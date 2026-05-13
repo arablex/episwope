@@ -2,8 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1440">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>EpiScope — Global Disease Surveillance</title>
+<meta name="description" content="Real-time global disease outbreak monitoring. Bloomberg Terminal for epidemiology.">
+<meta name="theme-color" content="#E8590C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EpiScope">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon.svg">
+<meta property="og:title" content="EpiScope — Global Disease Surveillance">
+<meta property="og:description" content="Real-time outbreak monitoring: WHO, ProMED, ECDC data on an interactive globe.">
+<meta property="og:type" content="website">
 <style>
   :root{
     --bg:#EDEBE4;
@@ -898,6 +909,185 @@
   .clr-s0{ color:var(--s0);} .clr-s1{ color:var(--s1);} .clr-s2{ color:var(--s2);}
   .clr-s3{ color:var(--s3);} .clr-s4{ color:var(--s4);} .clr-s5{ color:var(--s5);}
 
+  /* ============================================================
+     MOBILE RESPONSIVE  (≤768px)
+     ============================================================ */
+  @media (max-width: 768px) {
+
+    /* Reset desktop grid */
+    .app {
+      padding: 0;
+      grid-template-columns: 1fr;
+      grid-template-rows: 52px 1fr auto;
+      gap: 0;
+      height: 100dvh;
+    }
+
+    /* Topbar — slim, full-width */
+    .topbar {
+      grid-column: 1;
+      border-radius: 0;
+      border-left: 0; border-right: 0; border-top: 0;
+      padding: 0 14px;
+      height: 52px;
+      position: relative; z-index: 100;
+    }
+
+    /* Hide desktop-only topbar elements */
+    .top-divider,
+    .top-tabs,
+    .top-meta,
+    .pill-btn { display: none !important; }
+
+    /* Keep brand + search + lang btn visible */
+    .search { max-width: none; flex: 1; margin: 0 8px; }
+
+    /* Globe stage — fills available space */
+    .stage {
+      grid-column: 1;
+      border-radius: 0;
+      border: none;
+      height: calc(100dvh - 52px - 56px);
+      position: relative;
+    }
+
+    /* Sidebar → hidden on mobile (content shown in bottom sheet) */
+    .sidebar { display: none; }
+
+    /* Right panel → slides in from bottom as a sheet */
+    .panel {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 56px;         /* above bottom nav */
+      top: auto;
+      height: 0;
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+      border-bottom: none;
+      z-index: 200;
+      transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      box-shadow: 0 -8px 32px -8px rgba(22,21,19,0.18);
+    }
+    .panel.mob-open {
+      height: 72vh;
+    }
+    .panel-scroll {
+      height: 100%;
+    }
+    /* drag handle on top of panel */
+    .panel::before {
+      content: '';
+      display: block;
+      width: 36px; height: 4px;
+      background: var(--muted-2);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      flex-shrink: 0;
+    }
+
+    /* Bottom outbreak sheet (outbreak list) */
+    .mob-sheet {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 56px;
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid var(--glass-bd);
+      border-bottom: none;
+      box-shadow: 0 -6px 28px -6px rgba(22,21,19,0.14);
+      z-index: 150;
+      transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
+      height: 120px;  /* collapsed: shows handle + 2 rows */
+      overflow: hidden;
+    }
+    .mob-sheet.expanded { height: 52vh; }
+    .mob-sheet.hidden   { height: 0; }
+
+    .mob-sheet-handle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .mob-sheet-handle::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      width: 36px; height: 4px;
+      background: var(--muted-2);
+      border-radius: 2px;
+    }
+    .mob-sheet-title {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 4px;
+    }
+    .mob-sheet-count {
+      font-size: 11px; font-weight: 600;
+      background: var(--accent); color: #fff;
+      padding: 2px 7px; border-radius: var(--r-pill);
+    }
+    .mob-sheet-list {
+      overflow-y: auto;
+      height: calc(100% - 52px);
+      padding: 0 12px 12px;
+    }
+
+    /* Bottom navigation bar */
+    .mob-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 56px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border-top: 1px solid var(--glass-bd);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 300;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .mob-nav-btn {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      padding: 6px 16px;
+      border-radius: var(--r-sm);
+      font-size: 10px; font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: color .15s;
+      background: none; border: none;
+    }
+    .mob-nav-btn svg { opacity: 0.55; transition: opacity .15s; }
+    .mob-nav-btn.is-active { color: var(--accent); }
+    .mob-nav-btn.is-active svg { opacity: 1; }
+
+    /* Adjust out-row for touch */
+    .out-row { min-height: 52px; padding: 10px 12px; }
+    .out-row .nm { font-size: 13px; }
+    .out-row .lo { font-size: 11px; }
+
+    /* Panel adjustments for mobile */
+    .panel-head { padding: 8px 16px 12px; }
+    .panel-name { font-size: 22px; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+
+    /* Hide desktop elements in mobile panel */
+    .hmap-wrap,
+    .rep-list { display: none; }
+
+    /* Sparkline smaller */
+    .spark { height: 50px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1266,6 +1456,123 @@
 </script>
 <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+/* ── Mobile UI controller ── */
+(function(){
+  const isMob = () => window.innerWidth <= 768;
+
+  // Inject bottom nav + sheet into DOM
+  function injectMobileUI(){
+    if(!isMob() || document.getElementById('mobNav')) return;
+
+    // Bottom nav
+    const nav = document.createElement('nav');
+    nav.id = 'mobNav';
+    nav.className = 'mob-nav';
+    nav.innerHTML = `
+      <button class="mob-nav-btn is-active" data-view="globe" id="mnGlobe">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+        Globe
+      </button>
+      <button class="mob-nav-btn" data-view="list" id="mnList">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Outbreaks
+      </button>
+      <button class="mob-nav-btn" data-view="detail" id="mnDetail">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Detail
+      </button>
+    `;
+    document.body.appendChild(nav);
+
+    // Bottom sheet
+    const sheet = document.createElement('div');
+    sheet.id = 'mobSheet';
+    sheet.className = 'mob-sheet';
+    sheet.innerHTML = `
+      <div class="mob-sheet-handle" id="mobSheetHandle">
+        <span class="mob-sheet-title">Outbreaks</span>
+        <span class="mob-sheet-count" id="mobSheetCount">12</span>
+      </div>
+      <div class="mob-sheet-list" id="mobSheetList"></div>
+    `;
+    document.body.appendChild(sheet);
+
+    // Sheet toggle
+    document.getElementById('mobSheetHandle').addEventListener('click', ()=>{
+      sheet.classList.toggle('expanded');
+    });
+
+    // Nav switching
+    nav.addEventListener('click', e=>{
+      const btn = e.target.closest('.mob-nav-btn'); if(!btn) return;
+      nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const view = btn.dataset.view;
+
+      const panel = document.getElementById('panel');
+      const mSheet = document.getElementById('mobSheet');
+
+      if(view === 'globe'){
+        if(panel) panel.classList.remove('mob-open');
+        if(mSheet){ mSheet.classList.remove('expanded','hidden'); }
+      } else if(view === 'list'){
+        if(panel) panel.classList.remove('mob-open');
+        if(mSheet){ mSheet.classList.add('expanded'); mSheet.classList.remove('hidden'); }
+      } else if(view === 'detail'){
+        if(panel) panel.classList.add('mob-open');
+        if(mSheet) mSheet.classList.add('hidden');
+      }
+    });
+
+    // Sync sheet list with outbreak list
+    syncSheetList();
+  }
+
+  function syncSheetList(){
+    const src  = document.getElementById('list');
+    const dest = document.getElementById('mobSheetList');
+    const cnt  = document.getElementById('mobSheetCount');
+    if(!src || !dest) return;
+    dest.innerHTML = src.innerHTML;
+    if(cnt) cnt.textContent = src.querySelectorAll('.out-row').length;
+    // wire clicks
+    dest.querySelectorAll('.out-row').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        // mirror click to main list
+        const mainRow = src.querySelector(`[data-id="${el.dataset.id}"]`);
+        if(mainRow) mainRow.click();
+        // switch to detail view
+        const nav = document.getElementById('mobNav');
+        if(nav){
+          nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
+          const detBtn = nav.querySelector('[data-view="detail"]');
+          if(detBtn) detBtn.classList.add('is-active');
+        }
+        const panel = document.getElementById('panel');
+        const mSheet = document.getElementById('mobSheet');
+        if(panel) panel.classList.add('mob-open');
+        if(mSheet) mSheet.classList.add('hidden');
+      });
+    });
+  }
+
+  // Run after globe.js populates the list
+  window.addEventListener('load', ()=>{
+    if(isMob()){
+      injectMobileUI();
+      // re-sync when list updates
+      const obs = new MutationObserver(()=>{ syncSheetList(); });
+      const list = document.getElementById('list');
+      if(list) obs.observe(list, {childList:true, subtree:true});
+    }
+  });
+
+  window.addEventListener('resize', ()=>{
+    if(isMob()) injectMobileUI();
+  });
+})();
+</script>
 <script src="globe.js"></script>
 </body>
 </html>
