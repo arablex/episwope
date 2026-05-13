@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>EpiScope — Глобальный эпидемиологический мониторинг</title>
+<meta name="description" content="EpiScope — система глобального эпидемиологического надзора. Вспышки заболеваний, патогены, аналитика ВОЗ в реальном времени.">
+<meta property="og:title" content="EpiScope — Эпиднадзор в реальном времени">
+<meta property="og:description" content="Глобальная система мониторинга вспышек инфекционных заболеваний">
+<style>
+  :root{
+    --bg:#EDEBE4;
+    --ink:#161513;
+    --ink-2:#3B3A36;
+    --muted:#807E76;
+    --muted-2:#B6B3AA;
+    --line:#E5E3DC;
+    --line-2:#EFEDE6;
+
+    --s0:#A09F95;
+    --s1:#E4B514;
+    --s2:#E8590C;
+    --s3:#C92A2A;
+    --s4:#8B1A1A;
+    --s5:#5C2010;
+
+    --accent:#E8590C;
+    --accent-deep:#C92A2A;
+
+    --r-xs: 10px;
+    --r-sm: 14px;
+    --r-md: 18px;
+    --r-lg: 22px;
+    --r-xl: 28px;
+    --r-pill: 999px;
+
+    --glass-bg: linear-gradient(180deg, rgba(255,255,255,0.66) 0%, rgba(255,255,255,0.44) 100%);
+    --glass-bd: rgba(255,255,255,0.60);
+    --glass-shadow:
+      0 22px 52px -22px rgba(28,24,18,0.16),
+      0 6px 18px -8px rgba(28,24,18,0.07),
+      inset 0 1px 0 rgba(255,255,255,0.82);
+
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", system-ui, sans-serif;
+    --display: "Fraunces", "SF Pro Display", -apple-system, system-ui, serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{
+    height:100%; overflow:hidden;
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:-0.005em;
+  }
+  body{
+    background:#EDEBE4;
+    background-image:
+      radial-gradient(1000px 700px at 18% 8%, rgba(232,89,12,0.06), transparent 55%),
+      linear-gradient(180deg, #F3F0E7 0%, #EAE7DD 100%);
+  }
+  button{ font-family:inherit; cursor:pointer; border:0; background:none; color:inherit; }
+  ::selection{ background:#E8590C33; }
+
+  .aurora{
+    position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .aurora b{
+    position:absolute; display:block;
+    width:520px; height:520px; border-radius:50%;
+    filter: blur(80px); opacity:.26;
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+  .aurora b:nth-child(1){ left:-160px; top:-160px; background:radial-gradient(circle, #FAD9B7, transparent 60%); }
+  .aurora b:nth-child(2){ right:-180px; top:30%; width:600px; height:600px; background:radial-gradient(circle, #F0D5D5, transparent 60%); animation-duration:28s;}
+  .aurora b:nth-child(3){ left:30%; bottom:-220px; width:680px; height:680px; background:radial-gradient(circle, #F7EAC8, transparent 65%); animation-duration:32s; }
+  @keyframes drift{
+    from{ transform:translate3d(0,0,0) scale(1); }
+    to  { transform:translate3d(40px,-30px,0) scale(1.08); }
+  }
+
+  .app{
+    position:relative; z-index:2;
+    height:100vh; width:100vw;
+    padding:18px;
+    display:grid;
+    grid-template-columns: 268px 1fr 360px;
+    grid-template-rows: 60px 1fr;
+    gap:18px;
+  }
+
+  /* Wide views: pathogens + reports take full width except panel */
+  .app.v-pathogens .stage,
+  .app.v-reports .stage{
+    grid-column: 2 / -1;
+  }
+  .app.v-pathogens .panel,
+  .app.v-reports .panel{
+    display:none;
+  }
+
+  .topbar{
+    grid-column:1 / -1;
+    background:var(--glass-bg);
+    backdrop-filter:blur(28px) saturate(160%);
+    -webkit-backdrop-filter:blur(28px) saturate(160%);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-lg);
+    box-shadow:var(--glass-shadow);
+    padding:0 18px;
+    display:flex; align-items:center; gap:18px;
+  }
+
+  .brand-mark{
+    width:32px; height:32px; border-radius:10px; flex-shrink:0;
+    background:linear-gradient(145deg, #E8590C, #C92A2A);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:800; color:#fff; letter-spacing:-0.5px;
+    box-shadow:0 4px 12px -4px rgba(232,89,12,0.55);
+  }
+  .brand-name{ font-size:14px; font-weight:700; letter-spacing:-0.5px; line-height:1.1; }
+  .brand-sub{ font-size:10px; color:var(--muted); letter-spacing:0.02em; }
+
+  .top-divider{ width:1px; height:28px; background:var(--line); flex-shrink:0; }
+
+  .search{
+    flex:1; max-width:340px;
+    display:flex; align-items:center; gap:8px;
+    background:rgba(22,21,19,0.05); border-radius:var(--r-sm);
+    padding:0 10px; height:34px; border:1px solid transparent;
+    transition:border-color .15s;
+    color:var(--muted);
+  }
+  .search:focus-within{ border-color:var(--accent); color:var(--ink); }
+  .search input{ flex:1; border:0; background:0; font:inherit; font-size:12px; outline:0; color:inherit; }
+  .search input::placeholder{ color:var(--muted); }
+  .search .kbd{ font-size:10px; padding:2px 5px; border-radius:5px; background:var(--line); color:var(--muted); }
+
+  .top-tabs{
+    display:flex; align-items:center; gap:4px;
+    background:rgba(22,21,19,0.06); border-radius:var(--r-sm);
+    padding:4px;
+  }
+  .top-tab{
+    height:28px; padding:0 12px; border-radius:var(--r-xs);
+    font-size:12px; font-weight:500; color:var(--muted);
+    display:flex; align-items:center; gap:5px;
+    transition:background .15s, color .15s;
+  }
+  .top-tab.is-active{
+    background:#fff;
+    color:var(--ink);
+    box-shadow:0 1px 4px rgba(22,21,19,0.10);
+  }
+
+  .top-meta{ margin-left:auto; display:flex; align-items:center; gap:18px; font-size:11px; color:var(--muted);}
+  .top-meta b{ color:var(--ink); font-weight:700; }
+
+  .live-dot{
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:#22C55E; box-shadow:0 0 0 3px rgba(34,197,94,0.22);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{ box-shadow:0 0 0 3px rgba(34,197,94,0.22);} 50%{ box-shadow:0 0 0 5px rgba(34,197,94,0.08);} }
+
+  .top-actions{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{
+    width:32px; height:32px; border-radius:var(--r-xs);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--muted); transition:background .15s;
+  }
+  .icon-btn:hover{ background:rgba(22,21,19,0.07); color:var(--ink); }
+
+  .pill-btn{
+    height:32px; padding:0 14px; border-radius:var(--r-pill);
+    background:var(--ink); color:#fff;
+    font-size:12px; font-weight:600;
+    display:flex; align-items:center; gap:6px;
+  }
+  .pill-btn:hover{ background:#2a2822; }
+  .accent-dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    background:var(--glass-bg);
+    backdrop-filter:blur(28px) saturate(160%);
+    -webkit-backdrop-filter:blur(28px) saturate(160%);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-xl);
+    box-shadow:var(--glass-shadow);
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    padding:18px 0;
+  }
+
+  .side-section{ padding:0 16px; margin-bottom:14px; }
+  .side-h{
+    font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--muted);
+    margin-bottom:8px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .side-h .count{ font-size:9px; background:var(--line); border-radius:6px; padding:1px 6px; font-weight:600; letter-spacing:0; color:var(--muted); }
+
+  .stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .stat{
+    background:rgba(22,21,19,0.04); border-radius:var(--r-sm);
+    padding:10px 10px 8px;
+    border:1px solid var(--line);
+  }
+  .stat.acc{ background:rgba(22,21,19,0.05); }
+  .stat-num{ font-size:18px; font-weight:800; letter-spacing:-0.03em; line-height:1; }
+  .stat-num.s2{ color:var(--s2); }
+  .stat-num.s3{ color:var(--s3); }
+  .stat-num.s4{ color:var(--s4); }
+  .stat-label{ font-size:9px; color:var(--muted); margin-top:3px; line-height:1.2; }
+  .stat-delta{ font-size:9px; color:var(--muted-2); margin-top:4px; }
+  .stat-delta.dn{ color:var(--s0); }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:5px; }
+  .chip{
+    height:26px; padding:0 10px; border-radius:var(--r-pill);
+    font-size:11px; font-weight:500; color:var(--muted);
+    background:rgba(22,21,19,0.05); border:1px solid transparent;
+    display:flex; align-items:center; gap:5px;
+    transition:all .15s; cursor:pointer;
+  }
+  .chip.is-active{ background:#fff; color:var(--ink); border-color:var(--line); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
+  .chip .badge{ font-size:9px; background:var(--line); border-radius:6px; padding:0 5px; }
+  .dot{ width:6px; height:6px; border-radius:50%; display:inline-block; }
+  .fill-s0{ background:var(--s0);} .fill-s1{ background:var(--s1);} .fill-s2{ background:var(--s2);}
+  .fill-s3{ background:var(--s3);} .fill-s4{ background:var(--s4);} .fill-s5{ background:var(--s5);}
+
+  .list-h{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:0 16px; margin-bottom:6px;
+    font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);
+  }
+  .list-h .count{ font-size:9px; background:var(--line); border-radius:6px; padding:1px 6px; font-weight:600; letter-spacing:0; color:var(--muted); }
+
+  .list-wrap{ flex:1; overflow-y:auto; padding:0 8px; scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
+  .out-row{
+    display:flex; align-items:center; gap:9px;
+    padding:8px 8px; border-radius:var(--r-sm);
+    cursor:pointer; transition:background .12s;
+    position:relative;
+  }
+  .out-row:hover{ background:rgba(22,21,19,0.05); }
+  .out-row.is-selected{ background:rgba(232,89,12,0.07); }
+  .out-row.is-selected::before{
+    content:''; position:absolute; left:0; top:25%; bottom:25%;
+    width:2px; border-radius:2px; background:var(--accent);
+  }
+  .sq{
+    width:28px; height:28px; border-radius:8px; flex-shrink:0;
+    font-size:9px; font-weight:800; color:#fff;
+    display:flex; align-items:center; justify-content:center; letter-spacing:-0.3px;
+  }
+  .out-row .nm{ font-size:11.5px; font-weight:600; letter-spacing:-0.3px; }
+  .out-row .lo{ font-size:10px; color:var(--muted); margin-top:1px; }
+  .out-row .ct{ margin-left:auto; text-align:right; font-size:12px; font-weight:700; flex-shrink:0; }
+  .out-row .ct small{ display:block; font-size:9px; color:var(--muted); font-weight:400; }
+
+  .status-foot{
+    padding:10px 16px 0;
+    display:flex; align-items:center; gap:8px;
+    font-size:10px; color:var(--muted);
+    border-top:1px solid var(--line); margin-top:8px;
+  }
+  .live-pill{
+    display:flex; align-items:center; gap:5px;
+    background:rgba(34,197,94,0.10); color:#16A34A;
+    padding:3px 8px; border-radius:var(--r-pill); font-weight:600;
+  }
+  .live-pill .dot{ background:#22C55E; }
+
+  .hidden{ display:none!important; }
+
+  /* ============ STAGE ============ */
+  .stage{
+    background:var(--glass-bg);
+    backdrop-filter:blur(28px) saturate(160%);
+    -webkit-backdrop-filter:blur(28px) saturate(160%);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-xl);
+    box-shadow:var(--glass-shadow);
+    position:relative; overflow:hidden;
+  }
+
+  .view{
+    display:none;
+    position:absolute; inset:0;
+  }
+  .view.is-active{ display:flex; flex-direction:column; }
+
+  #view-globe.is-active{ display:block; }
+
+  #globe{ display:block; width:100%; height:100%; }
+
+  .stage-corner{
+    position:absolute; top:16px; left:18px;
+    pointer-events:none;
+  }
+  .crumbs{
+    display:flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--muted);
+  }
+  .crumbs b{ color:var(--ink); font-weight:600; }
+  .crumbs .sep{ color:var(--muted-2); }
+  .pin{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 3px rgba(232,89,12,0.20);
+    display:inline-block; flex-shrink:0;
+  }
+
+  .stage-cluster{
+    position:absolute; right:18px; top:50%;
+    transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .control-stack{
+    display:flex; flex-direction:column; gap:1px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-sm);
+    overflow:hidden;
+    box-shadow:0 4px 14px -6px rgba(22,21,19,0.14);
+  }
+  .control-stack button{
+    width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:300; color:var(--muted);
+    transition:background .12s, color .12s;
+  }
+  .control-stack button:hover{ background:rgba(22,21,19,0.07); color:var(--ink); }
+  .control-stack button.is-on{ color:var(--accent); }
+
+  .stage-bottom{
+    position:absolute; bottom:18px; left:18px; right:18px;
+    display:flex; align-items:flex-end; justify-content:space-between;
+    pointer-events:none;
+  }
+  .legend{
+    background:rgba(255,255,255,0.70);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-md);
+    padding:10px 12px;
+    box-shadow:0 4px 16px -6px rgba(22,21,19,0.12);
+    min-width:220px;
+  }
+  .legend-h{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--muted); margin-bottom:7px;
+  }
+  .legend-h em{ font-size:9px; font-style:normal; color:var(--muted-2); text-transform:none; letter-spacing:0; }
+  .scale{ display:flex; gap:2px; height:8px; border-radius:4px; overflow:hidden; margin-bottom:4px; }
+  .scale i{ flex:1; border-radius:1px; }
+  .scale-labels{ display:flex; justify-content:space-between; font-size:8.5px; color:var(--muted-2); }
+
+  .clock{
+    display:flex; gap:10px;
+    background:rgba(255,255,255,0.70);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-sm);
+    padding:8px 12px;
+    font-size:10px; color:var(--muted);
+    box-shadow:0 4px 16px -6px rgba(22,21,19,0.12);
+  }
+  .clock b{ color:var(--ink); font-weight:700; font-size:11px; margin-left:2px; }
+
+  /* POPUP */
+  .popup{
+    position:absolute; bottom:72px; left:18px;
+    width:230px;
+    background:rgba(255,255,255,0.88);
+    backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-lg);
+    box-shadow:0 12px 40px -12px rgba(22,21,19,0.22), 0 4px 16px -6px rgba(22,21,19,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+    overflow:hidden;
+  }
+  .popup-bar{ height:3px; }
+  .popup-body{ padding:13px 14px 14px; }
+  .popup-id{ font-size:9px; color:var(--muted); letter-spacing:0.04em; margin-bottom:4px; }
+  .popup-name{ font-size:17px; font-weight:800; letter-spacing:-0.04em; line-height:1.15; margin-bottom:5px; }
+  .popup-loc{
+    display:flex; align-items:center; gap:5px;
+    font-size:10.5px; color:var(--muted); margin-bottom:8px;
+  }
+  .popup-tags{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; }
+  .tag{
+    height:20px; padding:0 7px; border-radius:var(--r-pill);
+    font-size:9.5px; font-weight:600;
+    display:flex; align-items:center; gap:4px;
+    background:rgba(22,21,19,0.06); color:var(--ink-2);
+  }
+  .tag.who{ background:rgba(232,89,12,0.10); color:var(--accent); }
+  .popup-metrics{ display:flex; gap:10px; margin-bottom:10px; }
+  .popup-metrics .k{ font-size:9px; color:var(--muted); }
+  .popup-metrics .v{ font-size:16px; font-weight:800; letter-spacing:-0.03em; }
+  .popup-survey{
+    border-radius:var(--r-sm); padding:8px 10px;
+    color:#fff;
+  }
+  .popup-survey .lbl{ font-size:9px; opacity:0.75; }
+  .popup-survey .big{ font-size:15px; font-weight:800; letter-spacing:-0.03em; margin-top:2px; }
+  .popup-survey .sub{ font-size:9.5px; opacity:0.80; margin-top:2px; }
+
+  /* ============ HEATMAP VIEW ============ */
+  .heatmap-wrap{ flex:1; display:flex; flex-direction:column; gap:12px; padding:18px; overflow:hidden; }
+  .heatmap-card{
+    flex:1; background:rgba(255,255,255,0.45); border-radius:var(--r-lg);
+    border:1px solid var(--glass-bd); overflow:hidden; position:relative;
+  }
+  .heatmap-card svg{ width:100%; height:100%; display:block; }
+  .hmap-pill{
+    position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+    background:rgba(255,255,255,0.88); backdrop-filter:blur(12px);
+    border:1px solid var(--glass-bd); border-radius:var(--r-pill);
+    padding:5px 14px; font-size:11px; font-weight:600;
+    display:flex; align-items:center; gap:7px; white-space:nowrap;
+    box-shadow:0 4px 14px -4px rgba(22,21,19,0.14);
+  }
+
+  .hmap-tooltip{
+    position:fixed; pointer-events:none;
+    background:rgba(255,255,255,0.96); border:1px solid var(--glass-bd);
+    border-radius:var(--r-md); padding:10px 12px;
+    box-shadow:0 12px 32px -8px rgba(22,21,19,0.22);
+    font-size:12px; opacity:0; transition:opacity .15s; z-index:999;
+    min-width:180px;
+  }
+  .hmap-tooltip.is-on{ opacity:1; }
+  .hmap-tooltip .t-name{ font-weight:700; font-size:13px; margin-bottom:2px; }
+  .hmap-tooltip .t-loc{ color:var(--muted); font-size:10.5px; margin-bottom:7px; }
+  .hmap-tooltip .t-row{ display:flex; gap:14px; }
+  .hmap-tooltip .t-k{ font-size:9px; color:var(--muted); }
+  .hmap-tooltip .t-v{ font-size:14px; font-weight:700; }
+
+  /* ============ PATHOGENS VIEW ============ */
+  .pathogens-wrap{ flex:1; display:flex; flex-direction:column; overflow:hidden; padding:18px; gap:12px; }
+  .view-toolbar{ display:flex; align-items:center; gap:12px; }
+  .view-toolbar-title{ font-size:15px; font-weight:700; letter-spacing:-0.4px; }
+  .view-meta{ font-size:11px; color:var(--muted); }
+  .path-grid{
+    flex:1; overflow-y:auto; scrollbar-width:thin;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;
+    padding-right:4px; align-content:start;
+  }
+  .path-card{
+    background:rgba(255,255,255,0.58); border:1px solid var(--glass-bd);
+    border-radius:var(--r-lg); padding:14px;
+    cursor:pointer; transition:box-shadow .15s, background .15s;
+  }
+  .path-card:hover{ background:rgba(255,255,255,0.80); box-shadow:0 8px 24px -8px rgba(22,21,19,0.14); }
+  .path-card.inactive{ opacity:0.62; }
+  .path-card-top{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .path-sev-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .path-name{ font-size:12px; font-weight:700; letter-spacing:-0.3px; flex:1; }
+  .path-short{ font-size:9px; color:var(--muted); background:var(--line); border-radius:5px; padding:1px 5px; }
+  .path-family{ font-size:10px; color:var(--muted); margin-bottom:10px; }
+  .path-stats{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+  .path-stat .k{ font-size:9px; color:var(--muted); }
+  .path-stat .v{ font-size:13px; font-weight:700; }
+  .path-stat .v.sm{ font-size:11px; }
+  .path-footer{ display:flex; flex-wrap:wrap; gap:4px; }
+  .path-badge{
+    font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:var(--r-pill);
+    background:var(--line); color:var(--muted);
+  }
+  .path-badge.active{ background:rgba(232,89,12,0.10); color:var(--accent); }
+  .path-badge.vok{ background:rgba(34,197,94,0.12); color:#16A34A; }
+  .path-badge.vtrial{ background:rgba(228,181,20,0.14); color:#92680A; }
+  .path-badge.vno{ background:rgba(201,42,42,0.10); color:#C92A2A; }
+
+  /* ============ REPORTS VIEW ============ */
+  .reports-wrap{ flex:1; display:flex; flex-direction:column; overflow:hidden; padding:18px; gap:12px; }
+  .rep-list{ flex:1; overflow-y:auto; scrollbar-width:thin; display:flex; flex-direction:column; gap:8px; padding-right:4px; }
+  .rep-card{
+    background:rgba(255,255,255,0.58); border:1px solid var(--glass-bd);
+    border-radius:var(--r-lg); padding:14px 16px;
+    display:grid; grid-template-columns:auto 1fr;
+    gap:0 14px; cursor:pointer; transition:box-shadow .15s;
+  }
+  .rep-card:hover{ box-shadow:0 6px 20px -6px rgba(22,21,19,0.14); }
+  .rep-type{
+    font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em;
+    color:var(--muted); padding-top:2px; white-space:nowrap;
+    grid-row: 1 / 3;
+    writing-mode:vertical-rl; transform:rotate(180deg);
+    border-right:1px solid var(--line); padding-right:10px; margin-right:0;
+  }
+  .rep-body{ grid-column:2; }
+  .rep-no{ font-size:9px; color:var(--muted); margin-bottom:3px; letter-spacing:0.04em; }
+  .rep-title{ font-size:13px; font-weight:700; letter-spacing:-0.3px; margin-bottom:3px; }
+  .rep-meta{ font-size:10px; color:var(--muted); margin-bottom:6px; }
+  .rep-summary{ font-size:11px; color:var(--ink-2); line-height:1.5; margin-bottom:8px; }
+  .rep-tags{ display:flex; flex-wrap:wrap; gap:4px; }
+  .rep-tag{ font-size:9px; background:var(--line); border-radius:var(--r-pill); padding:1px 7px; color:var(--muted); }
+  .rep-footer{ display:flex; align-items:center; justify-content:space-between; }
+  .rep-date{ font-size:9px; color:var(--muted); }
+  .rep-sev{ display:flex; align-items:center; gap:4px; }
+  .rep-sev-dot{ width:6px; height:6px; border-radius:50%; }
+  .rep-sev-lbl{ font-size:9.5px; font-weight:600; }
+  .rep-pages{ font-size:9px; color:var(--muted); }
+
+  /* ============ RIGHT PANEL ============ */
+  .panel{
+    background:var(--glass-bg);
+    backdrop-filter:blur(28px) saturate(160%);
+    -webkit-backdrop-filter:blur(28px) saturate(160%);
+    border:1px solid var(--glass-bd);
+    border-radius:var(--r-xl);
+    box-shadow:var(--glass-shadow);
+    overflow:hidden;
+  }
+  .panel-scroll{ height:100%; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
+
+  .panel-head{ padding:18px 18px 14px; border-bottom:1px solid var(--line); }
+  .panel-eyebrow{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:9.5px; color:var(--muted); letter-spacing:0.04em;
+    text-transform:uppercase; margin-bottom:7px;
+  }
+  .panel-eyebrow .x{ font-size:16px; color:var(--muted); line-height:1; }
+  .panel-name{ font-size:26px; font-weight:900; letter-spacing:-0.06em; line-height:1.08; margin-bottom:7px; }
+  .panel-loc{
+    display:flex; align-items:center; gap:6px;
+    font-size:11px; color:var(--muted); margin-bottom:10px;
+  }
+  .panel-status{
+    border-radius:var(--r-sm); padding:8px 11px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .panel-status .l{ font-size:9px; color:rgba(255,255,255,0.72); text-transform:uppercase; letter-spacing:0.06em; }
+  .panel-status .v{ font-size:11px; color:#fff; font-weight:700; }
+
+  .panel-section{ padding:14px 18px; border-bottom:1px solid var(--line); }
+  .panel-section .lbl{
+    font-size:9.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.07em; color:var(--muted);
+    margin-bottom:10px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .panel-section .lbl em{ font-size:10px; font-style:normal; color:var(--muted-2); text-transform:none; letter-spacing:0; font-weight:400; }
+
+  .metric-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .metric{
+    background:rgba(22,21,19,0.04); border-radius:var(--r-sm);
+    padding:9px 10px; border:1px solid var(--line);
+  }
+  .metric .k{ font-size:9px; color:var(--muted); margin-bottom:2px; }
+  .metric .v{ font-size:18px; font-weight:800; letter-spacing:-0.04em; }
+  .metric .delta{ font-size:9px; color:var(--muted-2); margin-top:3px; }
+  .metric .delta.up{ color:var(--s2); }
+  .metric .delta.dn{ color:var(--s0); }
+
+  .sev-bar{ display:flex; gap:2px; height:8px; border-radius:4px; overflow:hidden; margin-bottom:6px; }
+  .sev-bar i{ flex:1; }
+  .sev-pos{ height:3px; margin-bottom:3px; position:relative; }
+  .sev-pos::before{ content:'▲'; position:absolute; font-size:7px; color:var(--ink); transform:translateX(-50%); }
+  .sev-key{ display:flex; justify-content:space-between; font-size:8px; color:var(--muted-2); }
+
+  .spark-wrap{ background:rgba(22,21,19,0.03); border-radius:var(--r-sm); padding:10px; border:1px solid var(--line); }
+  .spark-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; }
+  .spark-big{ font-size:22px; font-weight:800; letter-spacing:-0.04em; line-height:1; }
+  .spark-cap{ font-size:9px; color:var(--muted); margin-top:2px; }
+  .spark-trend{ font-size:10px; font-weight:700; padding:3px 8px; border-radius:var(--r-pill); color:#fff; }
+  .spark{ height:52px; }
+  .spark svg{ display:block; }
+
+  .ai-card{
+    background:linear-gradient(180deg, rgba(20,18,14,0.91), rgba(12,11,8,0.94));
+    border-radius:var(--r-md);
+    border-left:2px solid var(--accent);
+    padding:13px 14px;
+    box-shadow:0 8px 20px -14px rgba(20,18,14,0.55);
+  }
+  .ai-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .ai-top .lbl{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:rgba(255,255,255,0.55); }
+  .ai-top .ts{ font-size:9px; color:rgba(255,255,255,0.35); }
+  .ai-card p{ font-size:11.5px; color:rgba(255,255,255,0.88); line-height:1.6; }
+  .ai-card .sig{ font-size:9px; color:rgba(255,255,255,0.35); margin-top:8px; }
+
+  .actions{ display:flex; gap:8px; }
+  .btn{
+    flex:1; height:34px; border-radius:var(--r-sm);
+    font-size:12px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    transition:opacity .15s;
+  }
+  .btn:hover{ opacity:0.85; }
+  .btn.primary{ background:var(--accent); color:#fff; box-shadow:0 8px 20px -10px rgba(232,89,12,0.45); }
+  .btn.ghost{ background:rgba(22,21,19,0.07); color:var(--ink); }
+
+  .events{ display:flex; flex-direction:column; gap:6px; }
+  .ev{ display:grid; grid-template-columns:44px 1fr auto; gap:6px; align-items:start; font-size:11px; }
+  .ev .when{ color:var(--muted); font-size:10px; padding-top:1px; }
+  .ev .what{ color:var(--ink-2); line-height:1.4; }
+  .ev .ct{ font-size:9px; font-weight:700; padding:1px 6px; border-radius:var(--r-pill); }
+
+  /* severity color utils */
+  .bg-s0{ background:var(--s0);} .bg-s1{ background:var(--s1);} .bg-s2{ background:linear-gradient(160deg, #F47521, #E8590C);}
+  .bg-s3{ background:linear-gradient(160deg, #E03A3A, #C92A2A);} .bg-s4{ background:linear-gradient(160deg, #A02222, #8B1A1A);}
+  .bg-s5{ background:linear-gradient(160deg, #7A2A18, #5C2010);}
+  .clr-s0{ color:var(--s0);} .clr-s1{ color:var(--s1);} .clr-s2{ color:var(--s2);}
+  .clr-s3{ color:var(--s3);} .clr-s4{ color:var(--s4);} .clr-s5{ color:var(--s5);}
+
+</style>
+</head>
+<body>
+
+<div class="aurora"><b></b><b></b><b></b></div>
+
+<div class="app v-globe" id="app">
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="brand-mark">E</span>
+      <div>
+        <div class="brand-name">EpiScope</div>
+        <div class="brand-sub">Система эпиднадзора · v4.2</div>
+      </div>
+    </div>
+
+    <div class="top-divider"></div>
+
+    <label class="search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="Поиск вспышек, патогенов, регионов, ID ВОЗ…" />
+      <span class="kbd">⌘K</span>
+    </label>
+
+    <div class="top-tabs">
+      <button class="top-tab is-active">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        Глобус
+      </button>
+      <button class="top-tab">Тепловая карта</button>
+      <button class="top-tab">Патогены</button>
+      <button class="top-tab">Отчёты</button>
+    </div>
+
+    <div class="top-meta">
+      <span><span class="live-dot"></span>&nbsp;&nbsp;В эфире · ВОЗ · ProMED · ECDC</span>
+      <span id="dataUpdated">Данные: загрузка…</span>
+      <span>Время <b id="topClock">--:-- UTC</b></span>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" title="Слои">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 12 10 6 10-6"/><path d="m2 16 10 6 10-6"/></svg>
+      </button>
+      <button class="icon-btn" title="Профиль">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      </button>
+      <button class="pill-btn">
+        <span class="accent-dot"></span>
+        Новый алерт
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+
+    <!-- Globe / Heatmap sidebar -->
+    <div class="sidebar-globe">
+      <div class="side-section">
+        <div class="side-h">Обзор <span class="count">24 ч</span></div>
+        <div class="stats-grid">
+          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Активных вспышек</div><div class="stat-delta">▲ +6 сегодня</div></div>
+          <div class="stat acc s4"><div class="stat-num s4">8 341</div><div class="stat-label">Смертей · 30 дн.</div><div class="stat-delta">▲ +312</div></div>
+          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Критических алертов</div><div class="stat-delta">▲ +2</div></div>
+          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Стран</div><div class="stat-delta dn">▼ −1</div></div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-h">Фильтр по уровню</div>
+        <div class="chips" id="chips">
+          <button class="chip is-active" data-f="all">Все<span class="badge">12</span></button>
+          <button class="chip" data-f="critical"><span class="dot fill-s4"></span>Критич.</button>
+          <button class="chip" data-f="alert"><span class="dot fill-s3"></span>Алерт</button>
+          <button class="chip" data-f="warning"><span class="dot fill-s2"></span>Внимание</button>
+          <button class="chip" data-f="monitoring"><span class="dot fill-s0"></span>Монит.</button>
+        </div>
+      </div>
+
+      <div class="list-h">
+        <span>Вспышки</span><span class="count" id="listCount">12</span>
+      </div>
+      <div class="list-wrap" id="list"></div>
+
+      <div class="status-foot">
+        <span class="live-pill"><span class="dot"></span>В эфире</span>
+        <span>обновлено <b id="lastSync">--:--:-- UTC</b></span>
+      </div>
+    </div>
+
+    <!-- Pathogens sidebar -->
+    <div class="sidebar-pathogens hidden">
+      <div class="side-section">
+        <div class="side-h">Тип <span class="count" id="pathCount">14</span></div>
+        <div class="chips" id="pathTypeChips">
+          <button class="chip is-active" data-pt="all">Все</button>
+          <button class="chip" data-pt="virus">Вирус</button>
+          <button class="chip" data-pt="bacteria">Бактерия</button>
+          <button class="chip" data-pt="parasite">Паразит</button>
+        </div>
+      </div>
+      <div class="side-section">
+        <div class="side-h">Показать</div>
+        <div class="chips" id="pathShowChips">
+          <button class="chip is-active" data-ps="all">Все</button>
+          <button class="chip" data-ps="active">Только активные</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports sidebar -->
+    <div class="sidebar-reports hidden">
+      <div class="side-section">
+        <div class="side-h">Тип <span class="count" id="repCount">12</span></div>
+        <div class="chips" id="repTypeChips">
+          <button class="chip is-active" data-rt="all">Все</button>
+          <button class="chip" data-rt="Situation report">Ситуация</button>
+          <button class="chip" data-rt="Risk assessment">Риск</button>
+          <button class="chip" data-rt="Weekly bulletin">Бюллетень</button>
+          <button class="chip" data-rt="Briefing">Брифинг</button>
+        </div>
+      </div>
+      <div class="side-section">
+        <div class="side-h">Регион</div>
+        <div class="chips" id="repRegionChips">
+          <button class="chip is-active" data-rr="all">Все</button>
+          <button class="chip" data-rr="Global">Глобально</button>
+          <button class="chip" data-rr="AFRO">AFRO</button>
+          <button class="chip" data-rr="AMRO">AMRO</button>
+          <button class="chip" data-rr="EMRO">EMRO</button>
+          <button class="chip" data-rr="EURO">EURO</button>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ============ STAGE ============ -->
+  <main class="stage" id="stage">
+
+    <!-- VIEW: Globe -->
+    <div id="view-globe" class="view is-active">
+    <canvas id="globe"></canvas>
+
+    <div class="stage-corner">
+      <div class="crumbs">
+        <span class="pin"></span>
+        <span>Африка</span><span class="sep">/</span>
+        <b id="crumbCountry">Uganda</b>
+        <span class="sep">·</span>
+        <b id="crumbOutbreak">Ebola Sudan-virus</b>
+      </div>
+    </div>
+
+    <div class="stage-cluster">
+      <div class="control-stack">
+        <button id="zIn" title="Приблизить">+</button>
+        <button id="zOut" title="Отдалить">−</button>
+        <button id="zRecenter" title="Сбросить вид">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+        </button>
+      </div>
+      <div class="control-stack">
+        <button id="togRot" class="is-on" title="Авторотация">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 4v5h-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="stage-bottom">
+      <div class="legend">
+        <div class="legend-h"><span>Индекс угрозы</span><em>Комп. — нагрузка × CFR × R<sub>t</sub></em></div>
+        <div class="scale">
+          <i style="background:var(--s0)"></i>
+          <i style="background:var(--s1)"></i>
+          <i style="background:var(--s2)"></i>
+          <i style="background:var(--s3)"></i>
+          <i style="background:var(--s4)"></i>
+          <i style="background:var(--s5)"></i>
+        </div>
+        <div class="scale-labels">
+          <span>Монит.</span><span>Низкий</span><span>Внимание</span><span>Алерт</span><span>Критич.</span><span>Катастрофа</span>
+        </div>
+      </div>
+      <div class="clock">
+        <span>ШИР<b id="lat">+1.37°</b></span>
+        <span>ДОЛ<b id="lon">+32.29°</b></span>
+        <span>М<b id="zo">1.00×</b></span>
+      </div>
+    </div>
+
+    <!-- popup -->
+    <div class="popup" id="popup">
+      <div class="popup-bar" id="popBar"></div>
+      <div class="popup-body">
+        <div class="popup-id" id="popId">EPI-2026-UGA-0142 · ВОЗ/AFRO</div>
+        <div class="popup-name" id="popName">Ebola Sudan-virus</div>
+        <div class="popup-loc"><span class="pin" id="popPin"></span><span id="popLoc">Mubende District, Уганда</span></div>
+        <div class="popup-tags">
+          <span class="tag"><span class="dot fill-s4"></span><span id="popSev">Критический</span></span>
+          <span class="tag who">ВОЗ Grade 3</span>
+          <span class="tag">PHEIC Pending</span>
+        </div>
+        <div class="popup-metrics">
+          <div><div class="k">Подтверждено</div><div class="v" id="popConf">142</div></div>
+          <div><div class="k">Смертей</div><div class="v clr-s4" id="popDeath">38</div></div>
+        </div>
+        <div class="popup-survey" id="popSurvey">
+          <div class="lbl">Мониторинг · дельта 24ч</div>
+          <div class="big" id="popDelta">+19 новых случаев</div>
+          <div class="sub" id="popSub">Кластер расширяется · 3 округа</div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /view-globe -->
+
+    <!-- VIEW: Heatmap -->
+    <div id="view-heatmap" class="view">
+      <div class="heatmap-wrap">
+        <div class="heatmap-card">
+          <svg id="heatmapSvg"></svg>
+          <div class="hmap-pill"><span class="pin"></span>Тепловая карта · Активные вспышки</div>
+        </div>
+        <div class="legend">
+          <div class="legend-h"><span>Индекс угрозы</span><em>Нажмите на выделенную страну для деталей</em></div>
+          <div class="scale">
+            <i style="background:var(--s0)"></i><i style="background:var(--s1)"></i>
+            <i style="background:var(--s2)"></i><i style="background:var(--s3)"></i>
+            <i style="background:var(--s4)"></i><i style="background:var(--s5)"></i>
+          </div>
+          <div class="scale-labels">
+            <span>Монит.</span><span>Низкий</span><span>Внимание</span><span>Алерт</span><span>Критич.</span><span>Катастрофа</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-heatmap -->
+
+    <!-- VIEW: Pathogens -->
+    <div id="view-pathogens" class="view">
+      <div class="pathogens-wrap">
+        <div class="view-toolbar">
+          <span class="view-toolbar-title">Каталог патогенов</span>
+          <span class="view-meta"><b id="pathResultCount">14</b> патогенов</span>
+        </div>
+        <div class="path-grid" id="pathGrid"></div>
+      </div>
+    </div><!-- /view-pathogens -->
+
+    <!-- VIEW: Reports -->
+    <div id="view-reports" class="view">
+      <div class="reports-wrap">
+        <div class="view-toolbar">
+          <span class="view-toolbar-title">Аналитика ВОЗ</span>
+          <span class="view-meta"><b id="repResultCount">12</b> отчётов</span>
+        </div>
+        <div class="rep-list" id="repList"></div>
+      </div>
+    </div><!-- /view-reports -->
+
+  </main>
+
+  <div class="hmap-tooltip" id="hmapTooltip"></div>
+
+  <!-- ============ RIGHT PANEL ============ -->
+  <aside class="panel" id="panel">
+    <div class="panel-scroll">
+      <div class="panel-head">
+        <div class="panel-eyebrow"><span id="panEy">Вспышка · EPI-2026-UGA-0142</span><button class="x">×</button></div>
+        <h1 class="panel-name" id="panName">Ebola<br>Sudan-virus</h1>
+        <div class="panel-loc"><span class="pin" id="panPin"></span><span id="panLoc">Mubende District, Уганда · AFRO</span></div>
+        <div class="panel-status" id="panStatus">
+          <span class="l">Классификация ВОЗ</span>
+          <span class="v">Grade 3 · PHEIC ожидается</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="lbl">Метрики <em>последние 24 ч</em></div>
+        <div class="metric-grid">
+          <div class="metric"><div class="k">Подтверждено</div><div class="v" id="mConf">142</div><div class="delta up">▲ 15.5% · 7 дн.</div></div>
+          <div class="metric"><div class="k">Смертей</div><div class="v clr-s4" id="mDeath">38</div><div class="delta up">▲ 6 · 24ч</div></div>
+          <div class="metric"><div class="k">CFR</div><div class="v" id="mCfr">26.8%</div><div class="delta dn">▼ 1.2pt · 7 дн.</div></div>
+          <div class="metric"><div class="k">R<sub>t</sub></div><div class="v" id="mRt">1.84</div><div class="delta up">▲ 0.21</div></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="lbl">Индекс угрозы <em id="sevIdxVal">84 / 100</em></div>
+        <div class="sev-bar">
+          <i style="background:var(--s0)"></i>
+          <i style="background:var(--s1)"></i>
+          <i style="background:var(--s2)"></i>
+          <i style="background:var(--s3)"></i>
+          <i style="background:var(--s4)"></i>
+          <i style="background:var(--s5)"></i>
+        </div>
+        <div class="sev-pos" id="sevPos"></div>
+        <div class="sev-key"><span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="lbl">Динамика за 14 дней</div>
+        <div class="spark-wrap">
+          <div class="spark-top">
+            <div>
+              <div class="spark-big" id="sparkBig">142</div>
+              <div class="spark-cap">Всего подтверждено</div>
+            </div>
+            <span class="spark-trend" id="sparkTrend">▲ 7 дн. +24</span>
+          </div>
+          <div class="spark" id="spark"></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="ai-card" id="aiCard">
+          <div class="ai-top">
+            <span class="lbl">Синтез · Haiku 4.5</span>
+            <span class="ts">14:18 UTC</span>
+          </div>
+          <p id="aiText"></p>
+          <div class="sig">Проверено 2 эпидемиологами</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="actions">
+          <button class="btn primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.4 0z"/></svg>
+            Установить алерт
+          </button>
+          <button class="btn ghost">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Экспорт
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section" style="border-bottom:0;">
+        <div class="lbl">Последние события</div>
+        <div class="events" id="events"></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  window.EPISWOPE_LANG = 'ru';
+  window.EPISWOPE_BASE = '../';   // path prefix for public/events.json
+</script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="../globe.js"></script>
+</body>
+</html>

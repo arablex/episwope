@@ -2,13 +2,72 @@
    EpiScope v2 — refined globe + 2026 UI bindings
    ========================================================= */
 
+/* ── i18n ────────────────────────────────────────────────── */
+const LANG = window.EPISWOPE_LANG || 'en';
+
+const STRINGS = {
+  en: {
+    outbreak:'Outbreak',
+    cases:'cases',
+    dataPrefix:'Data:',
+    dataLoading:'loading…',
+    confirmed:'Confirmed',
+    deaths:'Deaths',
+    severity:'Severity',
+    surveyTitle:'Survey · 24h delta',
+    newCases:'new cases',
+    last24hSurv:'Last 24 hours · {region} surveillance',
+    sevLabel:{ monitoring:'Monitor', low:'Low', warning:'Warning', alert:'Alert', critical:'Critical', catastrophic:'Catastrophic' },
+    incubation:'Incubation',
+    transmission:'Transmission',
+    vaccLicensed:'✓ Vaccine licensed',
+    vaccTrial:'⚗ In trial',
+    vaccNone:'✗ No vaccine',
+    active:'active',
+    pages:'pages',
+    noEvents:'No events logged in the last 24h.',
+    liveInjected:'Injected {n} live events',
+    liveUnavailable:'Live data unavailable:',
+  },
+  ru: {
+    outbreak:'Вспышка',
+    cases:'случаев',
+    dataPrefix:'Данные:',
+    dataLoading:'загрузка…',
+    confirmed:'Подтверждено',
+    deaths:'Смертей',
+    severity:'Уровень',
+    surveyTitle:'Мониторинг · дельта 24ч',
+    newCases:'новых случаев',
+    last24hSurv:'Последние 24 часа · {region}',
+    sevLabel:{ monitoring:'Монит.', low:'Низкий', warning:'Внимание', alert:'Алерт', critical:'Критич.', catastrophic:'Катастрофа' },
+    incubation:'Инкубация',
+    transmission:'Передача',
+    vaccLicensed:'✓ Вакцина одобрена',
+    vaccTrial:'⚗ В испытании',
+    vaccNone:'✗ Вакцины нет',
+    active:'активно',
+    pages:'стр.',
+    noEvents:'Событий за последние 24ч не зафиксировано.',
+    liveInjected:'Загружено {n} событий',
+    liveUnavailable:'Данные недоступны:',
+  }
+};
+
+function T(key, vars){
+  const s = STRINGS[LANG] || STRINGS.en;
+  let str = s[key] ?? (STRINGS.en[key] ?? key);
+  if(vars) Object.entries(vars).forEach(([k,v]) => { str = str.replace(`{${k}}`, v); });
+  return str;
+}
+
 const SEV = {
-  monitoring:  { idx:0, color:'#A09F95', dark:'#807E76', light:'#B8B7AD', label:'Monitor' },
-  low:         { idx:1, color:'#E4B514', dark:'#B28A0E', light:'#F2C73D', label:'Low' },
-  warning:     { idx:2, color:'#E8590C', dark:'#B84408', light:'#F47521', label:'Warning' },
-  alert:       { idx:3, color:'#C92A2A', dark:'#9F1F1F', light:'#E03A3A', label:'Alert' },
-  critical:    { idx:4, color:'#8B1A1A', dark:'#6E1414', light:'#A02222', label:'Critical' },
-  catastrophic:{ idx:5, color:'#5C2010', dark:'#421710', light:'#7A2A18', label:'Catastrophic' },
+  monitoring:  { idx:0, color:'#A09F95', dark:'#807E76', light:'#B8B7AD', label: STRINGS[LANG]?.sevLabel?.monitoring || 'Monitor' },
+  low:         { idx:1, color:'#E4B514', dark:'#B28A0E', light:'#F2C73D', label: STRINGS[LANG]?.sevLabel?.low || 'Low' },
+  warning:     { idx:2, color:'#E8590C', dark:'#B84408', light:'#F47521', label: STRINGS[LANG]?.sevLabel?.warning || 'Warning' },
+  alert:       { idx:3, color:'#C92A2A', dark:'#9F1F1F', light:'#E03A3A', label: STRINGS[LANG]?.sevLabel?.alert || 'Alert' },
+  critical:    { idx:4, color:'#8B1A1A', dark:'#6E1414', light:'#A02222', label: STRINGS[LANG]?.sevLabel?.critical || 'Critical' },
+  catastrophic:{ idx:5, color:'#5C2010', dark:'#421710', light:'#7A2A18', label: STRINGS[LANG]?.sevLabel?.catastrophic || 'Catastrophic' },
 };
 
 const OUTBREAKS = [
@@ -636,7 +695,7 @@ function renderList(){
         <div class="nm">${o.name}</div>
         <div class="lo">${o.country} · ${o.region}</div>
       </div>
-      <div class="ct">${fmtNum(o.cases)}<small>cases</small></div>
+      <div class="ct">${fmtNum(o.cases)}<small>${T('cases')}</small></div>
     </div>`;
   }).join('');
   root.querySelectorAll('.out-row').forEach(el=>{
@@ -658,7 +717,7 @@ function renderPanel(){
   const sev = SEV[o.sev];
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
-  document.getElementById('panEy').textContent = `Outbreak · ${o.code}`;
+  document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
   document.getElementById('panName').innerHTML = breakName(o.name);
   document.getElementById('panLoc').textContent = `${o.place} · ${o.region}`;
   document.getElementById('panPin').style.background = sev.color;
@@ -730,7 +789,7 @@ function renderPanel(){
   // events
   const ev = document.getElementById('events');
   if(!o.events || o.events.length===0){
-    ev.innerHTML = `<div class="ev" style="color:var(--muted);"><span class="when">—</span><span class="what">No events logged in the last 24h.</span><span class="ct"></span></div>`;
+    ev.innerHTML = `<div class="ev" style="color:var(--muted);"><span class="when">—</span><span class="what">${T('noEvents')}</span><span class="ct"></span></div>`;
   } else {
     ev.innerHTML = o.events.map(e=>`
       <div class="ev">
@@ -806,7 +865,8 @@ const ISO2_NUM = {
 
 async function loadLiveData(){
   try {
-    const res = await fetch('./public/events.json?_=' + Date.now());
+    const base = window.EPISWOPE_BASE || './';
+    const res = await fetch(base + 'public/events.json?_=' + Date.now());
     if(!res.ok) return;
     const json = await res.json();
     const events = json.events || [];
@@ -818,7 +878,8 @@ async function loadLiveData(){
       const d = new Date(json.meta.updated_at);
       const hh = String(d.getUTCHours()).padStart(2,'0');
       const mm = String(d.getUTCMinutes()).padStart(2,'0');
-      updEl.textContent = `Data: ${d.toLocaleDateString('en',{month:'short',day:'numeric'})} ${hh}:${mm} UTC`;
+      const locale = LANG === 'ru' ? 'ru' : 'en';
+      updEl.textContent = `${T('dataPrefix')} ${d.toLocaleDateString(locale,{month:'short',day:'numeric'})} ${hh}:${mm} UTC`;
     }
 
     // Convert API events to OUTBREAKS-compatible objects and inject them
@@ -1126,9 +1187,9 @@ function renderHeatmap(){
         <div class="t-name">${o.name}</div>
         <div class="t-loc">${o.place}</div>
         <div class="t-row">
-          <div><div class="t-k">Cases</div><div class="t-v">${fmtNum(o.cases)}</div></div>
-          <div><div class="t-k">Deaths</div><div class="t-v" style="color:${SEV[o.sev].color}">${fmtNum(o.deaths)}</div></div>
-          <div><div class="t-k">Severity</div><div class="t-v" style="color:${SEV[o.sev].color};font-size:13px">${SEV[o.sev].label}</div></div>
+          <div><div class="t-k">${T('confirmed')}</div><div class="t-v">${fmtNum(o.cases)}</div></div>
+          <div><div class="t-k">${T('deaths')}</div><div class="t-v" style="color:${SEV[o.sev].color}">${fmtNum(o.deaths)}</div></div>
+          <div><div class="t-k">${T('severity')}</div><div class="t-v" style="color:${SEV[o.sev].color};font-size:13px">${SEV[o.sev].label}</div></div>
         </div>`;
     })
     .on('mouseleave', () => tooltip.classList.remove('is-on'))
@@ -1168,8 +1229,8 @@ function renderPathogens(){
     const hasActive = p.activeCount > 0;
     const vClass = p.vaccineStatus.includes('Licensed') ? 'vok' :
                    p.vaccineStatus.includes('trial') || p.vaccineStatus.includes('Trial') ? 'vtrial' : 'vno';
-    const vLabel = p.vaccineStatus.includes('Licensed') ? '✓ Vaccine licensed' :
-                   p.vaccineStatus.includes('trial') || p.vaccineStatus.includes('Trial') ? '⚗ In trial' : '✗ No vaccine';
+    const vLabel = p.vaccineStatus.includes('Licensed') ? T('vaccLicensed') :
+                   p.vaccineStatus.includes('trial') || p.vaccineStatus.includes('Trial') ? T('vaccTrial') : T('vaccNone');
     return `
     <div class="path-card ${hasActive?'':'inactive'}" data-pid="${p.id}">
       <div class="path-card-top">
@@ -1181,11 +1242,11 @@ function renderPathogens(){
       <div class="path-stats">
         <div class="path-stat"><div class="k">R₀</div><div class="v">${p.r0===0?'—':p.r0.toFixed(1)}</div></div>
         <div class="path-stat"><div class="k">CFR</div><div class="v">${p.cfr}%</div></div>
-        <div class="path-stat"><div class="k">Incubation</div><div class="v sm">${p.incubation}</div></div>
-        <div class="path-stat"><div class="k">Transmission</div><div class="v sm">${p.transmission.split('·')[0].trim()}</div></div>
+        <div class="path-stat"><div class="k">${T('incubation')}</div><div class="v sm">${p.incubation}</div></div>
+        <div class="path-stat"><div class="k">${T('transmission')}</div><div class="v sm">${p.transmission.split('·')[0].trim()}</div></div>
       </div>
       <div class="path-footer">
-        ${hasActive ? `<span class="path-badge active">● ${p.activeCount} active</span>` : ''}
+        ${hasActive ? `<span class="path-badge active">● ${p.activeCount} ${T('active')}</span>` : ''}
         <span class="path-badge ${vClass}">${vLabel}</span>
       </div>
     </div>`;
