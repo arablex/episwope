@@ -178,6 +178,14 @@
     display:flex; align-items:center; gap:6px;
   }
   .pill-btn:hover{ background:#2a2822; }
+  .lang-btn{
+    height:28px; padding:0 10px; border-radius:var(--r-xs);
+    font-size:11px; font-weight:700; letter-spacing:0.04em;
+    color:var(--muted); background:rgba(22,21,19,0.06);
+    border:1px solid var(--line); text-decoration:none;
+    display:flex; align-items:center; transition:all .15s;
+  }
+  .lang-btn:hover{ background:#fff; color:var(--ink); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
   .accent-dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); }
 
   /* ============ SIDEBAR ============ */
@@ -654,6 +662,7 @@
     </div>
 
     <div class="top-actions">
+      <a href="/" class="lang-btn" title="English version">EN</a>
       <button class="icon-btn" title="Слои">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 12 10 6 10-6"/><path d="m2 16 10 6 10-6"/></svg>
       </button>

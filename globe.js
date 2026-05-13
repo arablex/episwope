@@ -210,6 +210,7 @@ const state = {
   scale: 1,
   autoRotate: true,
   filter: 'all',
+  query: '',
   selectedId: 'ebola-uganda',
   hoveredId: null,
   countries: [],
@@ -681,13 +682,29 @@ function flyTo(o){
   })(t0);
 }
 
+function matchesQuery(o, q){
+  if(!q) return true;
+  const hay = [o.name, o.country, o.region, o.pathogen, o.code, o.place]
+    .filter(Boolean).join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).every(word => hay.includes(word));
+}
+
 function renderList(){
   const root = document.getElementById('list');
   const f = state.filter;
-  const items = OUTBREAKS.filter(o => f==='all' || o.sev===f);
+  const q = state.query;
+  const items = OUTBREAKS.filter(o =>
+    (f==='all' || o.sev===f) && matchesQuery(o, q)
+  );
   document.getElementById('listCount').textContent = items.length;
+
+  if(items.length === 0){
+    root.innerHTML = `<div style="padding:20px 8px;text-align:center;color:var(--muted);font-size:12px;">No results for "${q}"</div>`;
+    return;
+  }
+
   root.innerHTML = items.map(o => {
-    const ini = o.country.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const ini = (o.country||'??').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
     return `
     <div class="out-row ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
       <span class="sq bg-${sevClass(o.sev)}">${ini}</span>
@@ -843,12 +860,104 @@ document.getElementById('chips').addEventListener('click', e=>{
   renderList();
 });
 
+/* search */
+const _searchEl = document.getElementById('searchInput');
+if(_searchEl){
+  let _searchTimer;
+  _searchEl.addEventListener('input', e=>{
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(()=>{
+      state.query = e.target.value.trim();
+      // Switch to globe view if in another view
+      if(state.query && currentView !== 'globe') switchView('globe');
+      renderList();
+    }, 180);
+  });
+  // ⌘K / Ctrl+K focus shortcut
+  document.addEventListener('keydown', e=>{
+    if((e.metaKey||e.ctrlKey) && e.key==='k'){
+      e.preventDefault(); _searchEl.focus(); _searchEl.select();
+    }
+    if(e.key==='Escape' && document.activeElement===_searchEl){
+      _searchEl.value=''; state.query=''; renderList(); _searchEl.blur();
+    }
+  });
+}
+
 /* =========================================================
    LIVE DATA  (public/events.json — updated by GitHub Actions)
    ========================================================= */
 
 // Severity mapping: API strings → OUTBREAKS sev keys
 const SEV_MAP = { critical:'critical', high:'alert', medium:'warning', low:'monitoring' };
+
+// Country name → {iso2, isoNum, lat, lng} fallback when API doesn't return coords
+const COUNTRY_COORDS = {
+  'democratic republic of the congo':{ iso:'CD', num:180, lat:-4.0,  lng:21.7  },
+  'dr congo':                         { iso:'CD', num:180, lat:-4.0,  lng:21.7  },
+  'nigeria':                          { iso:'NG', num:566, lat:9.1,   lng:8.7   },
+  'ethiopia':                         { iso:'ET', num:231, lat:9.1,   lng:40.5  },
+  'sudan':                            { iso:'SD', num:729, lat:15.5,  lng:32.5  },
+  'south sudan':                      { iso:'SS', num:728, lat:7.9,   lng:29.7  },
+  'kenya':                            { iso:'KE', num:404, lat:-1.3,  lng:36.8  },
+  'uganda':                           { iso:'UG', num:800, lat:1.4,   lng:32.3  },
+  'tanzania':                         { iso:'TZ', num:834, lat:-6.4,  lng:34.9  },
+  'ghana':                            { iso:'GH', num:288, lat:7.9,   lng:-1.0  },
+  'sierra leone':                     { iso:'SL', num:694, lat:8.5,   lng:-11.8 },
+  'mali':                             { iso:'ML', num:466, lat:17.6,  lng:-4.0  },
+  'niger':                            { iso:'NE', num:562, lat:17.6,  lng:8.1   },
+  'chad':                             { iso:'TD', num:148, lat:15.5,  lng:18.7  },
+  'cameroon':                         { iso:'CM', num:120, lat:3.9,   lng:11.5  },
+  'somalia':                          { iso:'SO', num:706, lat:6.0,   lng:46.2  },
+  'angola':                           { iso:'AO', num:24,  lat:-11.2, lng:17.9  },
+  'mozambique':                       { iso:'MZ', num:508, lat:-18.7, lng:35.5  },
+  'zimbabwe':                         { iso:'ZW', num:716, lat:-20.0, lng:30.0  },
+  'zambia':                           { iso:'ZM', num:894, lat:-13.1, lng:27.8  },
+  'guinea':                           { iso:'GN', num:324, lat:11.0,  lng:-10.9 },
+  'liberia':                          { iso:'LR', num:430, lat:6.4,   lng:-9.4  },
+  'brazil':                           { iso:'BR', num:76,  lat:-14.2, lng:-51.9 },
+  'colombia':                         { iso:'CO', num:170, lat:4.6,   lng:-74.3 },
+  'peru':                             { iso:'PE', num:604, lat:-9.2,  lng:-75.0 },
+  'haiti':                            { iso:'HT', num:332, lat:19.0,  lng:-72.3 },
+  'mexico':                           { iso:'MX', num:484, lat:23.6,  lng:-102.6},
+  'united states':                    { iso:'US', num:840, lat:37.1,  lng:-95.7 },
+  'pakistan':                         { iso:'PK', num:586, lat:30.4,  lng:69.3  },
+  'afghanistan':                      { iso:'AF', num:4,   lat:33.9,  lng:67.7  },
+  'iran':                             { iso:'IR', num:364, lat:32.4,  lng:53.7  },
+  'iraq':                             { iso:'IQ', num:368, lat:33.2,  lng:43.7  },
+  'yemen':                            { iso:'YE', num:887, lat:15.6,  lng:48.5  },
+  'syria':                            { iso:'SY', num:760, lat:34.8,  lng:38.9  },
+  'egypt':                            { iso:'EG', num:818, lat:26.8,  lng:30.8  },
+  'india':                            { iso:'IN', num:356, lat:20.6,  lng:78.9  },
+  'bangladesh':                       { iso:'BD', num:50,  lat:23.7,  lng:90.4  },
+  'indonesia':                        { iso:'ID', num:360, lat:-0.8,  lng:113.9 },
+  'myanmar':                          { iso:'MM', num:104, lat:16.9,  lng:96.1  },
+  'thailand':                         { iso:'TH', num:764, lat:15.9,  lng:100.9 },
+  'vietnam':                          { iso:'VN', num:704, lat:14.1,  lng:108.3 },
+  'philippines':                      { iso:'PH', num:608, lat:12.9,  lng:121.8 },
+  'china':                            { iso:'CN', num:156, lat:35.9,  lng:104.2 },
+  'cambodia':                         { iso:'KH', num:116, lat:12.6,  lng:104.9 },
+  'germany':                          { iso:'DE', num:276, lat:51.2,  lng:10.5  },
+  'france':                           { iso:'FR', num:250, lat:46.2,  lng:2.2   },
+  'italy':                            { iso:'IT', num:380, lat:41.9,  lng:12.6  },
+  'ukraine':                          { iso:'UA', num:804, lat:48.4,  lng:31.2  },
+  'russia':                           { iso:'RU', num:643, lat:61.5,  lng:105.3 },
+  'kazakhstan':                       { iso:'KZ', num:398, lat:48.0,  lng:68.0  },
+};
+
+function resolveCoords(ev){
+  // Already has coords → use them
+  if(ev.lat && ev.lng) return { lat:ev.lat, lng:ev.lng, isoNum: ISO2_NUM[ev.iso?.toUpperCase()] || null };
+  // Look up by country name
+  const key = (ev.country||'').toLowerCase().trim();
+  const c = COUNTRY_COORDS[key];
+  if(c) return { lat:c.lat, lng:c.lng, isoNum:c.num };
+  // Partial match
+  for(const [name, data] of Object.entries(COUNTRY_COORDS)){
+    if(key.includes(name) || name.includes(key)) return { lat:data.lat, lng:data.lng, isoNum:data.num };
+  }
+  return { lat:0, lng:0, isoNum:null };
+}
 
 // ISO numeric lookup table (alpha-2 → numeric) for the most common outbreak countries
 const ISO2_NUM = {
@@ -890,7 +999,7 @@ async function loadLiveData(){
       // Avoid duplicates
       if(OUTBREAKS.find(o => o.id === evId)) continue;
 
-      const isoNum = ev.iso ? (ISO2_NUM[ev.iso.toUpperCase()] || null) : null;
+      const coords = resolveCoords(ev);
 
       OUTBREAKS.unshift({
         id: evId,
@@ -898,11 +1007,11 @@ async function loadLiveData(){
         name: ev.disease,
         pathogen: ev.disease,
         country: ev.country,
-        iso: isoNum,
+        iso: coords.isoNum,
         region: ev.region || 'UNKNOWN',
-        place: `${ev.country}`,
-        lat: ev.lat || 0,
-        lon: ev.lng || 0,
+        place: ev.country,
+        lat: coords.lat,
+        lon: coords.lng,
         sev: SEV_MAP[ev.severity] || 'monitoring',
         who: `${ev.source} · live feed`,
         cases: ev.cases || 0,
@@ -918,7 +1027,7 @@ async function loadLiveData(){
         _link: ev.link,
       });
 
-      if(isoNum) HIGHLIGHT_ISO.add(isoNum);
+      if(coords.isoNum) HIGHLIGHT_ISO.add(coords.isoNum);
       injected++;
     }
 

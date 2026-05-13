@@ -186,6 +186,14 @@
   }
   .pill-btn:hover{ transform:translateY(-1px); }
   .pill-btn .accent-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px rgba(232,89,12,0.25); }
+  .lang-btn{
+    height:28px; padding:0 10px; border-radius:var(--r-xs);
+    font-size:11px; font-weight:700; letter-spacing:0.04em;
+    color:var(--muted); background:rgba(22,21,19,0.06);
+    border:1px solid var(--line); text-decoration:none;
+    display:flex; align-items:center; transition:all .15s;
+  }
+  .lang-btn:hover{ background:#fff; color:var(--ink); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
 
   /* ============ SIDEBAR (floating glass) ============ */
   .sidebar{
@@ -896,7 +904,7 @@
 
     <label class="search">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input placeholder="Search outbreaks, pathogens, regions, WHO IDs…" />
+      <input id="searchInput" placeholder="Search outbreaks, pathogens, regions, WHO IDs…" />
       <span class="kbd">⌘K</span>
     </label>
 
@@ -917,6 +925,7 @@
     </div>
 
     <div class="top-actions">
+      <a href="/ru/" class="lang-btn" title="Русская версия">RU</a>
       <button class="icon-btn" title="Layers">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 12 10 6 10-6"/><path d="m2 16 10 6 10-6"/></svg>
       </button>
