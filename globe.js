@@ -28,6 +28,14 @@ const STRINGS = {
     noEvents:'No events logged in the last 24h.',
     liveInjected:'Injected {n} live events',
     liveUnavailable:'Live data unavailable:',
+    riskTitle:'How dangerous is this for you?',
+    riskTourist:'✈ Traveler to region',
+    riskResident:'🏠 Local resident',
+    riskHealthcare:'🏥 Healthcare worker',
+    riskLow:'Low risk',
+    riskMedium:'Moderate',
+    riskHigh:'High risk',
+    riskNote:'Based on transmission type and current severity level',
   },
   ru: {
     outbreak:'Вспышка',
@@ -51,6 +59,14 @@ const STRINGS = {
     noEvents:'Событий за последние 24ч не зафиксировано.',
     liveInjected:'Загружено {n} событий',
     liveUnavailable:'Данные недоступны:',
+    riskTitle:'Насколько это опасно для вас?',
+    riskTourist:'✈ Турист в регионе',
+    riskResident:'🏠 Местный житель',
+    riskHealthcare:'🏥 Медработник',
+    riskLow:'Низкий риск',
+    riskMedium:'Умеренный',
+    riskHigh:'Высокий риск',
+    riskNote:'На основе типа передачи и текущего уровня угрозы',
   }
 };
 
@@ -59,6 +75,68 @@ function T(key, vars){
   let str = s[key] ?? (STRINGS.en[key] ?? key);
   if(vars) Object.entries(vars).forEach(([k,v]) => { str = str.replace(`{${k}}`, v); });
   return str;
+}
+
+/* ── Disease name translations ───────────────────────────── */
+const DISEASE_RU = {
+  'Ebola Sudan-virus':'Эбола (вирус Судана)',
+  'Dengue (DENV-2)':'Денге (DENV-2)',
+  'Cholera (O1)':'Холера (O1)',
+  'H5N1 avian influenza':'Птичий грипп H5N1',
+  'Yellow Fever':'Жёлтая лихорадка',
+  'Meningitis (NmC)':'Менингит (NmC)',
+  'Lassa Fever':'Лихорадка Ласса',
+  'Mpox (clade Ib)':'Оспа обезьян (клада Ib)',
+  'Malaria (P. falciparum)':'Малярия (P. falciparum)',
+  'Typhoid (XDR)':'Тиф XDR (резистентный)',
+  'Rabies (canine variant)':'Бешенство (собачий)',
+  'Crimean–Congo HF':'Крымско-Конго ГЛ',
+  'Mpox':'Оспа обезьян',
+  'Dengue':'Денге',
+  'Cholera':'Холера',
+  'Measles':'Корь',
+  'Lassa Fever':'Лихорадка Ласса',
+  'West Nile Virus':'Вирус Западного Нила',
+  'Polio':'Полиомиелит',
+  'Marburg Virus':'Вирус Марбург',
+  'H5N1 Influenza':'Грипп H5N1',
+  'Yellow Fever':'Жёлтая лихорадка',
+  'Malaria':'Малярия',
+};
+function diseaseName(name){ return LANG === 'ru' ? (DISEASE_RU[name] || name) : name; }
+
+/* ── Risk profiles ───────────────────────────────────────── */
+// Keys matched with .includes() against lowercased disease name
+const DISEASE_RISK_PROFILES = [
+  // bloodborne / contact — low tourist, high healthcare
+  { keys:['ebola','marburg'],            t:'low',    r:'high',   h:'high'   },
+  { keys:['lassa','cchf','crimean'],     t:'low',    r:'medium', h:'high'   },
+  { keys:['mpox'],                       t:'low',    r:'medium', h:'medium' },
+  // vector-borne — medium tourist (exposure via mosquito/tick)
+  { keys:['dengue','malaria','yellow fever'],  t:'medium', r:'high',   h:'medium' },
+  { keys:['west nile'],                  t:'low',    r:'medium', h:'low'    },
+  // airborne / droplet — higher tourist risk
+  { keys:['measles'],                    t:'medium', r:'high',   h:'high'   },
+  { keys:['meningitis'],                 t:'low',    r:'medium', h:'high'   },
+  { keys:['h5n1','avian influenza'],     t:'low',    r:'medium', h:'high'   },
+  // fecal-oral
+  { keys:['cholera','typhoid'],          t:'medium', r:'high',   h:'medium' },
+  { keys:['polio'],                      t:'low',    r:'medium', h:'medium' },
+  // other
+  { keys:['rabies'],                     t:'low',    r:'medium', h:'medium' },
+];
+
+function computeRisk(o){
+  const name = (o.name || o.disease || '').toLowerCase();
+  let base = {t:'low', r:'medium', h:'medium'};
+  for(const p of DISEASE_RISK_PROFILES){
+    if(p.keys.some(k => name.includes(k))){ base = p; break; }
+  }
+  const levels = ['low','medium','high'];
+  const sevBoost = {monitoring:-1, low:0, warning:0, alert:1, critical:1};
+  const boost = sevBoost[o.sev] ?? 0;
+  const adj = l => levels[Math.max(0, Math.min(2, levels.indexOf(l) + boost))];
+  return { tourist: adj(base.t), resident: adj(base.r), healthcare: adj(base.h) };
 }
 
 const SEV = {
@@ -78,6 +156,7 @@ const OUTBREAKS = [
     new24:19, sevIdx:84,
     trend:[3,5,4,8,11,9,14,16,15,19,22,18,24,19],
     blurb:'Cluster expanding from Mubende into Kassanda and Kyegegwa districts. Genomic surveillance confirms Sudan-virus clade, distinct from 2022 lineage. CFR running near 27% with 6 nosocomial transmissions flagged. WHO mission deploying; cross-border watch on Kenyan and Tanzanian boundaries.',
+    blurb_ru:'Кластер расширяется из Мубенде в районы Кассанда и Кьегегва. Геномный надзор подтверждает вирус Судана — отличный от штамма 2022 года. Летальность около 27%, выявлено 6 внутрибольничных случаев. ВОЗ направляет миссию, усилен контроль на границах с Кенией и Танзанией.',
     events:[
       {when:'14:18', what:'<b>Genomic match</b> — Sudan clade C, distant from Mubende-2022', ct:'+2'},
       {when:'12:04', what:'<b>WHO mission</b> deploying — Kampala field office', ct:''},
@@ -92,6 +171,7 @@ const OUTBREAKS = [
     new24:38_410, sevIdx:72,
     trend:[180,210,260,330,420,560,780,1100,1450,1820,2240,2480,2710,3120],
     blurb:'Record season — DENV-2 dominant after 4 years of DENV-1 cycling. Hospitalisations doubled in Minas Gerais; Aedes albopictus indices remain in the high-risk band through Q2.',
+    blurb_ru:'Рекордный сезон — доминирует DENV-2 после 4 лет цикла DENV-1. Госпитализации удвоились в Минас-Жерайс. Индекс комаров Aedes albopictus остаётся в зоне высокого риска до конца Q2.',
     events:[
       {when:'13:55', what:'<b>São Paulo</b> declares public health emergency', ct:''},
       {when:'11:20', what:'Hospitalisations up <b>+22%</b> WoW', ct:'+22%'},
@@ -105,6 +185,7 @@ const OUTBREAKS = [
     new24:880, sevIdx:68,
     trend:[120,180,240,310,400,520,640,780,860,940,1020,1080,1140,1280],
     blurb:'Outbreak following displacement waves into eastern states. Water and sanitation infrastructure compromised; OCV campaign authorised — 2.1M doses requested via ICG.',
+    blurb_ru:'Вспышка на фоне волн вынужденного переселения. Водопроводная инфраструктура повреждена. Запущена кампания оральной вакцинации против холеры — запрошено 2,1 млн доз через ICG.',
     events:[
       {when:'13:02', what:'OCV stockpile request — <b>2.1M doses</b>', ct:''},
       {when:'10:11', what:'Gedaref camp positivity at <b>14%</b>', ct:'14%'},
@@ -117,6 +198,7 @@ const OUTBREAKS = [
     new24:1, sevIdx:48,
     trend:[0,0,1,0,1,0,0,1,1,0,1,0,1,1],
     blurb:'Two human cases linked to backyard poultry. No evidence of human-to-human transmission. Mekong delta poultry markets under enhanced surveillance.',
+    blurb_ru:'Два случая у людей, связанных с домашней птицей. Признаков передачи от человека к человеку нет. Рынки птицы в дельте Меконга под усиленным надзором.',
     events:[
       {when:'12:40', what:'2nd <b>human case</b> — 47M, Đồng Tháp', ct:'+1'},
       {when:'09:00', what:'Poultry cull — 18,400 birds', ct:''},
@@ -129,6 +211,7 @@ const OUTBREAKS = [
     new24:96, sevIdx:54,
     trend:[40,55,62,71,80,95,110,124,138,144,160,175,182,190],
     blurb:'Reactive vaccination underway in 14 LGAs. 1.4M doses deployed; coverage at 71% of target population. Sylvatic cycle confirmed in Plateau.',
+    blurb_ru:'Реактивная вакцинация в 14 округах. Развёрнуто 1,4 млн доз, охват 71% целевого населения. Лесной цикл передачи подтверждён в штате Плато.',
     events:[ {when:'11:45', what:'Reactive vax — <b>1.4M doses</b> deployed', ct:''} ]
   },
   { id:'mening-niger',     code:'EPI-2026-NER-0029', name:'Meningitis (NmC)',
@@ -138,6 +221,7 @@ const OUTBREAKS = [
     new24:212, sevIdx:65,
     trend:[60,90,120,160,200,240,280,300,340,380,400,420,440,470],
     blurb:'Meningitis belt seasonal surge — NmC predominant. Mass vaccination triggered above attack-rate threshold. ICG dispatch of 1.8M doses confirmed.',
+    blurb_ru:'Сезонный подъём в зоне менингитного пояса — доминирует NmC. Запущена массовая вакцинация после превышения порогового уровня атаки. ICG подтвердил поставку 1,8 млн доз.',
     events:[]
   },
   { id:'lassa-sl',         code:'EPI-2026-SLE-0011', name:'Lassa Fever',
@@ -147,6 +231,7 @@ const OUTBREAKS = [
     new24:14, sevIdx:46,
     trend:[8,9,10,12,11,14,15,12,13,15,14,16,15,14],
     blurb:'Endemic season uptick — Mastomys reservoir control intensified in Kenema. KGH treatment centre at 78% capacity.',
+    blurb_ru:'Сезонный подъём в эндемичном районе — усилен контроль над резервуаром Mastomys в Кенема. Лечебный центр KGH заполнен на 78%.',
     events:[]
   },
   { id:'mpox-drc',         code:'EPI-2026-COD-0073', name:'Mpox (clade Ib)',
@@ -156,6 +241,7 @@ const OUTBREAKS = [
     new24:284, sevIdx:62,
     trend:[120,140,160,190,210,230,260,280,300,310,340,360,380,400],
     blurb:'Clade Ib expansion through eastern provinces. Sexual transmission chain confirmed; pediatric case-share 38%. MVA-BN doses being airlifted to Goma.',
+    blurb_ru:'Расширение клады Ib через восточные провинции. Подтверждена половая цепочка передачи; 38% случаев — дети. Вакцина MVA-BN доставляется в Гому воздухом.',
     events:[]
   },
   { id:'malaria-moz',      code:'EPI-2026-MOZ-0052', name:'Malaria (P. falciparum)',
@@ -165,6 +251,7 @@ const OUTBREAKS = [
     new24:6_840, sevIdx:60,
     trend:[420,520,610,720,840,960,1080,1200,1320,1420,1520,1620,1700,1820],
     blurb:'Post-cyclone surge — ITN coverage gap in Zambezia under reactive distribution. RDT positivity peak 41% in week 18.',
+    blurb_ru:'Подъём после циклона — дефицит обработанных противомоскитных сеток в Замбезии, ведётся реактивная раздача. Позитивность RDT-теста достигла 41% на 18-й неделе.',
     events:[]
   },
   { id:'typhoid-pak',      code:'EPI-2026-PAK-0036', name:'Typhoid (XDR)',
@@ -174,6 +261,7 @@ const OUTBREAKS = [
     new24:182, sevIdx:50,
     trend:[40,55,72,89,110,130,150,162,178,192,210,224,236,250],
     blurb:'Extensively drug-resistant typhoid clones circulating in urban Sindh. Typbar-TCV catch-up campaign at 64% coverage.',
+    blurb_ru:'Штаммы тифа с множественной лекарственной устойчивостью (XDR) циркулируют в городах провинции Синд. Охват кампанией вакцинации Typbar-TCV составляет 64%.',
     events:[]
   },
   { id:'rabies-india',     code:'EPI-2026-IND-0028', name:'Rabies (canine variant)',
@@ -183,6 +271,7 @@ const OUTBREAKS = [
     new24:18, sevIdx:34,
     trend:[15,12,14,16,15,18,14,17,16,19,18,17,16,18],
     blurb:'Endemic reporting unchanged WoW. PEP availability stable across 92% of community health centres. Animal-bite registry digitisation now at 14 states.',
+    blurb_ru:'Эндемичный уровень без изменений. Доступность постэкспозиционной профилактики (ПЭП) стабильна в 92% медпунктов. Реестр укусов животных оцифрован в 14 штатах.',
     events:[]
   },
   { id:'cchf-kaz',         code:'EPI-2026-KAZ-0009', name:'Crimean–Congo HF',
@@ -192,6 +281,7 @@ const OUTBREAKS = [
     new24:4, sevIdx:30,
     trend:[2,3,2,4,3,5,4,3,2,4,5,3,4,4],
     blurb:'Hyalomma tick season opening. Livestock holders advised on PPE. No nosocomial chains detected.',
+    blurb_ru:'Открытие сезона клещей Hyalomma. Животноводам рекомендованы средства индивидуальной защиты. Внутрибольничных цепочек передачи не выявлено.',
     events:[]
   },
 ];
@@ -709,7 +799,7 @@ function renderList(){
     <div class="out-row ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
       <span class="sq bg-${sevClass(o.sev)}">${ini}</span>
       <div>
-        <div class="nm">${o.name}</div>
+        <div class="nm">${diseaseName(o.name)}</div>
         <div class="lo">${o.country} · ${o.region}</div>
       </div>
       <div class="ct">${fmtNum(o.cases)}<small>${T('cases')}</small></div>
@@ -735,7 +825,7 @@ function renderPanel(){
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
-  document.getElementById('panName').innerHTML = breakName(o.name);
+  document.getElementById('panName').innerHTML = breakName(diseaseName(o.name));
   document.getElementById('panLoc').textContent = `${o.place} · ${o.region}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
@@ -797,7 +887,30 @@ function renderPanel(){
   // AI card — accent border follows severity, dark bg stays from CSS
   const ai = document.getElementById('aiCard');
   ai.style.borderLeftColor = sev.color;
-  document.getElementById('aiText').textContent = o.blurb;
+  document.getElementById('aiText').textContent = (LANG === 'ru' && o.blurb_ru) ? o.blurb_ru : o.blurb;
+
+  // Risk block
+  const riskEl = document.getElementById('riskBlock');
+  if(riskEl){
+    const risk = computeRisk(o);
+    const riskColor = {low:'#3D8B5C', medium:'#C87B00', high:'#C92A2A'};
+    const riskBg    = {low:'rgba(61,139,92,0.10)', medium:'rgba(200,123,0,0.10)', high:'rgba(201,42,42,0.10)'};
+    const riskIcon  = {low:'🟢', medium:'🟡', high:'🔴'};
+    const rows = [
+      [T('riskTourist'),    risk.tourist],
+      [T('riskResident'),   risk.resident],
+      [T('riskHealthcare'), risk.healthcare],
+    ];
+    riskEl.innerHTML = `
+      <div class="risk-title">${T('riskTitle')}</div>
+      ${rows.map(([who, level])=>`
+        <div class="risk-row">
+          <span class="risk-who">${who}</span>
+          <span class="risk-level" style="background:${riskBg[level]};color:${riskColor[level]}">${riskIcon[level]} ${T('risk'+level[0].toUpperCase()+level.slice(1))}</span>
+        </div>`).join('')}
+      <div class="risk-note">${T('riskNote')}</div>
+    `;
+  }
 
   // primary action button color
   document.querySelector('.btn.primary').style.background = grad;
@@ -1022,6 +1135,7 @@ async function loadLiveData(){
         sevIdx: {critical:80,alert:60,warning:40,monitoring:20}[SEV_MAP[ev.severity]||'monitoring'],
         trend: [0,0,0,0,0,0,0, ev.cases||0],
         blurb: ev.summary || '',
+        blurb_ru: ev.summary_ru || '',
         events: [],
         _live: true,
         _link: ev.link,
