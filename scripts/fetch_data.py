@@ -188,41 +188,110 @@ def _extract_number(text: str, pattern: str) -> int | None:
     except: return None
 
 # ---------------------------------------------------------------------------
-# Optional: Claude Haiku enrichment (only if ANTHROPIC_API_KEY is set)
+# AI extraction — tries providers in priority order, first available wins
+# Priority: GEMINI_API_KEY → GROQ_API_KEY → ANTHROPIC_API_KEY → skip (free mode)
 # ---------------------------------------------------------------------------
 
-def call_haiku(text: str) -> dict | None:
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        return None
-    prompt = f"""Extract disease outbreak info from this text. Return ONLY valid JSON, no markdown.
+EXTRACTION_PROMPT = """Extract disease outbreak info from this text. Return ONLY valid JSON, no markdown, no explanation.
 
-Text: {text[:1800]}
+Text: {text}
 
 JSON structure:
-{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"alpha-2 or null","cases":number_or_null,"deaths":number_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence summary","lat":number_or_null,"lng":number_or_null}}
+{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"ISO alpha-2 or null","cases":integer_or_null,"deaths":integer_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence plain English summary","lat":number_or_null,"lng":number_or_null}}
 
-If not an outbreak return {{"disease":null}}"""
+If not a disease outbreak return {{"disease":null}}"""
 
+
+def _parse_ai_json(raw: str) -> dict | None:
+    raw = re.sub(r"^```[a-z]*\n?", "", raw.strip())
+    raw = re.sub(r"\n?```$", "", raw)
+    try:
+        return json.loads(raw)
+    except Exception:
+        return None
+
+
+def call_gemini(text: str) -> dict | None:
+    """Google Gemini Flash — FREE tier: 1500 req/day. Get key: aistudio.google.com"""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not key:
+        return None
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}"
     payload = json.dumps({
-        "model": "claude-haiku-4-5",
-        "max_tokens": 350,
-        "messages": [{"role":"user","content":prompt}]
+        "contents": [{"parts": [{"text": EXTRACTION_PROMPT.format(text=text[:1800])}]}],
+        "generationConfig": {"maxOutputTokens": 400, "temperature": 0}
+    }).encode()
+    req = urllib.request.Request(url, data=payload,
+        headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            body = json.loads(resp.read())
+            raw = body["candidates"][0]["content"]["parts"][0]["text"]
+            return _parse_ai_json(raw)
+    except Exception as e:
+        print(f"  ⚠ Gemini: {e}", flush=True)
+        return None
+
+
+def call_groq(text: str) -> dict | None:
+    """Groq (Llama 3.3 70B) — FREE tier: ~14 400 req/day. Get key: console.groq.com"""
+    key = os.environ.get("GROQ_API_KEY", "")
+    if not key:
+        return None
+    payload = json.dumps({
+        "model": "llama-3.3-70b-versatile",
+        "max_tokens": 400,
+        "temperature": 0,
+        "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(text=text[:1800])}]
     }).encode()
     req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages", data=payload,
-        headers={"x-api-key":api_key,"anthropic-version":"2023-06-01","content-type":"application/json"},
+        "https://api.groq.com/openai/v1/chat/completions", data=payload,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         method="POST"
     )
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = json.loads(resp.read())
-            raw  = body["content"][0]["text"].strip()
-            raw  = re.sub(r"^```[a-z]*\n?","",raw); raw = re.sub(r"\n?```$","",raw)
-            return json.loads(raw)
+            raw = body["choices"][0]["message"]["content"]
+            return _parse_ai_json(raw)
+    except Exception as e:
+        print(f"  ⚠ Groq: {e}", flush=True)
+        return None
+
+
+def call_haiku(text: str) -> dict | None:
+    """Anthropic Claude Haiku — ~$1-2/month. Get key: console.anthropic.com"""
+    key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        return None
+    payload = json.dumps({
+        "model": "claude-haiku-4-5", "max_tokens": 400,
+        "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(text=text[:1800])}]
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages", data=payload,
+        headers={"x-api-key": key, "anthropic-version": "2023-06-01",
+                 "content-type": "application/json"}, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            body = json.loads(resp.read())
+            return _parse_ai_json(body["content"][0]["text"])
     except Exception as e:
         print(f"  ⚠ Haiku: {e}", flush=True)
         return None
+
+
+def call_ai(text: str) -> dict | None:
+    """Try AI providers in order: Gemini (free) → Groq (free) → Haiku (paid)."""
+    return call_gemini(text) or call_groq(text) or call_haiku(text)
+
+
+def detect_ai_mode() -> str:
+    if os.environ.get("GEMINI_API_KEY"):   return "gemini (free)"
+    if os.environ.get("GROQ_API_KEY"):     return "groq (free)"
+    if os.environ.get("ANTHROPIC_API_KEY"):return "haiku (paid)"
+    return "regex (free)"
 
 # ---------------------------------------------------------------------------
 # RSS fetch
@@ -263,8 +332,9 @@ def fetch_feed(feed: dict) -> list[dict]:
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    has_ai = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    print(f"Mode: {'AI (Haiku)' if has_ai else 'free regex'}", flush=True)
+    mode = detect_ai_mode()
+    has_ai = mode != "regex (free)"
+    print(f"Mode: {mode}", flush=True)
 
     all_raw = []
     for feed in FEEDS:
@@ -281,7 +351,7 @@ def main():
         # Try AI first (if available), fall back to free extraction
         extracted = None
         if has_ai:
-            extracted = call_haiku(text)
+            extracted = call_ai(text)
             time.sleep(0.25)
         if not extracted or not extracted.get("disease"):
             extracted = extract_free(raw["title"], raw["description"])
@@ -320,7 +390,7 @@ def main():
 
     meta = {"updated_at": datetime.now(timezone.utc).isoformat(),
             "total_events": len(events), "total_alerts": len(alerts),
-            "mode": "ai" if has_ai else "free"}
+            "mode": mode}
 
     (OUTPUT_DIR/"events.json").write_text(
         json.dumps({"meta":meta,"events":events}, ensure_ascii=False, indent=2), encoding="utf-8")
