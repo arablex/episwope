@@ -327,6 +327,89 @@ def fetch_feed(feed: dict) -> list[dict]:
     return results
 
 # ---------------------------------------------------------------------------
+# GDACS — Global Disaster Alert and Coordination System (free, no key needed)
+# Orange/Red alerts = disease-risk triggers (floods→cholera, cyclones→dengue)
+# ---------------------------------------------------------------------------
+
+GDACS_DISEASE_RISK = {
+    "FL": "Flood → elevated risk of waterborne diseases (cholera, typhoid, leptospirosis)",
+    "TC": "Tropical cyclone → risk of dengue, cholera after landfall",
+    "EQ": "Earthquake → risk of waterborne diseases if infrastructure damaged",
+    "VO": "Volcanic eruption → respiratory hazard, population displacement risk",
+    "DR": "Drought → malnutrition risk, potential meningitis and cholera spread",
+    "TS": "Tsunami → waterborne disease risk in affected coastal communities",
+}
+
+def fetch_gdacs() -> list[dict]:
+    """Fetch GDACS Orange/Red disaster alerts — direct disease-risk triggers."""
+    print("Fetching GDACS …", flush=True)
+    url = "https://www.gdacs.org/xml/rss.xml"
+    try:
+        req = urllib.request.Request(url,
+            headers={"User-Agent": "EpiScope/1.0 (github.com/arablex/episwope)"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            content = resp.read()
+    except Exception as e:
+        print(f"  ✗ GDACS: {e}", flush=True)
+        return []
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError as e:
+        print(f"  ✗ GDACS XML: {e}", flush=True)
+        return []
+
+    GDACS_NS  = "http://www.gdacs.org"
+    GEO_NS    = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+    results   = []
+
+    for item in root.findall(".//item"):
+        def gn(tag, ns):
+            el = item.find(f"{{{ns}}}{tag}")
+            return (el.text or "").strip() if el is not None else ""
+
+        alert_level = gn("alertlevel", GDACS_NS)
+        if alert_level not in ("Orange", "Red"):
+            continue
+
+        event_type   = gn("eventtype",  GDACS_NS)
+        country      = gn("country",    GDACS_NS)
+        severity_txt = gn("severity",   GDACS_NS)
+        title        = (item.find("title").text or "").strip() if item.find("title") is not None else ""
+        link_el      = item.find("link")
+        link         = (link_el.text or "").strip() if link_el is not None else ""
+        pub_el       = item.find("pubDate")
+        pub_date     = (pub_el.text or "").strip() if pub_el is not None else ""
+
+        try:
+            lat = float(gn("lat",  GEO_NS))
+            lng = float(gn("long", GEO_NS))
+        except (ValueError, TypeError):
+            lat, lng = None, None
+
+        country_lower = country.lower()
+        if lat is None and country_lower in COUNTRY_DB:
+            _, lat, lng, _ = COUNTRY_DB[country_lower]
+
+        sev = "alert" if alert_level == "Red" else "warning"
+        disease_note = GDACS_DISEASE_RISK.get(event_type, "Natural disaster — potential health impact on affected population")
+
+        results.append({
+            "source":        "gdacs",
+            "disaster_type": event_type,
+            "title":         title,
+            "link":          link,
+            "description":   disease_note,
+            "pub_date":      pub_date,
+            "country":       country,
+            "lat":           lat,
+            "lng":           lng,
+            "severity":      sev,
+        })
+
+    print(f"  → {len(results)} GDACS alerts (Orange/Red only)", flush=True)
+    return results
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -340,6 +423,10 @@ def main():
     for feed in FEEDS:
         all_raw.extend(fetch_feed(feed))
         time.sleep(1)
+
+    # GDACS disaster alerts (disease-risk triggers)
+    gdacs_raw = fetch_gdacs()
+    time.sleep(1)
 
     print(f"\nTotal candidates: {len(all_raw)}", flush=True)
 
@@ -387,6 +474,35 @@ def main():
             if key not in seen:
                 seen.add(key)
                 alerts.append({k: event[k] for k in ("disease","country","severity","summary","link","date")})
+
+    # Inject GDACS disaster events
+    for gev in gdacs_raw:
+        country_lower = (gev.get("country") or "").lower()
+        coords = COUNTRY_DB.get(country_lower)
+        if coords:
+            iso, lat, lng, region = coords
+        else:
+            iso, lat, lng, region = None, gev.get("lat"), gev.get("lng"), "UNKNOWN"
+
+        events.append({
+            "id":            f"gdacs-{gev.get('disaster_type','?')}-{len(events)}",
+            "type":          "disaster",
+            "disaster_type": gev.get("disaster_type", ""),
+            "disease":       f"{gev.get('disaster_type','Disaster')} Alert",
+            "country":       gev.get("country", ""),
+            "iso":           iso,
+            "region":        region,
+            "lat":           lat,
+            "lng":           lng,
+            "cases":         None,
+            "deaths":        None,
+            "severity":      gev.get("severity", "monitoring"),
+            "summary":       gev.get("description", gev.get("title", ""))[:300],
+            "source":        "GDACS",
+            "link":          gev.get("link", ""),
+            "date":          gev.get("pub_date", ""),
+            "fetched_at":    datetime.now(timezone.utc).isoformat(),
+        })
 
     if len(events) == 0:
         print("⚠ 0 events extracted — preserving existing data, skipping overwrite", flush=True)

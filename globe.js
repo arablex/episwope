@@ -28,6 +28,11 @@ const STRINGS = {
     noEvents:'No events logged in the last 24h.',
     liveInjected:'Injected {n} live events',
     liveUnavailable:'Live data unavailable:',
+    travelAdvisory: 'Travel Advisory',
+    watchBtn: '☆ Watch region',
+    watchedBtn: '★ Watching',
+    otherThreats: 'Other threats in',
+    trendLabel: 'Trend (14d)',
     riskTitle:'How dangerous is this for you?',
     riskTourist:'✈ Traveler to region',
     riskResident:'🏠 Local resident',
@@ -59,6 +64,11 @@ const STRINGS = {
     noEvents:'Событий за последние 24ч не зафиксировано.',
     liveInjected:'Загружено {n} событий',
     liveUnavailable:'Данные недоступны:',
+    travelAdvisory: 'Рекомендации для путешественников',
+    watchBtn: '☆ Следить за регионом',
+    watchedBtn: '★ Слежу',
+    otherThreats: 'Другие угрозы в',
+    trendLabel: 'Динамика (14д)',
     riskTitle:'Насколько это опасно для вас?',
     riskTourist:'✈ Турист в регионе',
     riskResident:'🏠 Местный житель',
@@ -138,6 +148,55 @@ function computeRisk(o){
   const adj = l => levels[Math.max(0, Math.min(2, levels.indexOf(l) + boost))];
   return { tourist: adj(base.t), resident: adj(base.r), healthcare: adj(base.h) };
 }
+
+/* ── Travel advisory ─────────────────────────────────────── */
+const TRAVEL_ADVISORY = {
+  en: {
+    high:   { label: 'Avoid non-essential travel', icon: '🔴', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    medium: { label: 'Exercise increased caution', icon: '🟡', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
+    low:    { label: 'Normal precautions apply',   icon: '🟢', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
+  },
+  ru: {
+    high:   { label: 'Избегать несущественных поездок',  icon: '🔴', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    medium: { label: 'Повышенная осторожность',           icon: '🟡', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
+    low:    { label: 'Стандартные меры предосторожности', icon: '🟢', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
+  },
+};
+
+const TREND_LABELS = {
+  en: { rising:'↑ Worsening', stable:'→ Stable', falling:'↓ Improving' },
+  ru: { rising:'↑ Ухудшается', stable:'→ Стабильно', falling:'↓ Улучшается' },
+};
+
+function trendDirection(trend){
+  if(!trend || trend.length < 6) return 'stable';
+  const recent  = trend.slice(-3).reduce((a,b)=>a+b,0) / 3;
+  const earlier = trend.slice(0,3).reduce((a,b)=>a+b,0) / 3;
+  if(earlier === 0) return recent > 0 ? 'rising' : 'stable';
+  const pct = (recent - earlier) / earlier;
+  if(pct >  0.12) return 'rising';
+  if(pct < -0.12) return 'falling';
+  return 'stable';
+}
+
+function countryTravelRisk(country){
+  const threats = OUTBREAKS.filter(o => o.country === country);
+  if(!threats.length) return 'low';
+  const maxIdx = Math.max(...threats.map(o => SEV[o.sev]?.idx ?? 0));
+  if(maxIdx >= 4) return 'high';
+  if(maxIdx >= 2) return 'medium';
+  return 'low';
+}
+
+/* ── Watched regions (localStorage) ─────────────────────── */
+let WATCHED = new Set(JSON.parse(localStorage.getItem('episwope_watched') || '[]'));
+function toggleWatch(country){
+  if(WATCHED.has(country)) WATCHED.delete(country);
+  else WATCHED.add(country);
+  localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
+  renderPanel();
+}
+function isWatched(country){ return WATCHED.has(country); }
 
 const SEV = {
   monitoring:  { idx:0, color:'#A09F95', dark:'#807E76', light:'#B8B7AD', label: STRINGS[LANG]?.sevLabel?.monitoring || 'Monitor' },
@@ -933,6 +992,42 @@ function renderPanel(){
   // crumb
   document.getElementById('crumbCountry').textContent  = o.country;
   document.getElementById('crumbOutbreak').textContent = o.name;
+
+  // Travel advisory section
+  const travelEl = document.getElementById('travelStatus');
+  if(travelEl){
+    const risk  = countryTravelRisk(o.country);
+    const lang  = LANG === 'ru' ? 'ru' : 'en';
+    const adv   = TRAVEL_ADVISORY[lang][risk];
+    const trend = trendDirection(o.trend);
+    const tLbl  = (TREND_LABELS[lang] || TREND_LABELS.en)[trend];
+    const tClr  = {rising:'#C92A2A', stable:'#807E76', falling:'#3D8B5C'}[trend];
+    const others = OUTBREAKS.filter(x => x.country === o.country && x.id !== o.id && !x._live);
+    const othersHtml = others.length ? `
+      <div class="travel-others">
+        <span class="travel-others-lbl">${T('otherThreats')} ${o.country}:</span>
+        ${others.slice(0,3).map(x=>`<span class="travel-tag" style="background:${SEV[x.sev].color}20;color:${SEV[x.sev].color}">${diseaseName(x.name)}</span>`).join('')}
+      </div>` : '';
+    travelEl.innerHTML = `
+      <div class="travel-main" style="background:${adv.bg};border:1px solid ${adv.border};border-radius:var(--r-md);padding:12px 14px;">
+        <div class="travel-top">
+          <span class="travel-lbl">${T('travelAdvisory')}</span>
+          <span class="travel-trend" style="color:${tClr};font-size:11px;font-weight:600;">${tLbl}</span>
+        </div>
+        <div class="travel-verdict">${adv.icon} ${adv.label}</div>
+        ${othersHtml}
+      </div>`;
+  }
+
+  // Watch button state
+  const watchBtn = document.getElementById('watchBtn');
+  if(watchBtn){
+    const watched = isWatched(o.country);
+    watchBtn.textContent = T(watched ? 'watchedBtn' : 'watchBtn');
+    watchBtn.style.borderColor = watched ? 'var(--accent)' : '';
+    watchBtn.style.color       = watched ? 'var(--accent)' : '';
+    watchBtn.onclick = () => toggleWatch(o.country);
+  }
 }
 
 function breakName(name){

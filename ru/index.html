@@ -603,6 +603,14 @@
   .risk-level{ font-size:11px; font-weight:600; padding:3px 9px; border-radius:var(--r-pill); letter-spacing:0.03em; }
   .risk-note{ font-size:10px; color:var(--muted); margin-top:6px; opacity:0.7; }
 
+  /* ── Travel advisory ── */
+  .travel-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .travel-lbl{ font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+  .travel-verdict{ font-size:13px; font-weight:600; color:var(--ink); }
+  .travel-others{ margin-top:10px; display:flex; flex-wrap:wrap; gap:4px; align-items:baseline; }
+  .travel-others-lbl{ font-size:10px; color:var(--muted); width:100%; margin-bottom:3px; }
+  .travel-tag{ font-size:10px; font-weight:500; padding:2px 7px; border-radius:var(--r-pill); }
+
   .actions{ display:flex; gap:8px; }
   .btn{
     flex:1; height:34px; border-radius:var(--r-sm);
@@ -908,6 +916,10 @@
       </div>
 
       <div class="panel-section">
+        <div id="travelStatus"></div>
+      </div>
+
+      <div class="panel-section">
         <div class="lbl">Метрики <em>последние 24 ч</em></div>
         <div class="metric-grid">
           <div class="metric"><div class="k">Подтверждено</div><div class="v" id="mConf">142</div><div class="delta up">▲ 15.5% · 7 дн.</div></div>
@@ -970,6 +982,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Экспорт
           </button>
+          <button class="btn ghost" id="watchBtn" style="width:100%">☆ Следить за регионом</button>
         </div>
       </div>
 
