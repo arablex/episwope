@@ -239,6 +239,152 @@ function toggleWatch(country){
 }
 function isWatched(country){ return WATCHED.has(country); }
 
+/* ── Country Profile ─────────────────────────────────────── */
+function getUniqueCountries(){
+  const seen = new Set();
+  const list = [];
+  for(const o of OUTBREAKS){
+    if(o.country && !seen.has(o.country)){
+      seen.add(o.country);
+      list.push(o.country);
+    }
+  }
+  return list.sort((a,b) => countryName(a).localeCompare(countryName(b)));
+}
+
+function selectCountry(country){
+  state.selectedCountry = country;
+  const inp = document.getElementById('countrySearch');
+  if(inp) inp.value = country ? countryName(country) : '';
+  const dd = document.getElementById('countryDropdown');
+  if(dd) dd.style.display = 'none';
+  renderList();
+  if(country) renderCountryPanel(country);
+  else renderPanel();
+}
+
+function generateRecommendation(country, outbreaks){
+  const risk = countryTravelRisk(country);
+  const parts = [];
+
+  // Lead line
+  const cname = countryName(country);
+  if(LANG === 'ru'){
+    if(risk === 'high')   parts.push(`Рекомендуем воздержаться от несущественных поездок в ${cname}.`);
+    else if(risk === 'medium') parts.push(`Соблюдайте повышенную осторожность при поездках в ${cname}.`);
+    else parts.push(`Стандартные меры предосторожности для поездок в ${cname}.`);
+  } else {
+    if(risk === 'high')   parts.push(`Avoid non-essential travel to ${country}.`);
+    else if(risk === 'medium') parts.push(`Exercise increased caution when traveling to ${country}.`);
+    else parts.push(`Standard precautions apply for travel to ${country}.`);
+  }
+
+  // Disease-specific advice
+  const names = outbreaks.map(o=>(o.name||'').toLowerCase()).join(' ');
+  const isMosquito = /dengue|malaria|yellow fever|west nile/.test(names);
+  const isWater    = /cholera|typhoid|polio/.test(names);
+  const isContact  = /ebola|marburg|lassa|mpox/.test(names);
+  const isAirborne = /measles|meningitis|influenza|h5n1/.test(names);
+
+  if(LANG === 'ru'){
+    if(isMosquito) parts.push('Используйте репеллент и носите закрытую одежду — активны трансмиссивные заболевания.');
+    if(isWater)    parts.push('Пейте только бутилированную воду, избегайте уличной еды — риск водных инфекций.');
+    if(isContact)  parts.push('Избегайте контакта с больными и биологическими жидкостями — вспышка геморрагической лихорадки.');
+    if(isAirborne) parts.push('Рассмотрите ношение маски в людных местах — активны воздушно-капельные инфекции.');
+  } else {
+    if(isMosquito) parts.push('Use insect repellent and wear protective clothing — vector-borne diseases active.');
+    if(isWater)    parts.push('Drink only bottled or boiled water, avoid street food — waterborne disease risk.');
+    if(isContact)  parts.push('Avoid contact with sick individuals and body fluids — hemorrhagic fever outbreak.');
+    if(isAirborne) parts.push('Consider wearing a mask in crowded areas — airborne infections active.');
+  }
+
+  return parts.join(' ');
+}
+
+function renderCountryPanel(country){
+  const outbreaks = OUTBREAKS.filter(o => o.country === country);
+  const totalCases  = outbreaks.reduce((s,o) => s + (o.cases  || 0), 0);
+  const totalDeaths = outbreaks.reduce((s,o) => s + (o.deaths || 0), 0);
+  const risk    = countryTravelRisk(country);
+  const adv     = TRAVEL_ADVISORY[LANG]?.[risk] || TRAVEL_ADVISORY.en[risk];
+  const rec     = generateRecommendation(country, outbreaks);
+  const cname   = countryName(country);
+
+  // Dominant severity
+  let domSev = 'monitoring';
+  if(outbreaks.length){
+    domSev = outbreaks.reduce((m,o) => SEV[o.sev].idx > SEV[m.sev].idx ? o : m).sev;
+  }
+  const sev = SEV[domSev];
+
+  const labels = {
+    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'☆ Watch country', watching:'★ Watching', back:'← Back' },
+    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'☆ Следить за страной', watching:'★ Слежу', back:'← Назад' },
+  };
+  const L = labels[LANG] || labels.en;
+
+  const threatsHtml = outbreaks.length
+    ? outbreaks.map(o => {
+        const s = SEV[o.sev];
+        return `<div class="cp-threat-row">
+          <span class="cp-threat-dot" style="background:${s.color}"></span>
+          <div class="cp-threat-info">
+            <span class="cp-threat-name">${diseaseName(o.name)}</span>
+            <span class="cp-threat-sev" style="color:${s.color}">${s.label}</span>
+          </div>
+          <div class="cp-threat-num">${fmtNum(o.cases||0)}<small>${LANG==='ru'?'сл.':'cases'}</small></div>
+        </div>`;
+      }).join('')
+    : `<div class="cp-no-threats">${L.noThreats}</div>`;
+
+  const watchedState = isWatched(country);
+
+  document.querySelector('.panel-scroll').innerHTML = `
+    <div class="cp-head" style="border-top:4px solid ${sev.color}">
+      <div class="cp-back" id="cpBack">${L.back}</div>
+      <div class="cp-eyebrow">${L.profile}</div>
+      <div class="cp-country-name">${cname}</div>
+      <div class="cp-advisory" style="background:${adv.bg};border:1px solid ${adv.border || adv.bg}">
+        ${adv.icon} ${adv.label}
+      </div>
+    </div>
+
+    <div class="cp-stats-row">
+      <div class="cp-stat"><div class="cp-stat-val">${fmtNum(totalCases)}</div><div class="cp-stat-lbl">${L.totalCases}</div></div>
+      <div class="cp-stat"><div class="cp-stat-val" style="color:${sev.color}">${fmtNum(totalDeaths)}</div><div class="cp-stat-lbl">${L.totalDeaths}</div></div>
+      <div class="cp-stat"><div class="cp-stat-val">${outbreaks.length}</div><div class="cp-stat-lbl">${L.threats}</div></div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-title">${L.threats}</div>
+      ${threatsHtml}
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-title">${L.recommendation}</div>
+      <div class="cp-rec-text">${rec}</div>
+    </div>
+
+    <div class="cp-section">
+      <button class="btn ghost cp-watch-btn" id="cpWatchBtn" style="${watchedState?'border-color:var(--accent);color:var(--accent)':''}">
+        ${watchedState ? L.watching : L.watchCountry}
+      </button>
+    </div>
+  `;
+
+  // Wire back button
+  document.getElementById('cpBack').addEventListener('click', ()=>{
+    selectCountry(null);
+    renderPanel();
+  });
+
+  // Wire watch button
+  document.getElementById('cpWatchBtn').addEventListener('click', ()=>{
+    toggleWatch(country);
+    renderCountryPanel(country); // re-render to update button
+  });
+}
+
 const SEV = {
   monitoring:  { idx:0, color:'#A09F95', dark:'#807E76', light:'#B8B7AD', label: STRINGS[LANG]?.sevLabel?.monitoring || 'Monitor' },
   low:         { idx:1, color:'#E4B514', dark:'#B28A0E', light:'#F2C73D', label: STRINGS[LANG]?.sevLabel?.low || 'Low' },
@@ -402,6 +548,7 @@ const state = {
   filter: 'all',
   query: '',
   selectedId: 'ebola-uganda',
+  selectedCountry: null,
   hoveredId: null,
   countries: [],
   dpr: Math.min(2, window.devicePixelRatio || 1),
@@ -883,9 +1030,9 @@ function renderList(){
   const root = document.getElementById('list');
   const f = state.filter;
   const q = state.query;
-  const items = OUTBREAKS.filter(o =>
-    (f==='all' || o.sev===f) && matchesQuery(o, q)
-  );
+  let items = f === 'all' ? OUTBREAKS : OUTBREAKS.filter(o => o.sev === f || (f==='warning' && o.sev==='low'));
+  if(state.selectedCountry) items = items.filter(o => o.country === state.selectedCountry);
+  items = items.filter(o => matchesQuery(o, q));
   document.getElementById('listCount').textContent = items.length;
 
   if(items.length === 0){
@@ -1311,6 +1458,33 @@ async function boot(){
   loadLiveData();
   // Refresh every 30 minutes
   setInterval(loadLiveData, 30 * 60 * 1000);
+
+  // Country search wiring
+  const csInput = document.getElementById('countrySearch');
+  const csDD    = document.getElementById('countryDropdown');
+  if(csInput && csDD){
+    csInput.addEventListener('input', ()=>{
+      const q = csInput.value.toLowerCase().trim();
+      if(!q){ csDD.style.display='none'; return; }
+      const matches = getUniqueCountries().filter(c =>
+        countryName(c).toLowerCase().includes(q) || c.toLowerCase().includes(q)
+      );
+      if(!matches.length){ csDD.style.display='none'; return; }
+      csDD.innerHTML = matches.slice(0,8).map(c=>
+        `<div class="cs-item" data-country="${c}">${countryName(c)}</div>`
+      ).join('');
+      csDD.style.display = 'block';
+      csDD.querySelectorAll('.cs-item').forEach(el=>{
+        el.addEventListener('click', ()=> selectCountry(el.dataset.country));
+      });
+    });
+    csInput.addEventListener('keydown', e=>{
+      if(e.key==='Escape'){ selectCountry(null); csInput.blur(); }
+    });
+    document.addEventListener('click', e=>{
+      if(!csInput.contains(e.target) && !csDD.contains(e.target)) csDD.style.display='none';
+    });
+  }
 }
 boot();
 

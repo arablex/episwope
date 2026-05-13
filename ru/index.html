@@ -618,6 +618,53 @@
   .travel-others-lbl{ font-size:10px; color:var(--muted); width:100%; margin-bottom:3px; }
   .travel-tag{ font-size:10px; font-weight:500; padding:2px 7px; border-radius:var(--r-pill); }
 
+  /* ── Country Profile ── */
+  .cp-head{ padding:18px 18px 14px; border-bottom:1px solid var(--line); }
+  .cp-back{ font-size:11px; color:var(--muted); cursor:pointer; margin-bottom:10px; }
+  .cp-back:hover{ color:var(--ink); }
+  .cp-eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .cp-country-name{ font-size:26px; font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:12px; }
+  .cp-advisory{ padding:8px 14px; border-radius:var(--r-md); font-size:13px; font-weight:600; display:inline-block; }
+  .cp-stats-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--line); border-bottom:1px solid var(--line); }
+  .cp-stat{ background:var(--glass-bg); padding:14px 12px; text-align:center; }
+  .cp-stat-val{ font-size:20px; font-weight:800; letter-spacing:-0.03em; }
+  .cp-stat-lbl{ font-size:10px; color:var(--muted); margin-top:2px; }
+  .cp-section{ padding:14px 18px; border-bottom:1px solid var(--line); }
+  .cp-section-title{ font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .cp-threat-row{ display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-2); }
+  .cp-threat-row:last-child{ border-bottom:0; }
+  .cp-threat-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .cp-threat-info{ flex:1; }
+  .cp-threat-name{ font-size:13px; font-weight:600; display:block; }
+  .cp-threat-sev{ font-size:11px; font-weight:500; }
+  .cp-threat-num{ font-size:13px; font-weight:700; text-align:right; }
+  .cp-threat-num small{ font-size:10px; font-weight:400; color:var(--muted); margin-left:2px; }
+  .cp-no-threats{ font-size:12px; color:var(--muted); padding:8px 0; }
+  .cp-rec-text{ font-size:12.5px; line-height:1.65; color:var(--ink-2); }
+  .cp-watch-btn{ width:100%; }
+
+  /* ── Country search ── */
+  .country-search-wrap{ position:relative; margin-bottom:10px; }
+  #countrySearch{
+    width:100%; height:32px; padding:0 10px;
+    background:rgba(22,21,19,0.05); border:1px solid transparent;
+    border-radius:var(--r-sm); font:inherit; font-size:12px; color:var(--ink);
+    outline:none; transition:border-color .15s;
+  }
+  #countrySearch:focus{ border-color:var(--accent); background:#fff; }
+  #countrySearch::placeholder{ color:var(--muted); }
+  #countryDropdown{
+    display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:50;
+    background:#fff; border:1px solid var(--line); border-radius:var(--r-md);
+    box-shadow:0 8px 24px -8px rgba(22,21,19,0.18); overflow:hidden;
+  }
+  .cs-item{
+    padding:9px 12px; font-size:12.5px; cursor:pointer;
+    border-bottom:1px solid var(--line-2); transition:background .1s;
+  }
+  .cs-item:last-child{ border-bottom:0; }
+  .cs-item:hover{ background:rgba(232,89,12,0.07); }
+
   .actions{ display:flex; gap:8px; }
   .btn{
     flex:1; height:34px; border-radius:var(--r-sm);
@@ -904,6 +951,10 @@
         </div>
       </div>
 
+      <div class="side-section country-search-wrap">
+          <input id="countrySearch" placeholder="Поиск по стране…" autocomplete="off">
+          <div id="countryDropdown"></div>
+        </div>
       <div class="list-h">
         <span>Вспышки</span><span class="count" id="listCount">12</span>
       </div>
