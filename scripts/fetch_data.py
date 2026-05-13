@@ -388,6 +388,10 @@ def main():
                 seen.add(key)
                 alerts.append({k: event[k] for k in ("disease","country","severity","summary","link","date")})
 
+    if len(events) == 0:
+        print("⚠ 0 events extracted — preserving existing data, skipping overwrite", flush=True)
+        import sys; sys.exit(0)
+
     meta = {"updated_at": datetime.now(timezone.utc).isoformat(),
             "total_events": len(events), "total_alerts": len(alerts),
             "mode": mode}
