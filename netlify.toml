@@ -1,0 +1,36 @@
+[build]
+  publish = "."
+  command = ""   # static site, no build step
+
+# Cache headers for static assets
+[[headers]]
+  for = "/public/*"
+  [headers.values]
+    Cache-Control = "public, max-age=1800, stale-while-revalidate=3600"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# episcope.ru → /ru/ (works when both domains point to same Netlify site)
+[[redirects]]
+  from   = "https://episcope.ru/*"
+  to     = "/ru/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "https://www.episcope.ru/*"
+  to     = "/ru/:splat"
+  status = 200
+  force  = true
