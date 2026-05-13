@@ -1,0 +1,43 @@
+name: Update epidemiology data
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:   # allow manual trigger from GitHub UI
+
+permissions:
+  contents: write    # needed to commit JSON files back to repo
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Run fetch script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/fetch_data.py
+
+      - name: Commit data if changed
+        run: |
+          git config user.name  "EpiScope Bot"
+          git config user.email "bot@episwope.noreply"
+          git add public/events.json public/alerts.json
+          # Only commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No data changes — skipping commit"
+          else
+            git commit -m "chore: update epidemiology data [skip ci]"
+            git push
+          fi

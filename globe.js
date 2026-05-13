@@ -785,6 +785,94 @@ document.getElementById('chips').addEventListener('click', e=>{
 });
 
 /* =========================================================
+   LIVE DATA  (public/events.json — updated by GitHub Actions)
+   ========================================================= */
+
+// Severity mapping: API strings → OUTBREAKS sev keys
+const SEV_MAP = { critical:'critical', high:'alert', medium:'warning', low:'monitoring' };
+
+// ISO numeric lookup table (alpha-2 → numeric) for the most common outbreak countries
+const ISO2_NUM = {
+  CD:180, NG:566, SD:729, US:840, TZ:834, BR:76, PK:586, AF:4,
+  HT:332, IT:380, DE:276, AF:4, SO:706, ET:231, YE:887, IN:356,
+  VN:704, SL:694, NE:562, MZ:508, KZ:398, UG:800, AO:24, MG:450,
+  CM:120, CF:140, GN:324, LR:430, ML:466, SN:686, GH:288, CI:384,
+  ZA:710, KE:404, RW:646, BD:50, MM:104, PH:608, ID:360, CN:156,
+  JP:392, RU:643, FR:250, GB:826, ES:724, PT:620, GR:300, TR:792,
+  IR:364, IQ:368, SY:760, LB:422, JO:400, SA:682, EG:818, MA:504,
+  DZ:12, TN:788, LY:434, MR:478, BF:854, TD:148, SS:728, BI:108,
+  ZM:894, ZW:716, TZ:834, UG:800, MW:454, BW:72, NA:516, SZ:748,
+};
+
+async function loadLiveData(){
+  try {
+    const res = await fetch('./public/events.json?_=' + Date.now());
+    if(!res.ok) return;
+    const json = await res.json();
+    const events = json.events || [];
+    if(!events.length) return;
+
+    // Update "last data update" timestamp
+    const updEl = document.getElementById('dataUpdated');
+    if(updEl && json.meta?.updated_at){
+      const d = new Date(json.meta.updated_at);
+      const hh = String(d.getUTCHours()).padStart(2,'0');
+      const mm = String(d.getUTCMinutes()).padStart(2,'0');
+      updEl.textContent = `Data: ${d.toLocaleDateString('en',{month:'short',day:'numeric'})} ${hh}:${mm} UTC`;
+    }
+
+    // Convert API events to OUTBREAKS-compatible objects and inject them
+    let injected = 0;
+    for(const ev of events){
+      if(!ev.disease || !ev.country) continue;
+      const evId = `live-${ev.id}`;
+      // Avoid duplicates
+      if(OUTBREAKS.find(o => o.id === evId)) continue;
+
+      const isoNum = ev.iso ? (ISO2_NUM[ev.iso.toUpperCase()] || null) : null;
+
+      OUTBREAKS.unshift({
+        id: evId,
+        code: `LIVE-${ev.source}-${new Date(ev.fetched_at||ev.date).toISOString().slice(0,10)}`,
+        name: ev.disease,
+        pathogen: ev.disease,
+        country: ev.country,
+        iso: isoNum,
+        region: ev.region || 'UNKNOWN',
+        place: `${ev.country}`,
+        lat: ev.lat || 0,
+        lon: ev.lng || 0,
+        sev: SEV_MAP[ev.severity] || 'monitoring',
+        who: `${ev.source} · live feed`,
+        cases: ev.cases || 0,
+        deaths: ev.deaths || 0,
+        cfr: ev.cases && ev.deaths ? ((ev.deaths/ev.cases)*100).toFixed(1) : 0,
+        rt: 1.0,
+        new24: 0,
+        sevIdx: {critical:80,alert:60,warning:40,monitoring:20}[SEV_MAP[ev.severity]||'monitoring'],
+        trend: [0,0,0,0,0,0,0, ev.cases||0],
+        blurb: ev.summary || '',
+        events: [],
+        _live: true,
+        _link: ev.link,
+      });
+
+      if(isoNum) HIGHLIGHT_ISO.add(isoNum);
+      injected++;
+    }
+
+    if(injected > 0){
+      console.log(`[EpiScope] Injected ${injected} live events`);
+      renderList();
+      renderPanel();
+      renderPopup();
+    }
+  } catch(e){
+    console.warn('[EpiScope] Live data unavailable:', e.message);
+  }
+}
+
+/* =========================================================
    BOOT
    ========================================================= */
 async function boot(){
@@ -798,6 +886,11 @@ async function boot(){
   renderPanel();
   renderPopup();
   requestAnimationFrame(frame);
+
+  // Load live data after globe is visible
+  loadLiveData();
+  // Refresh every 30 minutes
+  setInterval(loadLiveData, 30 * 60 * 1000);
 }
 boot();
 
