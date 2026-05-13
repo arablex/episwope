@@ -1,176 +1,261 @@
 #!/usr/bin/env python3
 """
 EpiScope data fetcher — runs every 6 hours via GitHub Actions.
-Fetches WHO DON + ProMED RSS feeds, extracts structured outbreak data
-using Claude Haiku, writes public/events.json + public/alerts.json.
+Fetches WHO DON + ProMED + ECDC RSS feeds, extracts structured outbreak data.
 
-Cost estimate: ~30-50 Haiku API calls per run × $0.00025/1k tokens ≈ < $0.02/day
+Mode A (free, default): regex + keyword pattern matching on RSS titles
+Mode B (optional):      Claude Haiku for richer extraction if ANTHROPIC_API_KEY is set
+
+Cost: $0/month in Mode A. ~$1-2/month in Mode B.
 """
 
-import json
-import os
-import re
-import sys
-import time
-import xml.etree.ElementTree as ET
+import json, os, re, time, xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
-import urllib.request
-import urllib.error
+import urllib.request, urllib.error
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
 
 FEEDS = [
-    {
-        "name": "WHO DON",
-        "url": "https://www.who.int/rss-feeds/news.rss",
-        "tag": "who",
-    },
-    {
-        "name": "ProMED",
-        "url": "https://promedmail.org/promed-rss/",
-        "tag": "promed",
-    },
-    {
-        "name": "ECDC",
-        "url": "https://www.ecdc.europa.eu/en/rss.xml",
-        "tag": "ecdc",
-    },
+    {"name": "WHO DON",  "url": "https://www.who.int/rss-feeds/news.rss",            "tag": "who"},
+    {"name": "ProMED",   "url": "https://promedmail.org/promed-rss/",                 "tag": "promed"},
+    {"name": "ECDC",     "url": "https://www.ecdc.europa.eu/en/rss.xml",             "tag": "ecdc"},
 ]
 
-# Outbreak-related keywords to pre-filter RSS items (case-insensitive)
 KEYWORDS = [
-    "outbreak", "disease", "virus", "epidemic", "pandemic", "infection",
-    "cholera", "dengue", "ebola", "mpox", "monkeypox", "influenza", "avian flu",
-    "malaria", "measles", "polio", "rabies", "typhoid", "lassa", "marburg",
-    "covid", "sars", "mers", "yellow fever", "meningitis", "plague",
-    "hantavirus", "rickettsia", "leishmaniasis", "brucellosis",
-    "alert", "cases", "deaths", "fatalities", "surveillance",
+    "outbreak","disease","virus","epidemic","pandemic","infection",
+    "cholera","dengue","ebola","mpox","monkeypox","influenza","avian flu","avian influenza",
+    "malaria","measles","polio","rabies","typhoid","lassa","marburg","yellow fever",
+    "meningitis","plague","hantavirus","covid","sars","mers","rift valley",
+    "alert","cases","deaths","fatalities","surveillance",
 ]
 
-MAX_ITEMS_PER_FEED = 15   # cap to control Haiku cost
+MAX_ITEMS_PER_FEED = 15
 OUTPUT_DIR = Path(__file__).parent.parent / "public"
 
 # ---------------------------------------------------------------------------
-# Haiku extraction
+# Free extraction: pattern matching on WHO/ECDC structured titles
+# WHO DON titles follow: "Disease Name – Country" or "Disease Name - Country"
+# ---------------------------------------------------------------------------
+
+DISEASE_PATTERNS = [
+    (r"ebola|ebolavirus|ebv",                       "Ebola virus disease",      "critical"),
+    (r"marburg",                                     "Marburg virus disease",    "critical"),
+    (r"lassa",                                       "Lassa fever",              "warning"),
+    (r"mpox|monkeypox",                              "Mpox",                     "warning"),
+    (r"cholera",                                     "Cholera",                  "alert"),
+    (r"dengue",                                      "Dengue fever",             "alert"),
+    (r"h5n1|avian influenza|avian flu|bird flu",     "Avian influenza A(H5N1)",  "high"),
+    (r"yellow fever",                                "Yellow fever",             "warning"),
+    (r"meningitis|meningococcal",                    "Meningitis",               "alert"),
+    (r"plague|yersinia",                             "Plague",                   "critical"),
+    (r"rift valley",                                 "Rift Valley fever",        "warning"),
+    (r"measles|morbillivirus",                       "Measles",                  "warning"),
+    (r"polio|poliovirus",                            "Polio",                    "warning"),
+    (r"typhoid|salmonella typhi",                    "Typhoid fever",            "warning"),
+    (r"malaria|plasmodium",                          "Malaria",                  "alert"),
+    (r"rabies",                                      "Rabies",                   "monitoring"),
+    (r"crimean.congo|cchf",                          "Crimean–Congo HF",         "warning"),
+    (r"covid|sars-cov|coronavirus",                  "COVID-19",                 "monitoring"),
+    (r"influenza|flu\b",                             "Influenza",                "low"),
+]
+
+# Country name → (ISO alpha-2, lat, lng, WHO region)
+COUNTRY_DB = {
+    "democratic republic of the congo": ("CD", -4.0,  21.7,  "AFRO"),
+    "dr congo": ("CD", -4.0, 21.7, "AFRO"),
+    "drc":      ("CD", -4.0, 21.7, "AFRO"),
+    "congo":    ("CD", -4.0, 21.7, "AFRO"),
+    "nigeria":  ("NG",  9.1,  8.7, "AFRO"),
+    "ethiopia": ("ET",  9.1, 40.5, "AFRO"),
+    "sudan":    ("SD", 15.5, 32.5, "EMRO"),
+    "south sudan": ("SS", 7.9, 29.7, "AFRO"),
+    "kenya":    ("KE", -1.3, 36.8, "AFRO"),
+    "uganda":   ("UG",  1.4, 32.3, "AFRO"),
+    "tanzania": ("TZ", -6.4, 34.9, "AFRO"),
+    "ghana":    ("GH",  7.9, -1.0, "AFRO"),
+    "cameroon": ("CM",  3.9, 11.5, "AFRO"),
+    "guinea":   ("GN", 11.0,-10.9, "AFRO"),
+    "sierra leone": ("SL", 8.5,-11.8, "AFRO"),
+    "liberia":  ("LR",  6.4,-9.4,  "AFRO"),
+    "mali":     ("ML", 17.6,-4.0,  "AFRO"),
+    "niger":    ("NE", 17.6,  8.1, "AFRO"),
+    "chad":     ("TD", 15.5, 18.7, "AFRO"),
+    "angola":   ("AO", -11.2,17.9, "AFRO"),
+    "mozambique": ("MZ",-18.7, 35.5,"AFRO"),
+    "zambia":   ("ZM", -13.1, 27.8,"AFRO"),
+    "zimbabwe": ("ZW", -20.0, 30.0,"AFRO"),
+    "somalia":  ("SO",  6.0, 46.2, "AFRO"),
+    "brazil":   ("BR", -14.2,-51.9,"AMRO"),
+    "colombia": ("CO",   4.6,-74.3,"AMRO"),
+    "peru":     ("PE",  -9.2,-75.0,"AMRO"),
+    "haiti":    ("HT",  19.0,-72.3,"AMRO"),
+    "bolivia":  ("BO", -16.3,-63.6,"AMRO"),
+    "argentina":("AR", -38.4,-63.6,"AMRO"),
+    "mexico":   ("MX",  23.6,-102.6,"AMRO"),
+    "united states": ("US", 37.1,-95.7,"AMRO"),
+    "usa":      ("US", 37.1,-95.7,"AMRO"),
+    "canada":   ("CA", 56.1,-106.3,"AMRO"),
+    "pakistan": ("PK", 30.4, 69.3,"EMRO"),
+    "afghanistan": ("AF", 33.9, 67.7,"EMRO"),
+    "iran":     ("IR", 32.4, 53.7,"EMRO"),
+    "iraq":     ("IQ", 33.2, 43.7,"EMRO"),
+    "syria":    ("SY", 34.8, 38.9,"EMRO"),
+    "yemen":    ("YE", 15.6, 48.5,"EMRO"),
+    "egypt":    ("EG", 26.8, 30.8,"EMRO"),
+    "india":    ("IN", 20.6, 78.9,"SEARO"),
+    "bangladesh": ("BD", 23.7, 90.4,"SEARO"),
+    "indonesia": ("ID", -0.8,113.9,"SEARO"),
+    "myanmar":  ("MM", 16.9, 96.1,"SEARO"),
+    "thailand": ("TH", 15.9, 100.9,"SEARO"),
+    "vietnam":  ("VN", 14.1,108.3,"WPRO"),
+    "philippines": ("PH", 12.9,121.8,"WPRO"),
+    "china":    ("CN", 35.9,104.2,"WPRO"),
+    "cambodia": ("KH", 12.6,104.9,"WPRO"),
+    "papua new guinea": ("PG", -6.3,143.9,"WPRO"),
+    "france":   ("FR", 46.2,  2.2,"EURO"),
+    "germany":  ("DE", 51.2, 10.5,"EURO"),
+    "italy":    ("IT", 41.9, 12.6,"EURO"),
+    "ukraine":  ("UA", 48.4, 31.2,"EURO"),
+    "turkey":   ("TR", 38.9, 35.2,"EURO"),
+    "russia":   ("RU", 61.5, 105.3,"EURO"),
+    "kazakhstan": ("KZ", 48.0, 68.0,"EURO"),
+}
+
+SEV_ORDER = {"critical":4,"alert":3,"warning":2,"high":2,"low":1,"monitoring":0}
+
+def extract_free(title: str, description: str) -> dict | None:
+    """Extract outbreak data using regex + keyword patterns. No API needed."""
+    text = (title + " " + description).lower()
+
+    # Match disease
+    disease_name, severity = None, "monitoring"
+    for pattern, name, sev in DISEASE_PATTERNS:
+        if re.search(pattern, text, re.I):
+            disease_name = name
+            severity = sev
+            break
+    if not disease_name:
+        return None
+
+    # Extract country from title (WHO format: "Disease – Country – DON")
+    country_name, iso, lat, lng, region = None, None, None, None, None
+    # Try dash-separated segments first
+    segments = re.split(r"\s[–—-]\s", title)
+    for seg in segments[1:]:
+        seg_clean = seg.strip().lower()
+        seg_clean = re.sub(r"\s*–.*$","", seg_clean).strip()
+        seg_clean = re.sub(r"\s*\(.*?\)","", seg_clean).strip()
+        if seg_clean in COUNTRY_DB:
+            iso, lat, lng, region = COUNTRY_DB[seg_clean]
+            country_name = seg.strip().split("–")[0].strip().title()
+            break
+    # Fallback: scan full text for country names
+    if not country_name:
+        for cname, (c_iso, c_lat, c_lng, c_reg) in COUNTRY_DB.items():
+            if cname in text:
+                country_name = cname.title()
+                iso, lat, lng, region = c_iso, c_lat, c_lng, c_reg
+                break
+
+    # Extract numbers
+    cases  = _extract_number(text, r"(\d[\d,\.]+)\s*(?:confirmed\s*)?cases?")
+    deaths = _extract_number(text, r"(\d[\d,\.]+)\s*deaths?")
+
+    summary = (description[:200] if description else title)
+    summary = re.sub(r"<[^>]+>", " ", summary).strip()[:200]
+
+    return {
+        "disease": disease_name,
+        "country": country_name,
+        "iso":     iso,
+        "region":  region,
+        "lat":     lat,
+        "lng":     lng,
+        "cases":   cases,
+        "deaths":  deaths,
+        "severity": severity,
+        "summary": summary or title[:200],
+    }
+
+def _extract_number(text: str, pattern: str) -> int | None:
+    m = re.search(pattern, text, re.I)
+    if not m: return None
+    try:
+        return int(m.group(1).replace(",","").replace(".",""))
+    except: return None
+
+# ---------------------------------------------------------------------------
+# Optional: Claude Haiku enrichment (only if ANTHROPIC_API_KEY is set)
 # ---------------------------------------------------------------------------
 
 def call_haiku(text: str) -> dict | None:
-    """Send text to Claude Haiku, return parsed JSON or None on failure."""
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key:
-        print("  ⚠ No ANTHROPIC_API_KEY — skipping AI extraction", flush=True)
         return None
+    prompt = f"""Extract disease outbreak info from this text. Return ONLY valid JSON, no markdown.
 
-    prompt = f"""Extract disease outbreak information from this text and return ONLY valid JSON.
+Text: {text[:1800]}
 
-Text:
-{text[:2000]}
+JSON structure:
+{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"alpha-2 or null","cases":number_or_null,"deaths":number_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence summary","lat":number_or_null,"lng":number_or_null}}
 
-Return this exact JSON structure (no markdown, no explanation):
-{{
-  "disease": "disease name or null",
-  "country": "country name or null",
-  "region": "WHO region (AFRO/AMRO/EMRO/EURO/SEARO/WPRO) or null",
-  "iso": "ISO-3166 alpha-2 code or null",
-  "cases": number_or_null,
-  "deaths": number_or_null,
-  "severity": "low|medium|high|critical",
-  "summary": "1-2 sentence plain English summary",
-  "lat": number_or_null,
-  "lng": number_or_null
-}}
-
-If this is not about a disease outbreak, return {{"disease": null}}.
-"""
+If not an outbreak return {{"disease":null}}"""
 
     payload = json.dumps({
         "model": "claude-haiku-4-5",
-        "max_tokens": 400,
-        "messages": [{"role": "user", "content": prompt}]
+        "max_tokens": 350,
+        "messages": [{"role":"user","content":prompt}]
     }).encode()
-
     req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=payload,
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        method="POST",
+        "https://api.anthropic.com/v1/messages", data=payload,
+        headers={"x-api-key":api_key,"anthropic-version":"2023-06-01","content-type":"application/json"},
+        method="POST"
     )
-
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = json.loads(resp.read())
-            raw = body["content"][0]["text"].strip()
-            # Strip markdown code fences if present
-            raw = re.sub(r"^```[a-z]*\n?", "", raw)
-            raw = re.sub(r"\n?```$", "", raw)
+            raw  = body["content"][0]["text"].strip()
+            raw  = re.sub(r"^```[a-z]*\n?","",raw); raw = re.sub(r"\n?```$","",raw)
             return json.loads(raw)
     except Exception as e:
-        print(f"  ⚠ Haiku error: {e}", flush=True)
+        print(f"  ⚠ Haiku: {e}", flush=True)
         return None
-
 
 # ---------------------------------------------------------------------------
 # RSS fetch
 # ---------------------------------------------------------------------------
 
 def fetch_feed(feed: dict) -> list[dict]:
-    """Fetch RSS feed, return list of {title, link, description, pub_date}."""
     print(f"Fetching {feed['name']} …", flush=True)
     try:
-        req = urllib.request.Request(
-            feed["url"],
-            headers={"User-Agent": "EpiScope/1.0 (github.com/arablex/episwope)"},
-        )
+        req = urllib.request.Request(feed["url"],
+            headers={"User-Agent":"EpiScope/1.0 (github.com/arablex/episwope)"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             content = resp.read()
-    except urllib.error.URLError as e:
-        print(f"  ✗ fetch failed: {e}", flush=True)
-        return []
-
+    except Exception as e:
+        print(f"  ✗ {e}", flush=True); return []
     try:
         root = ET.fromstring(content)
     except ET.ParseError as e:
-        print(f"  ✗ XML parse error: {e}", flush=True)
-        return []
+        print(f"  ✗ XML: {e}", flush=True); return []
 
-    ns = ""
     items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
     results = []
     for item in items:
-        def text(tag):
-            el = item.find(tag) or item.find(f"{{{ns}}}{tag}")
+        def t(tag):
+            el = item.find(tag)
             return (el.text or "").strip() if el is not None else ""
-
-        title = text("title")
-        desc  = text("description") or text("summary") or text("content")
-        link  = text("link") or text("guid")
-        pub   = text("pubDate") or text("updated") or text("published")
-
-        combined = (title + " " + desc).lower()
-        if not any(kw in combined for kw in KEYWORDS):
-            continue
-
-        results.append({
-            "source": feed["tag"],
-            "title": title,
-            "link": link,
-            "description": re.sub(r"<[^>]+>", " ", desc)[:800],
-            "pub_date": pub,
-        })
-
-        if len(results) >= MAX_ITEMS_PER_FEED:
-            break
-
-    print(f"  → {len(results)} outbreak items", flush=True)
+        title = t("title"); desc = re.sub(r"<[^>]+>"," ", t("description") or t("summary") or "")
+        link  = t("link") or t("guid"); pub = t("pubDate") or t("updated") or ""
+        combined = (title+" "+desc).lower()
+        if not any(kw in combined for kw in KEYWORDS): continue
+        results.append({"source":feed["tag"],"title":title,"link":link,"description":desc[:600],"pub_date":pub})
+        if len(results) >= MAX_ITEMS_PER_FEED: break
+    print(f"  → {len(results)} items", flush=True)
     return results
-
 
 # ---------------------------------------------------------------------------
 # Main
@@ -178,81 +263,71 @@ def fetch_feed(feed: dict) -> list[dict]:
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    has_ai = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    print(f"Mode: {'AI (Haiku)' if has_ai else 'free regex'}", flush=True)
 
     all_raw = []
     for feed in FEEDS:
-        items = fetch_feed(feed)
-        all_raw.extend(items)
-        time.sleep(1)   # polite delay between fetches
+        all_raw.extend(fetch_feed(feed))
+        time.sleep(1)
 
-    print(f"\nTotal candidate items: {len(all_raw)}", flush=True)
-    print("Running Haiku extraction …\n", flush=True)
+    print(f"\nTotal candidates: {len(all_raw)}", flush=True)
 
-    events = []
-    alerts = []
-    seen_diseases = set()
+    events, alerts, seen = [], [], set()
 
     for raw in all_raw:
         text = raw["title"] + "\n\n" + raw["description"]
-        extracted = call_haiku(text)
-        time.sleep(0.3)  # avoid hammering API
 
+        # Try AI first (if available), fall back to free extraction
+        extracted = None
+        if has_ai:
+            extracted = call_haiku(text)
+            time.sleep(0.25)
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
         if not extracted or not extracted.get("disease"):
             continue
 
+        sev_raw = extracted.get("severity","monitoring")
+        # normalise: "high" → "alert", "medium" → "warning"
+        sev_map = {"high":"alert","medium":"warning","critical":"critical","low":"low","monitoring":"monitoring"}
+        severity = sev_map.get(sev_raw, sev_raw)
+
         event = {
             "id": f"{raw['source']}-{len(events)}",
-            "disease": extracted.get("disease"),
-            "country": extracted.get("country"),
-            "iso": extracted.get("iso"),
-            "region": extracted.get("region"),
-            "lat": extracted.get("lat"),
-            "lng": extracted.get("lng"),
-            "cases": extracted.get("cases"),
-            "deaths": extracted.get("deaths"),
-            "severity": extracted.get("severity", "low"),
-            "summary": extracted.get("summary", raw["title"]),
-            "source": raw["source"].upper(),
-            "link": raw["link"],
-            "date": raw["pub_date"],
+            "disease":  extracted.get("disease"),
+            "country":  extracted.get("country"),
+            "iso":      extracted.get("iso"),
+            "region":   extracted.get("region"),
+            "lat":      extracted.get("lat"),
+            "lng":      extracted.get("lng"),
+            "cases":    extracted.get("cases"),
+            "deaths":   extracted.get("deaths"),
+            "severity": severity,
+            "summary":  extracted.get("summary", raw["title"])[:300],
+            "source":   raw["source"].upper(),
+            "link":     raw["link"],
+            "date":     raw["pub_date"],
             "fetched_at": datetime.now(timezone.utc).isoformat(),
         }
         events.append(event)
 
-        # High-severity → alerts panel
-        if extracted.get("severity") in ("high", "critical"):
-            key = (extracted.get("disease", ""), extracted.get("country", ""))
-            if key not in seen_diseases:
-                seen_diseases.add(key)
-                alerts.append({
-                    "disease": extracted.get("disease"),
-                    "country": extracted.get("country"),
-                    "severity": extracted.get("severity"),
-                    "summary": extracted.get("summary", raw["title"]),
-                    "link": raw["link"],
-                    "date": raw["pub_date"],
-                })
+        if severity in ("alert","critical"):
+            key = (extracted.get("disease",""), extracted.get("country",""))
+            if key not in seen:
+                seen.add(key)
+                alerts.append({k: event[k] for k in ("disease","country","severity","summary","link","date")})
 
-    meta = {
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-        "total_events": len(events),
-        "total_alerts": len(alerts),
-    }
+    meta = {"updated_at": datetime.now(timezone.utc).isoformat(),
+            "total_events": len(events), "total_alerts": len(alerts),
+            "mode": "ai" if has_ai else "free"}
 
-    events_out = {"meta": meta, "events": events}
-    alerts_out = {"meta": meta, "alerts": alerts}
+    (OUTPUT_DIR/"events.json").write_text(
+        json.dumps({"meta":meta,"events":events}, ensure_ascii=False, indent=2), encoding="utf-8")
+    (OUTPUT_DIR/"alerts.json").write_text(
+        json.dumps({"meta":meta,"alerts":alerts}, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    (OUTPUT_DIR / "events.json").write_text(
-        json.dumps(events_out, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    (OUTPUT_DIR / "alerts.json").write_text(
-        json.dumps(alerts_out, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-
-    print(f"\n✓ Wrote {len(events)} events + {len(alerts)} alerts")
-    print(f"  → {OUTPUT_DIR}/events.json")
-    print(f"  → {OUTPUT_DIR}/alerts.json")
-
+    print(f"\n✓ {len(events)} events · {len(alerts)} alerts · mode={meta['mode']}")
 
 if __name__ == "__main__":
     main()
