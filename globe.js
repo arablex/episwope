@@ -115,6 +115,47 @@ const DISEASE_RU = {
 };
 function diseaseName(name){ return LANG === 'ru' ? (DISEASE_RU[name] || name) : name; }
 
+/* ── Country & region translations ───────────────────────── */
+const COUNTRY_RU = {
+  'Uganda':'Уганда','Brazil':'Бразилия','Sudan':'Судан','South Sudan':'Южный Судан',
+  'Vietnam':'Вьетнам','Nigeria':'Нигерия','Niger':'Нигер','Sierra Leone':'Сьерра-Леоне',
+  'DR Congo':'ДР Конго','Democratic Republic of the Congo':'ДР Конго',
+  'Mozambique':'Мозамбик','Pakistan':'Пакистан','India':'Индия','Kazakhstan':'Казахстан',
+  'Tanzania':'Танзания','Haiti':'Гаити','Afghanistan':'Афганистан','Germany':'Германия',
+  'Italy':'Италия','United States':'США','Russia':'Россия','China':'Китай',
+  'France':'Франция','Kenya':'Кения','Ethiopia':'Эфиопия','Ghana':'Гана','Somalia':'Сомали',
+  'Yemen':'Йемен','Syria':'Сирия','Iraq':'Ирак','Iran':'Иран','Egypt':'Египет',
+  'Mali':'Мали','Chad':'Чад','Cameroon':'Камерун','Angola':'Ангола','Zambia':'Замбия',
+  'Zimbabwe':'Зимбабве','Colombia':'Колумбия','Peru':'Перу','Bolivia':'Боливия',
+  'Argentina':'Аргентина','Mexico':'Мексика','Bangladesh':'Бангладеш',
+  'Indonesia':'Индонезия','Myanmar':'Мьянма','Thailand':'Таиланд','Cambodia':'Камбоджа',
+  'Philippines':'Филиппины','Papua New Guinea':'Папуа — Новая Гвинея',
+  'Ukraine':'Украина','Turkey':'Турция','Guinea':'Гвинея','Liberia':'Либерия',
+  'Burkina Faso':'Буркина-Фасо','Senegal':'Сенегал','Morocco':'Марокко',
+  'Libya':'Ливия','Tunisia':'Тунис','Algeria':'Алжир',
+};
+const REGION_RU = {
+  'AFRO':'Африка','AMRO':'Америка','EMRO':'Вост. Средиземноморье',
+  'EURO':'Европа','SEARO':'Юго-Вост. Азия','WPRO':'Зап. Пацифика',
+  'Africa':'Африка','Americas':'Америка','Eastern Mediterranean':'Вост. Средиземноморье',
+  'Europe':'Европа','South-East Asia':'Юго-Вост. Азия','Western Pacific':'Зап. Пацифика',
+  'UNKNOWN':'Неизвестно',
+};
+function countryName(n){ return LANG==='ru' ? (COUNTRY_RU[n]||n) : n; }
+function regionName(r){  return LANG==='ru' ? (REGION_RU[r]||r)  : r; }
+
+/* ── WHO status translation ───────────────────────────────── */
+function translateWho(text){
+  if(LANG !== 'ru' || !text) return text;
+  return text
+    .replace('Grade 3','Степень 3').replace('Grade 2','Степень 2').replace('Grade 1','Степень 1')
+    .replace('PHEIC pending','ЧСЗМП рассматривается').replace('PHEIC active','ЧСЗМП активна')
+    .replace('Regional emergency','Региональная ЧС').replace('Zoonotic','Зооноз')
+    .replace('Belt season','Сезон менингопояса').replace('Endemic surveillance','Эндемичный мониторинг')
+    .replace('Seasonal surveillance','Сезонный мониторинг').replace('live feed','живой фид')
+    .replace('PAHO','ПАОЗ');
+}
+
 /* ── Risk profiles ───────────────────────────────────────── */
 // Keys matched with .includes() against lowercased disease name
 const DISEASE_RISK_PROFILES = [
@@ -859,7 +900,7 @@ function renderList(){
       <span class="sq bg-${sevClass(o.sev)}">${ini}</span>
       <div>
         <div class="nm">${diseaseName(o.name)}</div>
-        <div class="lo">${o.country} · ${o.region}</div>
+        <div class="lo">${countryName(o.country)} · ${regionName(o.region)}</div>
       </div>
       <div class="ct">${fmtNum(o.cases)}<small>${T('cases')}</small></div>
     </div>`;
@@ -885,12 +926,12 @@ function renderPanel(){
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
   document.getElementById('panName').innerHTML = breakName(diseaseName(o.name));
-  document.getElementById('panLoc').textContent = `${o.place} · ${o.region}`;
+  document.getElementById('panLoc').textContent = `${o.place} · ${regionName(o.region)}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
   ps.style.background = grad;
   ps.style.boxShadow = `0 8px 20px -10px ${hexA(sev.color, 0.55)}, inset 0 1px 0 rgba(255,255,255,0.14)`;
-  ps.querySelector('.v').textContent = o.who;
+  ps.querySelector('.v').textContent = translateWho(o.who);
 
   document.getElementById('mConf').textContent = fmtNum(o.cases);
   document.getElementById('mDeath').textContent = fmtNum(o.deaths);
@@ -990,8 +1031,8 @@ function renderPanel(){
   }
 
   // crumb
-  document.getElementById('crumbCountry').textContent  = o.country;
-  document.getElementById('crumbOutbreak').textContent = o.name;
+  document.getElementById('crumbCountry').textContent  = countryName(o.country);
+  document.getElementById('crumbOutbreak').textContent = diseaseName(o.name);
 
   // Travel advisory section
   const travelEl = document.getElementById('travelStatus');
@@ -1043,7 +1084,7 @@ function renderPopup(){
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
   document.getElementById('popBar').style.background = sev.color;
   document.getElementById('popId').textContent = `${o.code} · WHO/${o.region}`;
-  document.getElementById('popName').textContent = o.name;
+  document.getElementById('popName').textContent = diseaseName(o.name);
   document.getElementById('popLoc').textContent  = o.place;
   document.getElementById('popPin').style.background = sev.color;
   document.getElementById('popSev').textContent  = sev.label;
@@ -1055,8 +1096,8 @@ function renderPopup(){
   pd.style.color = sev.color;
   const surv = document.getElementById('popSurvey');
   surv.style.background = grad;
-  document.getElementById('popDelta').textContent = `+${fmtNum(o.new24)} new cases`;
-  document.getElementById('popSub').textContent = `Last 24 hours · ${o.region} surveillance`;
+  document.getElementById('popDelta').textContent = `+${fmtNum(o.new24)} ${T('newCases')}`;
+  document.getElementById('popSub').textContent = T('last24hSurv', {region: regionName(o.region)});
 }
 
 /* chips */
