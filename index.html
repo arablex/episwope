@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="EpiScope">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap">
 <meta property="og:title" content="EpiScope — Global Disease Surveillance">
 <meta property="og:description" content="Real-time outbreak monitoring: WHO, ProMED, ECDC data on an interactive globe.">
 <meta property="og:type" content="website">
@@ -54,6 +57,8 @@
 
     --sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", system-ui, sans-serif;
     --display: "Fraunces", "SF Pro Display", -apple-system, system-ui, serif;
+    --online: #19A463;
+    --online-bg: rgba(25,164,99,0.10);
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -252,6 +257,7 @@
   .stat.acc.s4::before{ background:var(--s4); }
   .stat-num{
     font-size:30px; font-weight:900; letter-spacing:-0.04em; line-height:1;
+    font-family:var(--display);
     font-variant-numeric:tabular-nums;
   }
   .stat-num.s2{ color:var(--s2); }
@@ -456,16 +462,18 @@
     transform:translate(-50%, -110%);
     z-index:8;
     overflow:hidden;
-    display:none;
+    visibility:hidden;
     opacity:0;
-    transition:opacity .2s ease;
+    pointer-events:none;
+    transition:opacity .2s ease, visibility .2s;
   }
-  .popup.is-on{ display:block; opacity:1; }
+  .popup.is-on{ visibility:visible; opacity:1; pointer-events:auto; }
   .popup-bar{ height:4px; background:var(--accent-deep); }
   .popup-body{ padding:14px 16px 0; }
   .popup-id{ font-size:9.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
   .popup-name{
     font-size:24px; font-weight:900; letter-spacing:-0.035em;
+    font-family:var(--display);
     line-height:1.02; margin-top:6px;
   }
   .popup-loc{
@@ -535,6 +543,7 @@
   .panel-eyebrow .x:hover{ background:#fff; }
   .panel-name{
     font-size:34px; font-weight:900; letter-spacing:-0.04em; line-height:0.98;
+    font-family:var(--display);
     margin-top:14px; text-wrap:pretty;
   }
   .panel-loc{
@@ -669,7 +678,7 @@
   .cp-back{ font-size:11px; color:var(--muted); cursor:pointer; margin-bottom:10px; }
   .cp-back:hover{ color:var(--ink); }
   .cp-eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-  .cp-country-name{ font-size:26px; font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:12px; }
+  .cp-country-name{ font-size:26px; font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:12px; font-family:var(--display); }
   .cp-advisory{ padding:8px 14px; border-radius:var(--r-md); font-size:13px; font-weight:600; display:inline-block; }
   .cp-stats-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--line); border-bottom:1px solid var(--line); }
   .cp-stat{ background:var(--glass-bg); padding:14px 12px; text-align:center; }
@@ -1236,15 +1245,15 @@
 
     <div class="top-actions">
       <a href="/ru/" class="lang-btn" title="Русская версия">RU</a>
-      <button class="icon-btn" title="Layers">
+      <button class="icon-btn" title="Layers" aria-label="Map layers">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 12 10 6 10-6"/><path d="m2 16 10 6 10-6"/></svg>
       </button>
-      <button class="icon-btn" title="Profile">
+      <button class="icon-btn" title="Profile" aria-label="User profile">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
       </button>
-      <button class="pill-btn">
+      <button class="pill-btn" id="newAlertBtn" onclick="document.getElementById('subEmail').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('subEmail').focus(),350)">
         <span class="accent-dot"></span>
-        New Alert
+        Get Alerts
       </button>
     </div>
   </header>
@@ -1419,6 +1428,11 @@
           <div class="big" id="popDelta">+19 new cases</div>
           <div class="sub" id="popSub">Cluster expanding · 3 districts affected</div>
         </div>
+        <div id="popCountryLink" style="padding:8px 16px 12px; border-top:1px solid rgba(255,255,255,0.15);">
+          <button id="popGoCountry" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font:inherit;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;width:100%;letter-spacing:0.03em;">
+            🌍 View country profile →
+          </button>
+        </div>
       </div>
     </div>
     </div><!-- /view-globe -->
@@ -1474,7 +1488,7 @@
   <aside class="panel" id="panel">
     <div class="panel-scroll">
       <div class="panel-head">
-        <div class="panel-eyebrow"><span id="panEy">Outbreak · EPI-2026-UGA-0142</span><button class="x">×</button></div>
+        <div class="panel-eyebrow"><span id="panEy">Outbreak · EPI-2026-UGA-0142</span><button class="x" aria-label="Close panel">×</button></div>
         <h1 class="panel-name" id="panName">Ebola<br>Sudan-virus</h1>
         <div class="panel-loc"><span class="pin" id="panPin"></span><span id="panLoc">Mubende District, Uganda · AFRO</span></div>
         <div class="panel-status" id="panStatus">

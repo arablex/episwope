@@ -113,7 +113,13 @@ const DISEASE_RU = {
   'Yellow Fever':'Жёлтая лихорадка',
   'Malaria':'Малярия',
 };
-function diseaseName(name){ return LANG === 'ru' ? (DISEASE_RU[name] || name) : name; }
+function diseaseName(o_or_name){
+  if(typeof o_or_name === 'object'){
+    if(LANG === 'ru' && o_or_name.name_ru) return o_or_name.name_ru;
+    return o_or_name.name;
+  }
+  return LANG === 'ru' ? (DISEASE_RU[o_or_name] || o_or_name) : o_or_name;
+}
 
 /* ── Country & region translations ───────────────────────── */
 const COUNTRY_RU = {
@@ -235,7 +241,7 @@ function toggleWatch(country){
   if(WATCHED.has(country)) WATCHED.delete(country);
   else WATCHED.add(country);
   localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
-  renderPanel();
+  // re-render is triggered by the caller (renderPanel or renderCountryPanel)
 }
 function isWatched(country){ return WATCHED.has(country); }
 
@@ -313,7 +319,7 @@ function renderCountryPanel(country){
   // Dominant severity
   let domSev = 'monitoring';
   if(outbreaks.length){
-    domSev = outbreaks.reduce((m,o) => SEV[o.sev].idx > SEV[m.sev].idx ? o : m).sev;
+    domSev = outbreaks.reduce((m,o) => (SEV[o.sev]?.idx ?? 0) > (SEV[m.sev]?.idx ?? 0) ? o : m).sev;
   }
   const sev = SEV[domSev];
 
@@ -375,7 +381,6 @@ function renderCountryPanel(country){
   // Wire back button
   document.getElementById('cpBack').addEventListener('click', ()=>{
     selectCountry(null);
-    renderPanel();
   });
 
   // Wire watch button
@@ -393,6 +398,47 @@ const SEV = {
   critical:    { idx:4, color:'#8B1A1A', dark:'#6E1414', light:'#A02222', label: STRINGS[LANG]?.sevLabel?.critical || 'Critical' },
   catastrophic:{ idx:5, color:'#5C2010', dark:'#421710', light:'#7A2A18', label: STRINGS[LANG]?.sevLabel?.catastrophic || 'Catastrophic' },
 };
+
+/* ── Category definitions ───────────────────────────────── */
+const CATEGORY_META = {
+  epidemic:     { icon:'🦠', color:'#C92A2A', en:'Epidemics',    ru:'Эпидемии',    type:'epidemic' },
+  disaster:     { icon:'🌊', color:'#1D6FA4', en:'Disasters',    ru:'Катастрофы',  type:'disaster' },
+  air:          { icon:'💨', color:'#6B7F3A', en:'Air Quality',  ru:'Воздух',      type:'air' },
+  food:         { icon:'🍽️', color:'#A0522D', en:'Food Safety',  ru:'Еда',         type:'food' },
+  humanitarian: { icon:'🏚️', color:'#8B5CF6', en:'Humanitarian', ru:'Гуманитар.',  type:'humanitarian' },
+};
+
+function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
+function toggleCat(key){
+  state.cats[key] = !state.cats[key];
+  // Update toggle button visual
+  const btn = document.querySelector(`.cat-toggle[data-cat="${key}"]`);
+  if(btn){
+    const meta = CATEGORY_META[key];
+    btn.classList.toggle('is-active', state.cats[key]);
+    btn.style.borderColor = state.cats[key] ? meta.color : 'transparent';
+    btn.style.background  = state.cats[key] ? meta.color+'18' : '';
+    btn.style.color       = state.cats[key] ? meta.color : '';
+  }
+  renderList();
+}
+
+/* ── Demo data for new categories ───────────────────────── */
+const CAT_EVENTS = [
+  // Air quality
+  { id:'air-delhi',  type:'air', name:'Air Quality — Critical', name_ru:'Качество воздуха — критич.', country:'India',  region:'SEARO', lat:28.6, lng:77.2,  sev:'alert',      cases:null, deaths:null, summary:'PM2.5 AQI 285 — Very Unhealthy. Avoid outdoor activity. Wear N95 masks.', summary_ru:'PM2.5 АКИ 285 — Очень вредно. Избегать прогулок. Носить маску N95.', who:'Open-Meteo AQI', iso:356 },
+  { id:'air-beijing',type:'air', name:'Air Quality — Elevated', name_ru:'Качество воздуха — повыш.',  country:'China',  region:'WPRO',  lat:39.9, lng:116.4, sev:'warning',    cases:null, deaths:null, summary:'PM2.5 AQI 158 — Unhealthy. Sensitive groups should avoid prolonged outdoor exposure.', summary_ru:'PM2.5 АКИ 158 — Вредно. Уязвимым группам ограничить пребывание на воздухе.', who:'Open-Meteo AQI', iso:156 },
+  { id:'air-dhaka',  type:'air', name:'Air Quality — Hazardous',name_ru:'Качество воздуха — опасно', country:'Bangladesh',region:'SEARO',lat:23.7, lng:90.4,  sev:'critical',  cases:null, deaths:null, summary:'PM2.5 AQI 320 — Hazardous. Stay indoors, use air purifiers. Health alert for all.', summary_ru:'PM2.5 АКИ 320 — Опасно. Оставаться в помещениях. Санитарное предупреждение всем.', who:'Open-Meteo AQI', iso:50 },
+  { id:'air-karachi',type:'air', name:'Air Quality — Unhealthy', name_ru:'Качество воздуха — вредно',  country:'Pakistan',region:'EMRO', lat:24.9, lng:67.0,  sev:'warning',   cases:null, deaths:null, summary:'PM2.5 AQI 172 — Unhealthy. Reduce prolonged outdoor exertion.', summary_ru:'PM2.5 АКИ 172 — Вредно. Снизить физическую активность на улице.', who:'Open-Meteo AQI', iso:586 },
+  // Food safety
+  { id:'food-listeria', type:'food', name:'Listeria Outbreak',  name_ru:'Листериоз', country:'United States', region:'AMRO', lat:38.9, lng:-95.7, sev:'alert',   cases:22, deaths:4, summary:'Multi-state listeria outbreak linked to deli meats. FDA recall issued. Check fridges for affected products.', summary_ru:'Вспышка листериоза в нескольких штатах — заражённая мясная нарезка. Отзыв FDA. Проверьте холодильники.', who:'openFDA', iso:840 },
+  { id:'food-salmonella',type:'food',name:'Salmonella Alert',   name_ru:'Сальмонеллёз', country:'Germany', region:'EURO', lat:51.2, lng:10.4, sev:'warning',  cases:147, deaths:1, summary:'Salmonella Enteritidis cluster traced to eggs from Rhine-Westphalia farms. RASFF notification issued.', summary_ru:'Вспышка сальмонеллёза — яйца с ферм Рейн-Вестфалии. Оповещение RASFF. Тщательно готовьте яйца.', who:'RASFF', iso:276 },
+  { id:'food-ecoli',    type:'food', name:'E.coli O157 Cluster', name_ru:'E.coli O157', country:'France', region:'EURO', lat:46.2, lng:2.2,  sev:'warning',  cases:38, deaths:0, summary:'E.coli O157:H7 cluster in Normandy linked to unpasteurised cheese. EFSA alert. Avoid raw dairy products.', summary_ru:'Вспышка E.coli O157 в Нормандии — непастеризованный сыр. Предупреждение EFSA. Избегать сырых молочных продуктов.', who:'RASFF', iso:250 },
+  // Humanitarian
+  { id:'hum-gaza',     type:'humanitarian', name:'Humanitarian Crisis',  name_ru:'Гуманитарный кризис', country:'Palestinian Territories', region:'EMRO', lat:31.5, lng:34.5, sev:'critical',  cases:null, deaths:null, summary:'Acute food insecurity and healthcare system collapse. WHO reports 90%+ hospital non-functionality. IPC Phase 4-5.', summary_ru:'Острая нехватка еды и коллапс системы здравоохранения. ВОЗ: 90% больниц не работают. МПК Фаза 4-5.', who:'ReliefWeb', iso:0 },
+  { id:'hum-sudan',    type:'humanitarian', name:'Displacement Crisis',  name_ru:'Кризис перемещения',  country:'Sudan', region:'AFRO', lat:15.5, lng:32.5, sev:'critical',  cases:null, deaths:null, summary:'11M+ internally displaced. Cholera, measles, malnutrition surging in camps. Largest displacement crisis globally.', summary_ru:'11+ млн внутренне перемещённых. В лагерях растут холера, корь, недоедание. Крупнейший в мире кризис перемещения.', who:'UNHCR', iso:729 },
+  { id:'hum-myanmar',  type:'humanitarian', name:'Healthcare Collapse',  name_ru:'Коллапс здравоохранения', country:'Myanmar', region:'SEARO', lat:16.9, lng:96.1, sev:'alert', cases:null, deaths:null, summary:'Ongoing conflict destroyed 60%+ of primary healthcare facilities. Malaria and dengue resurging. 18M need assistance.', summary_ru:'Конфликт уничтожил 60%+ первичных учреждений здравоохранения. Рост малярии и денге. 18 млн нуждаются в помощи.', who:'OCHA', iso:104 },
+];
 
 const OUTBREAKS = [
   { id:'ebola-uganda',     code:'EPI-2026-UGA-0142', name:'Ebola Sudan-virus',
@@ -532,6 +578,24 @@ const OUTBREAKS = [
   },
 ];
 
+// Inject category events into OUTBREAKS at load time
+CAT_EVENTS.forEach(ev => {
+  if(!OUTBREAKS.find(o=>o.id===ev.id)){
+    OUTBREAKS.push({
+      ...ev,
+      name: ev.name,
+      blurb: ev.summary,
+      blurb_ru: ev.summary_ru,
+      place: ev.country,
+      lon: ev.lng,
+      trend: [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      rt: 0, cfr: 0, new24: 0, sevIdx: {critical:75,alert:55,warning:35,monitoring:15}[ev.sev]||20,
+      events: [],
+      code: `CAT-${ev.type.toUpperCase()}-${ev.id}`,
+    });
+  }
+});
+
 const HIGHLIGHT_ISO = new Set(OUTBREAKS.map(o=>o.iso));
 
 /* =========================================================
@@ -547,8 +611,9 @@ const state = {
   autoRotate: true,
   filter: 'all',
   query: '',
-  selectedId: 'ebola-uganda',
+  selectedId: null,
   selectedCountry: null,
+  cats: { epidemic:true, disaster:false, air:false, food:false, humanitarian:false },
   hoveredId: null,
   countries: [],
   dpr: Math.min(2, window.devicePixelRatio || 1),
@@ -1031,12 +1096,21 @@ function renderList(){
   const f = state.filter;
   const q = state.query;
   let items = f === 'all' ? OUTBREAKS : OUTBREAKS.filter(o => o.sev === f || (f==='warning' && o.sev==='low'));
+  // Category filter
+  items = items.filter(o => {
+    const cat = o.type || 'epidemic';
+    return state.cats[cat] !== false;
+  });
   if(state.selectedCountry) items = items.filter(o => o.country === state.selectedCountry);
   items = items.filter(o => matchesQuery(o, q));
   document.getElementById('listCount').textContent = items.length;
 
   if(items.length === 0){
-    root.innerHTML = `<div style="padding:20px 8px;text-align:center;color:var(--muted);font-size:12px;">No results for "${q}"</div>`;
+    const noMsg = q
+      ? (LANG==='ru' ? `По запросу «${q}» ничего не найдено` : `No results for "${q}"`)
+      : (LANG==='ru' ? 'Нет активных угроз в этой категории' : 'No active threats in this category');
+    root.innerHTML = `<div style="padding:24px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6;">
+      <div style="font-size:22px;margin-bottom:8px;">🔍</div>${noMsg}</div>`;
     return;
   }
 
@@ -1044,9 +1118,9 @@ function renderList(){
     const ini = (o.country||'??').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
     return `
     <div class="out-row ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
-      <span class="sq bg-${sevClass(o.sev)}">${ini}</span>
+      <span class="sq bg-${sevClass(o.sev)}" style="${o.type&&o.type!=='epidemic'?`background:${CATEGORY_META[o.type]?.color||''}40;border:2px solid ${CATEGORY_META[o.type]?.color||''}`:''}">${o.type&&o.type!=='epidemic'?(CATEGORY_META[o.type]?.icon||ini):ini}</span>
       <div>
-        <div class="nm">${diseaseName(o.name)}</div>
+        <div class="nm">${diseaseName(o)}</div>
         <div class="lo">${countryName(o.country)} · ${regionName(o.region)}</div>
       </div>
       <div class="ct">${fmtNum(o.cases)}<small>${T('cases')}</small></div>
@@ -1061,18 +1135,37 @@ function renderList(){
 
 function sevClass(s){ return 's' + SEV[s].idx; }
 function fmtNum(n){
+  if(n == null || isNaN(n)) return '—';
   if(n>=1_000_000) return (n/1_000_000).toFixed(n>=10_000_000?0:1)+'M';
   if(n>=1000) return (n/1000).toFixed(n>=10_000?0:1)+'k';
-  return n.toLocaleString();
+  return Number(n).toLocaleString();
+}
+
+function renderPanelEmpty(){
+  const ps = document.querySelector('.panel-scroll');
+  if(!ps) return;
+  const critical = OUTBREAKS.filter(o=>o.sev==='critical'||o.sev==='alert').length;
+  ps.innerHTML = `
+    <div style="padding:32px 20px 24px; text-align:center;">
+      <div style="font-size:40px; margin-bottom:12px;">🌍</div>
+      <div style="font-size:17px; font-weight:800; letter-spacing:-0.03em; margin-bottom:6px;">${LANG==='ru'?'Глобальный мониторинг':'Global Surveillance'}</div>
+      <div style="font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:20px;">${LANG==='ru'?`Отслеживается <b style="color:var(--ink)">${OUTBREAKS.filter(o=>o.type!=='air'&&o.type!=='food'&&o.type!=='humanitarian').length}</b> вспышек · <b style="color:var(--s3)">${critical}</b> критических`:`Tracking <b style="color:var(--ink)">${OUTBREAKS.filter(o=>o.type!=='air'&&o.type!=='food'&&o.type!=='humanitarian').length}</b> outbreaks · <b style="color:var(--s3)">${critical}</b> critical`}</div>
+      <div style="font-size:11px; color:var(--muted-2); margin-bottom:16px;">${LANG==='ru'?'Нажмите на маркер на глобусе или выберите вспышку из списка':'Click a marker on the globe or select an outbreak from the list'}</div>
+      <div style="background:rgba(232,89,12,0.07); border:1px solid rgba(232,89,12,0.18); border-radius:var(--r-md); padding:12px 14px; text-align:left;">
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); margin-bottom:8px;">🔍 ${LANG==='ru'?'Проверить страну':'Check a country'}</div>
+        <div style="font-size:12px; color:var(--ink-2);">${LANG==='ru'?'Используйте поиск по стране слева — получите сводку угроз и рекомендации по безопасности':'Use the country search on the left to get a threat summary and travel safety recommendations'}</div>
+      </div>
+    </div>`;
 }
 
 function renderPanel(){
-  const o = currentSel(); if(!o) return;
+  const o = currentSel();
+  if(!o){ renderPanelEmpty(); return; }
   const sev = SEV[o.sev];
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
-  document.getElementById('panName').innerHTML = breakName(diseaseName(o.name));
+  document.getElementById('panName').innerHTML = breakName(diseaseName(o));
   document.getElementById('panLoc').textContent = `${o.place} · ${regionName(o.region)}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
@@ -1082,8 +1175,10 @@ function renderPanel(){
 
   document.getElementById('mConf').textContent = fmtNum(o.cases);
   document.getElementById('mDeath').textContent = fmtNum(o.deaths);
-  document.getElementById('mCfr').textContent = o.cfr.toFixed(o.cfr<1?2:1)+'%';
-  document.getElementById('mRt').textContent  = o.rt.toFixed(2);
+  const cfr = parseFloat(o.cfr) || 0;
+  document.getElementById('mCfr').textContent = cfr.toFixed(cfr<1?2:1)+'%';
+  const rt = parseFloat(o.rt) || 0;
+  document.getElementById('mRt').textContent  = rt.toFixed(2);
   // color the deaths metric value with severity
   document.getElementById('mDeath').style.color = sev.color;
 
@@ -1179,7 +1274,7 @@ function renderPanel(){
 
   // crumb
   document.getElementById('crumbCountry').textContent  = countryName(o.country);
-  document.getElementById('crumbOutbreak').textContent = diseaseName(o.name);
+  document.getElementById('crumbOutbreak').textContent = diseaseName(o);
 
   // Travel advisory section
   const travelEl = document.getElementById('travelStatus');
@@ -1214,7 +1309,7 @@ function renderPanel(){
     watchBtn.textContent = T(watched ? 'watchedBtn' : 'watchBtn');
     watchBtn.style.borderColor = watched ? 'var(--accent)' : '';
     watchBtn.style.color       = watched ? 'var(--accent)' : '';
-    watchBtn.onclick = () => toggleWatch(o.country);
+    watchBtn.onclick = () => { toggleWatch(o.country); renderPanel(); };
   }
 }
 
@@ -1231,7 +1326,7 @@ function renderPopup(){
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
   document.getElementById('popBar').style.background = sev.color;
   document.getElementById('popId').textContent = `${o.code} · WHO/${o.region}`;
-  document.getElementById('popName').textContent = diseaseName(o.name);
+  document.getElementById('popName').textContent = diseaseName(o);
   document.getElementById('popLoc').textContent  = o.place;
   document.getElementById('popPin').style.background = sev.color;
   document.getElementById('popSev').textContent  = sev.label;
@@ -1245,6 +1340,11 @@ function renderPopup(){
   surv.style.background = grad;
   document.getElementById('popDelta').textContent = `+${fmtNum(o.new24)} ${T('newCases')}`;
   document.getElementById('popSub').textContent = T('last24hSurv', {region: regionName(o.region)});
+  const goCountry = document.getElementById('popGoCountry');
+  if(goCountry && o.country){
+    goCountry.textContent = LANG==='ru' ? `🌍 Профиль: ${countryName(o.country)} →` : `🌍 ${countryName(o.country)} country profile →`;
+    goCountry.onclick = () => selectCountry(o.country);
+  }
 }
 
 /* chips */
@@ -1412,7 +1512,7 @@ async function loadLiveData(){
         who: `${ev.source} · live feed`,
         cases: ev.cases || 0,
         deaths: ev.deaths || 0,
-        cfr: ev.cases && ev.deaths ? ((ev.deaths/ev.cases)*100).toFixed(1) : 0,
+        cfr: ev.cases && ev.deaths ? parseFloat(((ev.deaths/ev.cases)*100).toFixed(1)) : 0,
         rt: 1.0,
         new24: 0,
         sevIdx: {critical:80,alert:60,warning:40,monitoring:20}[SEV_MAP[ev.severity]||'monitoring'],
@@ -1458,6 +1558,12 @@ async function boot(){
   loadLiveData();
   // Refresh every 30 minutes
   setInterval(loadLiveData, 30 * 60 * 1000);
+
+  // Category toggle wiring
+  document.getElementById('catToggles')?.addEventListener('click', e=>{
+    const btn = e.target.closest('.cat-toggle'); if(!btn) return;
+    toggleCat(btn.dataset.cat);
+  });
 
   // Country search wiring
   const csInput = document.getElementById('countrySearch');
