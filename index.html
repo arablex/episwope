@@ -21,13 +21,14 @@
 <meta property="og:type" content="website">
 <style>
   :root{
-    --bg:#EDEBE4;
-    --ink:#161513;
+    --bg:#F4F2EE;
+    --bg-card:#FFFFFF;
+    --ink:#0F0E0C;
     --ink-2:#3B3A36;
     --muted:#807E76;
     --muted-2:#B6B3AA;
-    --line:#E5E3DC;
-    --line-2:#EFEDE6;
+    --line:#ECEAE2;
+    --line-2:#F2F0E8;
 
     /* severity scale */
     --s0:#A09F95;
@@ -71,41 +72,77 @@
     letter-spacing:-0.005em;
   }
   body{
-    background:#EDEBE4;
-    background-image:
-      radial-gradient(1000px 700px at 18% 8%, rgba(232,89,12,0.06), transparent 55%),
-      linear-gradient(180deg, #F3F0E7 0%, #EAE7DD 100%);
+    background:#F4F2EE;
   }
   button{ font-family:inherit; cursor:pointer; border:0; background:none; color:inherit; }
   ::selection{ background:#E8590C33; }
 
-  /* aurora orbs subtly drifting */
-  .aurora{
-    position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
-  }
-  .aurora b{
-    position:absolute; display:block;
-    width:520px; height:520px; border-radius:50%;
-    filter: blur(80px); opacity:.26;
-    animation: drift 22s ease-in-out infinite alternate;
-  }
-  .aurora b:nth-child(1){ left:-160px; top:-160px; background:radial-gradient(circle, #FAD9B7, transparent 60%); }
-  .aurora b:nth-child(2){ right:-180px; top:30%; width:600px; height:600px; background:radial-gradient(circle, #F0D5D5, transparent 60%); animation-duration:28s;}
-  .aurora b:nth-child(3){ left:30%; bottom:-220px; width:680px; height:680px; background:radial-gradient(circle, #F7EAC8, transparent 65%); animation-duration:32s; }
-  @keyframes drift{
-    from{ transform:translate3d(0,0,0) scale(1); }
-    to  { transform:translate3d(40px,-30px,0) scale(1.08); }
-  }
+  /* aurora orbs removed — clean minimal shell */
+  .aurora{ display:none; }
 
   /* ============ APP SHELL — floating layout ============ */
   .app{
     position:relative; z-index:2;
     height:100vh; width:100vw;
-    padding:18px;
+    padding:14px;
     display:grid;
-    grid-template-columns: 268px 1fr 360px;
-    grid-template-rows: 60px 1fr;
-    gap:18px;
+    grid-template-columns: 260px 1fr 360px;
+    grid-template-rows: 56px 1fr 156px;
+    gap:14px;
+  }
+  /* ============ BOTTOM EVENT BAR ============ */
+  .events-bar{
+    grid-column:1 / -1;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px 18px 16px;
+    display:flex; flex-direction:column; gap:10px;
+    box-shadow:0 1px 0 rgba(20,18,14,0.02);
+  }
+  .events-bar-h{
+    display:flex; align-items:baseline; justify-content:space-between;
+  }
+  .events-bar-h .t{
+    font-family:var(--display);
+    font-size:22px; font-weight:900; letter-spacing:-0.04em;
+    color:var(--ink);
+  }
+  .events-bar-h .all{
+    font-size:12px; color:var(--muted); display:inline-flex; align-items:center; gap:4px;
+  }
+  .events-bar-h .all:hover{ color:var(--ink); }
+  .events-row{
+    display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
+    scrollbar-width:thin; scrollbar-color:#d6d3c8 transparent;
+    padding-bottom:4px;
+  }
+  .events-row::-webkit-scrollbar{ height:6px; }
+  .events-row::-webkit-scrollbar-thumb{ background:#d6d3c8; border-radius:99px; }
+  .ev-card{
+    flex:0 0 232px;
+    background:#FAF8F2;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px 12px;
+    display:flex; flex-direction:column; gap:6px;
+    cursor:pointer;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .ev-card:hover{ background:#fff; border-color:#d6d3c8; transform:translateY(-1px); }
+  .ev-card.is-selected{ background:#fff; border-color:var(--ink); }
+  .ev-card .top{ display:flex; align-items:center; justify-content:space-between; }
+  .ev-card .country{ font-size:10px; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:var(--ink); display:inline-flex; align-items:center; gap:6px; }
+  .ev-card .country .dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .ev-card .sev-tag{ font-size:9px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border-radius:99px; }
+  .ev-card .name{ font-family:var(--display); font-size:21px; font-weight:900; letter-spacing:-0.04em; line-height:1.05; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev-card .stats{ display:flex; gap:14px; margin-top:auto; }
+  .ev-card .stat .v{ font-family:var(--display); font-size:18px; font-weight:900; letter-spacing:-0.04em; line-height:1; color:var(--ink); }
+  .ev-card .stat .v.red{ color:var(--s3); }
+  .ev-card .stat .k{ font-size:9.5px; color:var(--muted); margin-top:2px; }
+  @media (max-width: 900px){
+    .app{ grid-template-rows: 56px 1fr; }
+    .events-bar{ display:none; }
   }
 
   /* ============ TOPBAR (floating pill) ============ */
@@ -1313,11 +1350,6 @@
           <input id="countrySearch" placeholder="Filter by country…" autocomplete="off">
           <div id="countryDropdown"></div>
         </div>
-      <div class="list-h">
-        <span>Outbreaks</span><span class="count" id="listCount">12</span>
-      </div>
-      <div class="list-wrap" id="list"></div>
-
       <div class="status-foot">
         <span class="live-pill"><span class="dot"></span>Live</span>
         <span>last sync <b id="lastSync">14:32:09 UTC</b></span>
@@ -1610,6 +1642,15 @@
       </div>
     </div>
   </aside>
+
+  <!-- ============ BOTTOM EVENT BAR ============ -->
+  <section class="events-bar" id="eventsBar">
+    <div class="events-bar-h">
+      <span class="t">Активные события</span>
+      <a class="all" href="#" id="eventsAllLink">Все <span id="listCount">12</span> →</a>
+    </div>
+    <div class="events-row" id="list"></div>
+  </section>
 
 </div>
 

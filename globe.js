@@ -842,19 +842,37 @@ function renderList(){
     return;
   }
 
+  const sevLabels = {
+    critical: LANG==='ru'?'Крит.':'Critical',
+    alert:    LANG==='ru'?'Алерт':'Alert',
+    warning:  LANG==='ru'?'Средн.':'Warning',
+    monitoring: LANG==='ru'?'Низк.':'Monitor',
+    low:      LANG==='ru'?'Низк.':'Low',
+  };
+  const sevTagStyle = (sev) => {
+    const c = SEV[sev]?.color || '#888';
+    return `background:${hexA(c,0.12)};color:${c};`;
+  };
   root.innerHTML = items.map(o => {
-    const ini = (o.country||'??').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const sev = SEV[o.sev] || SEV.warning;
+    const cases = fmtNum(o.cases);
+    const deaths = fmtNum(o.deaths);
+    const cat = o.type || 'epidemic';
+    const catColor = (CATEGORY_META[cat]?.color) || sev.color;
     return `
-    <div class="out-row ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
-      <span class="sq bg-${sevClass(o.sev)}" style="${o.type&&o.type!=='epidemic'?`background:${CATEGORY_META[o.type]?.color||''}40;border:2px solid ${CATEGORY_META[o.type]?.color||''}`:''}">${o.type&&o.type!=='epidemic'?(CATEGORY_META[o.type]?.icon||ini):ini}</span>
-      <div>
-        <div class="nm">${diseaseName(o)}</div>
-        <div class="lo">${countryName(o.country)} · ${regionName(o.region)}</div>
+    <article class="ev-card ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
+      <div class="top">
+        <span class="country"><span class="dot" style="background:${catColor}"></span>${countryName(o.country)||'—'}</span>
+        <span class="sev-tag" style="${sevTagStyle(o.sev)}">${sevLabels[o.sev]||o.sev}</span>
       </div>
-      <div class="ct">${fmtNum(o.cases)}<small>${T('cases')}</small></div>
-    </div>`;
+      <div class="name">${diseaseName(o)}</div>
+      <div class="stats">
+        <div class="stat"><div class="v">${cases}</div><div class="k">${T('cases')}</div></div>
+        <div class="stat"><div class="v ${o.deaths?'red':''}">${o.deaths?deaths:'—'}</div><div class="k">${T('deaths')||(LANG==='ru'?'смертей':'deaths')}</div></div>
+      </div>
+    </article>`;
   }).join('');
-  root.querySelectorAll('.out-row').forEach(el=>{
+  root.querySelectorAll('.ev-card').forEach(el=>{
     el.addEventListener('click', ()=> selectOutbreak(el.dataset.id));
     el.addEventListener('mouseenter', ()=>{ state.hoveredId = el.dataset.id; });
     el.addEventListener('mouseleave', ()=>{ state.hoveredId = null; });
@@ -894,9 +912,9 @@ function renderPanel(){
   const o = currentSel();
   if(!o){ renderPanelEmpty(); return; }
   // Restore the detail markup if a previous renderPanelEmpty replaced it
-  const ps = document.querySelector('.panel-scroll');
-  if(ps && _panelDetailHTML !== null && !document.getElementById('panEy')){
-    ps.innerHTML = _panelDetailHTML;
+  const panelScroll = document.querySelector('.panel-scroll');
+  if(panelScroll && _panelDetailHTML !== null && !document.getElementById('panEy')){
+    panelScroll.innerHTML = _panelDetailHTML;
   }
   const sev = SEV[o.sev];
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
