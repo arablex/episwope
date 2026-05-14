@@ -140,6 +140,224 @@ const COUNTRY_RU = {
   'Burkina Faso':'Буркина-Фасо','Senegal':'Сенегал','Morocco':'Марокко',
   'Libya':'Ливия','Tunisia':'Тунис','Algeria':'Алжир',
 };
+
+/* ── Full country master list (198 countries + territories) ── */
+const ALL_COUNTRIES = [
+  { en:'Afghanistan',                  ru:'Афганистан',            iso2:'AF', num:4,   lat:33.94, lng:67.71 },
+  { en:'Albania',                      ru:'Албания',               iso2:'AL', num:8,   lat:41.15, lng:20.17 },
+  { en:'Algeria',                      ru:'Алжир',                 iso2:'DZ', num:12,  lat:28.03, lng:1.66 },
+  { en:'Andorra',                      ru:'Андорра',               iso2:'AD', num:20,  lat:42.51, lng:1.52 },
+  { en:'Angola',                       ru:'Ангола',                iso2:'AO', num:24,  lat:-11.20, lng:17.87 },
+  { en:'Antigua and Barbuda',          ru:'Антигуа и Барбуда',     iso2:'AG', num:28,  lat:17.06, lng:-61.80 },
+  { en:'Argentina',                    ru:'Аргентина',             iso2:'AR', num:32,  lat:-38.42, lng:-63.62 },
+  { en:'Armenia',                      ru:'Армения',               iso2:'AM', num:51,  lat:40.07, lng:45.04 },
+  { en:'Australia',                    ru:'Австралия',             iso2:'AU', num:36,  lat:-25.27, lng:133.78 },
+  { en:'Austria',                      ru:'Австрия',               iso2:'AT', num:40,  lat:47.52, lng:14.55 },
+  { en:'Azerbaijan',                   ru:'Азербайджан',           iso2:'AZ', num:31,  lat:40.14, lng:47.58 },
+  { en:'Bahamas',                      ru:'Багамы',                iso2:'BS', num:44,  lat:25.03, lng:-77.40 },
+  { en:'Bahrain',                      ru:'Бахрейн',               iso2:'BH', num:48,  lat:25.93, lng:50.64 },
+  { en:'Bangladesh',                   ru:'Бангладеш',             iso2:'BD', num:50,  lat:23.68, lng:90.36 },
+  { en:'Barbados',                     ru:'Барбадос',              iso2:'BB', num:52,  lat:13.19, lng:-59.54 },
+  { en:'Belarus',                      ru:'Беларусь',              iso2:'BY', num:112, lat:53.71, lng:27.95 },
+  { en:'Belgium',                      ru:'Бельгия',               iso2:'BE', num:56,  lat:50.50, lng:4.47 },
+  { en:'Belize',                       ru:'Белиз',                 iso2:'BZ', num:84,  lat:17.19, lng:-88.50 },
+  { en:'Benin',                        ru:'Бенин',                 iso2:'BJ', num:204, lat:9.31, lng:2.32 },
+  { en:'Bhutan',                       ru:'Бутан',                 iso2:'BT', num:64,  lat:27.51, lng:90.43 },
+  { en:'Bolivia',                      ru:'Боливия',               iso2:'BO', num:68,  lat:-16.29, lng:-63.59 },
+  { en:'Bosnia and Herzegovina',       ru:'Босния и Герцеговина',  iso2:'BA', num:70,  lat:43.92, lng:17.68 },
+  { en:'Botswana',                     ru:'Ботсвана',              iso2:'BW', num:72,  lat:-22.33, lng:24.68 },
+  { en:'Brazil',                       ru:'Бразилия',              iso2:'BR', num:76,  lat:-14.24, lng:-51.93 },
+  { en:'Brunei',                       ru:'Бруней',                iso2:'BN', num:96,  lat:4.54, lng:114.73 },
+  { en:'Bulgaria',                     ru:'Болгария',              iso2:'BG', num:100, lat:42.73, lng:25.49 },
+  { en:'Burkina Faso',                 ru:'Буркина-Фасо',          iso2:'BF', num:854, lat:12.24, lng:-1.56 },
+  { en:'Burundi',                      ru:'Бурунди',               iso2:'BI', num:108, lat:-3.37, lng:29.92 },
+  { en:'Cambodia',                     ru:'Камбоджа',              iso2:'KH', num:116, lat:12.57, lng:104.99 },
+  { en:'Cameroon',                     ru:'Камерун',               iso2:'CM', num:120, lat:7.37, lng:12.35 },
+  { en:'Canada',                       ru:'Канада',                iso2:'CA', num:124, lat:56.13, lng:-106.35 },
+  { en:'Cape Verde',                   ru:'Кабо-Верде',            iso2:'CV', num:132, lat:16.54, lng:-23.04 },
+  { en:'Central African Republic',     ru:'ЦАР',                   iso2:'CF', num:140, lat:6.61, lng:20.94 },
+  { en:'Chad',                         ru:'Чад',                   iso2:'TD', num:148, lat:15.45, lng:18.73 },
+  { en:'Chile',                        ru:'Чили',                  iso2:'CL', num:152, lat:-35.68, lng:-71.54 },
+  { en:'China',                        ru:'Китай',                 iso2:'CN', num:156, lat:35.86, lng:104.20 },
+  { en:'Colombia',                     ru:'Колумбия',              iso2:'CO', num:170, lat:4.57, lng:-74.30 },
+  { en:'Comoros',                      ru:'Коморы',                iso2:'KM', num:174, lat:-11.65, lng:43.33 },
+  { en:'Congo',                        ru:'Республика Конго',      iso2:'CG', num:178, lat:-0.23, lng:15.83 },
+  { en:'Costa Rica',                   ru:'Коста-Рика',            iso2:'CR', num:188, lat:9.75, lng:-83.75 },
+  { en:'Croatia',                      ru:'Хорватия',              iso2:'HR', num:191, lat:45.10, lng:15.20 },
+  { en:'Cuba',                         ru:'Куба',                  iso2:'CU', num:192, lat:21.52, lng:-77.78 },
+  { en:'Cyprus',                       ru:'Кипр',                  iso2:'CY', num:196, lat:35.13, lng:33.43 },
+  { en:'Czech Republic',               ru:'Чехия',                 iso2:'CZ', num:203, lat:49.82, lng:15.47 },
+  { en:'Democratic Republic of Congo', ru:'ДР Конго',              iso2:'CD', num:180, lat:-4.04, lng:21.76 },
+  { en:'Denmark',                      ru:'Дания',                 iso2:'DK', num:208, lat:56.26, lng:9.50 },
+  { en:'Djibouti',                     ru:'Джибути',               iso2:'DJ', num:262, lat:11.83, lng:42.59 },
+  { en:'Dominica',                     ru:'Доминика',              iso2:'DM', num:212, lat:15.41, lng:-61.37 },
+  { en:'Dominican Republic',           ru:'Доминиканская Республика', iso2:'DO', num:214, lat:18.74, lng:-70.16 },
+  { en:'East Timor',                   ru:'Восточный Тимор',       iso2:'TL', num:626, lat:-8.87, lng:125.73 },
+  { en:'Ecuador',                      ru:'Эквадор',               iso2:'EC', num:218, lat:-1.83, lng:-78.18 },
+  { en:'Egypt',                        ru:'Египет',                iso2:'EG', num:818, lat:26.82, lng:30.80 },
+  { en:'El Salvador',                  ru:'Сальвадор',             iso2:'SV', num:222, lat:13.79, lng:-88.90 },
+  { en:'Equatorial Guinea',            ru:'Экваториальная Гвинея', iso2:'GQ', num:226, lat:1.65, lng:10.27 },
+  { en:'Eritrea',                      ru:'Эритрея',               iso2:'ER', num:232, lat:15.18, lng:39.78 },
+  { en:'Estonia',                      ru:'Эстония',               iso2:'EE', num:233, lat:58.60, lng:25.01 },
+  { en:'Eswatini',                     ru:'Эсватини',              iso2:'SZ', num:748, lat:-26.52, lng:31.47 },
+  { en:'Ethiopia',                     ru:'Эфиопия',               iso2:'ET', num:231, lat:9.15, lng:40.49 },
+  { en:'Fiji',                         ru:'Фиджи',                 iso2:'FJ', num:242, lat:-16.58, lng:179.41 },
+  { en:'Finland',                      ru:'Финляндия',             iso2:'FI', num:246, lat:61.92, lng:25.75 },
+  { en:'France',                       ru:'Франция',               iso2:'FR', num:250, lat:46.23, lng:2.21 },
+  { en:'Gabon',                        ru:'Габон',                 iso2:'GA', num:266, lat:-0.80, lng:11.61 },
+  { en:'Gambia',                       ru:'Гамбия',                iso2:'GM', num:270, lat:13.44, lng:-15.31 },
+  { en:'Georgia',                      ru:'Грузия',                iso2:'GE', num:268, lat:42.32, lng:43.36 },
+  { en:'Germany',                      ru:'Германия',              iso2:'DE', num:276, lat:51.17, lng:10.45 },
+  { en:'Ghana',                        ru:'Гана',                  iso2:'GH', num:288, lat:7.95, lng:-1.02 },
+  { en:'Greece',                       ru:'Греция',                iso2:'GR', num:300, lat:39.07, lng:21.82 },
+  { en:'Grenada',                      ru:'Гренада',               iso2:'GD', num:308, lat:12.26, lng:-61.60 },
+  { en:'Guatemala',                    ru:'Гватемала',             iso2:'GT', num:320, lat:15.78, lng:-90.23 },
+  { en:'Guinea',                       ru:'Гвинея',                iso2:'GN', num:324, lat:9.95, lng:-9.70 },
+  { en:'Guinea-Bissau',                ru:'Гвинея-Бисау',          iso2:'GW', num:624, lat:11.80, lng:-15.18 },
+  { en:'Guyana',                       ru:'Гайана',                iso2:'GY', num:328, lat:4.86, lng:-58.93 },
+  { en:'Haiti',                        ru:'Гаити',                 iso2:'HT', num:332, lat:18.97, lng:-72.29 },
+  { en:'Honduras',                     ru:'Гондурас',              iso2:'HN', num:340, lat:15.20, lng:-86.24 },
+  { en:'Hong Kong',                    ru:'Гонконг',               iso2:'HK', num:344, lat:22.32, lng:114.17 },
+  { en:'Hungary',                      ru:'Венгрия',               iso2:'HU', num:348, lat:47.16, lng:19.50 },
+  { en:'Iceland',                      ru:'Исландия',              iso2:'IS', num:352, lat:64.96, lng:-19.02 },
+  { en:'India',                        ru:'Индия',                 iso2:'IN', num:356, lat:20.59, lng:78.96 },
+  { en:'Indonesia',                    ru:'Индонезия',             iso2:'ID', num:360, lat:-0.79, lng:113.92 },
+  { en:'Iran',                         ru:'Иран',                  iso2:'IR', num:364, lat:32.43, lng:53.69 },
+  { en:'Iraq',                         ru:'Ирак',                  iso2:'IQ', num:368, lat:33.22, lng:43.68 },
+  { en:'Ireland',                      ru:'Ирландия',              iso2:'IE', num:372, lat:53.41, lng:-8.24 },
+  { en:'Israel',                       ru:'Израиль',               iso2:'IL', num:376, lat:31.05, lng:34.85 },
+  { en:'Italy',                        ru:'Италия',                iso2:'IT', num:380, lat:41.87, lng:12.57 },
+  { en:'Ivory Coast',                  ru:"Кот-д'Ивуар",           iso2:'CI', num:384, lat:7.54, lng:-5.55 },
+  { en:'Jamaica',                      ru:'Ямайка',                iso2:'JM', num:388, lat:18.11, lng:-77.30 },
+  { en:'Japan',                        ru:'Япония',                iso2:'JP', num:392, lat:36.20, lng:138.25 },
+  { en:'Jordan',                       ru:'Иордания',              iso2:'JO', num:400, lat:30.59, lng:36.24 },
+  { en:'Kazakhstan',                   ru:'Казахстан',             iso2:'KZ', num:398, lat:48.02, lng:66.92 },
+  { en:'Kenya',                        ru:'Кения',                 iso2:'KE', num:404, lat:-0.02, lng:37.91 },
+  { en:'Kiribati',                     ru:'Кирибати',              iso2:'KI', num:296, lat:-3.37, lng:-168.73 },
+  { en:'Kosovo',                       ru:'Косово',                iso2:'XK', num:0,   lat:42.60, lng:20.90 },
+  { en:'Kuwait',                       ru:'Кувейт',                iso2:'KW', num:414, lat:29.31, lng:47.48 },
+  { en:'Kyrgyzstan',                   ru:'Киргизия',              iso2:'KG', num:417, lat:41.20, lng:74.77 },
+  { en:'Laos',                         ru:'Лаос',                  iso2:'LA', num:418, lat:19.86, lng:102.50 },
+  { en:'Latvia',                       ru:'Латвия',                iso2:'LV', num:428, lat:56.88, lng:24.60 },
+  { en:'Lebanon',                      ru:'Ливан',                 iso2:'LB', num:422, lat:33.85, lng:35.86 },
+  { en:'Lesotho',                      ru:'Лесото',                iso2:'LS', num:426, lat:-29.61, lng:28.23 },
+  { en:'Liberia',                      ru:'Либерия',               iso2:'LR', num:430, lat:6.43, lng:-9.43 },
+  { en:'Libya',                        ru:'Ливия',                 iso2:'LY', num:434, lat:26.34, lng:17.23 },
+  { en:'Liechtenstein',                ru:'Лихтенштейн',           iso2:'LI', num:438, lat:47.17, lng:9.56 },
+  { en:'Lithuania',                    ru:'Литва',                 iso2:'LT', num:440, lat:55.17, lng:23.88 },
+  { en:'Luxembourg',                   ru:'Люксембург',            iso2:'LU', num:442, lat:49.82, lng:6.13 },
+  { en:'Madagascar',                   ru:'Мадагаскар',            iso2:'MG', num:450, lat:-18.77, lng:46.87 },
+  { en:'Malawi',                       ru:'Малави',                iso2:'MW', num:454, lat:-13.25, lng:34.30 },
+  { en:'Malaysia',                     ru:'Малайзия',              iso2:'MY', num:458, lat:4.21, lng:101.98 },
+  { en:'Maldives',                     ru:'Мальдивы',              iso2:'MV', num:462, lat:3.20, lng:73.22 },
+  { en:'Mali',                         ru:'Мали',                  iso2:'ML', num:466, lat:17.57, lng:-3.99 },
+  { en:'Malta',                        ru:'Мальта',                iso2:'MT', num:470, lat:35.94, lng:14.38 },
+  { en:'Marshall Islands',             ru:'Маршалловы Острова',    iso2:'MH', num:584, lat:7.13, lng:171.18 },
+  { en:'Mauritania',                   ru:'Мавритания',            iso2:'MR', num:478, lat:21.01, lng:-10.94 },
+  { en:'Mauritius',                    ru:'Маврикий',              iso2:'MU', num:480, lat:-20.35, lng:57.55 },
+  { en:'Mexico',                       ru:'Мексика',               iso2:'MX', num:484, lat:23.63, lng:-102.55 },
+  { en:'Micronesia',                   ru:'Микронезия',            iso2:'FM', num:583, lat:7.43, lng:150.55 },
+  { en:'Moldova',                      ru:'Молдова',               iso2:'MD', num:498, lat:47.41, lng:28.37 },
+  { en:'Monaco',                       ru:'Монако',                iso2:'MC', num:492, lat:43.75, lng:7.41 },
+  { en:'Mongolia',                     ru:'Монголия',              iso2:'MN', num:496, lat:46.86, lng:103.85 },
+  { en:'Montenegro',                   ru:'Черногория',            iso2:'ME', num:499, lat:42.71, lng:19.37 },
+  { en:'Morocco',                      ru:'Марокко',               iso2:'MA', num:504, lat:31.79, lng:-7.09 },
+  { en:'Mozambique',                   ru:'Мозамбик',              iso2:'MZ', num:508, lat:-18.67, lng:35.53 },
+  { en:'Myanmar',                      ru:'Мьянма',                iso2:'MM', num:104, lat:21.91, lng:95.96 },
+  { en:'Namibia',                      ru:'Намибия',               iso2:'NA', num:516, lat:-22.96, lng:18.49 },
+  { en:'Nauru',                        ru:'Науру',                 iso2:'NR', num:520, lat:-0.52, lng:166.93 },
+  { en:'Nepal',                        ru:'Непал',                 iso2:'NP', num:524, lat:28.39, lng:84.12 },
+  { en:'Netherlands',                  ru:'Нидерланды',            iso2:'NL', num:528, lat:52.13, lng:5.29 },
+  { en:'New Zealand',                  ru:'Новая Зеландия',        iso2:'NZ', num:554, lat:-40.90, lng:174.89 },
+  { en:'Nicaragua',                    ru:'Никарагуа',             iso2:'NI', num:558, lat:12.87, lng:-85.21 },
+  { en:'Niger',                        ru:'Нигер',                 iso2:'NE', num:562, lat:17.61, lng:8.08 },
+  { en:'Nigeria',                      ru:'Нигерия',               iso2:'NG', num:566, lat:9.08, lng:8.68 },
+  { en:'North Korea',                  ru:'Северная Корея',        iso2:'KP', num:408, lat:40.34, lng:127.51 },
+  { en:'North Macedonia',              ru:'Северная Македония',    iso2:'MK', num:807, lat:41.61, lng:21.75 },
+  { en:'Norway',                       ru:'Норвегия',              iso2:'NO', num:578, lat:60.47, lng:8.47 },
+  { en:'Oman',                         ru:'Оман',                  iso2:'OM', num:512, lat:21.51, lng:55.92 },
+  { en:'Pakistan',                     ru:'Пакистан',              iso2:'PK', num:586, lat:30.38, lng:69.35 },
+  { en:'Palau',                        ru:'Палау',                 iso2:'PW', num:585, lat:7.51, lng:134.58 },
+  { en:'Palestine',                    ru:'Палестина',             iso2:'PS', num:275, lat:31.95, lng:35.23 },
+  { en:'Panama',                       ru:'Панама',                iso2:'PA', num:591, lat:8.54, lng:-80.78 },
+  { en:'Papua New Guinea',             ru:'Папуа — Новая Гвинея',  iso2:'PG', num:598, lat:-6.31, lng:143.96 },
+  { en:'Paraguay',                     ru:'Парагвай',              iso2:'PY', num:600, lat:-23.44, lng:-58.44 },
+  { en:'Peru',                         ru:'Перу',                  iso2:'PE', num:604, lat:-9.19, lng:-75.02 },
+  { en:'Philippines',                  ru:'Филиппины',             iso2:'PH', num:608, lat:12.88, lng:121.77 },
+  { en:'Poland',                       ru:'Польша',                iso2:'PL', num:616, lat:51.92, lng:19.15 },
+  { en:'Portugal',                     ru:'Португалия',            iso2:'PT', num:620, lat:39.40, lng:-8.22 },
+  { en:'Qatar',                        ru:'Катар',                 iso2:'QA', num:634, lat:25.35, lng:51.18 },
+  { en:'Romania',                      ru:'Румыния',               iso2:'RO', num:642, lat:45.94, lng:24.97 },
+  { en:'Russia',                       ru:'Россия',                iso2:'RU', num:643, lat:61.52, lng:105.32 },
+  { en:'Rwanda',                       ru:'Руанда',                iso2:'RW', num:646, lat:-1.94, lng:29.87 },
+  { en:'Saint Kitts and Nevis',        ru:'Сент-Китс и Невис',     iso2:'KN', num:659, lat:17.36, lng:-62.78 },
+  { en:'Saint Lucia',                  ru:'Сент-Люсия',            iso2:'LC', num:662, lat:13.91, lng:-60.98 },
+  { en:'Saint Vincent and the Grenadines', ru:'Сент-Винсент и Гренадины', iso2:'VC', num:670, lat:12.98, lng:-61.29 },
+  { en:'Samoa',                        ru:'Самоа',                 iso2:'WS', num:882, lat:-13.76, lng:-172.10 },
+  { en:'San Marino',                   ru:'Сан-Марино',            iso2:'SM', num:674, lat:43.94, lng:12.46 },
+  { en:'Sao Tome and Principe',        ru:'Сан-Томе и Принсипи',   iso2:'ST', num:678, lat:0.19, lng:6.61 },
+  { en:'Saudi Arabia',                 ru:'Саудовская Аравия',     iso2:'SA', num:682, lat:23.89, lng:45.08 },
+  { en:'Senegal',                      ru:'Сенегал',               iso2:'SN', num:686, lat:14.50, lng:-14.45 },
+  { en:'Serbia',                       ru:'Сербия',                iso2:'RS', num:688, lat:44.02, lng:21.01 },
+  { en:'Seychelles',                   ru:'Сейшелы',               iso2:'SC', num:690, lat:-4.68, lng:55.49 },
+  { en:'Sierra Leone',                 ru:'Сьерра-Леоне',          iso2:'SL', num:694, lat:8.46, lng:-11.78 },
+  { en:'Singapore',                    ru:'Сингапур',              iso2:'SG', num:702, lat:1.35, lng:103.82 },
+  { en:'Slovakia',                     ru:'Словакия',              iso2:'SK', num:703, lat:48.67, lng:19.70 },
+  { en:'Slovenia',                     ru:'Словения',              iso2:'SI', num:705, lat:46.15, lng:14.99 },
+  { en:'Solomon Islands',              ru:'Соломоновы Острова',    iso2:'SB', num:90,  lat:-9.65, lng:160.16 },
+  { en:'Somalia',                      ru:'Сомали',                iso2:'SO', num:706, lat:5.15, lng:46.20 },
+  { en:'South Africa',                 ru:'ЮАР',                   iso2:'ZA', num:710, lat:-30.56, lng:22.94 },
+  { en:'South Korea',                  ru:'Южная Корея',           iso2:'KR', num:410, lat:35.91, lng:127.77 },
+  { en:'South Sudan',                  ru:'Южный Судан',           iso2:'SS', num:728, lat:6.88, lng:31.31 },
+  { en:'Spain',                        ru:'Испания',               iso2:'ES', num:724, lat:40.46, lng:-3.75 },
+  { en:'Sri Lanka',                    ru:'Шри-Ланка',             iso2:'LK', num:144, lat:7.87, lng:80.77 },
+  { en:'Sudan',                        ru:'Судан',                 iso2:'SD', num:729, lat:12.86, lng:30.22 },
+  { en:'Suriname',                     ru:'Суринам',               iso2:'SR', num:740, lat:3.92, lng:-56.03 },
+  { en:'Sweden',                       ru:'Швеция',                iso2:'SE', num:752, lat:60.13, lng:18.64 },
+  { en:'Switzerland',                  ru:'Швейцария',             iso2:'CH', num:756, lat:46.82, lng:8.23 },
+  { en:'Syria',                        ru:'Сирия',                 iso2:'SY', num:760, lat:34.80, lng:38.99 },
+  { en:'Taiwan',                       ru:'Тайвань',               iso2:'TW', num:158, lat:23.70, lng:120.96 },
+  { en:'Tajikistan',                   ru:'Таджикистан',           iso2:'TJ', num:762, lat:38.86, lng:71.28 },
+  { en:'Tanzania',                     ru:'Танзания',              iso2:'TZ', num:834, lat:-6.37, lng:34.89 },
+  { en:'Thailand',                     ru:'Таиланд',               iso2:'TH', num:764, lat:15.87, lng:100.99 },
+  { en:'Togo',                         ru:'Того',                  iso2:'TG', num:768, lat:8.62, lng:0.82 },
+  { en:'Tonga',                        ru:'Тонга',                 iso2:'TO', num:776, lat:-21.18, lng:-175.20 },
+  { en:'Trinidad and Tobago',          ru:'Тринидад и Тобаго',     iso2:'TT', num:780, lat:10.69, lng:-61.22 },
+  { en:'Tunisia',                      ru:'Тунис',                 iso2:'TN', num:788, lat:33.89, lng:9.54 },
+  { en:'Turkey',                       ru:'Турция',                iso2:'TR', num:792, lat:38.96, lng:35.24 },
+  { en:'Turkmenistan',                 ru:'Туркменистан',          iso2:'TM', num:795, lat:38.97, lng:59.56 },
+  { en:'Tuvalu',                       ru:'Тувалу',                iso2:'TV', num:798, lat:-7.11, lng:177.65 },
+  { en:'Uganda',                       ru:'Уганда',                iso2:'UG', num:800, lat:1.37, lng:32.29 },
+  { en:'Ukraine',                      ru:'Украина',               iso2:'UA', num:804, lat:48.38, lng:31.17 },
+  { en:'United Arab Emirates',         ru:'ОАЭ',                   iso2:'AE', num:784, lat:23.42, lng:53.85 },
+  { en:'United Kingdom',               ru:'Великобритания',        iso2:'GB', num:826, lat:55.38, lng:-3.44 },
+  { en:'United States',                ru:'США',                   iso2:'US', num:840, lat:37.09, lng:-95.71 },
+  { en:'Uruguay',                      ru:'Уругвай',               iso2:'UY', num:858, lat:-32.52, lng:-55.77 },
+  { en:'Uzbekistan',                   ru:'Узбекистан',            iso2:'UZ', num:860, lat:41.38, lng:64.59 },
+  { en:'Vanuatu',                      ru:'Вануату',               iso2:'VU', num:548, lat:-15.38, lng:166.96 },
+  { en:'Vatican City',                 ru:'Ватикан',               iso2:'VA', num:336, lat:41.90, lng:12.45 },
+  { en:'Venezuela',                    ru:'Венесуэла',             iso2:'VE', num:862, lat:6.42, lng:-66.59 },
+  { en:'Vietnam',                      ru:'Вьетнам',               iso2:'VN', num:704, lat:14.06, lng:108.28 },
+  { en:'Yemen',                        ru:'Йемен',                 iso2:'YE', num:887, lat:15.55, lng:48.52 },
+  { en:'Zambia',                       ru:'Замбия',                iso2:'ZM', num:894, lat:-13.13, lng:27.85 },
+  { en:'Zimbabwe',                     ru:'Зимбабве',              iso2:'ZW', num:716, lat:-19.02, lng:29.15 },
+];
+
+function flagEmoji(iso2){
+  if(!iso2 || iso2.length !== 2) return '';
+  const cp = c => 127397 + c.charCodeAt(0);
+  return String.fromCodePoint(cp(iso2[0].toUpperCase()), cp(iso2[1].toUpperCase()));
+}
+
+const COUNTRY_BY_EN = Object.fromEntries(ALL_COUNTRIES.map(c => [c.en.toLowerCase(), c]));
+const COUNTRY_BY_RU = Object.fromEntries(ALL_COUNTRIES.map(c => [c.ru.toLowerCase(), c]));
+const COUNTRY_BY_ISO2 = Object.fromEntries(ALL_COUNTRIES.map(c => [c.iso2, c]));
+function findCountry(name){
+  if(!name) return null;
+  const k = name.toLowerCase();
+  return COUNTRY_BY_EN[k] || COUNTRY_BY_RU[k] || null;
+}
+
 const REGION_RU = {
   'AFRO':'Африка','AMRO':'Америка','EMRO':'Вост. Средиземноморье',
   'EURO':'Европа','SEARO':'Юго-Вост. Азия','WPRO':'Зап. Пацифика',
@@ -147,7 +365,18 @@ const REGION_RU = {
   'Europe':'Европа','South-East Asia':'Юго-Вост. Азия','Western Pacific':'Зап. Пацифика',
   'UNKNOWN':'Неизвестно',
 };
-function countryName(n){ return LANG==='ru' ? (COUNTRY_RU[n]||n) : n; }
+function countryName(n){
+  if(!n) return n;
+  if(LANG !== 'ru') return n;
+  if(COUNTRY_RU[n]) return COUNTRY_RU[n];
+  const c = findCountry(n);
+  return c ? c.ru : n;
+}
+function countryISO2(n){
+  if(!n) return null;
+  const c = findCountry(n);
+  return c ? c.iso2 : null;
+}
 function regionName(r){  return LANG==='ru' ? (REGION_RU[r]||r)  : r; }
 
 /* ── WHO status translation ───────────────────────────────── */
@@ -1322,25 +1551,42 @@ async function boot(){
     toggleCat(btn.dataset.cat);
   });
 
-  // Country search wiring
+  // Country search wiring — full ALL_COUNTRIES list, flags, outbreak count
   const csInput = document.getElementById('countrySearch');
   const csDD    = document.getElementById('countryDropdown');
   if(csInput && csDD){
-    csInput.addEventListener('input', ()=>{
-      const q = csInput.value.toLowerCase().trim();
-      if(!q){ csDD.style.display='none'; return; }
-      const matches = getUniqueCountries().filter(c =>
-        countryName(c).toLowerCase().includes(q) || c.toLowerCase().includes(q)
+    // Count outbreaks per English country name for the right-hand badge
+    const outbreakCountFor = (en) => OUTBREAKS.filter(o => {
+      if(o.country === en) return true;
+      const c = findCountry(o.country); return c && c.en === en;
+    }).length;
+
+    const renderDropdown = (q) => {
+      const ql = (q||'').toLowerCase().trim();
+      const matches = ALL_COUNTRIES.filter(c =>
+        !ql
+          ? outbreakCountFor(c.en) > 0  // empty query → show only countries with outbreaks
+          : c.en.toLowerCase().includes(ql) || c.ru.toLowerCase().includes(ql)
       );
-      if(!matches.length){ csDD.style.display='none'; return; }
-      csDD.innerHTML = matches.slice(0,8).map(c=>
-        `<div class="cs-item" data-country="${c}">${countryName(c)}</div>`
-      ).join('');
+      if(!matches.length){
+        csDD.innerHTML = `<div class="cs-empty">${LANG==='ru'?'Ничего не найдено':'No matches'}</div>`;
+        csDD.style.display = 'block';
+        return;
+      }
+      csDD.innerHTML = matches.slice(0, 20).map(c => {
+        const n = outbreakCountFor(c.en);
+        const badge = n > 0
+          ? `<span class="cs-badge">${n}</span>`
+          : `<span class="cs-badge cs-badge--quiet">${LANG==='ru'?'—':'—'}</span>`;
+        return `<div class="cs-item" data-country="${c.en}"><span class="cs-flag">${flagEmoji(c.iso2)}</span><span class="cs-name">${LANG==='ru'?c.ru:c.en}</span>${badge}</div>`;
+      }).join('');
       csDD.style.display = 'block';
       csDD.querySelectorAll('.cs-item').forEach(el=>{
         el.addEventListener('click', ()=> selectCountry(el.dataset.country));
       });
-    });
+    };
+    csInput.addEventListener('focus', ()=> renderDropdown(csInput.value));
+    csInput.addEventListener('input', ()=> renderDropdown(csInput.value));
     csInput.addEventListener('keydown', e=>{
       if(e.key==='Escape'){ selectCountry(null); csInput.blur(); }
     });
