@@ -453,21 +453,33 @@
     0%,100%{ opacity:.16; transform:scale(1); }
     50%    { opacity:.30; transform:scale(1.12); }
   }
-  /* ─── Air-quality layer: soft gradient blob, AQI colour ramp.
-     hazardous=red → unhealthy=orange → moderate=amber → good=green.
-     For air markers we override the severity colour mapping. */
-  .ep-marker.is-air{ --r:52px; --c:#19A463; }
+  /* ─── Air-quality layer: large diffuse cloud over the affected region.
+     Radius scales with AQI severity. Centre dot is hidden — the whole
+     visual IS the data. Soft breathing animation hints at "live, drifting".
+     Colour ramp: hazardous=red → unhealthy=orange → moderate=amber → good=green. */
+  .ep-marker.is-air{ --r:240px; --c:#19A463; }
   .ep-marker.is-air::before{
-    background:radial-gradient(circle, var(--c) 0%, var(--c) 22%, transparent 75%);
-    opacity:.50;
-    animation:none; /* no critical pulse on air blobs */
+    background:radial-gradient(circle,
+      color-mix(in srgb, var(--c) 55%, transparent) 0%,
+      color-mix(in srgb, var(--c) 35%, transparent) 18%,
+      color-mix(in srgb, var(--c) 18%, transparent) 45%,
+      transparent 78%);
+    opacity:1;
+    filter:blur(4px);
+    animation:ep-air-breath 6s ease-in-out infinite;
   }
   .ep-marker.is-air::after{ display:none; }
-  .ep-marker.is-air.crit       { --c:#C92A2A; }  /* AQI > 200 hazardous   */
-  .ep-marker.is-air.alert      { --c:#E8590C; }  /* AQI 150-200 unhealthy */
-  .ep-marker.is-air.warning    { --c:#E4B514; }  /* AQI 100-150 moderate  */
-  .ep-marker.is-air.monitoring { --c:#19A463; }  /* AQI < 100 good        */
-  .ep-marker.is-air.low        { --c:#19A463; }
+  .ep-marker.is-air.crit       { --r:300px; --c:#C92A2A; }  /* AQI > 200 hazardous   */
+  .ep-marker.is-air.alert      { --r:240px; --c:#E8590C; }  /* AQI 150-200 unhealthy */
+  .ep-marker.is-air.warning    { --r:190px; --c:#E4B514; }  /* AQI 100-150 moderate  */
+  .ep-marker.is-air.monitoring { --r:130px; --c:#19A463; }  /* AQI < 100 good        */
+  .ep-marker.is-air.low        { --r:130px; --c:#19A463; }
+  @keyframes ep-air-breath{
+    0%, 100% { opacity:0.95; transform:scale(1); }
+    50%      { opacity:0.75; transform:scale(1.08); }
+  }
+  /* Selected air marker — slight saturation boost, no resize */
+  .ep-marker.is-air.is-sel::before{ opacity:1; filter:blur(2px) saturate(1.15); }
 
   /* floating UI on stage */
   .stage-corner{
@@ -554,15 +566,14 @@
   }
   .clock b{ color:var(--ink); font-weight:800; letter-spacing:-0.005em; margin-left:4px;}
 
-  /* === Popup card === */
+  /* === Popup card (compact tooltip — full detail lives in right panel) === */
   .popup{
     position:absolute;
-    width:320px;
-    background:var(--glass-bg);
-    backdrop-filter:blur(30px) saturate(180%);
-    border:1px solid var(--glass-bd);
-    border-radius:var(--r-lg);
-    box-shadow:var(--glass-shadow);
+    width:228px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 12px 32px -12px rgba(20,18,14,0.22);
     pointer-events:auto;
     transform:translate(-50%, -110%);
     z-index:8;
@@ -570,9 +581,26 @@
     visibility:hidden;
     opacity:0;
     pointer-events:none;
-    transition:opacity .2s ease, visibility .2s;
+    transition:opacity .15s ease, visibility .15s, transform .15s ease;
   }
-  .popup.is-on{ visibility:visible; opacity:1; pointer-events:auto; }
+  .popup.is-on{ visibility:visible; opacity:1; pointer-events:auto; transform:translate(-50%, -115%); }
+  /* Tail arrow pointing to the marker */
+  .popup::after{
+    content:''; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%) rotate(45deg);
+    width:12px; height:12px; background:#fff; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  /* Hide verbose sections — right panel handles full detail */
+  .popup .popup-id,
+  .popup .popup-tags,
+  .popup .popup-survey,
+  .popup .popup-cta{ display:none; }
+  .popup .popup-body{ padding:12px 14px 4px; }
+  .popup .popup-name{ font-size:17px !important; line-height:1.15; margin-bottom:4px; letter-spacing:-0.02em !important; }
+  .popup .popup-name br{ display:none; }
+  .popup .popup-loc{ font-size:11px !important; }
+  .popup .popup-metrics{ padding:12px 14px !important; margin-top:8px; gap:14px; border-top:1px solid var(--line); }
+  .popup .popup-metrics > div .v{ font-size:18px !important; }
+  .popup .popup-metrics > div .k{ font-size:9px !important; }
   .popup-bar{ height:4px; background:var(--accent-deep); }
   .popup-body{ padding:14px 16px 0; }
   .popup-id{ font-size:9.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }

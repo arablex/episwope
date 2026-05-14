@@ -990,10 +990,10 @@ function addOutbreakMarkers(){
     const sevClass = o.sev === 'critical' ? 'crit' : o.sev;
     const isAir = (o.type === 'air');
     el.className = `ep-marker ${sevClass}${isAir ? ' is-air' : ''}`;
-    // halo radius scales with case load (log) — clamp to a sane range
+    // halo radius — air clouds get their size from CSS (.is-air.<sev>),
+    // outbreak markers scale with case load (log).
     if(isAir){
-      // air uses AQI severity directly, fixed bigger soft area
-      el.style.setProperty('--r', '52px');
+      // Do not set --r inline; let CSS pick by severity class
     } else {
       const cases = Number(o.cases) || 0;
       // 22px base → 56px at 1M+ cases
