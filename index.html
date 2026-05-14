@@ -395,11 +395,11 @@
     border-radius:var(--r-xl);
     overflow:hidden;
   }
-  #globe{ width:100%; height:100%; display:block; background:#0F0E0C; }
+  #globe{ width:100%; height:100%; display:block; background:#F4F2EE; border-radius:18px; overflow:hidden; }
   #globe .mapboxgl-canvas{ outline:none; }
-  #globe .mapboxgl-ctrl-attrib{ background:rgba(15,14,12,0.7); }
-  #globe .mapboxgl-ctrl-attrib a{ color:rgba(255,255,255,0.5); }
-  #globe .mapboxgl-ctrl-logo{ filter:invert(1) opacity(.4); }
+  #globe .mapboxgl-ctrl-attrib{ background:rgba(255,255,255,0.7); }
+  #globe .mapboxgl-ctrl-attrib a{ color:rgba(20,18,14,0.5); }
+  #globe .mapboxgl-ctrl-logo{ opacity:.5; }
   /* Custom marker style (rendered by Mapbox as DOM markers) */
   .ep-marker{
     width:14px; height:14px; border-radius:50%;
@@ -1336,10 +1336,10 @@
       <div class="side-section">
         <div class="side-h">At a glance <span class="count">24 H</span></div>
         <div class="stats-grid">
-          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Active Outbreaks</div><div class="stat-delta">▲ +6 today</div></div>
-          <div class="stat acc s4"><div class="stat-num s4">8,341</div><div class="stat-label">Deaths · 30D</div><div class="stat-delta">▲ +312</div></div>
-          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Critical Alerts</div><div class="stat-delta">▲ +2</div></div>
-          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Countries</div><div class="stat-delta dn">▼ −1</div></div>
+          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Active Outbreaks</div><div class="stat-delta">+6 today</div></div>
+          <div class="stat acc s4"><div class="stat-num s4">8,341</div><div class="stat-label">Deaths · 30D</div><div class="stat-delta">+312</div></div>
+          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Critical Alerts</div><div class="stat-delta">+2</div></div>
+          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Countries</div><div class="stat-delta dn">−1</div></div>
         </div>
       </div>
 
@@ -1355,11 +1355,11 @@
       </div>
 
         <div class="cat-toggles" id="catToggles">
-          <button class="cat-toggle is-active" data-cat="epidemic" style="border-color:#C92A2A18;background:#C92A2A18;color:#C92A2A"><span class="cat-icon">🦠</span>Epidemics</button>
-          <button class="cat-toggle is-active" data-cat="disaster"     style="border-color:#1D6FA418;background:#1D6FA418;color:#1D6FA4"><span class="cat-icon">🌊</span>Disasters</button>
-          <button class="cat-toggle is-active" data-cat="air"          style="border-color:#6B7F3A18;background:#6B7F3A18;color:#6B7F3A"><span class="cat-icon">💨</span>Air</button>
-          <button class="cat-toggle is-active" data-cat="food"         style="border-color:#A0522D18;background:#A0522D18;color:#A0522D"><span class="cat-icon">🍽️</span>Food</button>
-          <button class="cat-toggle is-active" data-cat="humanitarian" style="border-color:#8B5CF618;background:#8B5CF618;color:#8B5CF6"><span class="cat-icon">🏚️</span>Humanitarian</button>
+          <button class="cat-toggle is-active" data-cat="epidemic"     style="border-color:#C92A2A18;background:#C92A2A18;color:#C92A2A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>Epidemics</button>
+          <button class="cat-toggle is-active" data-cat="disaster"     style="border-color:#1D6FA418;background:#1D6FA418;color:#1D6FA4"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>Disasters</button>
+          <button class="cat-toggle is-active" data-cat="air"          style="border-color:#6B7F3A18;background:#6B7F3A18;color:#6B7F3A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>Air</button>
+          <button class="cat-toggle is-active" data-cat="food"         style="border-color:#A0522D18;background:#A0522D18;color:#A0522D"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>Food</button>
+          <button class="cat-toggle is-active" data-cat="humanitarian" style="border-color:#8B5CF618;background:#8B5CF618;color:#8B5CF6"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>Humanitarian</button>
         </div>
       <div class="side-section country-search-wrap">
           <input id="countrySearch" placeholder="Поиск страны или country…" autocomplete="off">
@@ -1495,7 +1495,7 @@
         </div>
         <div id="popCountryLink" style="padding:8px 16px 12px; border-top:1px solid rgba(255,255,255,0.15);">
           <button id="popGoCountry" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font:inherit;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;width:100%;letter-spacing:0.03em;">
-            🌍 View country profile →
+            View country profile →
           </button>
         </div>
       </div>
@@ -1569,10 +1569,10 @@
       <div class="panel-section">
         <div class="lbl">Live metrics <em>last 24h</em></div>
         <div class="metric-grid">
-          <div class="metric"><div class="k">Confirmed</div><div class="v" id="mConf">142</div><div class="delta up">▲ 15.5% · 7d</div></div>
-          <div class="metric"><div class="k">Deaths</div><div class="v clr-s4" id="mDeath">38</div><div class="delta up">▲ 6 · 24h</div></div>
-          <div class="metric"><div class="k">CFR</div><div class="v" id="mCfr">26.8%</div><div class="delta dn">▼ 1.2pt · 7d</div></div>
-          <div class="metric"><div class="k">R<sub>t</sub></div><div class="v" id="mRt">1.84</div><div class="delta up">▲ 0.21</div></div>
+          <div class="metric"><div class="k">Confirmed</div><div class="v" id="mConf">142</div><div class="delta up">+15.5% · 7d</div></div>
+          <div class="metric"><div class="k">Deaths</div><div class="v clr-s4" id="mDeath">38</div><div class="delta up">+6 · 24h</div></div>
+          <div class="metric"><div class="k">CFR</div><div class="v" id="mCfr">26.8%</div><div class="delta dn">−1.2pt · 7d</div></div>
+          <div class="metric"><div class="k">R<sub>t</sub></div><div class="v" id="mRt">1.84</div><div class="delta up">+0.21</div></div>
         </div>
       </div>
 
@@ -1598,7 +1598,7 @@
               <div class="spark-big" id="sparkBig">142</div>
               <div class="spark-cap">Cumulative confirmed</div>
             </div>
-            <span class="spark-trend" id="sparkTrend">▲ 7-day +24</span>
+            <span class="spark-trend" id="sparkTrend">+24 · 7d</span>
           </div>
           <div class="spark" id="spark"></div>
         </div>
@@ -1629,7 +1629,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Export
           </button>
-          <button class="btn ghost" id="watchBtn" style="grid-column:1/-1">☆ Watch region</button>
+          <button class="btn ghost" id="watchBtn" style="grid-column:1/-1">Watch region</button>
         </div>
       </div>
 
@@ -1640,7 +1640,7 @@
 
       <!-- Email subscribe -->
       <div class="sub-wrap">
-        <div class="sub-label">🔔 Alert notifications</div>
+        <div class="sub-label">Alert notifications</div>
         <form id="subForm" class="sub-form" data-netlify="true" name="episwope-subscribe" method="POST" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="episwope-subscribe">
           <input name="bot-field" style="display:none" tabindex="-1" autocomplete="off">
@@ -1653,7 +1653,7 @@
             Critical outbreak alerts only · No spam
           </div>
         </form>
-        <div class="sub-ok" id="subOk">✓ Subscribed! We'll notify you about critical outbreaks.</div>
+        <div class="sub-ok" id="subOk">Subscribed. We'll notify you about critical outbreaks.</div>
       </div>
     </div>
   </aside>

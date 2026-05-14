@@ -599,7 +599,7 @@
   .sev-bar{ display:flex; gap:2px; height:8px; border-radius:4px; overflow:hidden; margin-bottom:6px; }
   .sev-bar i{ flex:1; }
   .sev-pos{ height:3px; margin-bottom:3px; position:relative; }
-  .sev-pos::before{ content:'▲'; position:absolute; font-size:7px; color:var(--ink); transform:translateX(-50%); }
+  .sev-pos::before{ content:''; position:absolute; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:5px solid var(--ink); transform:translateX(-50%); }
   .sev-key{ display:flex; justify-content:space-between; font-size:8px; color:var(--muted-2); }
 
   .spark-wrap{ background:rgba(22,21,19,0.03); border-radius:var(--r-sm); padding:10px; border:1px solid var(--line); }
@@ -1011,10 +1011,10 @@
       <div class="side-section">
         <div class="side-h">Обзор <span class="count">24 ч</span></div>
         <div class="stats-grid">
-          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Активных вспышек</div><div class="stat-delta">▲ +6 сегодня</div></div>
-          <div class="stat acc s4"><div class="stat-num s4">8 341</div><div class="stat-label">Смертей · 30 дн.</div><div class="stat-delta">▲ +312</div></div>
-          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Критических алертов</div><div class="stat-delta">▲ +2</div></div>
-          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Стран</div><div class="stat-delta dn">▼ −1</div></div>
+          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Активных вспышек</div><div class="stat-delta">+6 сегодня</div></div>
+          <div class="stat acc s4"><div class="stat-num s4">8 341</div><div class="stat-label">Смертей · 30 дн.</div><div class="stat-delta">+312</div></div>
+          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Критических алертов</div><div class="stat-delta">+2</div></div>
+          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Стран</div><div class="stat-delta dn">−1</div></div>
         </div>
       </div>
 
@@ -1030,11 +1030,11 @@
       </div>
 
         <div class="cat-toggles" id="catToggles">
-          <button class="cat-toggle is-active" data-cat="epidemic"     style="border-color:#C92A2A18;background:#C92A2A18;color:#C92A2A"><span class="cat-icon">🦠</span>Эпидемии</button>
-          <button class="cat-toggle is-active" data-cat="disaster"     style="border-color:#1D6FA418;background:#1D6FA418;color:#1D6FA4"><span class="cat-icon">🌊</span>Катастрофы</button>
-          <button class="cat-toggle is-active" data-cat="air"          style="border-color:#6B7F3A18;background:#6B7F3A18;color:#6B7F3A"><span class="cat-icon">💨</span>Воздух</button>
-          <button class="cat-toggle is-active" data-cat="food"         style="border-color:#A0522D18;background:#A0522D18;color:#A0522D"><span class="cat-icon">🍽️</span>Еда</button>
-          <button class="cat-toggle is-active" data-cat="humanitarian" style="border-color:#8B5CF618;background:#8B5CF618;color:#8B5CF6"><span class="cat-icon">🏚️</span>Гуманитар.</button>
+          <button class="cat-toggle is-active" data-cat="epidemic"     style="border-color:#C92A2A18;background:#C92A2A18;color:#C92A2A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>Эпидемии</button>
+          <button class="cat-toggle is-active" data-cat="disaster"     style="border-color:#1D6FA418;background:#1D6FA418;color:#1D6FA4"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>Катастрофы</button>
+          <button class="cat-toggle is-active" data-cat="air"          style="border-color:#6B7F3A18;background:#6B7F3A18;color:#6B7F3A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>Воздух</button>
+          <button class="cat-toggle is-active" data-cat="food"         style="border-color:#A0522D18;background:#A0522D18;color:#A0522D"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>Еда</button>
+          <button class="cat-toggle is-active" data-cat="humanitarian" style="border-color:#8B5CF618;background:#8B5CF618;color:#8B5CF6"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>Гуманитар.</button>
         </div>
       <div class="side-section country-search-wrap">
           <input id="countrySearch" placeholder="Поиск по стране…" autocomplete="off">
@@ -1175,7 +1175,7 @@
         </div>
         <div id="popCountryLink" style="padding:8px 16px 12px; border-top:1px solid rgba(255,255,255,0.15);">
           <button id="popGoCountry" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font:inherit;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;width:100%;letter-spacing:0.03em;">
-            🌍 Профиль страны →
+            Профиль страны →
           </button>
         </div>
       </div>
@@ -1249,10 +1249,10 @@
       <div class="panel-section">
         <div class="lbl">Метрики <em>последние 24 ч</em></div>
         <div class="metric-grid">
-          <div class="metric"><div class="k">Подтверждено</div><div class="v" id="mConf">142</div><div class="delta up">▲ 15.5% · 7 дн.</div></div>
-          <div class="metric"><div class="k">Смертей</div><div class="v clr-s4" id="mDeath">38</div><div class="delta up">▲ 6 · 24ч</div></div>
-          <div class="metric"><div class="k">CFR</div><div class="v" id="mCfr">26.8%</div><div class="delta dn">▼ 1.2pt · 7 дн.</div></div>
-          <div class="metric"><div class="k">R<sub>t</sub></div><div class="v" id="mRt">1.84</div><div class="delta up">▲ 0.21</div></div>
+          <div class="metric"><div class="k">Подтверждено</div><div class="v" id="mConf">142</div><div class="delta up">+15.5% · 7 дн.</div></div>
+          <div class="metric"><div class="k">Смертей</div><div class="v clr-s4" id="mDeath">38</div><div class="delta up">+6 · 24ч</div></div>
+          <div class="metric"><div class="k">CFR</div><div class="v" id="mCfr">26.8%</div><div class="delta dn">−1.2pt · 7 дн.</div></div>
+          <div class="metric"><div class="k">R<sub>t</sub></div><div class="v" id="mRt">1.84</div><div class="delta up">+0.21</div></div>
         </div>
       </div>
 
@@ -1278,7 +1278,7 @@
               <div class="spark-big" id="sparkBig">142</div>
               <div class="spark-cap">Всего подтверждено</div>
             </div>
-            <span class="spark-trend" id="sparkTrend">▲ 7 дн. +24</span>
+            <span class="spark-trend" id="sparkTrend">+24 · 7 дн.</span>
           </div>
           <div class="spark" id="spark"></div>
         </div>
@@ -1309,7 +1309,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Экспорт
           </button>
-          <button class="btn ghost" id="watchBtn" style="width:100%">☆ Следить за регионом</button>
+          <button class="btn ghost" id="watchBtn" style="width:100%">Следить за регионом</button>
         </div>
       </div>
 
@@ -1320,7 +1320,7 @@
 
       <!-- Email subscribe -->
       <div class="sub-wrap">
-        <div class="sub-label">🔔 Оповещения о вспышках</div>
+        <div class="sub-label">Оповещения о вспышках</div>
         <form id="subForm" class="sub-form" data-netlify="true" name="episwope-subscribe-ru" method="POST" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="episwope-subscribe-ru">
           <input name="bot-field" style="display:none" tabindex="-1" autocomplete="off">
@@ -1333,7 +1333,7 @@
             Только критические алерты · Без спама
           </div>
         </form>
-        <div class="sub-ok" id="subOk">✓ Готово! Пришлём уведомление при новых критических вспышках.</div>
+        <div class="sub-ok" id="subOk">Готово. Пришлём уведомление при новых критических вспышках.</div>
       </div>
     </div>
   </aside>

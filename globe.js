@@ -20,23 +20,23 @@ const STRINGS = {
     sevLabel:{ monitoring:'Monitor', low:'Low', warning:'Warning', alert:'Alert', critical:'Critical', catastrophic:'Catastrophic' },
     incubation:'Incubation',
     transmission:'Transmission',
-    vaccLicensed:'✓ Vaccine licensed',
-    vaccTrial:'⚗ In trial',
-    vaccNone:'✗ No vaccine',
+    vaccLicensed:'Vaccine licensed',
+    vaccTrial:'In trial',
+    vaccNone:'No vaccine',
     active:'active',
     pages:'pages',
     noEvents:'No events logged in the last 24h.',
     liveInjected:'Injected {n} live events',
     liveUnavailable:'Live data unavailable:',
     travelAdvisory: 'Travel Advisory',
-    watchBtn: '☆ Watch region',
-    watchedBtn: '★ Watching',
+    watchBtn: 'Watch region',
+    watchedBtn: 'Watching',
     otherThreats: 'Other threats in',
     trendLabel: 'Trend (14d)',
     riskTitle:'How dangerous is this for you?',
-    riskTourist:'✈ Traveler to region',
-    riskResident:'🏠 Local resident',
-    riskHealthcare:'🏥 Healthcare worker',
+    riskTourist:'Traveler to region',
+    riskResident:'Local resident',
+    riskHealthcare:'Healthcare worker',
     riskLow:'Low risk',
     riskMedium:'Moderate',
     riskHigh:'High risk',
@@ -56,23 +56,23 @@ const STRINGS = {
     sevLabel:{ monitoring:'Монит.', low:'Низкий', warning:'Внимание', alert:'Алерт', critical:'Критич.', catastrophic:'Катастрофа' },
     incubation:'Инкубация',
     transmission:'Передача',
-    vaccLicensed:'✓ Вакцина одобрена',
-    vaccTrial:'⚗ В испытании',
-    vaccNone:'✗ Вакцины нет',
+    vaccLicensed:'Вакцина одобрена',
+    vaccTrial:'В испытании',
+    vaccNone:'Вакцины нет',
     active:'активно',
     pages:'стр.',
     noEvents:'Событий за последние 24ч не зафиксировано.',
     liveInjected:'Загружено {n} событий',
     liveUnavailable:'Данные недоступны:',
     travelAdvisory: 'Рекомендации для путешественников',
-    watchBtn: '☆ Следить за регионом',
-    watchedBtn: '★ Слежу',
+    watchBtn: 'Следить за регионом',
+    watchedBtn: 'Слежу',
     otherThreats: 'Другие угрозы в',
     trendLabel: 'Динамика (14д)',
     riskTitle:'Насколько это опасно для вас?',
-    riskTourist:'✈ Турист в регионе',
-    riskResident:'🏠 Местный житель',
-    riskHealthcare:'🏥 Медработник',
+    riskTourist:'Турист в регионе',
+    riskResident:'Местный житель',
+    riskHealthcare:'Медработник',
     riskLow:'Низкий риск',
     riskMedium:'Умеренный',
     riskHigh:'Высокий риск',
@@ -428,14 +428,14 @@ function computeRisk(o){
 /* ── Travel advisory ─────────────────────────────────────── */
 const TRAVEL_ADVISORY = {
   en: {
-    high:   { label: 'Avoid non-essential travel', icon: '🔴', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
-    medium: { label: 'Exercise increased caution', icon: '🟡', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
-    low:    { label: 'Normal precautions apply',   icon: '🟢', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
+    high:   { label: 'Avoid non-essential travel', dot: '#C92A2A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    medium: { label: 'Exercise increased caution', dot: '#C87B00', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
+    low:    { label: 'Normal precautions apply',   dot: '#3D8B5C', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
   },
   ru: {
-    high:   { label: 'Избегать несущественных поездок',  icon: '🔴', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
-    medium: { label: 'Повышенная осторожность',           icon: '🟡', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
-    low:    { label: 'Стандартные меры предосторожности', icon: '🟢', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
+    high:   { label: 'Избегать несущественных поездок',  dot: '#C92A2A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    medium: { label: 'Повышенная осторожность',           dot: '#C87B00', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
+    low:    { label: 'Стандартные меры предосторожности', dot: '#3D8B5C', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
   },
 };
 
@@ -553,8 +553,8 @@ function renderCountryPanel(country){
   const sev = SEV[domSev];
 
   const labels = {
-    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'☆ Watch country', watching:'★ Watching', back:'← Back' },
-    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'☆ Следить за страной', watching:'★ Слежу', back:'← Назад' },
+    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'Watch country', watching:'Watching', back:'Back' },
+    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'Следить за страной', watching:'Слежу', back:'Назад' },
   };
   const L = labels[LANG] || labels.en;
 
@@ -580,7 +580,7 @@ function renderCountryPanel(country){
       <div class="cp-eyebrow">${L.profile}</div>
       <div class="cp-country-name">${cname}</div>
       <div class="cp-advisory" style="background:${adv.bg};border:1px solid ${adv.border || adv.bg}">
-        ${adv.icon} ${adv.label}
+        <span class="adv-dot" style="background:${adv.dot}"></span><span>${adv.label}</span>
       </div>
     </div>
 
@@ -628,13 +628,18 @@ const SEV = {
   catastrophic:{ idx:5, color:'#5C2010', dark:'#421710', light:'#7A2A18', label: STRINGS[LANG]?.sevLabel?.catastrophic || 'Catastrophic' },
 };
 
-/* ── Category definitions ───────────────────────────────── */
+/* ── Category definitions (inline SVG icons — Lucide-style) ─ */
 const CATEGORY_META = {
-  epidemic:     { icon:'🦠', color:'#C92A2A', en:'Epidemics',    ru:'Эпидемии',    type:'epidemic' },
-  disaster:     { icon:'🌊', color:'#1D6FA4', en:'Disasters',    ru:'Катастрофы',  type:'disaster' },
-  air:          { icon:'💨', color:'#6B7F3A', en:'Air Quality',  ru:'Воздух',      type:'air' },
-  food:         { icon:'🍽️', color:'#A0522D', en:'Food Safety',  ru:'Еда',         type:'food' },
-  humanitarian: { icon:'🏚️', color:'#8B5CF6', en:'Humanitarian', ru:'Гуманитар.',  type:'humanitarian' },
+  epidemic:     { color:'#C92A2A', en:'Epidemics',    ru:'Эпидемии',    type:'epidemic',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg>' },
+  disaster:     { color:'#1D6FA4', en:'Disasters',    ru:'Катастрофы',  type:'disaster',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>' },
+  air:          { color:'#6B7F3A', en:'Air Quality',  ru:'Воздух',      type:'air',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg>' },
+  food:         { color:'#A0522D', en:'Food Safety',  ru:'Еда',         type:'food',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg>' },
+  humanitarian: { color:'#8B5CF6', en:'Humanitarian', ru:'Гуманитар.',  type:'humanitarian',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>' },
 };
 
 function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
@@ -853,7 +858,7 @@ const markersById = {};
 function initMap(){
   map = new mapboxgl.Map({
     container: 'globe',
-    style: 'mapbox://styles/mapbox/dark-v11',
+    style: 'mapbox://styles/mapbox/light-v11',
     projection: 'globe',
     center: [22, 8],
     zoom: 1.4,
@@ -866,12 +871,13 @@ function initMap(){
   map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
   map.on('style.load', () => {
+    // Light atmosphere — pale sky, no stars (matches XPORT-style flat light map)
     map.setFog({
-      color: 'rgb(20, 18, 14)',
-      'high-color': 'rgb(50, 40, 25)',
-      'horizon-blend': 0.04,
-      'space-color': 'rgb(11, 10, 8)',
-      'star-intensity': 0.6,
+      color: 'rgb(244, 242, 238)',
+      'high-color': 'rgb(220, 220, 220)',
+      'horizon-blend': 0.06,
+      'space-color': 'rgb(244, 242, 238)',
+      'star-intensity': 0,
     });
   });
 
@@ -1066,8 +1072,7 @@ function renderList(){
     const noMsg = q
       ? (LANG==='ru' ? `По запросу «${q}» ничего не найдено` : `No results for "${q}"`)
       : (LANG==='ru' ? 'Нет активных угроз в этой категории' : 'No active threats in this category');
-    root.innerHTML = `<div style="padding:24px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6;">
-      <div style="font-size:22px;margin-bottom:8px;">🔍</div>${noMsg}</div>`;
+    root.innerHTML = `<div style="padding:24px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6;">${noMsg}</div>`;
     return;
   }
 
@@ -1126,12 +1131,11 @@ function renderPanelEmpty(){
   const critical = OUTBREAKS.filter(o=>o.sev==='critical'||o.sev==='alert').length;
   ps.innerHTML = `
     <div style="padding:32px 20px 24px; text-align:center;">
-      <div style="font-size:40px; margin-bottom:12px;">🌍</div>
       <div style="font-size:17px; font-weight:800; letter-spacing:-0.03em; margin-bottom:6px;">${LANG==='ru'?'Глобальный мониторинг':'Global Surveillance'}</div>
       <div style="font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:20px;">${LANG==='ru'?`Отслеживается <b style="color:var(--ink)">${OUTBREAKS.filter(o=>o.type!=='air'&&o.type!=='food'&&o.type!=='humanitarian').length}</b> вспышек · <b style="color:var(--s3)">${critical}</b> критических`:`Tracking <b style="color:var(--ink)">${OUTBREAKS.filter(o=>o.type!=='air'&&o.type!=='food'&&o.type!=='humanitarian').length}</b> outbreaks · <b style="color:var(--s3)">${critical}</b> critical`}</div>
       <div style="font-size:11px; color:var(--muted-2); margin-bottom:16px;">${LANG==='ru'?'Нажмите на маркер на глобусе или выберите вспышку из списка':'Click a marker on the globe or select an outbreak from the list'}</div>
       <div style="background:rgba(232,89,12,0.07); border:1px solid rgba(232,89,12,0.18); border-radius:var(--r-md); padding:12px 14px; text-align:left;">
-        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); margin-bottom:8px;">🔍 ${LANG==='ru'?'Проверить страну':'Check a country'}</div>
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); margin-bottom:8px;">${LANG==='ru'?'Проверить страну':'Check a country'}</div>
         <div style="font-size:12px; color:var(--ink-2);">${LANG==='ru'?'Используйте поиск по стране слева — получите сводку угроз и рекомендации по безопасности':'Use the country search on the left to get a threat summary and travel safety recommendations'}</div>
       </div>
     </div>`;
@@ -1207,7 +1211,7 @@ function renderPanel(){
   document.getElementById('sparkBig').textContent = fmtNum(o.cases);
   const delta = tr[tr.length-1] - tr[tr.length-8] || 0;
   const trendEl = document.getElementById('sparkTrend');
-  trendEl.innerHTML = `${delta>=0?'▲':'▼'} 7-day ${delta>=0?'+':''}${fmtNum(Math.abs(delta))}`;
+  trendEl.innerHTML = `${delta>=0?'+':'−'}${fmtNum(Math.abs(delta))} · 7d`;
   trendEl.style.background = sev.color;
 
   // AI card — accent border follows severity, dark bg stays from CSS
@@ -1221,7 +1225,8 @@ function renderPanel(){
     const risk = computeRisk(o);
     const riskColor = {low:'#3D8B5C', medium:'#C87B00', high:'#C92A2A'};
     const riskBg    = {low:'rgba(61,139,92,0.10)', medium:'rgba(200,123,0,0.10)', high:'rgba(201,42,42,0.10)'};
-    const riskIcon  = {low:'🟢', medium:'🟡', high:'🔴'};
+    // small colored dot replaces emoji circles
+    const dotFor = (level) => `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${riskColor[level]};margin-right:6px;vertical-align:middle;"></span>`;
     const rows = [
       [T('riskTourist'),    risk.tourist],
       [T('riskResident'),   risk.resident],
@@ -1232,7 +1237,7 @@ function renderPanel(){
       ${rows.map(([who, level])=>`
         <div class="risk-row">
           <span class="risk-who">${who}</span>
-          <span class="risk-level" style="background:${riskBg[level]};color:${riskColor[level]}">${riskIcon[level]} ${T('risk'+level[0].toUpperCase()+level.slice(1))}</span>
+          <span class="risk-level" style="background:${riskBg[level]};color:${riskColor[level]}">${dotFor(level)}${T('risk'+level[0].toUpperCase()+level.slice(1))}</span>
         </div>`).join('')}
       <div class="risk-note">${T('riskNote')}</div>
     `;
@@ -1281,7 +1286,7 @@ function renderPanel(){
           <span class="travel-lbl">${T('travelAdvisory')}</span>
           <span class="travel-trend" style="color:${tClr};font-size:11px;font-weight:600;">${tLbl}</span>
         </div>
-        <div class="travel-verdict">${adv.icon} ${adv.label}</div>
+        <div class="travel-verdict"><span class="adv-dot" style="background:${adv.dot}"></span>${adv.label}</div>
         ${othersHtml}
       </div>`;
   }
@@ -1326,7 +1331,7 @@ function renderPopup(){
   document.getElementById('popSub').textContent = T('last24hSurv', {region: regionName(o.region)});
   const goCountry = document.getElementById('popGoCountry');
   if(goCountry && o.country){
-    goCountry.textContent = LANG==='ru' ? `🌍 Профиль: ${countryName(o.country)} →` : `🌍 ${countryName(o.country)} country profile →`;
+    goCountry.textContent = LANG==='ru' ? `Профиль: ${countryName(o.country)} →` : `${countryName(o.country)} country profile →`;
     goCountry.onclick = () => selectCountry(o.country);
   }
 }
