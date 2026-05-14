@@ -12,5 +12,11 @@ export async function handleVerify({ token }, deps) {
     const key = rec.__key || hashEmail(rec.email);
     await deps.putSubscriber(key, rec);
   }
+  // If the subscriber later unsubscribed, the verify link is stale —
+  // route them to the unsubscribed page rather than misleadingly claiming
+  // they're now signed up.
+  if (rec.status === 'unsubscribed') {
+    return { status: 302, location: '/unsubscribed.html' };
+  }
   return { status: 302, location: '/thanks-subscribe.html' };
 }

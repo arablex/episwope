@@ -1,9 +1,9 @@
+// netlify/functions/admin-export-subs.mjs
 import { listAllVerified } from './_lib/blobs.mjs';
+import { checkBearerAuth } from './_lib/auth.mjs';
 
 export default async (req) => {
-  const expected = process.env.EPISCOPE_TOKEN_SECRET;
-  const auth = req.headers.get('authorization') || '';
-  if (!expected || auth !== `Bearer ${expected}`) {
+  if (!checkBearerAuth(req)) {
     return new Response('forbidden', { status: 403 });
   }
   const subs = await listAllVerified();

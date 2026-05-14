@@ -1,27 +1,42 @@
 // netlify/functions/resend-webhook.mjs
 import { handleResendWebhook } from './_lib/handlers/webhook.mjs';
 import { findByEmail, putSubscriber } from './_lib/blobs.mjs';
+import { verifySvixSignature } from './_lib/svix.mjs';
 
 export default async (req) => {
   if (req.method !== 'POST') {
     return new Response('method', { status: 405 });
   }
+
+  // Read RAW body once, so we can both verify the signature (which is computed
+  // over the exact bytes) AND parse JSON for the handler.
+  let rawBody;
+  try {
+    rawBody = await req.text();
+  } catch {
+    return new Response('bad body', { status: 400 });
+  }
+
+  // Resend signs deliveries via Svix. Verify when a secret is configured.
+  // Without a configured secret the endpoint accepts any POST — fine for
+  // staging, but PRODUCTION should always set RESEND_WEBHOOK_SECRET.
+  const sigSecret = process.env.RESEND_WEBHOOK_SECRET;
+  if (sigSecret) {
+    const ok = verifySvixSignature({
+      headers: req.headers,
+      rawBody,
+      secret: sigSecret,
+    });
+    if (!ok) return new Response('forbidden', { status: 403 });
+  }
+
   let event;
   try {
-    event = await req.json();
+    event = JSON.parse(rawBody);
   } catch {
     return new Response('bad json', { status: 400 });
   }
-  // Resend signs webhook deliveries with a secret; verify if configured.
-  // (Optional — skip for Phase 1 if RESEND_WEBHOOK_SECRET is not set.)
-  const sigSecret = process.env.RESEND_WEBHOOK_SECRET;
-  if (sigSecret) {
-    const sig = req.headers.get('svix-signature') || '';
-    if (!sig) return new Response('forbidden', { status: 403 });
-    // Verification using svix-signature is non-trivial; defer the actual
-    // crypto check to a follow-up task and accept all POSTs for Phase 1.
-    // The endpoint is unguessable enough as a stop-gap.
-  }
+
   const deps = { findByEmail, putSubscriber };
   const res = await handleResendWebhook(event, deps);
   return new Response(JSON.stringify(res.body || {}), {

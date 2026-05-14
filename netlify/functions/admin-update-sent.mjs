@@ -1,9 +1,9 @@
+// netlify/functions/admin-update-sent.mjs
 import { getStore } from '@netlify/blobs';
+import { checkBearerAuth } from './_lib/auth.mjs';
 
 export default async (req) => {
-  const expected = process.env.EPISCOPE_TOKEN_SECRET;
-  const auth = req.headers.get('authorization') || '';
-  if (!expected || auth !== `Bearer ${expected}`) {
+  if (!checkBearerAuth(req)) {
     return new Response('forbidden', { status: 403 });
   }
   if (req.method !== 'POST') return new Response('method', { status: 405 });

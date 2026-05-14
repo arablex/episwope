@@ -41,3 +41,13 @@ test('missing token returns 400', async () => {
   const res = await handleVerify({ token: '' }, d);
   assert.equal(res.status, 400);
 });
+
+test('unsubscribed record routes the verify link to /unsubscribed.html', async () => {
+  // User verified, then unsubscribed, then clicked the old verify link.
+  // Should NOT mislead them into thinking they're subscribed again.
+  const rec = { __key: 'k1', email:'a@x.com', countries:['Brazil'], status: 'unsubscribed', verifyToken: 'good', verifiedAt: '2026-05-10T00:00:00Z' };
+  const d = deps([rec]);
+  const res = await handleVerify({ token: 'good' }, d);
+  assert.equal(res.status, 302);
+  assert.match(res.location, /unsubscribed/);
+});
