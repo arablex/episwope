@@ -83,11 +83,11 @@ This task is manual — no code commits, but mandatory for everything else to wo
   - Scope: all (build + functions)
 
 - [ ] **Step 0.4:** User adds the sender domain to Resend:
-  - Resend dashboard → Domains → Add domain → `episwope.ru`
+  - Resend dashboard → Domains → Add domain → `episcope.ru`
   - Copies the SPF, DKIM, and (optional) DMARC records shown
 
 - [ ] **Step 0.5:** User adds those DNS records in Netlify:
-  - Netlify → Domains → episwope.ru → DNS settings → Add record (one per Resend instruction)
+  - Netlify → Domains → episcope.ru → DNS settings → Add record (one per Resend instruction)
   - Wait for green "verified" status in Resend (usually < 10 minutes)
 
 - [ ] **Step 0.6:** User enables Netlify Blobs:
@@ -303,8 +303,8 @@ import { renderVerifyEmail } from './templates.mjs';
 
 const SAMPLE = {
   countries: ['Brazil', 'Vietnam'],
-  verifyUrl: 'https://episwope.ru/api/verify?t=abc',
-  unsubUrl: 'https://episwope.ru/api/unsubscribe?t=xyz',
+  verifyUrl: 'https://episcope.ru/api/verify?t=abc',
+  unsubUrl: 'https://episcope.ru/api/unsubscribe?t=xyz',
 };
 
 test('English verify email contains all dynamic fields', () => {
@@ -498,7 +498,7 @@ export async function sendEmail({ to, subject, html, text, replyTo }) {
   if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
 
   const body = {
-    from: 'EpiScope <noreply@episwope.ru>',
+    from: 'EpiScope <noreply@episcope.ru>',
     to: Array.isArray(to) ? to : [to],
     subject,
     html,
@@ -559,7 +559,7 @@ function makeDeps() {
     sendEmail: async (msg) => { sent.push(msg); return { id: 'mock' }; },
     now: () => new Date('2026-05-14T10:00:00Z'),
     randomToken: () => 'tok_' + (blobs.size + sent.length),
-    siteOrigin: 'https://episwope.ru',
+    siteOrigin: 'https://episcope.ru',
   };
 }
 
@@ -577,7 +577,7 @@ test('valid new subscription creates pending record and sends verify email', asy
   assert.equal(rec.lang, 'ru');
   assert.equal(rec.status, 'pending');
   assert.equal(deps.sent.length, 1);
-  assert.match(deps.sent[0].html, /episwope\.ru\/api\/verify/);
+  assert.match(deps.sent[0].html, /episcope\.ru\/api\/verify/);
 });
 
 test('subscribing same email to second country appends, sends one more verify', async () => {
@@ -1574,7 +1574,7 @@ def render_section(country_en, lang, events):
         f'</article>'
     )
 
-def render_digest(sub, events_json, site_origin="https://episwope.ru"):
+def render_digest(sub, events_json, site_origin="https://episcope.ru"):
     lang = sub.get("lang", "en")
     L = STRINGS.get(lang, STRINGS["en"])
     countries = sub.get("countries", [])
@@ -1635,7 +1635,7 @@ def plan_sends(subs, events_json, now):
 
 def send_via_resend(message, to_email, api_key):
     body = {
-        "from": "EpiScope <noreply@episwope.ru>",
+        "from": "EpiScope <noreply@episcope.ru>",
         "to": [to_email],
         "subject": message["subject"],
         "html": message["html"],
@@ -1798,7 +1798,7 @@ In `.github/workflows/update-data.yml`, change the cron line and add two new ste
         run: |
           curl -sf \
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
-            https://episwope.ru/api/admin/export-subs \
+            https://episcope.ru/api/admin/export-subs \
             -o public/_subscribers.json || echo "[]" > public/_subscribers.json
 
       - name: Send weekly digests (Mondays only)
@@ -1817,7 +1817,7 @@ In `.github/workflows/update-data.yml`, change the cron line and add two new ste
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
             -H "Content-Type: application/json" \
             --data-binary "@public/_digest_sent.json" \
-            https://episwope.ru/api/admin/update-sent
+            https://episcope.ru/api/admin/update-sent
 ```
 
 Also change the cron schedule from the current value to:
@@ -2017,7 +2017,7 @@ Expected: PASS — 5 passing tests.
 - [ ] **Step 16.7: Register the webhook in Resend**
 
 Manual step. User opens Resend dashboard → Webhooks → Add endpoint:
-- URL: `https://episwope.ru/api/resend-webhook`
+- URL: `https://episcope.ru/api/resend-webhook`
 - Events: `email.bounced`, `email.complained`
 - Save the signing secret if shown, store as `RESEND_WEBHOOK_SECRET` in Netlify env vars (optional for Phase 1).
 

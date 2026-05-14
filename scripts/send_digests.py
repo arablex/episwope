@@ -86,7 +86,7 @@ def render_section(country_en, lang, events):
         f'</article>'
     )
 
-def render_digest(sub, events_json, site_origin="https://episwope.ru"):
+def render_digest(sub, events_json, site_origin="https://episcope.ru"):
     lang = sub.get("lang", "en")
     L = STRINGS.get(lang, STRINGS["en"])
     countries = sub.get("countries", [])
@@ -147,7 +147,7 @@ def plan_sends(subs, events_json, now):
 
 def send_via_resend(message, to_email, api_key):
     body = {
-        "from": "EpiScope <noreply@episwope.ru>",
+        "from": "EpiScope <noreply@episcope.ru>",
         "to": [to_email],
         "subject": message["subject"],
         "html": message["html"],

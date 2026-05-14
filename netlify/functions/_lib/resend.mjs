@@ -9,7 +9,7 @@ export async function sendEmail({ to, subject, html, text, replyTo }) {
   if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
 
   const body = {
-    from: 'EpiScope <noreply@episwope.ru>',
+    from: 'EpiScope <noreply@episcope.ru>',
     to: Array.isArray(to) ? to : [to],
     subject,
     html,
