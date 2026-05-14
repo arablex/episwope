@@ -421,6 +421,7 @@ function toggleCat(key){
     btn.style.color       = state.cats[key] ? meta.color : '';
   }
   renderList();
+  applyMarkerFilters();
 }
 
 /* ── Demo data for new categories ───────────────────────── */
@@ -599,16 +600,14 @@ CAT_EVENTS.forEach(ev => {
 const HIGHLIGHT_ISO = new Set(OUTBREAKS.map(o=>o.iso));
 
 /* =========================================================
-   STATE
+   STATE & MAPBOX SETUP
    ========================================================= */
 const stage   = document.getElementById('stage');
-const canvas  = document.getElementById('globe');
-const ctx     = canvas.getContext('2d');
+const globeEl = document.getElementById('globe');
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXA1M2wxbWExM25xMnFxeWJzZG9tOWJuIn0.PJ8o0uIDJDvtKib-EoKXBw';
 
 const state = {
-  rotation: [-22, -8, 0],
-  scale: 1,
-  autoRotate: true,
   filter: 'all',
   query: '',
   selectedId: null,
@@ -616,309 +615,96 @@ const state = {
   cats: { epidemic:true, disaster:false, air:false, food:false, humanitarian:false },
   hoveredId: null,
   countries: [],
-  dpr: Math.min(2, window.devicePixelRatio || 1),
-  cssW:0, cssH:0,
-  cx:0, cy:0, R:0,
-  dragging:false, drag:null,
-  t:0,
-  stars:[],          // background dust dots
+  t: 0,
 };
 
-const projection = d3.geoOrthographic().clipAngle(90).precision(0.5);
-const path = d3.geoPath(projection, ctx);
+let map = null;
+const markersById = {};
 
-/* =========================================================
-   RESIZE
-   ========================================================= */
-function resize(){
-  const r = stage.getBoundingClientRect();
-  state.cssW = r.width; state.cssH = r.height;
-  canvas.width  = Math.round(r.width  * state.dpr);
-  canvas.height = Math.round(r.height * state.dpr);
-  canvas.style.width = r.width+'px';
-  canvas.style.height = r.height+'px';
-  ctx.setTransform(state.dpr,0,0,state.dpr,0,0);
+function initMap(){
+  map = new mapboxgl.Map({
+    container: 'globe',
+    style: 'mapbox://styles/mapbox/dark-v11',
+    projection: 'globe',
+    center: [22, 8],
+    zoom: 1.4,
+    minZoom: 0.5,
+    maxZoom: 8,
+    attributionControl: false,
+    pitchWithRotate: false,
+    dragRotate: false,
+  });
+  map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
-  state.cx = r.width/2;
-  state.cy = r.height/2 + 6;
-  state.R  = Math.min(r.width, r.height) * 0.39 * state.scale;
-  projection.translate([state.cx, state.cy]).scale(state.R).rotate(state.rotation);
-
-  // regenerate background dust dots
-  state.stars = [];
-  const n = 90;
-  for(let i=0;i<n;i++){
-    state.stars.push({
-      x: Math.random()*r.width,
-      y: Math.random()*r.height,
-      r: 0.4 + Math.random()*1.3,
-      a: 0.05 + Math.random()*0.20,
+  map.on('style.load', () => {
+    map.setFog({
+      color: 'rgb(20, 18, 14)',
+      'high-color': 'rgb(50, 40, 25)',
+      'horizon-blend': 0.04,
+      'space-color': 'rgb(11, 10, 8)',
+      'star-intensity': 0.6,
     });
+  });
+
+  map.on('load', () => {
+    addOutbreakMarkers();
+    map.on('move', positionPopup);
+    map.on('zoom', () => { positionPopup(); updateClock(); });
+    map.on('resize', positionPopup);
+    updateClock();
+  });
+}
+
+function addOutbreakMarkers(){
+  if(!map) return;
+  const currentIds = new Set(OUTBREAKS.map(o => o.id));
+  // Remove stale markers
+  for(const id of Object.keys(markersById)){
+    if(!currentIds.has(id)){
+      markersById[id].remove();
+      delete markersById[id];
+    }
+  }
+  // Add new markers
+  for(const o of OUTBREAKS){
+    if(markersById[o.id]) continue;
+    const el = document.createElement('div');
+    el.className = `ep-marker ${o.sev === 'critical' ? 'crit' : o.sev}`;
+    el.dataset.id = o.id;
+    el.title = (o.name || '') + ' — ' + (o.country || '');
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      selectOutbreak(o.id);
+    });
+    el.addEventListener('mouseenter', () => { state.hoveredId = o.id; });
+    el.addEventListener('mouseleave', () => { state.hoveredId = null; });
+    const lon = o.lon ?? o.lng;
+    if(typeof lon !== 'number' || typeof o.lat !== 'number') continue;
+    const marker = new mapboxgl.Marker({ element: el })
+      .setLngLat([lon, o.lat])
+      .addTo(map);
+    markersById[o.id] = marker;
+  }
+  applyMarkerFilters();
+}
+
+function applyMarkerFilters(){
+  for(const o of OUTBREAKS){
+    const marker = markersById[o.id]; if(!marker) continue;
+    const el = marker.getElement();
+    const cat = o.type || 'epidemic';
+    const sevMatch = state.filter === 'all' || o.sev === state.filter || (state.filter === 'warning' && o.sev === 'low');
+    const catMatch = state.cats[cat] !== false;
+    el.style.display = (sevMatch && catMatch) ? '' : 'none';
+    el.classList.toggle('is-sel', o.id === state.selectedId);
   }
 }
-window.addEventListener('resize', ()=>{ resize(); });
+
+/* (Canvas rendering removed — Mapbox handles globe rendering & resize) */
 
 /* =========================================================
-   GLOBE RENDER
+   UTILITIES
    ========================================================= */
-function drawBackdrop(){
-  const {cx,cy,R} = state;
-
-  // soft ground shadow elliptical
-  ctx.save();
-  ctx.translate(cx, cy + R*0.96);
-  ctx.scale(1, 0.18);
-  const sh = ctx.createRadialGradient(0,0, 1, 0,0, R*1.1);
-  sh.addColorStop(0,'rgba(40,32,20,0.32)');
-  sh.addColorStop(1,'rgba(40,32,20,0)');
-  ctx.fillStyle = sh;
-  ctx.beginPath(); ctx.arc(0,0, R*1.05, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // dust / star points
-  for(const s of state.stars){
-    const d = Math.hypot(s.x-cx, s.y-cy);
-    if(d < R*1.05) continue;             // skip those overlapping sphere
-    ctx.fillStyle = `rgba(60,55,40,${s.a})`;
-    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
-  }
-}
-
-function drawAtmosphere(){
-  const {cx,cy,R} = state;
-  // outer atmosphere glow — soft warm pearl gradient
-  const g = ctx.createRadialGradient(cx, cy, R*0.96, cx, cy, R*1.42);
-  g.addColorStop(0,'rgba(255,250,235,0.55)');
-  g.addColorStop(0.30,'rgba(232,89,12,0.10)');
-  g.addColorStop(0.65,'rgba(232,89,12,0.04)');
-  g.addColorStop(1,'rgba(232,89,12,0)');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(cx, cy, R*1.42, 0, Math.PI*2); ctx.fill();
-
-  // tighter inner atmospheric rim (cool blue tint, just outside the sphere)
-  const g2 = ctx.createRadialGradient(cx, cy, R*0.99, cx, cy, R*1.07);
-  g2.addColorStop(0,'rgba(180,200,235,0.42)');
-  g2.addColorStop(1,'rgba(180,200,235,0)');
-  ctx.fillStyle = g2;
-  ctx.beginPath(); ctx.arc(cx, cy, R*1.10, 0, Math.PI*2); ctx.fill();
-}
-
-function drawSphere(){
-  const {cx,cy,R} = state;
-  // sphere base — pearl with subtle warm core
-  const g = ctx.createRadialGradient(cx-R*0.30, cy-R*0.40, R*0.05, cx+R*0.15, cy+R*0.10, R*1.10);
-  g.addColorStop(0,   '#FFFEFA');
-  g.addColorStop(0.30,'#F6F1E6');
-  g.addColorStop(0.70,'#E4DCC9');
-  g.addColorStop(1,   '#CCC1A8');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.fill();
-}
-
-function drawGraticule(){
-  // grid: 15° base, 30° slightly bolder, equator + prime meridian heavier
-  ctx.save();
-
-  // base 15° grid — very faint
-  ctx.lineWidth = 0.45;
-  ctx.strokeStyle = 'rgba(56,48,34,0.10)';
-  const fine = d3.geoGraticule().step([15,15]);
-  ctx.beginPath(); path(fine()); ctx.stroke();
-
-  // 30° grid — a touch heavier
-  ctx.lineWidth = 0.55;
-  ctx.strokeStyle = 'rgba(56,48,34,0.16)';
-  const med = d3.geoGraticule().step([30,30]);
-  ctx.beginPath(); path(med()); ctx.stroke();
-
-  // equator + prime meridian
-  ctx.lineWidth = 0.8;
-  ctx.strokeStyle = 'rgba(56,48,34,0.26)';
-  const eq = d3.geoGraticule().stepMajor([90,360]).stepMinor([360,360]);
-  ctx.beginPath(); path(eq()); ctx.stroke();
-
-  ctx.restore();
-}
-
-function drawCountries(){
-  if(!state.countries.length) return;
-  const sel = currentSel();
-  const selectedIso = sel?.iso || null;
-  const hoverIso    = (state.hoveredId && OUTBREAKS.find(o=>o.id===state.hoveredId)?.iso) || null;
-  const sevColor    = sel ? SEV[sel.sev].color : '#E8590C';
-  const sevDark     = sel ? SEV[sel.sev].dark  : '#B84408';
-
-  ctx.save();
-  ctx.lineJoin = 'round';
-
-  // pass 1: base fills
-  for(const feat of state.countries){
-    const iso = +feat.id;
-    let fill, stroke, lw;
-    if(iso === selectedIso){
-      fill = hexA(sevColor, 0.82); stroke = hexA(sevDark, 0.95); lw = 1.1;
-    } else if(iso === hoverIso){
-      fill = hexA('#E8590C', 0.32); stroke = hexA('#B84408', 0.55); lw = 0.75;
-    } else if(HIGHLIGHT_ISO.has(iso)){
-      fill = 'rgba(108,98,80,0.46)'; stroke = 'rgba(40,30,18,0.32)'; lw = 0.55;
-    } else {
-      fill = 'rgba(150,140,118,0.38)'; stroke = 'rgba(40,30,18,0.26)'; lw = 0.55;
-    }
-    ctx.fillStyle = fill;
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = lw;
-    ctx.beginPath(); path(feat); ctx.fill(); ctx.stroke();
-  }
-
-  // pass 2: contour-line texture — short dashed inner stroke for a topo-map feel
-  ctx.globalAlpha = 0.55;
-  ctx.strokeStyle = 'rgba(40,30,18,0.10)';
-  ctx.lineWidth = 0.32;
-  ctx.setLineDash([1.6, 2.4]);
-  for(const feat of state.countries){
-    ctx.beginPath(); path(feat); ctx.stroke();
-  }
-  ctx.setLineDash([]);
-  ctx.globalAlpha = 1;
-
-  // pass 3: bright outline on the selected country
-  if(selectedIso){
-    const feat = state.countries.find(f => +f.id === selectedIso);
-    if(feat){
-      ctx.lineWidth = 1.6;
-      ctx.strokeStyle = hexA(sevDark, 1);
-      ctx.beginPath(); path(feat); ctx.stroke();
-      // inner glow
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = hexA(sevColor, 0.18);
-      ctx.beginPath(); path(feat); ctx.stroke();
-    }
-  }
-  ctx.restore();
-}
-
-function drawLight(){
-  const {cx,cy,R} = state;
-  // bright specular highlight top-left
-  const sp = ctx.createRadialGradient(cx-R*0.58, cy-R*0.55, 1, cx-R*0.58, cy-R*0.55, R*0.95);
-  sp.addColorStop(0,'rgba(255,255,255,0.55)');
-  sp.addColorStop(0.45,'rgba(255,255,255,0.10)');
-  sp.addColorStop(1,'rgba(255,255,255,0)');
-  ctx.save();
-  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.clip();
-  ctx.fillStyle = sp;
-  ctx.fillRect(cx-R, cy-R, R*2, R*2);
-
-  // shadow side bottom-right
-  const shd = ctx.createRadialGradient(cx+R*0.50, cy+R*0.55, R*0.15, cx+R*0.55, cy+R*0.55, R*1.10);
-  shd.addColorStop(0,'rgba(20,16,10,0)');
-  shd.addColorStop(1,'rgba(20,16,10,0.28)');
-  ctx.fillStyle = shd;
-  ctx.fillRect(cx-R, cy-R, R*2, R*2);
-  ctx.restore();
-
-  // bright rim
-  ctx.save();
-  ctx.lineWidth = 1.2;
-  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-  ctx.beginPath(); ctx.arc(cx,cy,R-0.4,0,Math.PI*2); ctx.stroke();
-  // outer thin warm edge
-  ctx.lineWidth = 0.8;
-  ctx.strokeStyle = 'rgba(232,89,12,0.30)';
-  ctx.beginPath(); ctx.arc(cx,cy,R+0.6,0,Math.PI*2); ctx.stroke();
-  ctx.restore();
-}
-
-/* =========================================================
-   MARKERS
-   ========================================================= */
-function projectOutbreak(o){
-  const p = projection([o.lon, o.lat]);
-  if(!p) return null;
-  const c = d3.geoDistance([o.lon,o.lat], [-state.rotation[0], -state.rotation[1]]);
-  const visible = c < Math.PI/2 - 0.02;
-  return { x:p[0], y:p[1], visible, c };
-}
-
-function caseRadius(o){
-  const r = 10 + Math.log10(Math.max(10,o.cases)) * 11;
-  return r * (0.85 + 0.25*state.scale);
-}
-
-function drawMarkers(){
-  const sel = currentSel();
-  const t = state.t;
-
-  const list = OUTBREAKS
-    .filter(o => state.filter==='all' || o.sev===state.filter)
-    .map(o => ({o, p:projectOutbreak(o)}))
-    .filter(d => d.p && d.p.visible)
-    .sort((a,b) => (a.o.id===sel?.id?1:0) - (b.o.id===sel?.id?1:0));
-
-  // halos — radial soft glow
-  for(const {o,p} of list){
-    const r = caseRadius(o);
-    const col = SEV[o.sev].color;
-    const g = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, r*2.6);
-    g.addColorStop(0, hexA(col, 0.30));
-    g.addColorStop(0.35, hexA(col, 0.16));
-    g.addColorStop(0.7, hexA(col, 0.06));
-    g.addColorStop(1, hexA(col, 0));
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(p.x, p.y, r*2.6, 0, Math.PI*2); ctx.fill();
-  }
-
-  // pulsing rings — critical / selected
-  for(const {o,p} of list){
-    const isCritical = o.sev==='critical' || o.sev==='catastrophic';
-    const isSel = sel && sel.id===o.id;
-    if(!isCritical && !isSel) continue;
-    const r = caseRadius(o);
-    const ph = (Math.sin(t*0.0035 + r) + 1)/2;
-    ctx.lineWidth = 1.2;
-    ctx.strokeStyle = hexA(SEV[o.sev].color, Math.max(0, 0.55 - ph*0.5));
-    ctx.beginPath(); ctx.arc(p.x, p.y, r*(1.10 + ph*0.65), 0, Math.PI*2); ctx.stroke();
-
-    const ph2 = ((Math.sin(t*0.0035 + r + 1.8)) + 1)/2;
-    ctx.strokeStyle = hexA(SEV[o.sev].color, Math.max(0, 0.45 - ph2*0.4));
-    ctx.beginPath(); ctx.arc(p.x, p.y, r*(1.10 + ph2*0.35), 0, Math.PI*2); ctx.stroke();
-
-    // selected: rotating dashed ring
-    if(isSel){
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate((t*0.0006) % (Math.PI*2));
-      ctx.lineWidth = 1.2;
-      ctx.strokeStyle = hexA('#161513', 0.55);
-      ctx.setLineDash([5, 6]);
-      ctx.beginPath(); ctx.arc(0,0, r*1.55, 0, Math.PI*2); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.restore();
-    }
-  }
-
-  // center dots
-  for(const {o,p} of list){
-    const isSel = sel && sel.id===o.id;
-    const r = isSel ? 7 : 5;
-    // outer white halo
-    ctx.beginPath(); ctx.arc(p.x, p.y, r+3.6, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill();
-    // colored dot with subtle gradient
-    const g = ctx.createRadialGradient(p.x - r*0.3, p.y - r*0.3, 0.5, p.x, p.y, r);
-    g.addColorStop(0, SEV[o.sev].light);
-    g.addColorStop(1, SEV[o.sev].color);
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2); ctx.fill();
-    // dark ring on selected
-    if(isSel){
-      ctx.lineWidth = 1.4;
-      ctx.strokeStyle = '#161513';
-      ctx.beginPath(); ctx.arc(p.x, p.y, r+3.8, 0, Math.PI*2); ctx.stroke();
-    }
-  }
-}
-
 function hexA(h, a){
   const r = parseInt(h.slice(1,3),16);
   const g = parseInt(h.slice(3,5),16);
@@ -927,25 +713,16 @@ function hexA(h, a){
 }
 
 /* =========================================================
-   FRAME LOOP
+   MARKERS — projection helper for popup placement
    ========================================================= */
-function frame(ts){
-  state.t = ts;
-  if(state.autoRotate && !state.dragging){
-    state.rotation[0] = (state.rotation[0] + 0.05) % 360;
-    projection.rotate(state.rotation);
-  }
-  ctx.clearRect(0,0,state.cssW,state.cssH);
-  drawBackdrop();
-  drawAtmosphere();
-  drawSphere();
-  drawCountries();
-  drawGraticule();
-  drawLight();
-  drawMarkers();
-  positionPopup();
-  updateClock();
-  requestAnimationFrame(frame);
+function projectOutbreak(o){
+  if(!map) return null;
+  const lon = o.lon ?? o.lng;
+  if(typeof lon !== 'number' || typeof o.lat !== 'number') return null;
+  const p = map.project([lon, o.lat]);
+  const rect = globeEl.getBoundingClientRect();
+  const visible = p.x >= 0 && p.x <= rect.width && p.y >= 0 && p.y <= rect.height;
+  return { x: p.x, y: p.y, visible };
 }
 
 /* =========================================================
@@ -953,25 +730,33 @@ function frame(ts){
    ========================================================= */
 const popup = document.getElementById('popup');
 function positionPopup(){
+  if(!popup) return;
   const sel = currentSel();
   if(!sel){ popup.classList.remove('is-on'); return; }
   const p = projectOutbreak(sel);
   if(!p || !p.visible){ popup.classList.remove('is-on'); return; }
   popup.classList.add('is-on');
   const w = popup.offsetWidth, h = popup.offsetHeight;
+  const rect = globeEl.getBoundingClientRect();
   let x = p.x, y = p.y - 26;
   const pad = 16;
   if(x - w/2 < pad) x = w/2 + pad;
-  if(x + w/2 > state.cssW - pad) x = state.cssW - pad - w/2;
+  if(x + w/2 > rect.width - pad) x = rect.width - pad - w/2;
   if(y - h < pad) y = p.y + h + 36;
   popup.style.left = x+'px';
   popup.style.top  = y+'px';
 }
 
 function updateClock(){
-  document.getElementById('lat').textContent = fmtDeg(-state.rotation[1], 'NS');
-  document.getElementById('lon').textContent = fmtDeg(-state.rotation[0], 'EW');
-  document.getElementById('zo').textContent  = state.scale.toFixed(2)+'×';
+  if(!map) return;
+  const c = map.getCenter();
+  const z = map.getZoom();
+  const latEl = document.getElementById('lat');
+  const lonEl = document.getElementById('lon');
+  const zoEl  = document.getElementById('zo');
+  if(latEl) latEl.textContent = fmtDeg(c.lat, 'NS');
+  if(lonEl) lonEl.textContent = fmtDeg(c.lng, 'EW');
+  if(zoEl)  zoEl.textContent  = z.toFixed(2)+'×';
 }
 function fmtDeg(v, ax){
   const sign = v>=0 ? (ax[0]) : (ax[1]);
@@ -979,76 +764,23 @@ function fmtDeg(v, ax){
 }
 
 /* =========================================================
-   INTERACTIONS
+   INTERACTIONS — drag/zoom/click are handled natively by Mapbox.
+   Marker click & hover are wired up in addOutbreakMarkers().
    ========================================================= */
-canvas.addEventListener('pointerdown', e=>{
-  state.dragging = true;
-  state.drag = { x:e.clientX, y:e.clientY, rot:[...state.rotation] };
-  canvas.setPointerCapture(e.pointerId);
-});
-canvas.addEventListener('pointermove', e=>{
-  if(state.dragging){
-    const dx = e.clientX - state.drag.x;
-    const dy = e.clientY - state.drag.y;
-    const k = 0.35 / Math.max(0.5, state.scale);
-    state.rotation[0] = state.drag.rot[0] + dx*k;
-    state.rotation[1] = clamp(state.drag.rot[1] - dy*k, -88, 88);
-    projection.rotate(state.rotation);
-    return;
-  }
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-  let best=null, bd=14;
-  for(const o of OUTBREAKS){
-    const p = projectOutbreak(o); if(!p || !p.visible) continue;
-    const d = Math.hypot(p.x-mx, p.y-my);
-    if(d < bd){ bd = d; best = o.id; }
-  }
-  if(best !== state.hoveredId){
-    state.hoveredId = best;
-    canvas.style.cursor = best ? 'pointer' : 'grab';
-  }
-});
-canvas.addEventListener('pointerup', e=>{
-  if(state.dragging){
-    const moved = Math.hypot(e.clientX-state.drag.x, e.clientY-state.drag.y);
-    state.dragging = false;
-    if(moved < 4) handleClick(e);
-  }
-});
-canvas.addEventListener('pointerleave', ()=>{ state.dragging=false; state.hoveredId=null; });
-
-canvas.addEventListener('wheel', e=>{
-  e.preventDefault();
-  const k = Math.pow(1.0015, -e.deltaY);
-  setScale(state.scale * k);
-}, {passive:false});
-
-function handleClick(e){
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-  let best=null, bd=20;
-  for(const o of OUTBREAKS){
-    const p = projectOutbreak(o); if(!p || !p.visible) continue;
-    const d = Math.hypot(p.x-mx, p.y-my);
-    if(d < bd){ bd = d; best = o.id; }
-  }
-  if(best){ selectOutbreak(best); }
-}
-
-document.getElementById('zIn').onclick     = ()=> setScale(state.scale*1.25);
-document.getElementById('zOut').onclick    = ()=> setScale(state.scale/1.25);
-document.getElementById('zRecenter').onclick = ()=>{
-  state.scale = 1; resize();
-  flyTo(currentSel());
+document.getElementById('zIn').onclick     = () => map && map.zoomIn();
+document.getElementById('zOut').onclick    = () => map && map.zoomOut();
+document.getElementById('zRecenter').onclick = () => {
+  if(!map) return;
+  const sel = currentSel();
+  if(sel) flyTo(sel);
+  else map.flyTo({ center: [22, 8], zoom: 1.4, duration: 900 });
 };
 const togRot = document.getElementById('togRot');
-togRot.onclick = ()=>{
-  state.autoRotate = !state.autoRotate;
-  togRot.classList.toggle('is-on', state.autoRotate);
+togRot.onclick = () => {
+  // Auto-rotate not supported by Mapbox out-of-the-box — toggle is visual only.
+  togRot.classList.toggle('is-on');
 };
 
-function setScale(s){ state.scale = clamp(s, 0.7, 3.5); resize(); }
 function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
 
 /* =========================================================
@@ -1064,24 +796,20 @@ function selectOutbreak(id){
   renderList();
   renderPanel();
   renderPopup();
+  applyMarkerFilters();
+  positionPopup();
 }
 
 function flyTo(o){
-  if(!o) return;
-  state.autoRotate = false; togRot.classList.remove('is-on');
-  const start = [...state.rotation];
-  const target = [-o.lon, -o.lat, 0];
-  const d0 = ((target[0] - start[0] + 540) % 360) - 180;
-  const t0 = performance.now();
-  const dur = 900;
-  (function step(t){
-    const k = clamp((t - t0)/dur, 0, 1);
-    const e = 1 - Math.pow(1-k, 3);
-    state.rotation[0] = start[0] + d0*e;
-    state.rotation[1] = start[1] + (target[1]-start[1])*e;
-    projection.rotate(state.rotation);
-    if(k<1) requestAnimationFrame(step);
-  })(t0);
+  if(!o || !map) return;
+  const lon = o.lon ?? o.lng;
+  if(typeof lon !== 'number' || typeof o.lat !== 'number') return;
+  map.flyTo({
+    center: [lon, o.lat],
+    zoom: Math.max(map.getZoom(), 3.2),
+    speed: 1.4,
+    curve: 1.4,
+  });
 }
 
 function matchesQuery(o, q){
@@ -1141,9 +869,13 @@ function fmtNum(n){
   return Number(n).toLocaleString();
 }
 
+// Cache the original detail-panel markup so renderPanelEmpty can swap to empty state
+// without destroying the static HTML that renderPanel() relies on (panEy, panName, etc.).
+let _panelDetailHTML = null;
 function renderPanelEmpty(){
   const ps = document.querySelector('.panel-scroll');
   if(!ps) return;
+  if(_panelDetailHTML === null) _panelDetailHTML = ps.innerHTML;
   const critical = OUTBREAKS.filter(o=>o.sev==='critical'||o.sev==='alert').length;
   ps.innerHTML = `
     <div style="padding:32px 20px 24px; text-align:center;">
@@ -1161,6 +893,11 @@ function renderPanelEmpty(){
 function renderPanel(){
   const o = currentSel();
   if(!o){ renderPanelEmpty(); return; }
+  // Restore the detail markup if a previous renderPanelEmpty replaced it
+  const ps = document.querySelector('.panel-scroll');
+  if(ps && _panelDetailHTML !== null && !document.getElementById('panEy')){
+    ps.innerHTML = _panelDetailHTML;
+  }
   const sev = SEV[o.sev];
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
@@ -1354,6 +1091,7 @@ document.getElementById('chips').addEventListener('click', e=>{
   b.classList.add('is-active');
   state.filter = b.dataset.f;
   renderList();
+  applyMarkerFilters();
 });
 
 /* search */
@@ -1533,6 +1271,7 @@ async function loadLiveData(){
       renderList();
       renderPanel();
       renderPopup();
+      addOutbreakMarkers();
     }
   } catch(e){
     console.warn('[EpiScope] Live data unavailable:', e.message);
@@ -1543,7 +1282,8 @@ async function loadLiveData(){
    BOOT
    ========================================================= */
 async function boot(){
-  resize();
+  initMap();
+  // Country topojson still loaded for the heatmap view (uses d3.geoNaturalEarth1)
   try{
     const res = await fetch('https://unpkg.com/world-atlas@2.0.2/countries-110m.json');
     const topo = await res.json();
@@ -1552,7 +1292,6 @@ async function boot(){
   renderList();
   renderPanel();
   renderPopup();
-  requestAnimationFrame(frame);
 
   // Load live data after globe is visible
   loadLiveData();
