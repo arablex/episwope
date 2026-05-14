@@ -29,6 +29,10 @@ export async function findByUnsubToken(t) {
   return findBy('unsubToken', t);
 }
 
+export async function findByEmail(email) {
+  return findBy('email', String(email).trim().toLowerCase());
+}
+
 async function findBy(field, value) {
   const s = store();
   const { blobs } = await s.list();
