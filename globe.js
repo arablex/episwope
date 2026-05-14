@@ -645,14 +645,14 @@ const CATEGORY_META = {
 function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
 function toggleCat(key){
   state.cats[key] = !state.cats[key];
-  // Update toggle button visual
+  // Monochrome chrome: only the .is-active class drives the visual.
   const btn = document.querySelector(`.cat-toggle[data-cat="${key}"]`);
   if(btn){
-    const meta = CATEGORY_META[key];
     btn.classList.toggle('is-active', state.cats[key]);
-    btn.style.borderColor = state.cats[key] ? meta.color : 'transparent';
-    btn.style.background  = state.cats[key] ? meta.color+'18' : '';
-    btn.style.color       = state.cats[key] ? meta.color : '';
+    // Clear any inline colour overrides left over from older revisions
+    btn.style.borderColor = '';
+    btn.style.background  = '';
+    btn.style.color       = '';
   }
   renderList();
   applyMarkerFilters();
@@ -904,7 +904,20 @@ function addOutbreakMarkers(){
   for(const o of OUTBREAKS){
     if(markersById[o.id]) continue;
     const el = document.createElement('div');
-    el.className = `ep-marker ${o.sev === 'critical' ? 'crit' : o.sev}`;
+    // base severity class + air variant for air-quality events
+    const sevClass = o.sev === 'critical' ? 'crit' : o.sev;
+    const isAir = (o.type === 'air');
+    el.className = `ep-marker ${sevClass}${isAir ? ' is-air' : ''}`;
+    // halo radius scales with case load (log) — clamp to a sane range
+    if(isAir){
+      // air uses AQI severity directly, fixed bigger soft area
+      el.style.setProperty('--r', '52px');
+    } else {
+      const cases = Number(o.cases) || 0;
+      // 22px base → 56px at 1M+ cases
+      const r = Math.round(22 + Math.min(34, Math.log10(Math.max(10, cases)) * 6));
+      el.style.setProperty('--r', `${r}px`);
+    }
     el.dataset.id = o.id;
     el.title = (o.name || '') + ' — ' + (o.country || '');
     el.addEventListener('click', (ev) => {

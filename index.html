@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
 <meta property="og:title" content="EpiScope — Global Disease Surveillance">
 <meta property="og:description" content="Real-time outbreak monitoring: WHO, ProMED, ECDC data on an interactive globe.">
@@ -57,8 +57,8 @@
       0 6px 18px -8px rgba(28,24,18,0.07),
       inset 0 1px 0 rgba(255,255,255,0.82);
 
-    --sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", system-ui, sans-serif;
-    --display: "Fraunces", "SF Pro Display", -apple-system, system-ui, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    --display: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --online: #19A463;
     --online-bg: rgba(25,164,99,0.10);
   }
@@ -101,45 +101,49 @@
     box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
   .events-bar-h{
-    display:flex; align-items:baseline; justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between;
   }
   .events-bar-h .t{
-    font-family:var(--display);
-    font-size:22px; font-weight:900; letter-spacing:-0.04em;
+    font-size:13px; font-weight:800; letter-spacing:-0.005em;
     color:var(--ink);
   }
   .events-bar-h .all{
-    font-size:12px; color:var(--muted); display:inline-flex; align-items:center; gap:4px;
+    font-size:11.5px; font-weight:600; color:var(--muted); display:inline-flex; align-items:center; gap:4px;
   }
-  .events-bar-h .all:hover{ color:var(--ink); }
+  .events-bar-h .all:hover{ color:var(--accent); }
   .events-row{
     display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
     scrollbar-width:thin; scrollbar-color:#d6d3c8 transparent;
-    padding-bottom:4px;
+    padding:2px 2px 8px;
+    scroll-snap-type:x proximity;
   }
   .events-row::-webkit-scrollbar{ height:6px; }
+  .events-row::-webkit-scrollbar-track{ background:transparent; }
   .events-row::-webkit-scrollbar-thumb{ background:#d6d3c8; border-radius:99px; }
+  .events-row::-webkit-scrollbar-thumb:hover{ background:#a8a59a; }
   .ev-card{
-    flex:0 0 232px;
-    background:#FAF8F2;
+    flex:0 0 222px;
+    background:#fff;
     border:1px solid var(--line);
-    border-radius:12px;
-    padding:11px 13px 12px;
-    display:flex; flex-direction:column; gap:6px;
+    border-radius:14px;
+    padding:13px 14px;
+    display:flex; flex-direction:column; gap:10px;
     cursor:pointer;
-    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    scroll-snap-align:start;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
   }
-  .ev-card:hover{ background:#fff; border-color:#d6d3c8; transform:translateY(-1px); }
-  .ev-card.is-selected{ background:#fff; border-color:var(--ink); }
-  .ev-card .top{ display:flex; align-items:center; justify-content:space-between; }
-  .ev-card .country{ font-size:10px; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:var(--ink); display:inline-flex; align-items:center; gap:6px; }
-  .ev-card .country .dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-  .ev-card .sev-tag{ font-size:9px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border-radius:99px; }
-  .ev-card .name{ font-family:var(--display); font-size:21px; font-weight:900; letter-spacing:-0.04em; line-height:1.05; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ev-card .stats{ display:flex; gap:14px; margin-top:auto; }
-  .ev-card .stat .v{ font-family:var(--display); font-size:18px; font-weight:900; letter-spacing:-0.04em; line-height:1; color:var(--ink); }
+  .ev-card:hover{ border-color:#bcb9ad; box-shadow:0 6px 18px -10px rgba(20,18,14,0.14); transform:translateY(-1px); }
+  .ev-card.is-selected{ border-color:var(--ink); box-shadow:0 6px 18px -10px rgba(20,18,14,0.20); }
+  .ev-card .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .ev-card .country{ font-size:9.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-2); display:inline-flex; align-items:center; gap:6px; min-width:0; flex:1; }
+  .ev-card .country .dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .ev-card .country .nm-c{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev-card .sev-tag{ font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:3px 8px; border-radius:6px; flex-shrink:0; }
+  .ev-card .name{ font-size:14.5px; font-weight:800; letter-spacing:-0.012em; line-height:1.2; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev-card .stats{ display:flex; gap:20px; margin-top:auto; padding-top:2px; }
+  .ev-card .stat .v{ font-size:20px; font-weight:800; letter-spacing:-0.032em; line-height:1; color:var(--ink); }
   .ev-card .stat .v.red{ color:var(--s3); }
-  .ev-card .stat .k{ font-size:9.5px; color:var(--muted); margin-top:2px; }
+  .ev-card .stat .k{ font-size:10px; color:var(--muted); margin-top:4px; font-weight:500; }
   @media (max-width: 900px){
     .app{ grid-template-rows: 56px 1fr; }
     .events-bar{ display:none; }
@@ -400,20 +404,70 @@
   #globe .mapboxgl-ctrl-attrib{ background:rgba(255,255,255,0.7); }
   #globe .mapboxgl-ctrl-attrib a{ color:rgba(20,18,14,0.5); }
   #globe .mapboxgl-ctrl-logo{ opacity:.5; }
-  /* Custom marker style (rendered by Mapbox as DOM markers) */
+  /* ─── Map markers (Yandex/Google Maps refined style) ────────
+     Outer transparent halo = impact radius (scaled by .cases via inline --r)
+     Inner solid dot = severity color
+     Pulse on critical = subtle attention without noise */
   .ep-marker{
-    width:14px; height:14px; border-radius:50%;
-    border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.4);
-    cursor:pointer; transform:translate(-50%, -50%);
+    --r: 28px;                /* halo radius — set inline by JS based on cases */
+    --c: #C92A2A;             /* severity colour — set per .crit/.alert/.warning */
+    position:relative;
+    width:var(--r); height:var(--r);
+    transform:translate(-50%,-50%);
+    cursor:pointer;
+    display:grid; place-items:center;
+  }
+  /* halo */
+  .ep-marker::before{
+    content:'';
+    position:absolute; inset:0;
+    border-radius:50%;
+    background:var(--c);
+    opacity:.16;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  /* dot */
+  .ep-marker::after{
+    content:'';
+    width:9px; height:9px; border-radius:50%;
+    background:var(--c);
+    box-shadow:0 0 0 2px #fff, 0 1px 4px rgba(20,18,14,0.25);
+    position:relative; z-index:1;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .ep-marker:hover{ transform:translate(-50%, -50%) scale(1.25); box-shadow:0 2px 8px rgba(0,0,0,0.55); }
-  .ep-marker.is-sel{ transform:translate(-50%, -50%) scale(1.4); box-shadow:0 0 0 3px rgba(255,255,255,0.9), 0 0 0 4px #161513; }
-  .ep-marker.crit{ background:#C92A2A; }
-  .ep-marker.alert{ background:#E8590C; }
-  .ep-marker.warning{ background:#E4B514; }
-  .ep-marker.monitoring{ background:#1D6FA4; }
-  .ep-marker.low{ background:#1D6FA4; }
+  .ep-marker:hover::before{ opacity:.28; transform:scale(1.10); }
+  .ep-marker:hover::after { transform:scale(1.18); }
+  .ep-marker.is-sel::after{
+    transform:scale(1.3);
+    box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--c), 0 2px 8px rgba(20,18,14,0.30);
+  }
+  .ep-marker.is-sel::before{ opacity:.30; }
+  .ep-marker.crit{ --c:#C92A2A; }
+  .ep-marker.alert{ --c:#E8590C; }
+  .ep-marker.warning{ --c:#C28B0E; }
+  .ep-marker.monitoring{ --c:#1D6FA4; }
+  .ep-marker.low{ --c:#1D6FA4; }
+  /* Critical pulse — subtle, no aggressive flashing */
+  .ep-marker.crit::before{ animation: ep-pulse 2.8s ease-in-out infinite; }
+  @keyframes ep-pulse{
+    0%,100%{ opacity:.16; transform:scale(1); }
+    50%    { opacity:.30; transform:scale(1.12); }
+  }
+  /* ─── Air-quality layer: soft gradient blob, AQI colour ramp.
+     hazardous=red → unhealthy=orange → moderate=amber → good=green.
+     For air markers we override the severity colour mapping. */
+  .ep-marker.is-air{ --r:52px; --c:#19A463; }
+  .ep-marker.is-air::before{
+    background:radial-gradient(circle, var(--c) 0%, var(--c) 22%, transparent 75%);
+    opacity:.50;
+    animation:none; /* no critical pulse on air blobs */
+  }
+  .ep-marker.is-air::after{ display:none; }
+  .ep-marker.is-air.crit       { --c:#C92A2A; }  /* AQI > 200 hazardous   */
+  .ep-marker.is-air.alert      { --c:#E8590C; }  /* AQI 150-200 unhealthy */
+  .ep-marker.is-air.warning    { --c:#E4B514; }  /* AQI 100-150 moderate  */
+  .ep-marker.is-air.monitoring { --c:#19A463; }  /* AQI < 100 good        */
+  .ep-marker.is-air.low        { --c:#19A463; }
 
   /* floating UI on stage */
   .stage-corner{
@@ -747,20 +801,30 @@
   .cp-rec-text{ font-size:12.5px; line-height:1.65; color:var(--ink-2); }
   .cp-watch-btn{ width:100%; }
 
-  /* ── Category toggles ── */
-  .cat-toggles{ display:flex; flex-wrap:wrap; gap:5px; padding:0 16px 12px; }
+  /* ── Category toggles (monochrome + small severity dot accent) ── */
+  .cat-toggles{ display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px; }
   .cat-toggle{
-    display:inline-flex; align-items:center; gap:5px;
-    height:26px; padding:0 10px;
+    display:inline-flex; align-items:center; gap:6px;
+    height:28px; padding:0 11px;
     border-radius:var(--r-pill);
-    font-size:11px; font-weight:600;
+    font-size:11.5px; font-weight:600;
     border:1px solid var(--line);
     color:var(--muted);
-    cursor:pointer; transition:all .15s;
-    background:none;
+    cursor:pointer;
+    background:#fff;
+    transition:border-color .15s, background .15s, color .15s;
   }
-  .cat-toggle.is-active{ color:inherit; }
-  .cat-toggle .cat-icon{ font-size:12px; line-height:1; }
+  .cat-toggle:hover{ border-color:#bcb9ad; color:var(--ink-2); }
+  .cat-toggle.is-active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:#fff;
+  }
+  .cat-toggle .cat-icon{
+    width:13px; height:13px; display:inline-flex; align-items:center; justify-content:center;
+    color:currentColor;
+  }
+  .cat-toggle .cat-icon svg{ display:block; }
 
   /* ── Country search ── */
   .country-search-wrap{ position:relative; margin-bottom:10px; }
@@ -1355,11 +1419,11 @@
       </div>
 
         <div class="cat-toggles" id="catToggles">
-          <button class="cat-toggle is-active" data-cat="epidemic"     style="border-color:#C92A2A18;background:#C92A2A18;color:#C92A2A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>Epidemics</button>
-          <button class="cat-toggle is-active" data-cat="disaster"     style="border-color:#1D6FA418;background:#1D6FA418;color:#1D6FA4"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>Disasters</button>
-          <button class="cat-toggle is-active" data-cat="air"          style="border-color:#6B7F3A18;background:#6B7F3A18;color:#6B7F3A"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>Air</button>
-          <button class="cat-toggle is-active" data-cat="food"         style="border-color:#A0522D18;background:#A0522D18;color:#A0522D"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>Food</button>
-          <button class="cat-toggle is-active" data-cat="humanitarian" style="border-color:#8B5CF618;background:#8B5CF618;color:#8B5CF6"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>Humanitarian</button>
+          <button class="cat-toggle is-active" data-cat="epidemic"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>Epidemics</button>
+          <button class="cat-toggle is-active" data-cat="disaster"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>Disasters</button>
+          <button class="cat-toggle is-active" data-cat="air"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>Air</button>
+          <button class="cat-toggle is-active" data-cat="food"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>Food</button>
+          <button class="cat-toggle is-active" data-cat="humanitarian"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>Humanitarian</button>
         </div>
       <div class="side-section country-search-wrap">
           <input id="countrySearch" placeholder="Поиск страны или country…" autocomplete="off">
