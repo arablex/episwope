@@ -1336,6 +1336,26 @@
     .spark { height: 50px; }
   }
 
+  /* country profile — subscribe form */
+  .cp-subscribe { margin-top:14px; padding:14px; background:#FAF8F2; border:1px solid var(--line); border-radius:12px; }
+  .cp-sub-label { display:block; font-size:11.5px; font-weight:600; color:var(--ink-2); margin-bottom:8px; }
+  .cp-sub-row { display:flex; gap:6px; }
+  .cp-sub-input {
+    flex:1; height:34px; padding:0 11px;
+    border:1px solid var(--line); border-radius:9px;
+    font:inherit; font-size:13px; color:var(--ink);
+    background:#fff; outline:none; transition:border-color .15s;
+  }
+  .cp-sub-input:focus { border-color:var(--accent); }
+  .cp-sub-btn {
+    height:34px; padding:0 14px;
+    background:var(--ink); color:#fff;
+    border-radius:9px; font:inherit; font-size:12.5px; font-weight:600;
+    cursor:pointer; transition:opacity .15s;
+  }
+  .cp-sub-btn:hover { opacity:.92; }
+  .cp-sub-btn:disabled { opacity:.5; cursor:wait; }
+  .cp-sub-status { font-size:11.5px; color:var(--muted); margin-top:8px; min-height:14px; }
 </style>
 </head>
 <body>
