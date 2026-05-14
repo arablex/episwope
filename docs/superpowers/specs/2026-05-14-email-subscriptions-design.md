@@ -62,7 +62,7 @@ Phase 1 must ship completely (frontend form + backend function + cron + verifica
 | Concern | Pick | Why |
 |---|---|---|
 | Email API | **Resend** | 3 000 emails/month free; clean JSON API |
-| Sender domain | **`noreply@episwope.ru`** | DNS is on Netlify; SPF + DKIM + DMARC records cost nothing |
+| Sender domain | **`noreply@episcope.ru`** | DNS is on Netlify; SPF + DKIM + DMARC records cost nothing |
 | Storage | **Netlify Blobs** | KV store built into the Netlify plan; no extra service |
 | Forms / endpoints | **Netlify Functions** (Node 20) | Already on Netlify; serverless, free tier |
 | Cron | **Existing GitHub Action** | Already runs every 12 h; just one extra step |
@@ -123,7 +123,7 @@ Tokens are random 32-char URL-safe strings. They are part of the URL — no othe
    - If existing `pending` or `verified`: appends the country to `countries`, re-sends a verification email **only if** status is `pending`
    - Sends verification email through Resend
 5. Frontend shows: **"Проверь почту. Мы прислали ссылку для подтверждения."**
-6. User clicks `https://episwope.ru/api/verify?t=<verifyToken>` → function marks `status: 'verified'`, redirects to a small thank-you page
+6. User clicks `https://episcope.ru/api/verify?t=<verifyToken>` → function marks `status: 'verified'`, redirects to a small thank-you page
 7. From now on the email is included in the weekly digest for each country in `countries`
 
 ### 5.2 Weekly digest (cron, in GitHub Action)
@@ -145,7 +145,7 @@ Cron retries are safe because of the `lastDigestSentAt < 6 days ago` guard. If a
 
 ### 5.3 Unsubscribe
 
-GET `https://episwope.ru/api/unsubscribe?t=<unsubToken>` → mark `status: 'unsubscribed'`, render a "you have been unsubscribed" page, no confirmation step required (compliance: must be one-click).
+GET `https://episcope.ru/api/unsubscribe?t=<unsubToken>` → mark `status: 'unsubscribed'`, render a "you have been unsubscribed" page, no confirmation step required (compliance: must be one-click).
 
 ---
 
@@ -186,7 +186,7 @@ SOURCES
 
 Footer:
   You receive this weekly because you subscribed to {countries}.
-  Unsubscribe: https://episwope.ru/api/unsubscribe?t=...
+  Unsubscribe: https://episcope.ru/api/unsubscribe?t=...
 ```
 
 No marketing copy. No "click to read more." Plain, sourced, finite.
@@ -225,7 +225,7 @@ No marketing copy. No "click to read more." Plain, sourced, finite.
 
 ## 9. Implementation steps (high-level, to expand in the plan doc)
 
-1. **Resend account + DNS** — sign up; add SPF, DKIM, DMARC records to Netlify DNS for `episwope.ru`; verify in Resend dashboard
+1. **Resend account + DNS** — sign up; add SPF, DKIM, DMARC records to Netlify DNS for `episcope.ru`; verify in Resend dashboard
 2. **Netlify Blobs setup** — enable on the site; the blob store will be named `subscribers`
 3. **`/.netlify/functions/subscribe`** — Node 20 function; validates input, writes to Blobs, sends verification email
 4. **`/.netlify/functions/verify`** — Marks record verified; redirects to `/thanks-subscribe.html`
@@ -264,6 +264,6 @@ No marketing copy. No "click to read more." Plain, sourced, finite.
 None at the moment. All four input questions were answered by the user:
 
 - Email provider — Resend, free tier
-- Sender domain — `noreply@episwope.ru`, DNS configured on Netlify
+- Sender domain — `noreply@episcope.ru`, DNS configured on Netlify
 - Language — match the page the user subscribed on
 - Phasing — ship in 3 phases, starting with "Watch country"

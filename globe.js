@@ -647,9 +647,14 @@ function renderCountryPanel(country){
     </div>
 
     <div class="cp-section">
-      <button class="btn ghost cp-watch-btn" id="cpWatchBtn" style="${watchedState?'border-color:var(--accent);color:var(--accent)':''}">
-        ${watchedState ? L.watching : L.watchCountry}
-      </button>
+      <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
+        <label class="cp-sub-label">${LANG==='ru' ? 'Спокойный недельный digest на email' : 'Calm weekly digest by email'}</label>
+        <div class="cp-sub-row">
+          <input type="email" class="cp-sub-input" name="email" required placeholder="${LANG==='ru' ? 'твой email' : 'your email'}" autocomplete="email">
+          <button type="submit" class="cp-sub-btn">${LANG==='ru' ? 'Следить' : 'Watch'}</button>
+        </div>
+        <div class="cp-sub-status" aria-live="polite"></div>
+      </form>
     </div>
   `;
 
@@ -658,11 +663,42 @@ function renderCountryPanel(country){
     selectCountry(null);
   });
 
-  // Wire watch button
-  document.getElementById('cpWatchBtn').addEventListener('click', ()=>{
-    toggleWatch(country);
-    renderCountryPanel(country); // re-render to update button
-  });
+  // Wire subscribe form
+  const subForm = document.querySelector('.cp-subscribe');
+  if (subForm) {
+    subForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = subForm.querySelector('.cp-sub-btn');
+      const statusEl = subForm.querySelector('.cp-sub-status');
+      const email = subForm.querySelector('.cp-sub-input').value.trim();
+      if (!email) return;
+      btn.disabled = true;
+      statusEl.textContent = LANG === 'ru' ? 'Отправляем…' : 'Sending…';
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            country: subForm.dataset.country,
+            lang: subForm.dataset.lang,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'failed');
+        statusEl.textContent = LANG === 'ru'
+          ? 'Проверь почту — там ссылка для подтверждения.'
+          : 'Check your inbox to confirm.';
+        subForm.querySelector('.cp-sub-input').value = '';
+      } catch (err) {
+        statusEl.textContent = LANG === 'ru'
+          ? 'Не удалось подписаться. Попробуй ещё раз.'
+          : 'Subscription failed. Try again.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
 }
 
 const SEV = {
@@ -1004,6 +1040,10 @@ function hexA(h, a){
   const g = parseInt(h.slice(3,5),16);
   const b = parseInt(h.slice(5,7),16);
   return `rgba(${r},${g},${b},${a})`;
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /* =========================================================
