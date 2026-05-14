@@ -846,7 +846,7 @@ const state = {
   query: '',
   selectedId: null,
   selectedCountry: null,
-  cats: { epidemic:true, disaster:false, air:false, food:false, humanitarian:false },
+  cats: { epidemic:true, disaster:true, air:false, food:false, humanitarian:false },
   hoveredId: null,
   countries: [],
   t: 0,
@@ -1359,26 +1359,110 @@ document.getElementById('chips').addEventListener('click', e=>{
   applyMarkerFilters();
 });
 
-/* search */
+/* Global header search — searches outbreaks AND countries in one dropdown.
+   Outbreaks group → selectOutbreak(id). Countries group → selectCountry(en).  */
 const _searchEl = document.getElementById('searchInput');
+const _gDrop    = document.getElementById('globalDropdown');
 if(_searchEl){
   let _searchTimer;
+  const closeDrop = () => { if(_gDrop) _gDrop.classList.remove('on'); };
+  const openDrop  = () => { if(_gDrop) _gDrop.classList.add('on'); };
+
+  const renderGlobal = (rawQuery) => {
+    if(!_gDrop) return;
+    const q = (rawQuery||'').trim();
+    const ql = q.toLowerCase();
+
+    // 1) Outbreak matches (max 6) — search name, country, pathogen, code, place
+    const obMatches = OUTBREAKS.filter(o => {
+      if(!ql) return false;
+      const hay = [o.name, o.country, o.pathogen, o.code, o.place, o.region]
+        .filter(Boolean).join(' ').toLowerCase();
+      return ql.split(/\s+/).every(w => hay.includes(w));
+    }).slice(0, 6);
+
+    // 2) Country matches (max 8) — by EN or RU; empty query → countries WITH outbreaks
+    const outbreakCountFor = (en) => OUTBREAKS.filter(o => {
+      if(o.country === en) return true;
+      const c = findCountry(o.country); return c && c.en === en;
+    }).length;
+    const cMatches = ALL_COUNTRIES.filter(c =>
+      !ql ? outbreakCountFor(c.en) > 0
+          : (c.en.toLowerCase().includes(ql) || c.ru.toLowerCase().includes(ql))
+    ).slice(0, 8);
+
+    if(!obMatches.length && !cMatches.length){
+      _gDrop.innerHTML = `<div class="g-empty">${LANG==='ru'?'Ничего не найдено':'No matches'}</div>`;
+      openDrop();
+      return;
+    }
+
+    let html = '';
+    if(obMatches.length){
+      html += `<div class="g-drop-h">${LANG==='ru'?'Вспышки':'Outbreaks'}</div>`;
+      html += obMatches.map(o => {
+        const sev = SEV[o.sev] || SEV.warning;
+        const ini = (o.country||'??').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        const sevLabel = (LANG==='ru'
+          ? {critical:'Крит.', alert:'Алерт', warning:'Средн.', monitoring:'Низк.', low:'Низк.'}
+          : {critical:'Crit.', alert:'Alert', warning:'Warning', monitoring:'Monitor', low:'Low'})[o.sev] || o.sev;
+        return `<div class="g-row" data-kind="outbreak" data-id="${o.id}">
+          <span class="sq" style="background:${hexA(sev.color,0.12)};color:${sev.color};">${ini}</span>
+          <span class="info"><span class="nm">${diseaseName(o)}</span><span class="sub">${countryName(o.country)} · ${regionName(o.region)}</span></span>
+          <span class="tag" style="background:${hexA(sev.color,0.12)};color:${sev.color};">${sevLabel}</span>
+        </div>`;
+      }).join('');
+    }
+    if(cMatches.length){
+      html += `<div class="g-drop-h">${LANG==='ru'?'Страны':'Countries'}</div>`;
+      html += cMatches.map(c => {
+        const n = outbreakCountFor(c.en);
+        const tag = n > 0
+          ? `<span class="tag" style="background:rgba(232,89,12,0.12);color:var(--accent);">${n}</span>`
+          : `<span class="tag" style="background:var(--line-soft);color:var(--muted);">—</span>`;
+        return `<div class="g-row" data-kind="country" data-name="${c.en}">
+          <span class="flag">${flagEmoji(c.iso2)}</span>
+          <span class="info"><span class="nm">${LANG==='ru'?c.ru:c.en}</span><span class="sub">${LANG==='ru'?'Профиль страны':'Country profile'}</span></span>
+          ${tag}
+        </div>`;
+      }).join('');
+    }
+    _gDrop.innerHTML = html;
+    openDrop();
+
+    _gDrop.querySelectorAll('.g-row').forEach(el => {
+      el.addEventListener('click', () => {
+        if(el.dataset.kind === 'outbreak'){
+          selectOutbreak(el.dataset.id);
+        } else if(el.dataset.kind === 'country'){
+          selectCountry(el.dataset.name);
+        }
+        closeDrop();
+        _searchEl.blur();
+      });
+    });
+  };
+
+  _searchEl.addEventListener('focus', () => renderGlobal(_searchEl.value));
   _searchEl.addEventListener('input', e=>{
     clearTimeout(_searchTimer);
     _searchTimer = setTimeout(()=>{
       state.query = e.target.value.trim();
-      // Switch to globe view if in another view
-      if(state.query && currentView !== 'globe') switchView('globe');
+      renderGlobal(_searchEl.value);
       renderList();
-    }, 180);
+    }, 140);
   });
+  document.addEventListener('click', e=>{
+    if(!_searchEl.contains(e.target) && !(_gDrop && _gDrop.contains(e.target))) closeDrop();
+  });
+
   // ⌘K / Ctrl+K focus shortcut
   document.addEventListener('keydown', e=>{
     if((e.metaKey||e.ctrlKey) && e.key==='k'){
       e.preventDefault(); _searchEl.focus(); _searchEl.select();
     }
     if(e.key==='Escape' && document.activeElement===_searchEl){
-      _searchEl.value=''; state.query=''; renderList(); _searchEl.blur();
+      _searchEl.value=''; state.query=''; renderList(); closeDrop(); _searchEl.blur();
     }
   });
 }
