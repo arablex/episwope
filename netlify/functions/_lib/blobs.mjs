@@ -7,29 +7,51 @@ function store() {
   return getStore({ name: STORE_NAME, consistency: 'strong' });
 }
 
-/** Read a subscriber record by sha256(email). Returns null if missing. */
 export async function getSubscriber(emailHash) {
   const json = await store().get(emailHash, { type: 'json' });
   return json || null;
 }
 
-/** Write a subscriber record. */
 export async function putSubscriber(emailHash, record) {
   await store().setJSON(emailHash, record);
 }
 
-/** Remove a subscriber (used for stale pending sweeps). */
 export async function deleteSubscriber(emailHash) {
   await store().delete(emailHash);
 }
 
-/** Iterate ALL subscribers (used by the digest cron from Python via a tiny lister endpoint, NOT yet implemented in Phase 1). */
-export async function listSubscribers() {
-  const { blobs } = await store().list();
-  const records = [];
+/** Walk every blob and find the record whose verifyToken === t. O(n) — fine for Phase 1. */
+export async function findByVerifyToken(t) {
+  return findBy('verifyToken', t);
+}
+
+export async function findByUnsubToken(t) {
+  return findBy('unsubToken', t);
+}
+
+async function findBy(field, value) {
+  const s = store();
+  const { blobs } = await s.list();
   for (const b of blobs) {
-    const json = await store().get(b.key, { type: 'json' });
-    if (json) records.push(json);
+    const json = await s.get(b.key, { type: 'json' });
+    if (json && json[field] === value) {
+      json.__key = b.key;
+      return json;
+    }
   }
-  return records;
+  return null;
+}
+
+export async function listAllVerified() {
+  const s = store();
+  const { blobs } = await s.list();
+  const out = [];
+  for (const b of blobs) {
+    const json = await s.get(b.key, { type: 'json' });
+    if (json && json.status === 'verified') {
+      json.__key = b.key;
+      out.push(json);
+    }
+  }
+  return out;
 }
