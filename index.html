@@ -145,18 +145,16 @@
     .events-bar{ display:none; }
   }
 
-  /* ============ TOPBAR (floating pill) ============ */
+  /* ============ TOPBAR (clean light pill) ============ */
   .topbar{
     grid-column:1 / -1;
-    background:var(--glass-bg);
-    backdrop-filter:blur(28px) saturate(160%);
-    -webkit-backdrop-filter:blur(28px) saturate(160%);
-    border:1px solid var(--glass-bd);
-    border-radius:var(--r-pill);
-    box-shadow:var(--glass-shadow);
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:18px;
     display:flex; align-items:center; gap:14px;
-    padding:0 8px 0 18px;
+    padding:0 10px 0 18px;
     z-index:20;
+    box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
   .brand-mark{
     width:34px; height:34px; border-radius:11px;
@@ -174,14 +172,14 @@
 
   .search{
     display:flex; align-items:center; gap:10px;
-    height:40px; min-width:300px;
-    padding:0 14px;
-    background:rgba(255,255,255,0.66);
-    border:1px solid rgba(229,227,220,0.7);
+    height:40px; min-width:420px; max-width:520px; flex:1 1 420px;
+    padding:0 16px;
+    background:#fff;
+    border:1px solid var(--line);
     border-radius:var(--r-pill);
     transition:border-color .15s;
   }
-  .search:focus-within{ border-color:rgba(232,89,12,0.45); background:#fff; }
+  .search:focus-within{ border-color:var(--accent); }
   .search input{
     border:0; outline:0; background:transparent; font-family:inherit;
     font-size:13px; width:100%; color:var(--ink);
@@ -251,14 +249,12 @@
 
   /* ============ SIDEBAR (floating glass) ============ */
   .sidebar{
-    background:var(--glass-bg);
-    backdrop-filter:blur(28px) saturate(160%);
-    -webkit-backdrop-filter:blur(28px) saturate(160%);
-    border:1px solid var(--glass-bd);
-    border-radius:var(--r-xl);
-    box-shadow:var(--glass-shadow);
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:18px;
     display:flex; flex-direction:column;
     min-height:0; overflow:hidden;
+    box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
   .side-section{ padding:18px 20px; border-bottom:1px solid rgba(229,227,220,0.6); }
   .side-section:last-of-type{ border-bottom:0; }
@@ -569,15 +565,13 @@
 
   /* ============ RIGHT PANEL ============ */
   .panel{
-    background:var(--glass-bg);
-    backdrop-filter:blur(28px) saturate(160%);
-    -webkit-backdrop-filter:blur(28px) saturate(160%);
-    border:1px solid var(--glass-bd);
-    border-radius:var(--r-xl);
-    box-shadow:var(--glass-shadow);
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:18px;
     overflow:hidden;
     display:flex; flex-direction:column;
     min-height:0;
+    box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
   .panel-scroll{ overflow-y:auto; scrollbar-width:thin; scrollbar-color:#cfccc1 transparent; flex:1; min-height:0;}
   .panel-scroll::-webkit-scrollbar{ width:6px;}
@@ -887,6 +881,16 @@
   .app.v-reports .stage{ grid-column:2 / -1; }
   .app.v-pathogens .panel,
   .app.v-reports .panel{ display:none; }
+
+  /* List view: collapse stage + panel, expand events bar to fill */
+  .app.v-list .stage{ display:none; }
+  .app.v-list .panel{ display:none; }
+  .app.v-list .events-bar{ grid-row:1 / 4; grid-column:2 / -1; }
+  .app.v-list .events-row{ flex-wrap:wrap; align-content:flex-start; }
+  .app.v-list .ev-card{ flex:0 0 calc(25% - 8px); }
+  @media (max-width: 1100px){
+    .app.v-list .ev-card{ flex:0 0 calc(33.33% - 8px); }
+  }
 
   /* ============ HEATMAP ============ */
   .heatmap-wrap{
@@ -1294,14 +1298,19 @@
       <span class="kbd">⌘K</span>
     </label>
 
-    <div class="top-tabs">
-      <button class="top-tab is-active">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
-        Globe
+    <div class="top-tabs view-toggle">
+      <button class="top-tab is-active" data-view="globe" aria-label="3D globe view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        3D
       </button>
-      <button class="top-tab">Heatmap</button>
-      <button class="top-tab">Pathogens</button>
-      <button class="top-tab">Reports</button>
+      <button class="top-tab" data-view="heatmap" aria-label="Flat map view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+        Карта
+      </button>
+      <button class="top-tab" data-view="list" aria-label="List view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Список
+      </button>
     </div>
 
     <div class="top-meta">
@@ -1312,12 +1321,6 @@
 
     <div class="top-actions">
       <a href="/ru/" class="lang-btn" title="Русская версия">RU</a>
-      <button class="icon-btn" title="Layers" aria-label="Map layers">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 12 10 6 10-6"/><path d="m2 16 10 6 10-6"/></svg>
-      </button>
-      <button class="icon-btn" title="Profile" aria-label="User profile">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-      </button>
       <button class="pill-btn" id="newAlertBtn" onclick="document.getElementById('subEmail').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('subEmail').focus(),350)">
         <span class="accent-dot"></span>
         Get Alerts

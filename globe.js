@@ -1726,44 +1726,39 @@ const REPORTS_DATA = [
    VIEW SWITCHING
    ========================================================= */
 const APP = document.getElementById('app');
-const VIEW_NAMES = ['globe','heatmap','pathogens','reports'];
+const VIEW_NAMES = ['globe','heatmap','list'];
 let currentView = 'globe';
 
 function switchView(name){
   if(!VIEW_NAMES.includes(name)) return;
   currentView = name;
-
-  // Update app class (handles grid layout)
   APP.className = `app v-${name}`;
-
   // Show/hide view containers
   VIEW_NAMES.forEach(v => {
     const el = document.getElementById(`view-${v}`);
     if(el) el.classList.toggle('is-active', v === name);
   });
-
-  // Update tab buttons
-  document.querySelectorAll('.top-tab').forEach((tab, i) => {
-    tab.classList.toggle('is-active', i === VIEW_NAMES.indexOf(name));
+  // Update tab buttons via data-view (more robust than index)
+  document.querySelectorAll('.top-tab[data-view]').forEach(tab => {
+    tab.classList.toggle('is-active', tab.dataset.view === name);
   });
-
-  // Switch sidebar sections
+  // Sidebar visibility (only globe sidebar exists now)
   const sg = document.querySelector('.sidebar-globe');
-  const sp = document.querySelector('.sidebar-pathogens');
-  const sr = document.querySelector('.sidebar-reports');
-  if(sg) sg.classList.toggle('hidden', name === 'pathogens' || name === 'reports');
-  if(sp) sp.classList.toggle('hidden', name !== 'pathogens');
-  if(sr) sr.classList.toggle('hidden', name !== 'reports');
+  if(sg) sg.classList.remove('hidden');
 
-  // Initialize view content
-  if(name === 'heatmap')    renderHeatmap();
-  if(name === 'pathogens')  renderPathogens();
-  if(name === 'reports')    renderReports();
+  // Switch Mapbox projection between globe/mercator
+  if(map){
+    if(name === 'globe')   map.setProjection({ name:'globe' });
+    if(name === 'heatmap') map.setProjection({ name:'mercator' });
+  }
+  // Initialize content
+  if(name === 'heatmap')    renderHeatmap && renderHeatmap();
+  if(name === 'list')       { /* bottom row already always-on; list view expands it */ }
 }
 
-// Wire up top tabs
-document.querySelectorAll('.top-tab').forEach((tab, i) => {
-  tab.addEventListener('click', () => switchView(VIEW_NAMES[i]));
+// Wire up top tabs by data-view (3D / Карта / Список)
+document.querySelectorAll('.top-tab[data-view]').forEach(tab => {
+  tab.addEventListener('click', () => switchView(tab.dataset.view));
 });
 
 /* =========================================================
