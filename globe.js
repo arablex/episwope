@@ -470,9 +470,54 @@ function toggleWatch(country){
   if(WATCHED.has(country)) WATCHED.delete(country);
   else WATCHED.add(country);
   localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
-  // re-render is triggered by the caller (renderPanel or renderCountryPanel)
+  renderMyCountries();
+  // additional re-render is triggered by the caller (renderPanel or renderCountryPanel)
 }
 function isWatched(country){ return WATCHED.has(country); }
+
+/** Render the "My countries" sidebar section from the WATCHED Set.
+ *  Empty state explains how to add countries. Each row clicks to the
+ *  country profile; trailing × removes from the watch list. */
+function renderMyCountries(){
+  const root = document.getElementById('myCountries');
+  const count = document.getElementById('myCountriesCount');
+  if(!root) return;
+  const list = [...WATCHED].sort((a,b)=> countryName(a).localeCompare(countryName(b)));
+  if(count) count.textContent = list.length;
+  if(!list.length){
+    root.innerHTML = `<div class="mc-empty">${LANG==='ru'
+      ? 'Подпишись на страну в правой панели — она появится здесь.'
+      : 'Watch a country from the right panel — it lands here.'}</div>`;
+    return;
+  }
+  root.innerHTML = list.map(c => {
+    const meta = findCountry(c);
+    const flag = meta ? flagEmoji(meta.iso2) : '';
+    const n = OUTBREAKS.filter(o => o.country === c || (findCountry(o.country)?.en === c)).length;
+    const isSel = state.selectedCountry === c;
+    const cntCls = n > 0 ? 'cnt has' : 'cnt';
+    const cntText = n > 0 ? String(n) : '—';
+    return `<div class="mc-row${isSel ? ' is-selected' : ''}" data-country="${c.replace(/"/g,'&quot;')}">
+      <span class="flag">${flag}</span>
+      <span class="nm">${countryName(c)}</span>
+      <span class="${cntCls}">${cntText}</span>
+      <span class="x" data-remove="${c.replace(/"/g,'&quot;')}" title="${LANG==='ru'?'Удалить':'Remove'}">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </span>
+    </div>`;
+  }).join('');
+  root.querySelectorAll('.mc-row').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const x = e.target.closest('[data-remove]');
+      if(x){
+        e.stopPropagation();
+        toggleWatch(x.dataset.remove);
+      } else {
+        selectCountry(el.dataset.country);
+      }
+    });
+  });
+}
 
 /* ── Country Profile ─────────────────────────────────────── */
 function getUniqueCountries(){
@@ -496,6 +541,7 @@ function selectCountry(country){
   renderList();
   if(country) renderCountryPanel(country);
   else renderPanel();
+  renderMyCountries();
 }
 
 function generateRecommendation(country, outbreaks){
@@ -1641,6 +1687,7 @@ async function boot(){
   renderList();
   renderPanel();
   renderPopup();
+  renderMyCountries();
 
   // Load live data after globe is visible
   loadLiveData();
