@@ -413,6 +413,19 @@
   .food-see-all:hover{ color:var(--ink); }
   .food-empty  { font-size:12px; color:var(--muted); padding:8px 0; }
 
+  /* ── Health Weather (panel) ────────────────────────────── */
+  .hw-row{ display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid var(--line-2); }
+  .hw-row:last-child{ border-bottom:0; }
+  .hw-icon{ font-size:13px; width:18px; text-align:center; flex-shrink:0; }
+  .hw-key{ flex:1; font-size:12px; color:var(--muted); font-weight:500; }
+  .hw-badge{ font-size:11px; font-weight:700; padding:2px 9px; border-radius:var(--r-pill); }
+  .hw-good    { background:rgba(25,164,99,0.12);  color:#19A463; }
+  .hw-moderate{ background:rgba(228,181,20,0.14); color:#B8900A; }
+  .hw-unhealthy{ background:rgba(232,89,12,0.12); color:#E8590C; }
+  .hw-hazardous{ background:rgba(201,42,42,0.12); color:#C92A2A; }
+  .hw-loading { color:var(--muted-2); font-size:11px; font-style:italic; }
+  .hw-na      { color:var(--muted-2); font-size:11px; }
+
   .status-foot{
     padding:12px 18px;
     border-top:1px solid rgba(229,227,220,0.6);
@@ -2102,6 +2115,11 @@
 
       <div class="panel-section">
         <div id="travelStatus"></div>
+      </div>
+
+      <div class="panel-section" id="hwSection">
+        <div class="lbl">Health Conditions <em>Today</em></div>
+        <div id="hwContent"><span class="hw-loading">loading…</span></div>
       </div>
 
       <div class="panel-section">

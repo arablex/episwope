@@ -2010,6 +2010,78 @@ function renderPanelEmpty(){
     </div>`;
 }
 
+// ── Health Weather ────────────────────────────────────────────
+function aqiInfo(v){
+  if(v==null) return null;
+  if(v<=50)  return {label:`Good · ${v}`,       cls:'hw-good'};
+  if(v<=100) return {label:`Moderate · ${v}`,   cls:'hw-moderate'};
+  if(v<=150) return {label:`Sensitive · ${v}`,  cls:'hw-unhealthy'};
+  if(v<=200) return {label:`Unhealthy · ${v}`,  cls:'hw-unhealthy'};
+  return            {label:`Hazardous · ${v}`,  cls:'hw-hazardous'};
+}
+
+function pollenInfo(val){
+  if(!val || val<=0) return null;
+  if(val<10)  return {label:LANG==='ru'?'Низкая':'Low',          cls:'hw-good'};
+  if(val<30)  return {label:LANG==='ru'?'Умеренная':'Moderate',  cls:'hw-moderate'};
+  if(val<70)  return {label:LANG==='ru'?'Высокая':'High',        cls:'hw-unhealthy'};
+  return             {label:LANG==='ru'?'Очень высокая':'Very high', cls:'hw-hazardous'};
+}
+
+function fluLevelFromEvents(country){
+  const FLU_RE = /\b(influenza|flu|h\d+n\d+|grippe|грипп|ОРВИ)\b/i;
+  const matches = OUTBREAKS.filter(o =>
+    o.country===country && FLU_RE.test(o.name||o.disease||'')
+  );
+  if(!matches.length) return null;
+  const worst = matches.sort((a,b)=>b.sevIdx-a.sevIdx)[0];
+  const MAP = {
+    critical:   {label:LANG==='ru'?'Высокая':'High',       cls:'hw-hazardous'},
+    alert:      {label:LANG==='ru'?'Повышенная':'Elevated', cls:'hw-unhealthy'},
+    warning:    {label:LANG==='ru'?'Умеренная':'Moderate',  cls:'hw-moderate'},
+    monitoring: {label:LANG==='ru'?'Низкая':'Low',          cls:'hw-good'},
+    low:        {label:LANG==='ru'?'Фоновая':'Baseline',    cls:'hw-good'},
+  };
+  return MAP[worst.sev]||null;
+}
+
+async function loadHealthWeather(lat, lon, country){
+  const el = document.getElementById('hwContent');
+  if(!el) return;
+  el.innerHTML = `<span class="hw-loading">${LANG==='ru'?'загрузка…':'loading…'}</span>`;
+
+  let aqi=null, pollen=null;
+  try{
+    const vars = 'us_aqi,grass_pollen,birch_pollen,mugwort_pollen';
+    const r = await fetch(
+      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}&current=${vars}`
+    );
+    if(r.ok){
+      const d = await r.json();
+      const cur = d.current||{};
+      aqi = aqiInfo(cur.us_aqi!=null ? Math.round(cur.us_aqi) : null);
+      const maxP = Math.max(cur.grass_pollen||0, cur.birch_pollen||0, cur.mugwort_pollen||0);
+      pollen = pollenInfo(maxP>0 ? maxP : null);
+    }
+  }catch(_){}
+
+  const flu = fluLevelFromEvents(country);
+  const na  = `<span class="hw-na">${LANG==='ru'?'нет данных':'no data'}</span>`;
+  const badge = info => info
+    ? `<span class="hw-badge ${info.cls}">${info.label}</span>`
+    : na;
+
+  const aqiKey = LANG==='ru'?'Качество воздуха':'Air quality';
+  const polKey = LANG==='ru'?'Пыльца':'Pollen';
+  const fluKey = LANG==='ru'?'Активность гриппа':'Flu activity';
+
+  el.innerHTML = `
+    <div class="hw-row"><span class="hw-icon">🌬</span><span class="hw-key">${aqiKey}</span>${badge(aqi)}</div>
+    <div class="hw-row"><span class="hw-icon">🌿</span><span class="hw-key">${polKey}</span>${badge(pollen)}</div>
+    <div class="hw-row"><span class="hw-icon">🦠</span><span class="hw-key">${fluKey}</span>${badge(flu)}</div>
+  `;
+}
+
 function renderPanel(){
   const o = currentSel();
   if(!o){ renderPanelEmpty(); return; }
@@ -2179,6 +2251,12 @@ function renderPanel(){
   // Set Alert button
   const alertBtn = document.getElementById('alertBtn');
   if(alertBtn) alertBtn.onclick = () => openAlertModal(o);
+
+  // Health Weather — async, fills #hwContent after API call
+  const lon = o.lon ?? o.lng;
+  if(typeof o.lat==='number' && typeof lon==='number'){
+    loadHealthWeather(o.lat, lon, o.country);
+  }
 }
 
 function breakName(name){
