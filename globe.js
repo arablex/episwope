@@ -775,6 +775,13 @@ const CAT_EVENTS = [
   { id:'air-beijing',type:'air', name:'Air Quality — Elevated', name_ru:'Качество воздуха — повыш.',  country:'China',  region:'WPRO',  lat:39.9, lng:116.4, sev:'warning',    cases:null, deaths:null, summary:'PM2.5 AQI 158 — Unhealthy. Sensitive groups should avoid prolonged outdoor exposure.', summary_ru:'PM2.5 АКИ 158 — Вредно. Уязвимым группам ограничить пребывание на воздухе.', who:'Open-Meteo AQI', iso:156 },
   { id:'air-dhaka',  type:'air', name:'Air Quality — Hazardous',name_ru:'Качество воздуха — опасно', country:'Bangladesh',region:'SEARO',lat:23.7, lng:90.4,  sev:'critical',  cases:null, deaths:null, summary:'PM2.5 AQI 320 — Hazardous. Stay indoors, use air purifiers. Health alert for all.', summary_ru:'PM2.5 АКИ 320 — Опасно. Оставаться в помещениях. Санитарное предупреждение всем.', who:'Open-Meteo AQI', iso:50 },
   { id:'air-karachi',type:'air', name:'Air Quality — Unhealthy', name_ru:'Качество воздуха — вредно',  country:'Pakistan',region:'EMRO', lat:24.9, lng:67.0,  sev:'warning',   cases:null, deaths:null, summary:'PM2.5 AQI 172 — Unhealthy. Reduce prolonged outdoor exertion.', summary_ru:'PM2.5 АКИ 172 — Вредно. Снизить физическую активность на улице.', who:'Open-Meteo AQI', iso:586 },
+  // Disasters (GDACS-sourced, updated manually to reflect current events)
+  { id:'dis-myanmar-eq',  type:'disaster', name:'Earthquake M7.7',       name_ru:'Землетрясение М7.7',    country:'Myanmar',   region:'SEARO', lat:21.9,  lng:95.9,  sev:'critical', cases:3600,  deaths:3700, summary:'Catastrophic 7.7M earthquake struck central Myanmar (Mandalay region). Over 3 700 confirmed dead, 3 600 injured. Widespread building collapse, dam damage, displacement of 1.5M+ people. Aftershock sequence ongoing. GDACS Red alert.', summary_ru:'Катастрофическое землетрясение М7.7 в центральной Мьянме (регион Мандалай). Более 3 700 погибших, 3 600 раненых. Массовый обвал зданий, повреждение дамб, 1,5 млн перемещённых. Продолжаются афтершоки. Красный алерт GDACS.', who:'GDACS · USGS', iso:104 },
+  { id:'dis-brazil-fl',   type:'disaster', name:'Catastrophic Floods',   name_ru:'Катастрофическое наводнение', country:'Brazil', region:'AMRO', lat:-30.0, lng:-51.2, sev:'alert',    cases:800,   deaths:170,  summary:'Severe flooding in Rio Grande do Sul and Santa Catarina states. 170+ dead, 800 injured, 400 000 displaced. Infrastructure collapse — roads, bridges, power grid disrupted across 300+ municipalities.', summary_ru:'Сильные наводнения в штатах Риу-Гранди-ду-Сул и Санта-Катарина. 170+ погибших, 800 пострадавших, 400 000 перемещённых. Коллапс инфраструктуры в 300+ муниципалитетах.', who:'GDACS · CEMADEN', iso:76 },
+  { id:'dis-somalia-dr',  type:'disaster', name:'Severe Drought',        name_ru:'Сильная засуха',         country:'Somalia',   region:'AFRO', lat:5.2,   lng:46.2,  sev:'critical', cases:null,  deaths:null, summary:'La Niña-driven drought has decimated 70% of crops. IPC Phase 4 (Emergency) for 4.3M people; Famine (Phase 5) declared in Baidoa and Lower Shabelle. Acute malnutrition rising sharply.', summary_ru:'Засуха из-за Ла-Нинья уничтожила 70% урожая. МПК Фаза 4 (Чрезвычайная) для 4,3 млн; Голод (Фаза 5) объявлен в Байдоа и Нижнем Шабелле. Острое недоедание резко растёт.', who:'FAO · FEWS NET', iso:706 },
+  { id:'dis-indonesia-eq',type:'disaster', name:'Earthquake M6.2',       name_ru:'Землетрясение М6.2',    country:'Indonesia', region:'SEARO', lat:-8.6,  lng:115.2, sev:'warning',  cases:1200,  deaths:43,   summary:'M6.2 earthquake struck Lombok Island, Indonesia. 43 dead, 1 200 injured. Tsunami advisory lifted. Tourism areas damaged; evacuation of coastal zones underway. GDACS Orange alert.', summary_ru:'Землетрясение М6.2 на острове Ломбок, Индонезия. 43 погибших, 1 200 пострадавших. Предупреждение о цунами снято. Повреждены туристические зоны, проводится эвакуация прибрежных районов. Оранжевый алерт GDACS.', who:'GDACS · BMKG', iso:360 },
+  { id:'dis-pakistan-fl', type:'disaster', name:'Monsoon Floods',        name_ru:'Муссонные наводнения',  country:'Pakistan',  region:'EMRO', lat:30.4,  lng:69.3,  sev:'alert',    cases:2100,  deaths:290,  summary:'Pre-monsoon and glacier lake outburst floods (GLOFs) affecting KPK and Balochistan provinces. 290 dead, 2 100 injured, 1.2M people affected. Crop losses >60% in affected districts.', summary_ru:'Наводнения из-за прорыва ледниковых озёр в провинциях КПК и Белуджистан. 290 погибших, 2 100 пострадавших, 1,2 млн пострадавших. Потери урожая >60% в пострадавших районах.', who:'GDACS · NDMA', iso:586 },
+  { id:'dis-vanuatu-tc',  type:'disaster', name:'Tropical Cyclone Cat.4',name_ru:'Тропический циклон 4 кат.',country:'Vanuatu', region:'WPRO', lat:-17.7, lng:168.3, sev:'warning',  cases:350,   deaths:12,   summary:'Category 4 cyclone made landfall on Efate Island, Vanuatu. 12 dead, 350 injured. 85% of structures damaged on Efate. International humanitarian response activated. GDACS Orange alert.', summary_ru:'Циклон 4 категории достиг о. Эфате, Вануату. 12 погибших, 350 пострадавших. Повреждены 85% строений. Активирована международная гуманитарная помощь. Оранжевый алерт GDACS.', who:'GDACS · VMGD', iso:548 },
   // Food safety
   { id:'food-listeria', type:'food', name:'Listeria Outbreak',  name_ru:'Листериоз', country:'United States', region:'AMRO', lat:38.9, lng:-95.7, sev:'alert',   cases:22, deaths:4, summary:'Multi-state listeria outbreak linked to deli meats. FDA recall issued. Check fridges for affected products.', summary_ru:'Вспышка листериоза в нескольких штатах — заражённая мясная нарезка. Отзыв FDA. Проверьте холодильники.', who:'openFDA', iso:840 },
   { id:'food-salmonella',type:'food',name:'Salmonella Alert',   name_ru:'Сальмонеллёз', country:'Germany', region:'EURO', lat:51.2, lng:10.4, sev:'warning',  cases:147, deaths:1, summary:'Salmonella Enteritidis cluster traced to eggs from Rhine-Westphalia farms. RASFF notification issued.', summary_ru:'Вспышка сальмонеллёза — яйца с ферм Рейн-Вестфалии. Оповещение RASFF. Тщательно готовьте яйца.', who:'RASFF', iso:276 },
@@ -1060,7 +1067,7 @@ async function fetchAQI(){
     const src = map.getSource('aqi-src');
     if(src){
       src.setData(gj);
-      ['aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
+      ['aqi-glow','aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
         if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','visible');
       });
       return;
@@ -1068,26 +1075,40 @@ async function fetchAQI(){
 
     map.addSource('aqi-src', { type:'geojson', data:gj });
 
-    // Heatmap glow (background wash)
+    // Soft glow blobs per station (visible at any zoom)
+    map.addLayer({
+      id: 'aqi-glow',
+      type: 'circle',
+      source: 'aqi-src',
+      paint: {
+        'circle-radius':  ['interpolate',['linear'],['zoom'], 0,55, 3,70, 6,50, 8,30],
+        'circle-color':   ['get','color'],
+        'circle-opacity': 0.22,
+        'circle-blur':    1,
+        'circle-stroke-width': 0,
+      },
+    }, 'waterway-label');
+
+    // Heatmap density wash (accumulates where stations cluster)
     map.addLayer({
       id: 'aqi-heat',
       type: 'heatmap',
       source: 'aqi-src',
       maxzoom: 8,
       paint: {
-        'heatmap-weight':     ['interpolate',['linear'],['get','aqi'], 0,0, 100,0.4, 200,0.7, 300,1],
-        'heatmap-intensity':  ['interpolate',['linear'],['zoom'], 0,0.6, 8,1.2],
+        'heatmap-weight':    ['interpolate',['linear'],['get','aqi'], 0,0.25, 100,0.55, 200,0.8, 300,1],
+        'heatmap-intensity': ['interpolate',['linear'],['zoom'], 0,3, 3,2.5, 6,2, 8,1.5],
         'heatmap-color': [
           'interpolate',['linear'],['heatmap-density'],
           0,   'rgba(25,164,99,0)',
-          0.2, 'rgba(25,164,99,0.35)',
-          0.4, 'rgba(228,181,20,0.5)',
-          0.6, 'rgba(232,89,12,0.6)',
-          0.8, 'rgba(201,42,42,0.7)',
-          1,   'rgba(92,32,16,0.82)',
+          0.12,'rgba(25,164,99,0.5)',
+          0.3, 'rgba(228,181,20,0.62)',
+          0.55,'rgba(232,89,12,0.72)',
+          0.78,'rgba(201,42,42,0.82)',
+          1,   'rgba(92,32,16,0.92)',
         ],
-        'heatmap-radius':  ['interpolate',['linear'],['zoom'], 0,20, 5,40, 10,60],
-        'heatmap-opacity': 0.72,
+        'heatmap-radius':  ['interpolate',['linear'],['zoom'], 0,80, 2,65, 5,45, 8,28],
+        'heatmap-opacity': 0.82,
       },
     }, 'waterway-label');
 
@@ -1143,7 +1164,7 @@ function showAQILayer(on){
     map.on('moveend', _onAQIMove);
   } else {
     map.off('moveend', _onAQIMove);
-    ['aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
+    ['aqi-glow','aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
       if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','none');
     });
   }
