@@ -974,6 +974,15 @@ function initMap(){
     map.on('resize', positionPopup);
     updateClock();
   });
+
+  // Click on empty map → deselect
+  map.on('click', () => deselect());
+
+  // Popup close button
+  document.getElementById('popClose')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    deselect();
+  });
 }
 
 function addOutbreakMarkers(){
@@ -1125,6 +1134,13 @@ function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
    SELECTION / UI BINDING
    ========================================================= */
 function currentSel(){ return OUTBREAKS.find(o=>o.id===state.selectedId); }
+
+function deselect(){
+  state.selectedId = null;
+  state.selectedCountry = null;
+  if(popup) popup.classList.remove('is-on');
+  applyMarkerFilters();
+}
 
 function selectOutbreak(id){
   state.selectedId = id;

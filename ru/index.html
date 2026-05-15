@@ -410,7 +410,7 @@
   .ep-marker{
     --r: 28px;                /* halo radius — set inline by JS based on cases */
     --c: #C92A2A;             /* severity colour — set per .crit/.alert/.warning */
-    position:relative;
+    position:absolute; top:0; left:0; will-change:transform;
     width:var(--r); height:var(--r);
     cursor:pointer;
     display:grid; place-items:center;
@@ -582,6 +582,7 @@
     transition:opacity .15s ease, visibility .15s, transform .15s ease;
   }
   .popup.is-on{ visibility:visible; opacity:1; pointer-events:auto; transform:translate(-50%, -115%); }
+  .popup-close{ position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:var(--bg); border:1px solid var(--line); color:var(--muted); font-size:10px; cursor:pointer; display:grid; place-items:center; z-index:2; }
   /* Tail arrow pointing to the marker */
   .popup::after{
     content:''; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%) rotate(45deg);
@@ -1672,6 +1673,7 @@
 
     <!-- popup -->
     <div class="popup" id="popup">
+      <button class="popup-close" id="popClose" aria-label="Закрыть">&#x2715;</button>
       <div class="popup-bar" id="popBar"></div>
       <div class="popup-body">
         <div class="popup-id" id="popId">EPI-2026-UGA-0142 · ВОЗ/AFRO</div>
