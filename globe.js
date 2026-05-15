@@ -952,6 +952,10 @@ function initMap(){
   });
   map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
+  map.on('error', (e) => {
+    console.error('[EpiScope] Mapbox error:', e.error?.message || e);
+  });
+
   map.on('style.load', () => {
     // Light atmosphere — pale sky, no stars (matches XPORT-style flat light map)
     map.setFog({

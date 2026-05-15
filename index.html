@@ -1866,9 +1866,9 @@
   <input name="bot-field">
 </form>
 
-<!-- Domain-based language redirect: episcope.ru → /ru/ -->
+<!-- Language-based redirect: RU browser → /ru/ -->
 <script>
-  if(location.hostname === 'episcope.ru' || location.hostname === 'www.episcope.ru'){
+  if((navigator.language || '').toLowerCase().startsWith('ru')){
     location.replace('/ru/' + location.search + location.hash);
   }
 </script>

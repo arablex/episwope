@@ -22,18 +22,6 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# episcope.ru → /ru/ (works when both domains point to same Netlify site)
-[[redirects]]
-  from   = "https://episcope.ru/*"
-  to     = "/ru/:splat"
-  status = 200
-  force  = true
-
-[[redirects]]
-  from   = "https://www.episcope.ru/*"
-  to     = "/ru/:splat"
-  status = 200
-  force  = true
 
 [functions]
   directory = "netlify/functions"
