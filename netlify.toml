@@ -33,6 +33,12 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Env vars needed for monetization (set in Netlify UI → Environment variables):
+#   JWT_SECRET             — ≥32 random chars, signs magic-link tokens
+#   STRIPE_SECRET_KEY      — sk_live_... or sk_test_...
+#   STRIPE_WEBHOOK_SECRET  — whsec_... from Netlify webhook endpoint
+#   STRIPE_PRICE_ID        — price_... for the $9/mo Pro plan
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

@@ -59,3 +59,46 @@ ${L.verifyFooter} ${L.unsubscribeWord}: ${unsubUrl}
 
   return { subject: L.verifySubject, html, text };
 }
+
+export function renderMagicLinkEmail({ loginUrl, lang }) {
+  const L = {
+    en: {
+      subject:  'Your EpiScope login link',
+      headline: 'Log in to EpiScope Pro',
+      body:     'Click the button below to access your account. The link is valid for 30 days.',
+      cta:      'Log in to EpiScope',
+      footer:   "If you didn't request this link, you can safely ignore this email.",
+    },
+    ru: {
+      subject:  'Ссылка для входа в EpiScope',
+      headline: 'Войти в EpiScope Pro',
+      body:     'Нажми кнопку ниже чтобы войти в аккаунт. Ссылка действует 30 дней.',
+      cta:      'Войти в EpiScope',
+      footer:   'Если ты не запрашивал эту ссылку — просто проигнорируй письмо.',
+    },
+  }[lang] ?? {
+    subject:  'Your EpiScope login link',
+    headline: 'Log in to EpiScope Pro',
+    body:     'Click the button below to access your account. The link is valid for 30 days.',
+    cta:      'Log in to EpiScope',
+    footer:   "If you didn't request this link, you can safely ignore this email.",
+  };
+
+  const url = escapeHtml(loginUrl);
+  const html = `<!doctype html>
+<html lang="${lang}">
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;color:#0F0E0C;background:#F4F2EE;margin:0;padding:24px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:32px;">
+    <tr><td>
+      <h1 style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">${L.headline}</h1>
+      <p style="font-size:14px;line-height:1.55;color:#3B3A36;margin:0 0 28px;">${L.body}</p>
+      <p style="margin:0 0 28px;"><a href="${url}" style="display:inline-block;background:#0F0E0C;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 22px;border-radius:10px;">${L.cta}</a></p>
+      <p style="font-size:11.5px;line-height:1.55;color:#807E76;margin:0;">${L.footer}</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `${L.headline}\n\n${L.body}\n\n${L.cta}: ${loginUrl}\n\n${L.footer}`;
+  return { subject: L.subject, html, text };
+}
