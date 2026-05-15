@@ -1866,9 +1866,15 @@
   <input name="bot-field">
 </form>
 
-<!-- Language-based redirect: RU browser → /ru/ -->
+<!-- Language-based redirect: RU browser → /ru/ (skipped if user explicitly chose EN) -->
 <script>
-  if((navigator.language || '').toLowerCase().startsWith('ru')){
+  document.querySelector('.lang-btn')?.addEventListener('click', function(e){
+    e.preventDefault();
+    localStorage.setItem('episwope_lang', 'ru');
+    location.href = this.href;
+  });
+  if(localStorage.getItem('episwope_lang') !== 'en' &&
+     (navigator.language || '').toLowerCase().startsWith('ru')){
     location.replace('/ru/' + location.search + location.hash);
   }
 </script>
