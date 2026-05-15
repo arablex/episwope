@@ -144,9 +144,22 @@
   .ev-card .stat .v{ font-size:20px; font-weight:800; letter-spacing:-0.032em; line-height:1; color:var(--ink); }
   .ev-card .stat .v.red{ color:var(--s3); }
   .ev-card .stat .k{ font-size:10px; color:var(--muted); margin-top:4px; font-weight:500; }
+  /* ── 1200px: tighten columns ── */
+  @media (max-width: 1200px){
+    .app{ grid-template-columns: 220px 1fr 300px; padding:10px; gap:10px; }
+    .top-meta{ display:none; }
+  }
+  /* ── 980px: drop right panel, 2-column ── */
+  @media (max-width: 980px){
+    .app{ grid-template-columns: 220px 1fr; }
+    .panel{ display:none !important; }
+    .top-divider:last-of-type, .pill-btn{ display:none; }
+  }
+  /* ── 900px: drop events bar ── */
   @media (max-width: 900px){
-    .app{ grid-template-rows: 56px 1fr; }
+    .app{ grid-template-rows: 56px 1fr; padding:8px; gap:8px; }
     .events-bar{ display:none; }
+    .app.v-globe{ grid-template-rows: 52px 1fr; }
   }
 
   /* ============ TOPBAR (clean light pill) ============ */
@@ -1495,11 +1508,11 @@
       </button>
       <button class="top-tab" data-view="heatmap" aria-label="Flat map view">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-        Карта
+        Map
       </button>
       <button class="top-tab" data-view="list" aria-label="List view">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        Список
+        List
       </button>
     </div>
 
