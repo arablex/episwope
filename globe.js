@@ -1365,6 +1365,7 @@ function renderPanel(){
   }
 
   // crumb
+  document.getElementById('crumbRegion').textContent   = regionName(o.region || '');
   document.getElementById('crumbCountry').textContent  = countryName(o.country);
   document.getElementById('crumbOutbreak').textContent = diseaseName(o);
 
