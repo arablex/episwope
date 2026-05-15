@@ -1,0 +1,45 @@
+# EpiScope
+
+> Real-time global disease outbreak monitoring and epidemiological surveillance
+
+EpiScope is a public-health intelligence tool that tracks active disease outbreaks,
+food safety recalls, and environmental health conditions worldwide — updated every 12 hours
+from official sources.
+
+## What it does
+
+- Monitors 100+ active disease outbreaks on an interactive 3D globe
+- Severity classification: Critical / Alert / Warning / Monitoring (WHO-aligned)
+- Food safety alerts: FDA recalls, EU RASFF, UK FSA, Health Canada
+- Health Weather per country: air quality (AQI), pollen, flu activity
+- Email alerts when outbreaks appear in user's watched countries
+- Personal feed: aggregated alerts filtered to user's regions
+- Available in English and Russian
+
+## Data sources (updated every 12 hours via GitHub Actions)
+
+- WHO Disease Outbreak News (DON)
+- ECDC Communicable Disease Threats Report
+- Eurosurveillance (peer-reviewed European CDC journal)
+- Russia: Rospotrebnadzor RSS (Federal Service for Consumer Rights Protection)
+- China: China CDC Weekly (National Disease Control and Prevention Administration)
+- Disasters: GDACS (Global Disaster Alert and Coordination System)
+- Food: FDA openFDA API, EU RASFF, UK Food Standards Agency, Health Canada
+- Air quality: Open-Meteo Air Quality API (real-time)
+
+## Live data endpoints (public, no auth)
+
+- Active outbreaks JSON: https://episcope.ru/public/events.json
+- Food safety recalls JSON: https://episcope.ru/public/food_recalls.json
+- Active alerts JSON: https://episcope.ru/public/alerts.json
+
+## URLs
+
+- English: https://episcope.ru/
+- Russian: https://episcope.ru/ru/
+
+## Keywords
+
+disease outbreak map, epidemic monitoring, global health surveillance, WHO outbreak tracker,
+infectious disease map, real-time epidemiology, public health intelligence, food safety recalls,
+outbreak alerts, disease surveillance tool, карта вспышек заболеваний, эпидемиологический мониторинг
