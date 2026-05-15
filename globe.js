@@ -464,8 +464,52 @@ function countryTravelRisk(country){
   return 'low';
 }
 
-/* ── Watched regions (localStorage) ─────────────────────── */
+/* ── Watched regions (localStorage + server sync) ────────── */
 let WATCHED = new Set(JSON.parse(localStorage.getItem('episwope_watched') || '[]'));
+
+/** Debounce timer for server sync */
+let _syncTimer = null;
+
+/** PATCH /api/my-countries with current WATCHED set (debounced 1s). */
+function syncCountries() {
+  const jwt = localStorage.getItem('episwope_jwt');
+  if (!jwt) return;                              // not logged in — no sync
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async () => {
+    try {
+      await fetch('/api/my-countries', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+        body: JSON.stringify({ countries: [...WATCHED] }),
+      });
+    } catch (e) {
+      console.warn('syncCountries failed:', e.message);
+    }
+  }, 1000);
+}
+
+/** On login / page-load: pull server countries and merge into WATCHED.
+ *  Server list wins for any country not already in local list. */
+async function loadServerCountries() {
+  const jwt = localStorage.getItem('episwope_jwt');
+  if (!jwt) return;
+  try {
+    const res  = await fetch('/api/my-countries', {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!Array.isArray(data.countries)) return;
+    // Merge: union of local + server
+    data.countries.forEach(c => WATCHED.add(c));
+    localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
+    renderMyCountries();
+    updateMobPeek();
+  } catch (e) {
+    console.warn('loadServerCountries failed:', e.message);
+  }
+}
+
 function toggleWatch(country){
   if(!WATCHED.has(country) && !isPaid() && WATCHED.size >= FREE_COUNTRY_LIMIT){
     showProGate();
@@ -475,6 +519,7 @@ function toggleWatch(country){
   else WATCHED.add(country);
   localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
   renderMyCountries();
+  syncCountries();  // push to server if logged in
   // additional re-render is triggered by the caller (renderPanel or renderCountryPanel)
 }
 function isWatched(country){ return WATCHED.has(country); }
@@ -2410,6 +2455,9 @@ async function boot(){
   updateUserBtn();
   initBottomSheet();
   updateMobPeek();
+
+  // Sync watched countries from server (if logged in)
+  loadServerCountries();
 
   // Load live data after globe is visible
   loadLiveData();

@@ -71,3 +71,15 @@ jobs:
             git commit -m "chore: update epidemiology data [skip ci]"
             git push
           fi
+
+      - name: Trigger alert check
+        env:
+          EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
+        run: |
+          EVENTS=$(python3 -c "import json; d=json.load(open('public/events.json')); print(json.dumps(d['events']))")
+          curl -sf -X POST \
+            -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d "{\"events\": ${EVENTS}}" \
+            https://episcope.ru/api/alert-check \
+          || echo "⚠ alert-check failed (non-critical)"
