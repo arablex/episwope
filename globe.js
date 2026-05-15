@@ -483,6 +483,7 @@ async function loadFoodRecalls() {
     const data = await res.json();
     FOOD_RECALLS = data.recalls || [];
     renderFoodAlerts();
+    renderMyFeed();
   } catch (e) {
     console.warn('[EpiScope] food_recalls.json unavailable:', e.message);
   }
@@ -583,6 +584,7 @@ async function loadServerCountries() {
     data.countries.forEach(c => WATCHED.add(c));
     localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
     renderMyCountries();
+    renderMyFeed();
     updateMobPeek();
   } catch (e) {
     console.warn('loadServerCountries failed:', e.message);
@@ -598,6 +600,7 @@ function toggleWatch(country){
   else WATCHED.add(country);
   localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
   renderMyCountries();
+  renderMyFeed();
   syncCountries();  // push to server if logged in
   // additional re-render is triggered by the caller (renderPanel or renderCountryPanel)
 }
@@ -764,6 +767,83 @@ function renderMyCountries(){
         toggleWatch(x.dataset.remove);
       } else {
         selectCountry(el.dataset.country);
+      }
+    });
+  });
+}
+
+/* ── My Feed ─────────────────────────────────────────────── */
+function renderMyFeed(){
+  const root    = document.getElementById('myFeed');
+  const countEl = document.getElementById('myFeedCount');
+  if(!root) return;
+
+  if(!WATCHED.size){
+    if(countEl) countEl.textContent = '0';
+    root.innerHTML = `<div class="feed-empty">${LANG==='ru'
+      ? 'Добавь страны через правую панель — здесь появится твой персональный фид алертов.'
+      : 'Watch countries from the right panel — your personal alerts feed appears here.'}</div>`;
+    return;
+  }
+
+  // watched iso2 set for food recall matching
+  const watchedIso2 = new Set([...WATCHED].map(c => findCountry(c)?.iso2).filter(Boolean));
+  const SEV_ORD = {catastrophic:6, critical:5, alert:4, warning:3, low:2, monitoring:1};
+  const FOOD_ORD = {critical:5, alert:4, warning:3};
+
+  const outbreakItems = OUTBREAKS
+    .filter(o => WATCHED.has(o.country))
+    .map(o => ({
+      type:'outbreak', ord:SEV_ORD[o.sev]||0,
+      title: diseaseName(o),
+      meta: o.country,
+      color: SEV[o.sev]?.color||'#A09F95',
+      id: o.id,
+    }));
+
+  const foodItems = FOOD_RECALLS
+    .filter(r => watchedIso2.has(r.iso) || r.iso==='EU')
+    .map(r => ({
+      type:'food', ord:FOOD_ORD[r.severity]||2,
+      title: r.product,
+      meta: r.country || r.iso,
+      color: r.severity==='critical'?'#C92A2A': r.severity==='alert'?'#E8590C':'#A09F95',
+      link: r.link||null,
+    }));
+
+  const all = [...outbreakItems, ...foodItems].sort((a,b)=>b.ord-a.ord).slice(0,12);
+
+  if(countEl) countEl.textContent = all.length||'0';
+
+  if(!all.length){
+    root.innerHTML = `<div class="feed-empty">${LANG==='ru'
+      ? 'Нет активных событий для ваших регионов.'
+      : 'No active events for your watched regions.'}</div>`;
+    return;
+  }
+
+  const tagLbl = t => t==='food'
+    ? (LANG==='ru'?'Продукт':'Recall')
+    : (LANG==='ru'?'Вспышка':'Outbreak');
+
+  root.innerHTML = all.map((item,i) => `
+    <div class="feed-item" data-fi="${i}">
+      <span class="feed-dot" style="background:${item.color}"></span>
+      <div class="feed-body">
+        <div class="feed-title">${item.title}<span class="feed-tag ${item.type}">${tagLbl(item.type)}</span></div>
+        <div class="feed-meta">${item.meta}</div>
+      </div>
+    </div>`).join('');
+
+  root.querySelectorAll('.feed-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const item = all[+el.dataset.fi];
+      if(!item) return;
+      if(item.type==='outbreak' && item.id!=null){
+        state.selectedId = item.id;
+        renderPanel(); renderPopup();
+      } else if(item.link){
+        window.open(item.link, '_blank', 'noopener');
       }
     });
   });
@@ -2608,6 +2688,7 @@ async function boot(){
   renderPanel();
   renderPopup();
   renderMyCountries();
+  renderMyFeed();
   renderCatLists();
   updateUserBtn();
   initBottomSheet();
