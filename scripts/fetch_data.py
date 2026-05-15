@@ -38,15 +38,17 @@ OUTPUT_DIR = Path(__file__).parent.parent / "public"
 
 RSS_FEEDS = [
     # WHO: main disease outbreak news RSS
-    {"name": "WHO News",   "url": "https://www.who.int/feeds/entity/csr/don/en/rss.xml", "tag": "WHO"},
+    {"name": "WHO News",        "url": "https://www.who.int/feeds/entity/csr/don/en/rss.xml",           "tag": "WHO"},
+    # Outbreak News Today — curated daily outbreak reports (confirmed working)
+    {"name": "OutbreakNewsToday","url": "https://outbreaknewstoday.com/feed/",                           "tag": "ONT"},
     # ECDC surveillance news
-    {"name": "ECDC",       "url": "https://www.ecdc.europa.eu/en/news-events/rss",       "tag": "ECDC"},
+    {"name": "ECDC",            "url": "https://www.ecdc.europa.eu/en/news-events/rss",                 "tag": "ECDC"},
     # Africa CDC
-    {"name": "Africa CDC", "url": "https://africacdc.org/feed/",                          "tag": "AfricaCDC"},
+    {"name": "Africa CDC",      "url": "https://africacdc.org/feed/",                                   "tag": "AfricaCDC"},
     # PAHO news (Americas)
-    {"name": "PAHO",       "url": "https://www.paho.org/hq/index.php?format=feed&type=rss", "tag": "PAHO"},
+    {"name": "PAHO",            "url": "https://www.paho.org/hq/index.php?format=feed&type=rss",        "tag": "PAHO"},
     # CDC Health Alert Network
-    {"name": "CDC HAN",    "url": "https://emergency.cdc.gov/han/feed/atom.xml",         "tag": "CDC-HAN"},
+    {"name": "CDC HAN",         "url": "https://emergency.cdc.gov/han/feed/atom.xml",                   "tag": "CDC-HAN"},
 ]
 
 KEYWORDS = [
@@ -526,7 +528,63 @@ def fetch_who_don_json() -> list:
     return []
 
 # ---------------------------------------------------------------------------
-# Source 3: RSS feeds
+# Source 3: HealthMap API (optional — requires free API key)
+# Register at: https://healthmap.org/surveillance/  →  HEALTHMAP_API_KEY
+# ---------------------------------------------------------------------------
+
+def fetch_healthmap() -> list:
+    key = os.environ.get("HEALTHMAP_API_KEY", "")
+    if not key:
+        return []
+    print("Fetching HealthMap API …", flush=True)
+    url = (
+        f"https://healthmap.org/surveillance/index.php"
+        f"?auth={key}&cn=1&striphtml=1&geo=1&count=50&speciesid=1"
+        f"&startrow=0&feed=1"
+    )
+    try:
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "EpiScope/2.0 (episcope.ru)",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            raw = resp.read()
+        data = json.loads(raw)
+        items = data if isinstance(data, list) else data.get("alerts", data.get("data", []))
+        results = []
+        for item in items[:50]:
+            title   = item.get("summary", item.get("title", ""))
+            country = item.get("country", item.get("place_name", ""))
+            disease = item.get("disease", item.get("diseasename", ""))
+            link    = item.get("link",    item.get("url", ""))
+            date    = item.get("date",    item.get("event_date", ""))
+            lat     = item.get("lat")
+            lng     = item.get("lng",     item.get("lon"))
+            if not title:
+                continue
+            try: lat = float(lat)
+            except (TypeError, ValueError): lat = None
+            try: lng = float(lng)
+            except (TypeError, ValueError): lng = None
+            results.append({
+                "source": "HealthMap",
+                "title":  title,
+                "description": title,
+                "disease_hint": disease,
+                "country_hint": country,
+                "lat_hint": lat,
+                "lng_hint": lng,
+                "link":  link,
+                "pub_date": date,
+            })
+        print(f"  → {len(results)} HealthMap alerts", flush=True)
+        return results
+    except Exception as e:
+        print(f"  ✗ HealthMap: {e}", flush=True)
+        return []
+
+# ---------------------------------------------------------------------------
+# Source 4: RSS feeds
 # ---------------------------------------------------------------------------
 
 def fetch_rss(feed: dict) -> list:
@@ -828,7 +886,49 @@ def main():
             "date":       raw.get("pub_date", ""),
         })
 
-    # ── 3. RSS feeds ─────────────────────────────────────────────────────
+    # ── 3. HealthMap API (optional) ───────────────────────────────────────
+    for raw in fetch_healthmap():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = None
+        if has_ai:
+            extracted = call_ai(text)
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
+        disease_hint = raw.get("disease_hint", "")
+        country_hint = raw.get("country_hint", "")
+        lat_hint     = raw.get("lat_hint")
+        lng_hint     = raw.get("lng_hint")
+        if extracted and extracted.get("disease"):
+            if not extracted.get("lat") and lat_hint: extracted["lat"] = lat_hint
+            if not extracted.get("lng") and lng_hint: extracted["lng"] = lng_hint
+            if not extracted.get("country") and country_hint: extracted["country"] = country_hint
+            sev = normalise_sev(extracted.get("severity", "monitoring"))
+            add_event({
+                "id": f"hm-{event_id_counter[0]}", "type": "epidemic",
+                "disease": extracted.get("disease"), "country": extracted.get("country") or country_hint,
+                "iso": extracted.get("iso"), "region": extracted.get("region"),
+                "lat": extracted.get("lat"), "lng": extracted.get("lng"),
+                "cases": extracted.get("cases"), "deaths": extracted.get("deaths"),
+                "severity": sev,
+                "summary": extracted.get("summary", raw["title"])[:300],
+                "summary_ru": extracted.get("summary_ru", "")[:300],
+                "source": "HealthMap", "link": raw.get("link", ""), "date": raw.get("pub_date", ""),
+            })
+        elif disease_hint and country_hint:
+            c_lower = country_hint.lower()
+            coords = COUNTRY_DB.get(c_lower, ("", None, None, None))
+            add_event({
+                "id": f"hm-{event_id_counter[0]}", "type": "epidemic",
+                "disease": disease_hint, "country": country_hint,
+                "iso": coords[0], "region": coords[3],
+                "lat": lat_hint or coords[1], "lng": lng_hint or coords[2],
+                "cases": None, "deaths": None, "severity": "warning",
+                "summary": raw["title"][:300], "summary_ru": "",
+                "source": "HealthMap", "link": raw.get("link", ""), "date": raw.get("pub_date", ""),
+            })
+    time.sleep(1)
+
+    # ── 4. RSS feeds ─────────────────────────────────────────────────────
     for feed in RSS_FEEDS:
         rss_items = fetch_rss(feed)
         time.sleep(0.5)
