@@ -3,19 +3,19 @@
 EpiScope data fetcher — runs every 12 hours via GitHub Actions.
 
 Sources (in priority order):
-  1. ReliefWeb API     — structured health/disease reports, JSON, no key needed
-  2. WHO DON JSON      — WHO Disease Outbreak News (internal Sitefinity endpoint)
-  3. GDACS RSS         — Orange/Red disaster alerts (disease-risk triggers)
-  4. WHO DON RSS       — fallback for WHO news
-  5. ProMED RSS        — community-sourced outbreak reports
-  6. ECDC RSS          — European CDC surveillance news
-  7. Africa CDC RSS    — African outbreak reports
-  8. PAHO RSS          — Pan-American Health Organization
-  9. CDC HAN RSS       — US Health Alert Network
+  1. ReliefWeb API        — structured health/disease reports, JSON, no key needed
+  2. WHO DON JSON         — WHO Disease Outbreak News (internal Sitefinity endpoint)
+  3. HealthMap API        — global alerts (optional, HEALTHMAP_API_KEY)
+  4. Rospotrebnadzor RSS  — Russian federal epidemiology service (Russian text → AI)
+  5. China CDC Weekly     — monthly Notifiable Infectious Diseases report (scraped)
+  6. Eurosurveillance RSS — European CDC surveillance journal
+  7. Outbreak News Today  — curated daily outbreak reports
+  8. ECDC / Africa CDC / PAHO / CDC-HAN RSS feeds
+  9. GDACS               — Orange/Red disaster alerts (disease-risk triggers)
 
 AI extraction (optional, free tiers):
-  GEMINI_API_KEY  → gemini-2.0-flash (1500 req/day free)
-  GROQ_API_KEY    → llama-3.3-70b (14400 req/day free)
+  GEMINI_API_KEY    → gemini-2.0-flash (1500 req/day free, multilingual)
+  GROQ_API_KEY      → llama-3.3-70b (14400 req/day free)
   ANTHROPIC_API_KEY → claude-haiku-4-5 (~$1-2/month)
 
 Cost: $0/month in regex mode. ~$0-2/month with AI keys.
@@ -38,17 +38,19 @@ OUTPUT_DIR = Path(__file__).parent.parent / "public"
 
 RSS_FEEDS = [
     # WHO: main disease outbreak news RSS
-    {"name": "WHO News",        "url": "https://www.who.int/feeds/entity/csr/don/en/rss.xml",           "tag": "WHO"},
+    {"name": "WHO News",         "url": "https://www.who.int/feeds/entity/csr/don/en/rss.xml",              "tag": "WHO"},
     # Outbreak News Today — curated daily outbreak reports (confirmed working)
-    {"name": "OutbreakNewsToday","url": "https://outbreaknewstoday.com/feed/",                           "tag": "ONT"},
+    {"name": "OutbreakNewsToday","url": "https://outbreaknewstoday.com/feed/",                              "tag": "ONT"},
+    # Eurosurveillance — European disease surveillance journal (covers Russia-adjacent outbreaks)
+    {"name": "Eurosurveillance", "url": "https://www.eurosurveillance.org/rss/content/all/latest?fmt=rss",  "tag": "ESurv"},
     # ECDC surveillance news
-    {"name": "ECDC",            "url": "https://www.ecdc.europa.eu/en/news-events/rss",                 "tag": "ECDC"},
+    {"name": "ECDC",             "url": "https://www.ecdc.europa.eu/en/news-events/rss",                    "tag": "ECDC"},
     # Africa CDC
-    {"name": "Africa CDC",      "url": "https://africacdc.org/feed/",                                   "tag": "AfricaCDC"},
+    {"name": "Africa CDC",       "url": "https://africacdc.org/feed/",                                      "tag": "AfricaCDC"},
     # PAHO news (Americas)
-    {"name": "PAHO",            "url": "https://www.paho.org/hq/index.php?format=feed&type=rss",        "tag": "PAHO"},
+    {"name": "PAHO",             "url": "https://www.paho.org/hq/index.php?format=feed&type=rss",           "tag": "PAHO"},
     # CDC Health Alert Network
-    {"name": "CDC HAN",         "url": "https://emergency.cdc.gov/han/feed/atom.xml",                   "tag": "CDC-HAN"},
+    {"name": "CDC HAN",          "url": "https://emergency.cdc.gov/han/feed/atom.xml",                      "tag": "CDC-HAN"},
 ]
 
 KEYWORDS = [
@@ -159,11 +161,26 @@ COUNTRY_DB = {
     "italy":       ("IT", 41.9,  12.6,  "EURO"),
     "ukraine":     ("UA", 48.4,  31.2,  "EURO"),
     "turkey":      ("TR", 38.9,  35.2,  "EURO"),
-    "russia":      ("RU", 61.5, 105.3,  "EURO"),
-    "kazakhstan":  ("KZ", 48.0,  68.0,  "EURO"),
-    "uzbekistan":  ("UZ", 41.4,  64.6,  "EURO"),
-    "tajikistan":  ("TJ", 38.9,  71.3,  "EURO"),
-    "poland":      ("PL", 51.9,  19.1,  "EURO"),
+    "russia":          ("RU", 61.5, 105.3,  "EURO"),
+    "kazakhstan":      ("KZ", 48.0,  68.0,  "EURO"),
+    "uzbekistan":      ("UZ", 41.4,  64.6,  "EURO"),
+    "tajikistan":      ("TJ", 38.9,  71.3,  "EURO"),
+    "kyrgyzstan":      ("KG", 41.2,  74.8,  "EURO"),
+    "turkmenistan":    ("TM", 40.0,  59.5,  "EURO"),
+    "belarus":         ("BY", 53.7,  28.0,  "EURO"),
+    "georgia":         ("GE", 42.3,  43.4,  "EURO"),
+    "azerbaijan":      ("AZ", 40.1,  47.6,  "EURO"),
+    "armenia":         ("AM", 40.1,  45.0,  "EURO"),
+    "moldova":         ("MD", 47.4,  28.4,  "EURO"),
+    "mongolia":        ("MN", 46.8, 103.8,  "WPRO"),
+    "north korea":     ("KP", 40.3, 127.5,  "WPRO"),
+    "south korea":     ("KR", 36.0, 127.8,  "WPRO"),
+    "japan":           ("JP", 36.2, 138.3,  "WPRO"),
+    "taiwan":          ("TW", 23.7, 121.0,  "WPRO"),
+    "singapore":       ("SG",  1.4, 103.8,  "WPRO"),
+    "australia":       ("AU",-25.3, 133.8,  "WPRO"),
+    "new zealand":     ("NZ",-40.9, 174.9,  "WPRO"),
+    "poland":          ("PL", 51.9,  19.1,  "EURO"),
     "romania":     ("RO", 45.9,  24.9,  "EURO"),
     "spain":       ("ES", 40.5,  -3.7,  "EURO"),
     "united kingdom":("GB", 55.4,  -3.4, "EURO"),
@@ -185,7 +202,9 @@ ISO2_NUM = {
     "IN":356,"BD":50,"ID":360,"MM":104,"TH":764,"NP":524,"LK":144,"VN":704,
     "PH":608,"CN":156,"KH":116,"PG":598,"LA":418,"MY":458,"VU":548,"SB":90,
     "FR":250,"DE":276,"IT":380,"UA":804,"TR":792,"RU":643,"KZ":398,"UZ":860,
-    "TJ":762,"PL":616,"RO":642,"ES":724,"GB":826,"NL":528,"BE":56,"AT":40,
+    "TJ":762,"KG":417,"TM":795,"BY":112,"GE":268,"AZ":31,"AM":51,"MD":498,
+    "MN":496,"KP":408,"KR":410,"JP":392,"TW":158,"SG":702,"AU":36,"NZ":554,
+    "PL":616,"RO":642,"ES":724,"GB":826,"NL":528,"BE":56,"AT":40,
 }
 
 # ---------------------------------------------------------------------------
@@ -415,6 +434,130 @@ def _extract_number(text: str, pattern: str):
         return None
 
 # ---------------------------------------------------------------------------
+# Russian-language extraction helpers (Rospotrebnadzor)
+# ---------------------------------------------------------------------------
+
+# Keywords to filter Rospotrebnadzor RSS items (epidemiology-relevant)
+RU_EPIDEMIC_KEYWORDS = [
+    "вспышка", "эпидемия", "эпидемиолог", "заболева", "инфекц",
+    "вирус", "бактери", "холера", "грипп", "корь", "гепатит",
+    "туберкулёз", "туберкулез", "чума", "сибирская язва", "менингит",
+    "коклюш", "полиомиелит", "лихорадка", "ботулизм", "сальмонелл",
+    "дизентерия", "энцефалит", "боррелиоз", "малярия", "клещевой",
+    "бруцеллёз", "бруцеллез", "листериоз", "легионелл", "карантин",
+    "очаг заболева", "санитарно-эпидемиологическ", "геморрагическ",
+    "бешенство", "лептоспироз", "трихинелл", "иерсиниоз",
+]
+
+# Russian disease names → (English name, severity)
+RU_DISEASE_MAP = [
+    (r"эбола",                             ("Ebola virus disease",     "critical")),
+    (r"марбург",                           ("Marburg virus disease",   "critical")),
+    (r"нипах",                             ("Nipah virus",             "critical")),
+    (r"чума",                              ("Plague",                  "critical")),
+    (r"геморрагическая лихорадка конго|кгл",("Crimean-Congo HF",       "warning")),
+    (r"геморрагическ",                     ("Hemorrhagic fever",       "warning")),
+    (r"лихорадка западного нила",          ("West Nile virus",         "warning")),
+    (r"лихорадка денге|денге",             ("Dengue fever",            "alert")),
+    (r"зика",                              ("Zika virus",              "warning")),
+    (r"оспа обезьян|оспа обезь",           ("Mpox",                   "warning")),
+    (r"холера",                            ("Cholera",                 "alert")),
+    (r"малярия",                           ("Malaria",                 "alert")),
+    (r"менингит|менингококк",              ("Meningitis",              "alert")),
+    (r"сибирская язва|антракс",            ("Anthrax",                 "warning")),
+    (r"бруцеллёз|бруцеллез",              ("Brucellosis",             "warning")),
+    (r"лептоспироз",                       ("Leptospirosis",           "warning")),
+    (r"листериоз",                         ("Listeriosis",             "alert")),
+    (r"ботулизм",                          ("Botulism",                "warning")),
+    (r"корь",                              ("Measles",                 "warning")),
+    (r"коклюш",                            ("Pertussis",               "warning")),
+    (r"дифтерия",                          ("Diphtheria",              "warning")),
+    (r"полиомиелит|полиовирус",            ("Polio",                   "warning")),
+    (r"бешенство",                         ("Rabies",                  "monitoring")),
+    (r"клещевой энцефалит",               ("Tick-borne encephalitis", "warning")),
+    (r"энцефалит",                         ("Encephalitis",            "warning")),
+    (r"боррелиоз|болезнь лайма",          ("Lyme disease",            "warning")),
+    (r"гепатит\s*а|гепатит\s*е",          ("Hepatitis",               "alert")),
+    (r"гепатит",                           ("Hepatitis",               "monitoring")),
+    (r"туберкулёз|туберкулез|\bтб\b",     ("Tuberculosis",            "monitoring")),
+    (r"грипп\s*[aahн]\s*\(?[hн]5",        ("Avian influenza",         "alert")),
+    (r"птичий грипп",                      ("Avian influenza",         "alert")),
+    (r"грипп",                             ("Influenza",               "monitoring")),
+    (r"сальмонелл",                        ("Salmonellosis",           "warning")),
+    (r"дизентерия",                        ("Dysentery",               "warning")),
+    (r"иерсиниоз",                         ("Yersiniosis",             "warning")),
+    (r"трихинелл",                         ("Trichinellosis",          "warning")),
+    (r"легионелл",                         ("Legionellosis",           "warning")),
+    (r"ковид|covid|коронавирус",           ("COVID-19",                "monitoring")),
+    (r"орви|острые респираторн",           ("ARVI",                    "monitoring")),
+    (r"инфекц",                            ("Infectious disease",      "monitoring")),
+]
+
+# Russian country names → English (subset for Rospotrebnadzor news)
+RU_COUNTRY_MAP = {
+    "россий": "russia", "в рф": "russia", "по рф": "russia",
+    "китай": "china", "китае": "china",
+    "украин": "ukraine",
+    "казахстан": "kazakhstan",
+    "узбекистан": "uzbekistan",
+    "таджикистан": "tajikistan",
+    "кыргызстан": "kyrgyzstan", "киргиз": "kyrgyzstan",
+    "беларус": "belarus", "белоруссии": "belarus",
+    "азербайджан": "azerbaijan",
+    "армени": "armenia",
+    "грузи": "georgia",
+    "турци": "turkey",
+    "иран": "iran",
+    "афганистан": "afghanistan",
+    "индии": "india", "индия": "india",
+}
+
+
+def extract_russian(title: str, description: str) -> dict | None:
+    """Fallback extractor for Russian-language text (Rospotrebnadzor).
+    Maps Russian disease terms to English equivalents."""
+    text = (title + " " + description).lower()
+
+    disease_name, severity = None, "monitoring"
+    for ru_pattern, (en_name, sev) in RU_DISEASE_MAP:
+        if re.search(ru_pattern, text, re.I):
+            disease_name = en_name
+            severity = sev
+            break
+
+    if not disease_name:
+        return None
+
+    # Country detection
+    country_key = "russia"  # default: Rospotrebnadzor is Russian federal service
+    for ru_frag, en_key in RU_COUNTRY_MAP.items():
+        if ru_frag in text:
+            country_key = en_key
+            break
+
+    coords = COUNTRY_DB.get(country_key)
+    if not coords:
+        coords = COUNTRY_DB["russia"]
+
+    iso, lat, lng, region = coords
+    country_name = country_key.title()
+
+    # Numeric extraction (Russian patterns)
+    cases  = _extract_number(text, r"(\d[\d\s]*)\s*(?:случа|заболев|инфицирован)")
+    deaths = _extract_number(text, r"(\d[\d\s]*)\s*(?:смерт|погибш|летальн)")
+
+    summary_ru = re.sub(r"<[^>]+>", " ", (title + ". " + description)[:250]).strip()
+
+    return {
+        "disease": disease_name, "country": country_name,
+        "iso": iso, "region": region, "lat": lat, "lng": lng,
+        "cases": cases, "deaths": deaths, "severity": severity,
+        "summary": f"Russia epidemiology alert: {disease_name} in {country_name}. "
+                   + re.sub(r"<[^>]+>", " ", description[:180]).strip(),
+        "summary_ru": summary_ru,
+    }
+
+# ---------------------------------------------------------------------------
 # Source 1: ReliefWeb API — structured health/disease reports
 # ---------------------------------------------------------------------------
 
@@ -584,7 +727,254 @@ def fetch_healthmap() -> list:
         return []
 
 # ---------------------------------------------------------------------------
-# Source 4: RSS feeds
+# Source 4: Rospotrebnadzor RSS (Russia / CIS)
+# ---------------------------------------------------------------------------
+
+def fetch_rospotrebnadzor() -> list:
+    """Rospotrebnadzor RSS — Russian federal epidemiology/consumer-protection service.
+    Content is in Russian; filtered by epidemic keywords, then passed to AI or
+    Russian-regex fallback extractor."""
+    print("Fetching Rospotrebnadzor RSS …", flush=True)
+    url = "https://www.rospotrebnadzor.ru/region/rss/rss.php?rss=y"
+    try:
+        opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 EpiScope/2.0 (episcope.ru)",
+            "Accept": "application/rss+xml,application/xml,text/xml,*/*",
+        })
+        with opener.open(req, timeout=15) as resp:
+            content = resp.read()
+    except Exception as e:
+        print(f"  ✗ Rospotrebnadzor: {e}", flush=True)
+        return []
+
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError:
+        try:
+            cleaned = re.sub(rb'&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[\da-fA-F]+);)', rb'&amp;', content)
+            root = ET.fromstring(cleaned)
+        except ET.ParseError as e2:
+            print(f"  ✗ Rospotrebnadzor XML: {e2}", flush=True)
+            return []
+
+    items  = root.findall(".//item")
+    cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)
+    results = []
+
+    for item in items:
+        def t(tag):
+            el = item.find(tag)
+            return (el.text or "").strip() if el is not None else ""
+
+        title = t("title")
+        desc  = re.sub(r"<[^>]+>", " ", t("description") or "")
+        link  = t("link") or t("guid")
+        pub   = t("pubDate") or ""
+
+        try:
+            from email.utils import parsedate_to_datetime
+            pub_dt = parsedate_to_datetime(pub).astimezone(timezone.utc) if pub else None
+            if pub_dt and pub_dt < cutoff:
+                continue
+        except Exception:
+            pass
+
+        combined = (title + " " + desc).lower()
+        if not any(kw in combined for kw in RU_EPIDEMIC_KEYWORDS):
+            continue
+
+        results.append({
+            "source": "ROSP",
+            "title": title,
+            "description": (title + " " + desc)[:600],
+            "link": link,
+            "pub_date": pub,
+        })
+        if len(results) >= MAX_PER_FEED:
+            break
+
+    print(f"  → {len(results)} Rospotrebnadzor epidemic items", flush=True)
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Source 5: China CDC Weekly — monthly Notifiable Infectious Diseases
+# ---------------------------------------------------------------------------
+
+# Only include diseases that meet case/death thresholds (avoids noise)
+_CHINA_CDC_MIN_CASES = 50
+_CHINA_CDC_ALWAYS = {  # include regardless of case count (dangerous pathogens)
+    "plague", "cholera", "ebola", "marburg", "nipah", "anthrax", "avian",
+}
+
+
+def _parse_china_cdc_notifiable(html: str, article_url: str) -> list:
+    """Parse a China CDC Weekly HTML article table into raw event dicts."""
+    # Extract report period from heading
+    date_m = re.search(r'(?:China|china)[,\s—\-]+([A-Z][a-z]+\s+\d{4})', html)
+    report_date = date_m.group(1) if date_m else ""
+
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.S | re.I)
+    results = []
+    header_found = False
+    cases_col, deaths_col = 2, 3  # default column indices
+
+    for row in rows:
+        cells_raw = re.findall(r'<t[dh][^>]*>(.*?)</t[dh]>', row, re.S | re.I)
+        cells = [re.sub(r'<[^>]+>', ' ', c).replace('\xa0', ' ').strip() for c in cells_raw]
+        cells = [re.sub(r'\s+', ' ', c).strip() for c in cells]
+        if not cells:
+            continue
+
+        first = cells[0].lower()
+
+        # Detect header row
+        if any(h in first for h in ('disease', 'diseases')):
+            header_found = True
+            for i, h in enumerate(cells):
+                hl = h.lower()
+                if 'cases' in hl and i != 0:
+                    cases_col = i
+                elif 'death' in hl and i != 0:
+                    deaths_col = i
+            continue
+
+        if not header_found:
+            continue
+        if first in ('total', 'sum', 'all', '合计', ''):
+            continue
+
+        disease_raw = cells[0].strip()
+        if not disease_raw:
+            continue
+
+        def parse_num(s):
+            s = s.replace(',', '').replace(' ', '').strip()
+            if s in ('', '-', '−', '–'):
+                return 0
+            try:
+                return int(float(s))
+            except ValueError:
+                return None
+
+        cases  = parse_num(cells[cases_col])  if len(cells) > cases_col  else None
+        deaths = parse_num(cells[deaths_col]) if len(cells) > deaths_col else None
+        if cases is None:
+            cases = 0
+        if deaths is None:
+            deaths = 0
+
+        # Filter low-activity rows
+        disease_lower = disease_raw.lower()
+        always_include = any(k in disease_lower for k in _CHINA_CDC_ALWAYS)
+        if not always_include and cases < _CHINA_CDC_MIN_CASES and deaths == 0:
+            continue
+
+        # Map to our disease taxonomy
+        mapped_name = disease_raw
+        severity    = "monitoring"
+        for pattern, name, sev in DISEASE_PATTERNS:
+            if re.search(pattern, disease_lower, re.I):
+                mapped_name = name
+                severity    = sev
+                break
+
+        summary = (
+            f"China CDC monthly report: {cases:,} cases, {deaths} deaths of "
+            f"{mapped_name} in China"
+        )
+        if report_date:
+            summary += f" ({report_date} data)"
+        summary += "."
+
+        results.append({
+            "source":        "ChinaCDC",
+            "title":         f"{mapped_name} — China",
+            "description":   summary,
+            "disease_hint":  mapped_name,
+            "country_hint":  "China",
+            "iso_hint":      "CN",
+            "cases_direct":  cases if cases > 0 else None,
+            "deaths_direct": deaths if deaths > 0 else None,
+            "severity_hint": severity,
+            "link":          article_url,
+            "pub_date":      report_date,
+        })
+
+    print(f"  → {len(results)} China CDC disease records", flush=True)
+    return results
+
+
+def fetch_china_cdc_weekly() -> list:
+    """China CDC Weekly — scrape the homepage for the latest Notifiable
+    Infectious Diseases article, then parse the data table."""
+    print("Fetching China CDC Weekly …", flush=True)
+
+    home_html = ""
+    for home_url in ["https://weekly.chinacdc.cn/en/", "https://weekly.chinacdc.cn/"]:
+        try:
+            req = urllib.request.Request(home_url, headers={
+                "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+                "Accept": "text/html,*/*",
+            })
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                home_html = resp.read().decode("utf-8", errors="replace")
+            break
+        except Exception as e:
+            print(f"  ⚠ China CDC home ({home_url}): {e}", flush=True)
+
+    # Collect candidate article paths from homepage
+    all_paths = re.findall(r'href="(/en/article/doi/10\.46234/ccdcw[^"]+)"', home_html)
+    all_paths = list(dict.fromkeys(all_paths))  # dedupe, preserve order
+
+    # Prioritise links where surrounding text mentions "Notifiable"
+    notif_paths = [
+        m.group(1)
+        for m in re.finditer(
+            r'href="(/en/article/doi/[^"]+)"[^>]*>[^<]*[Nn]otifiable[^<]*<', home_html
+        )
+    ]
+    candidates = notif_paths + [p for p in all_paths if p not in notif_paths]
+
+    # Fallback: probe recent article numbers for current year + previous year
+    if not candidates:
+        year = datetime.now().year
+        max_week = min((datetime.now().timetuple().tm_yday // 7) + 4, 55)
+        for y in [year, year - 1]:
+            for w in range(max_week if y == year else 55, 0, -1):
+                candidates.append(f"/en/article/doi/10.46234/ccdcw{y}.{w:03d}")
+
+    # Fetch candidates until we find a "Notifiable Infectious Diseases" article
+    article_html = None
+    article_url  = None
+    checked = 0
+    for path in candidates[:40]:  # hard cap: 40 candidates max
+        url = f"https://weekly.chinacdc.cn{path}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 EpiScope/2.0"})
+            with urllib.request.urlopen(req, timeout=7) as resp:
+                html = resp.read().decode("utf-8", errors="replace")
+            checked += 1
+            if "Notifiable" in html and "Infectious" in html:
+                article_html = html
+                article_url  = url
+                print(f"  → China CDC article: {url} (checked {checked})", flush=True)
+                break
+        except urllib.error.HTTPError:
+            continue  # 404 / 403 — skip silently
+        except Exception:
+            continue
+
+    if not article_html:
+        print(f"  ✗ China CDC Weekly: no article found (checked {checked})", flush=True)
+        return []
+
+    return _parse_china_cdc_notifiable(article_html, article_url)
+
+
+# ---------------------------------------------------------------------------
+# Source 6: RSS feeds
 # ---------------------------------------------------------------------------
 
 def fetch_rss(feed: dict) -> list:
@@ -928,7 +1318,69 @@ def main():
             })
     time.sleep(1)
 
-    # ── 4. RSS feeds ─────────────────────────────────────────────────────
+    # ── 4. Rospotrebnadzor RSS (Russia / CIS) ────────────────────────────
+    for raw in fetch_rospotrebnadzor():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = None
+        if has_ai:
+            extracted = call_ai(text)   # Gemini handles Russian natively
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_russian(raw["title"], raw["description"])
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])  # last resort
+        if not extracted or not extracted.get("disease"):
+            continue
+        # If country not detected, default to Russia (Rospotrebnadzor is Russian federal)
+        if not extracted.get("country"):
+            extracted["country"] = "Russia"
+            extracted["iso"], extracted["lat"], extracted["lng"], extracted["region"] = COUNTRY_DB["russia"]
+        sev = normalise_sev(extracted.get("severity", "monitoring"))
+        add_event({
+            "id":         f"rosp-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    extracted.get("disease"),
+            "country":    extracted.get("country"),
+            "iso":        extracted.get("iso"),
+            "region":     extracted.get("region"),
+            "lat":        extracted.get("lat"),
+            "lng":        extracted.get("lng"),
+            "cases":      extracted.get("cases"),
+            "deaths":     extracted.get("deaths"),
+            "severity":   sev,
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
+            "source":     "Роспотребнадзор",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+    time.sleep(1)
+
+    # ── 5. China CDC Weekly ───────────────────────────────────────────────
+    for raw in fetch_china_cdc_weekly():
+        disease = raw.get("disease_hint", "")
+        if not disease:
+            continue
+        add_event({
+            "id":         f"cdc-cn-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    disease,
+            "country":    "China",
+            "iso":        "CN",
+            "region":     "WPRO",
+            "lat":        COUNTRY_DB["china"][1],
+            "lng":        COUNTRY_DB["china"][2],
+            "cases":      raw.get("cases_direct"),
+            "deaths":     raw.get("deaths_direct"),
+            "severity":   raw.get("severity_hint", "monitoring"),
+            "summary":    raw["description"][:300],
+            "summary_ru": "",
+            "source":     "China CDC Weekly",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+    time.sleep(1)
+
+    # ── 6. RSS feeds ─────────────────────────────────────────────────────
     for feed in RSS_FEEDS:
         rss_items = fetch_rss(feed)
         time.sleep(0.5)
@@ -963,7 +1415,7 @@ def main():
         if len(events) >= MAX_EVENTS:
             break
 
-    # ── 4. GDACS ─────────────────────────────────────────────────────────
+    # ── 7. GDACS ─────────────────────────────────────────────────────────
     for gev in fetch_gdacs():
         iso = gev.get("iso")
         add_event({
