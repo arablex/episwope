@@ -396,6 +396,22 @@
   }
   .out-row .ct small{ display:block; font-size:8.5px; font-weight:600; color:var(--muted); letter-spacing:0; margin-top:2px;}
 
+  /* ── Food Recalls ──────────────────────────────── */
+  .food-recalls-h{ cursor:pointer; user-select:none; display:flex; align-items:center; justify-content:space-between; }
+  .food-recalls-h:hover{ opacity:.8; }
+  .food-card{ border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:5px; cursor:pointer; transition:background .15s; }
+  .food-card:hover{ background:var(--bg-2); }
+  .food-card-head{ display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:3px; }
+  .food-hbadge{ font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px; white-space:nowrap; }
+  .food-hbadge.critical{ background:#fde; color:#c0392b; }
+  .food-hbadge.alert   { background:#fff3dc; color:#b87a00; }
+  .food-hbadge.warning { background:#f0f0ec; color:#6b6960; }
+  .food-product{ font-size:12px; font-weight:600; color:var(--ink); line-height:1.35; }
+  .food-meta   { font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .food-see-all{ font-size:11px; color:var(--muted); text-align:center; padding:6px; cursor:pointer; }
+  .food-see-all:hover{ color:var(--ink); }
+  .food-empty  { font-size:12px; color:var(--muted); padding:8px 0; }
+
   .status-foot{
     padding:12px 18px;
     border-top:1px solid rgba(229,227,220,0.6);
@@ -1827,6 +1843,23 @@
           </div>
 
         </div>
+
+      <!-- Отзывы продуктов питания -->
+      <div class="side-section" id="foodRecallsSection">
+        <div class="side-h food-recalls-h" onclick="toggleFoodRecalls()">
+          <span style="display:flex;align-items:center;gap:5px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg>
+            Отзывы продуктов
+          </span>
+          <span style="display:flex;align-items:center;gap:4px">
+            <span class="count" id="foodCritCount" style="background:#fde;color:#c0392b;display:none">0</span>
+            <span class="count" id="foodTotalCount">—</span>
+            <span id="foodChev" style="font-size:9px;color:var(--muted);transition:transform .2s">▾</span>
+          </span>
+        </div>
+        <div id="foodList" style="display:none;margin-top:8px"></div>
+      </div>
+
       <div class="side-section country-search-wrap">
           <input id="countrySearch" placeholder="Поиск по стране…" autocomplete="off">
           <div id="countryDropdown"></div>

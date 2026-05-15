@@ -464,6 +464,85 @@ function countryTravelRisk(country){
   return 'low';
 }
 
+/* ── Food Safety Recalls ─────────────────────────── */
+let FOOD_RECALLS = [];
+let _foodExpanded = false;
+let _foodShowAll  = false;
+const FOOD_PREVIEW = 6;   // cards shown before "show all"
+
+const FLAG = iso2 => {
+  if (!iso2 || iso2.length !== 2 || iso2 === 'EU') return iso2 === 'EU' ? '🇪🇺' : '';
+  const o = 0x1F1E6 - 65;
+  return String.fromCodePoint(iso2.charCodeAt(0) + o) + String.fromCodePoint(iso2.charCodeAt(1) + o);
+};
+
+async function loadFoodRecalls() {
+  try {
+    const res  = await fetch('/food_recalls.json');
+    if (!res.ok) return;
+    const data = await res.json();
+    FOOD_RECALLS = data.recalls || [];
+    renderFoodAlerts();
+  } catch (e) {
+    console.warn('[EpiScope] food_recalls.json unavailable:', e.message);
+  }
+}
+
+function renderFoodAlerts() {
+  const list     = document.getElementById('foodList');
+  const totEl    = document.getElementById('foodTotalCount');
+  const critEl   = document.getElementById('foodCritCount');
+  if (!list) return;
+
+  const total  = FOOD_RECALLS.length;
+  const crits  = FOOD_RECALLS.filter(r => r.severity === 'critical').length;
+
+  if (totEl) totEl.textContent = total || '—';
+  if (critEl) {
+    critEl.textContent = crits;
+    critEl.style.display = crits > 0 ? '' : 'none';
+  }
+
+  if (!_foodExpanded) return;
+
+  if (!total) {
+    list.innerHTML = `<div class="food-empty">${LANG === 'ru' ? 'Нет активных отзывов' : 'No active recalls'}</div>`;
+    return;
+  }
+
+  const shown = _foodShowAll ? FOOD_RECALLS : FOOD_RECALLS.slice(0, FOOD_PREVIEW);
+  const cards = shown.map(r => {
+    const flag   = r.iso === 'EU' ? '🇪🇺' : FLAG(r.iso);
+    const dateStr = r.date ? r.date.slice(0, 10) : '';
+    const src    = r.source || '';
+    return `
+      <div class="food-card" onclick="window.open('${r.link || '#'}','_blank')">
+        <div class="food-card-head">
+          <span class="food-hbadge ${r.severity}">${r.hazard}</span>
+          <span style="font-size:11px;color:var(--muted)">${flag} ${dateStr}</span>
+        </div>
+        <div class="food-product">${(r.product || '').slice(0, 90)}</div>
+        <div class="food-meta">${src}${r.class ? ' · ' + r.class : ''}${r.scope ? ' · ' + r.scope.slice(0, 40) : ''}</div>
+      </div>`;
+  }).join('');
+
+  const moreBtn = !_foodShowAll && total > FOOD_PREVIEW
+    ? `<div class="food-see-all" onclick="event.stopPropagation();_foodShowAll=true;renderFoodAlerts()">
+         ${LANG === 'ru' ? `Показать все ${total}` : `Show all ${total}`} ▾
+       </div>` : '';
+
+  list.innerHTML = cards + moreBtn;
+}
+
+function toggleFoodRecalls() {
+  _foodExpanded = !_foodExpanded;
+  const list = document.getElementById('foodList');
+  const chev = document.getElementById('foodChev');
+  if (list) list.style.display = _foodExpanded ? '' : 'none';
+  if (chev) chev.style.transform = _foodExpanded ? 'rotate(180deg)' : '';
+  if (_foodExpanded) renderFoodAlerts();
+}
+
 /* ── Watched regions (localStorage + server sync) ────────── */
 let WATCHED = new Set(JSON.parse(localStorage.getItem('episwope_watched') || '[]'));
 
@@ -2458,6 +2537,9 @@ async function boot(){
 
   // Sync watched countries from server (if logged in)
   loadServerCountries();
+
+  // Load food safety recalls
+  loadFoodRecalls();
 
   // Load live data after globe is visible
   loadLiveData();

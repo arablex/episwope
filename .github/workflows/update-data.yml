@@ -63,7 +63,7 @@ jobs:
         run: |
           git config user.name  "EpiScope Bot"
           git config user.email "bot@episcope.noreply"
-          git add public/events.json public/alerts.json
+          git add public/events.json public/alerts.json public/food_recalls.json
           # Only commit if there are actual changes
           if git diff --cached --quiet; then
             echo "No data changes — skipping commit"

@@ -1142,6 +1142,331 @@ def build_dedup_key(disease: str, country: str) -> str:
     return f"{d}|{c}"
 
 # ---------------------------------------------------------------------------
+# Food Safety: FDA (USA) · UK FSA · Health Canada · EU RASFF
+# ---------------------------------------------------------------------------
+
+FOOD_HAZARD_PATTERNS = [
+    (r"listeria|listeriosis",                      "Listeria",              "critical"),
+    (r"e\.?\s*coli|escherichia|stec|vtec|o157",   "E. coli",               "critical"),
+    (r"salmonella",                                "Salmonella",            "alert"),
+    (r"hepatitis\s*a",                             "Hepatitis A",           "alert"),
+    (r"botulism|clostridium\s*bot",               "Botulism",              "alert"),
+    (r"norovirus|norwalk",                         "Norovirus",             "alert"),
+    (r"campylobacter",                             "Campylobacter",         "alert"),
+    (r"staph|staphylococcus\s*aureus",             "Staphylococcus",        "warning"),
+    (r"undeclared.*(?:milk|dairy|lactose|casein)", "Allergen: Milk",        "alert"),
+    (r"undeclared.*(?:peanut|groundnut)",          "Allergen: Peanuts",     "alert"),
+    (r"undeclared.*(?:tree\s*nut|almond|cashew|walnut|pecan)", "Allergen: Tree nuts", "alert"),
+    (r"undeclared.*(?:wheat|gluten|barley|rye)",   "Allergen: Gluten",      "alert"),
+    (r"undeclared.*(?:shellfish|crustacean|shrimp|lobster)", "Allergen: Shellfish", "alert"),
+    (r"undeclared.*(?:fish)",                      "Allergen: Fish",        "alert"),
+    (r"undeclared.*(?:soy|soja)",                  "Allergen: Soy",         "warning"),
+    (r"undeclared.*(?:egg)",                       "Allergen: Eggs",        "warning"),
+    (r"undeclared.*(?:sesame)",                    "Allergen: Sesame",      "warning"),
+    (r"undeclared\s+allergen|may\s+contain",       "Undeclared allergen",   "warning"),
+    (r"metal\s*fragment|metallic",                 "Foreign: Metal",        "alert"),
+    (r"glass\s*fragment",                          "Foreign: Glass",        "alert"),
+    (r"plastic\s*fragment",                        "Foreign: Plastic",      "warning"),
+    (r"pesticide|mycotoxin|aflatoxin",             "Chemical contamination","alert"),
+    (r"mold|mould|yeast\s*spoilage",               "Mold/spoilage",         "warning"),
+]
+
+FOOD_CLASS_SEV = {"Class I": "critical", "Class II": "alert", "Class III": "warning"}
+
+
+def detect_food_hazard(text: str) -> tuple:
+    """Return (hazard_label, severity) from recall reason/product text."""
+    for pattern, label, sev in FOOD_HAZARD_PATTERNS:
+        if re.search(pattern, text, re.I):
+            return label, sev
+    return "Food safety", "warning"
+
+
+def _food_age_ok(date_str: str) -> bool:
+    """True if date_str (YYYY-MM-DD or YYYYMMDD) is within MAX_EVENT_AGE_DAYS."""
+    if not date_str:
+        return True
+    s = date_str.replace("-", "")
+    try:
+        dt = datetime.strptime(s[:8], "%Y%m%d")
+        return (datetime.now() - dt).days <= MAX_EVENT_AGE_DAYS
+    except Exception:
+        return True
+
+
+# ── FDA (USA) ─────────────────────────────────────────────────────────────
+
+def fetch_fda_recalls() -> list:
+    """FDA openFDA food enforcement (recalls). Free, no API key needed."""
+    print("Fetching FDA food recalls …", flush=True)
+    url = (
+        "https://api.fda.gov/food/enforcement.json"
+        "?search=status:Ongoing"
+        "&limit=50&sort=recall_initiation_date:desc"
+    )
+    try:
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "EpiScope/2.0 (episcope.ru)",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+        raw = data.get("results", [])
+        print(f"  → {len(raw)} FDA raw items", flush=True)
+    except Exception as e:
+        print(f"  ✗ FDA: {e}", flush=True)
+        return []
+
+    items = []
+    for r in raw:
+        cls     = r.get("classification", "")
+        reason  = r.get("reason_for_recall", "")
+        product = r.get("product_description", "")
+        brand   = r.get("brand_name", "").strip()
+        firm    = r.get("recalling_firm", "")
+        dist    = r.get("distribution_pattern", "")
+        date_r  = r.get("recall_initiation_date", "")   # YYYYMMDD
+        num     = r.get("recall_number", f"fda-{len(items)}")
+
+        # Parse date
+        date_iso = ""
+        if len(date_r) == 8:
+            date_iso = f"{date_r[:4]}-{date_r[4:6]}-{date_r[6:8]}"
+        if not _food_age_ok(date_iso):
+            continue
+
+        sev_cls              = FOOD_CLASS_SEV.get(cls, "warning")
+        hazard, sev_hazard   = detect_food_hazard(reason + " " + product)
+        sev = sev_cls if SEV_ORDER.get(sev_cls, 0) >= SEV_ORDER.get(sev_hazard, 0) else sev_hazard
+
+        # Skip Class III (cosmetic, very low risk)
+        if cls == "Class III":
+            continue
+
+        product_label = (f"{brand} — {product[:100]}").strip(" —") if brand else product[:120]
+
+        items.append({
+            "id":       f"fda-{num}",
+            "source":   "FDA",
+            "country":  "United States",
+            "iso":      "US",
+            "product":  product_label,
+            "hazard":   hazard,
+            "reason":   reason[:200],
+            "severity": sev,
+            "class":    cls,
+            "firm":     firm[:80],
+            "scope":    dist[:120],
+            "date":     date_iso,
+            "link":     "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts",
+            "summary":  f"{hazard} in {product_label[:80]}. {reason[:150]}",
+        })
+    print(f"  → {len(items)} FDA recalls (Class I+II)", flush=True)
+    return items
+
+
+# ── UK FSA + Health Canada (RSS) ──────────────────────────────────────────
+
+FOOD_RSS_SOURCES = [
+    {"name": "UK FSA",      "url": "https://www.food.gov.uk/news-alerts/feed/alerts.rss",               "iso": "GB", "country": "United Kingdom"},
+    {"name": "Health CA",   "url": "https://recalls-rappels.canada.ca/en/feeds/alerts.rss",              "iso": "CA", "country": "Canada"},
+    {"name": "Food Stds AU","url": "https://www.foodstandards.gov.au/media/Pages/recallsrss.aspx",       "iso": "AU", "country": "Australia"},
+]
+
+
+def fetch_food_rss_source(src: dict) -> list:
+    """Fetch a food-safety RSS feed and parse into recall items."""
+    try:
+        req = urllib.request.Request(src["url"], headers={
+            "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+            "Accept": "application/rss+xml,application/xml,text/xml,*/*",
+        })
+        opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+        with opener.open(req, timeout=12) as resp:
+            content = resp.read()
+    except Exception as e:
+        print(f"  ✗ {src['name']}: {e}", flush=True)
+        return []
+
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError:
+        try:
+            cleaned = re.sub(rb'&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[\da-fA-F]+);)', rb'&amp;', content)
+            root = ET.fromstring(cleaned)
+        except ET.ParseError:
+            return []
+
+    results = []
+    cutoff  = datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)
+    for item in root.findall(".//item")[:MAX_PER_FEED]:
+        def t(tag):
+            el = item.find(tag)
+            return (el.text or "").strip() if el is not None else ""
+
+        title   = t("title")
+        desc    = re.sub(r"<[^>]+>", " ", t("description") or "")
+        link    = t("link") or t("guid")
+        pub     = t("pubDate") or ""
+
+        try:
+            from email.utils import parsedate_to_datetime
+            pub_dt = parsedate_to_datetime(pub).astimezone(timezone.utc) if pub else None
+            if pub_dt and pub_dt < cutoff:
+                continue
+            date_iso = pub_dt.strftime("%Y-%m-%d") if pub_dt else ""
+        except Exception:
+            date_iso = ""
+
+        combined = (title + " " + desc).lower()
+        # Basic food-safety filter
+        if not any(kw in combined for kw in [
+            "recall", "withdrawal", "alert", "listeria", "salmonella", "e. coli",
+            "allergen", "undeclared", "contamination", "hazard",
+        ]):
+            continue
+
+        hazard, sev = detect_food_hazard(title + " " + desc)
+
+        results.append({
+            "id":       f"{src['iso'].lower()}-fsr-{len(results)}",
+            "source":   src["name"],
+            "country":  src["country"],
+            "iso":      src["iso"],
+            "product":  title[:150],
+            "hazard":   hazard,
+            "reason":   desc[:200],
+            "severity": sev,
+            "class":    "",
+            "firm":     "",
+            "scope":    "",
+            "date":     date_iso,
+            "link":     link,
+            "summary":  f"{hazard} — {title[:100]}",
+        })
+    print(f"  → {len(results)} {src['name']} recalls", flush=True)
+    return results
+
+
+# ── EU RASFF ──────────────────────────────────────────────────────────────
+
+def fetch_rasff() -> list:
+    """EU Rapid Alert System for Food and Feed (RASFF) — public API."""
+    print("Fetching EU RASFF …", flush=True)
+    # RASFF public portal JSON API
+    url = (
+        "https://webgate.ec.europa.eu/rasff-window/api/notification/notificationList.json"
+        "?event=search&pageSize=30&pageNumber=1"
+        "&sortField=lastUpdateDate&sortOrder=DESC"
+        "&inHistory=false"
+        "&riskDecision%5B%5D=serious&riskDecision%5B%5D=pending"
+    )
+    try:
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+            "Accept": "application/json",
+            "Referer": "https://webgate.ec.europa.eu/rasff-window/screen/search",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  ✗ RASFF: {e}", flush=True)
+        return []
+
+    notifications = data if isinstance(data, list) else data.get("notifications", data.get("data", []))
+    results = []
+    for n in notifications[:30]:
+        title       = n.get("subject", n.get("title", ""))
+        product     = n.get("product", {})
+        product_str = product.get("name", "") if isinstance(product, dict) else str(product)
+        hazard_str  = n.get("hazard", {})
+        hazard_name = hazard_str.get("name", "") if isinstance(hazard_str, dict) else str(hazard_str)
+        risk        = n.get("riskDecision", n.get("risk_decision", ""))
+        date_str    = n.get("lastUpdateDate", n.get("date", ""))[:10] if n.get("lastUpdateDate") or n.get("date") else ""
+        notif_ref   = n.get("reference", n.get("notificationReference", ""))
+        link        = f"https://webgate.ec.europa.eu/rasff-window/screen/notification/{notif_ref}" if notif_ref else \
+                      "https://webgate.ec.europa.eu/rasff-window/screen/search"
+
+        if not _food_age_ok(date_str):
+            continue
+
+        hazard, sev = detect_food_hazard(hazard_name + " " + title)
+        if risk and "serious" in str(risk).lower():
+            sev = max(sev, "alert", key=lambda x: SEV_ORDER.get(x, 0))
+
+        results.append({
+            "id":       f"rasff-{notif_ref or len(results)}",
+            "source":   "RASFF",
+            "country":  "European Union",
+            "iso":      "EU",
+            "product":  (product_str or title)[:150],
+            "hazard":   hazard_name or hazard,
+            "reason":   title[:200],
+            "severity": sev,
+            "class":    str(risk),
+            "firm":     "",
+            "scope":    "European Union",
+            "date":     date_str,
+            "link":     link,
+            "summary":  f"{hazard_name or hazard} — {product_str or title[:80]}",
+        })
+    print(f"  → {len(results)} RASFF notifications", flush=True)
+    return results
+
+
+# ── Combine + write food_recalls.json ─────────────────────────────────────
+
+def build_food_json():
+    """Fetch all food-safety sources, merge, write public/food_recalls.json."""
+    print("\n── Food Safety ───────────────────────────────────────", flush=True)
+    recalls = []
+
+    recalls += fetch_fda_recalls()
+    time.sleep(0.5)
+
+    for src in FOOD_RSS_SOURCES:
+        recalls += fetch_food_rss_source(src)
+        time.sleep(0.3)
+
+    recalls += fetch_rasff()
+
+    # Dedupe by (iso, product[:40]) — same product recalled in multiple feeds
+    seen_food = set()
+    unique = []
+    for r in recalls:
+        key = f"{r['iso']}|{r['product'][:40].lower()}"
+        if key not in seen_food:
+            seen_food.add(key)
+            unique.append(r)
+
+    # Sort: critical first, then by date desc
+    unique.sort(key=lambda r: (
+        -SEV_ORDER.get(r.get("severity", "warning"), 0),
+        r.get("date", "")
+    ), reverse=False)
+    # Reverse date within same severity: newer first
+    unique.sort(key=lambda r: (
+        -SEV_ORDER.get(r.get("severity", "warning"), 0),
+        r.get("date", "")[:10]
+    ))
+
+    meta = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "total":      len(unique),
+        "critical":   sum(1 for r in unique if r["severity"] == "critical"),
+        "alert":      sum(1 for r in unique if r["severity"] == "alert"),
+        "sources":    list({r["source"] for r in unique}),
+    }
+
+    output = {"meta": meta, "recalls": unique}
+    (OUTPUT_DIR / "food_recalls.json").write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"\n✓ Food: {len(unique)} recalls · {meta['critical']} critical · {meta['alert']} alert", flush=True)
+    return unique
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -1463,6 +1788,9 @@ def main():
         json.dumps({"meta": meta, "alerts": alerts}, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"\n✓ {len(events)} events · {len(alerts)} alerts · sources: {meta['sources']}")
+
+    # ── Food safety (separate JSON) ───────────────────────────────────────
+    build_food_json()
 
 
 if __name__ == "__main__":
