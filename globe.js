@@ -2541,6 +2541,8 @@ boot();
    MOBILE BOTTOM SHEET
    ========================================================= */
 
+const isMob = () => window.innerWidth <= 768;
+
 function updateMobPeek(){
   if(!isMob()) return;
   const c = OUTBREAKS.filter(o=>o.sev==='critical').length;
