@@ -2156,9 +2156,9 @@ async function loadHealthWeather(lat, lon, country){
   const fluKey = LANG==='ru'?'Активность гриппа':'Flu activity';
 
   el.innerHTML = `
-    <div class="hw-row"><span class="hw-icon">🌬</span><span class="hw-key">${aqiKey}</span>${badge(aqi)}</div>
-    <div class="hw-row"><span class="hw-icon">🌿</span><span class="hw-key">${polKey}</span>${badge(pollen)}</div>
-    <div class="hw-row"><span class="hw-icon">🦠</span><span class="hw-key">${fluKey}</span>${badge(flu)}</div>
+    <div class="hw-row"><span class="hw-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span><span class="hw-key">${aqiKey}</span>${badge(aqi)}</div>
+    <div class="hw-row"><span class="hw-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span><span class="hw-key">${polKey}</span>${badge(pollen)}</div>
+    <div class="hw-row"><span class="hw-icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span><span class="hw-key">${fluKey}</span>${badge(flu)}</div>
   `;
 }
 
