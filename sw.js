@@ -1,4 +1,4 @@
-const CACHE = 'episwope-v1';
+const CACHE = 'episwope-v2';   // bump version → старый кеш удаляется
 const SHELL = [
   '/',
   '/ru/',
@@ -6,6 +6,9 @@ const SHELL = [
   '/manifest.json',
   '/icon.svg',
 ];
+
+// Всегда запрашивать из сети (critical JS + HTML), не из кеша
+const NET_FIRST = new Set(['/', '/ru/', '/globe.js']);
 
 // ── Install: pre-cache shell ──────────────────────────────────────────────────
 self.addEventListener('install', e => {
@@ -23,24 +26,36 @@ self.addEventListener('activate', e => {
   );
 });
 
-// ── Fetch: network-first for API, cache-first for static ─────────────────────
+// ── Fetch ─────────────────────────────────────────────────────────────────────
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/.netlify/')) return;
   if (e.request.method !== 'GET') return;
 
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      const net = fetch(e.request).then(res => {
+  if (NET_FIRST.has(url.pathname)) {
+    // Network-first: всегда свежий JS и HTML, при ошибке — кеш
+    e.respondWith(
+      fetch(e.request).then(res => {
         if (res.ok && res.type === 'basic') {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          caches.open(CACHE).then(c => c.put(e.request, res.clone()));
         }
         return res;
-      });
-      return cached || net;
-    })
-  );
+      }).catch(() => caches.match(e.request))
+    );
+  } else {
+    // Cache-first для иконок, манифеста и прочего статика
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        const net = fetch(e.request).then(res => {
+          if (res.ok && res.type === 'basic') {
+            caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+          }
+          return res;
+        });
+        return cached || net;
+      })
+    );
+  }
 });
 
 // ── Push: show notification ───────────────────────────────────────────────────
