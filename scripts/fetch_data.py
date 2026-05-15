@@ -282,13 +282,23 @@ def call_gemini(text: str) -> dict:
         "generationConfig": {"maxOutputTokens": 500, "temperature": 0}
     }).encode()
     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            body = json.loads(resp.read())
-            return _parse_ai_json(body["candidates"][0]["content"]["parts"][0]["text"])
-    except Exception as e:
-        print(f"  ⚠ Gemini: {e}", flush=True)
-        return None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                body = json.loads(resp.read())
+                return _parse_ai_json(body["candidates"][0]["content"]["parts"][0]["text"])
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                wait = 65 * (attempt + 1)
+                print(f"  ⚠ Gemini rate limit — waiting {wait}s", flush=True)
+                time.sleep(wait)
+                continue
+            print(f"  ⚠ Gemini: {e}", flush=True)
+            return None
+        except Exception as e:
+            print(f"  ⚠ Gemini: {e}", flush=True)
+            return None
+    return None
 
 
 def call_groq(text: str) -> dict:
@@ -713,7 +723,7 @@ def main():
         extracted = None
         if has_ai:
             extracted = call_ai(text)
-            time.sleep(0.25)
+            time.sleep(4)
         if not extracted or not extracted.get("disease"):
             extracted = extract_free(raw["title"], raw["description"])
 
@@ -783,7 +793,7 @@ def main():
         extracted = None
         if has_ai:
             extracted = call_ai(text)
-            time.sleep(0.25)
+            time.sleep(4)
         if not extracted or not extracted.get("disease"):
             extracted = extract_free(raw["title"], raw["description"])
         if not extracted or not extracted.get("disease"):
@@ -824,7 +834,7 @@ def main():
             extracted = None
             if has_ai:
                 extracted = call_ai(text)
-                time.sleep(0.25)
+                time.sleep(4)
             if not extracted or not extracted.get("disease"):
                 extracted = extract_free(raw["title"], raw["description"])
             if not extracted or not extracted.get("disease"):
