@@ -1231,6 +1231,90 @@ function _aqiAdvice(aqi){
   }
 }
 
+/* ── Alert Modal ─────────────────────────────────────────── */
+
+function openAlertModal(o){
+  const modal = document.getElementById('alertModal');
+  if(!modal) return;
+
+  const isRu = LANG === 'ru';
+  const disName = diseaseName(o);
+
+  // Fill context labels
+  const sub = modal.querySelector('#alertModalSub');
+  if(sub) sub.textContent = `${disName} · ${o.country}`;
+
+  const ctryName = modal.querySelector('#alertTierCountryName');
+  if(ctryName) ctryName.textContent = isRu ? `По стране: ${o.country}` : `By country: ${o.country}`;
+
+  const specName = modal.querySelector('#alertTierSpecificName');
+  if(specName) specName.textContent = isRu ? `Точный алерт: ${disName}` : `Specific alert: ${disName}`;
+
+  // Store context on form for submission
+  const form = modal.querySelector('#alertModalForm');
+  if(form){
+    form.dataset.outbreak = o.id;
+    form.dataset.country  = o.country;
+    form.dataset.disease  = disName;
+  }
+
+  // Default tier: country
+  const defaultRadio = modal.querySelector('input[value="country"]');
+  if(defaultRadio) defaultRadio.checked = true;
+  modal.querySelectorAll('.alert-tier').forEach(el => {
+    el.classList.toggle('is-selected', el.querySelector('input')?.value === 'country');
+  });
+
+  // Reset form state
+  const emailInput = modal.querySelector('#alertModalEmail');
+  if(emailInput) emailInput.value = '';
+  const ok = modal.querySelector('#alertModalOk');
+  if(ok) ok.style.display = 'none';
+  if(form) form.style.display = '';
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => modal.classList.add('is-open'), 10);
+  emailInput?.focus();
+}
+
+function closeAlertModal(){
+  const modal = document.getElementById('alertModal');
+  if(!modal) return;
+  modal.classList.remove('is-open');
+  setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 220);
+}
+
+window.closeAlertModal = closeAlertModal;
+
+async function _submitAlertModal(e){
+  e.preventDefault();
+  const form  = e.currentTarget;
+  const email = form.querySelector('#alertModalEmail')?.value?.trim();
+  if(!email) return;
+
+  const tier     = form.closest('#alertModal')?.querySelector('input[name="alertTier"]:checked')?.value || 'country';
+  const country  = form.dataset.country  || '';
+  const outbreak = form.dataset.outbreak || '';
+  const disease  = form.dataset.disease  || '';
+
+  const btn = form.querySelector('button[type="submit"]');
+  if(btn){ btn.disabled = true; btn.textContent = LANG === 'ru' ? 'Подождите…' : 'Sending…'; }
+
+  try {
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tier, country, outbreak, disease, lang: LANG }),
+    });
+  } catch(_){ /* Netlify form fallback */ }
+
+  form.style.display = 'none';
+  const ok = form.closest('#alertModal')?.querySelector('#alertModalOk');
+  if(ok) ok.style.display = 'block';
+  if(btn){ btn.disabled = false; }
+}
+
 const SEV_COLOR_EXPR = ['match', ['get','sev'],
   'monitoring',   '#A09F95',
   'low',          '#E4B514',
@@ -1814,6 +1898,10 @@ function renderPanel(){
     watchBtn.style.color       = watched ? 'var(--accent)' : '';
     watchBtn.onclick = () => { toggleWatch(o.country); renderPanel(); };
   }
+
+  // Set Alert button
+  const alertBtn = document.getElementById('alertBtn');
+  if(alertBtn) alertBtn.onclick = () => openAlertModal(o);
 }
 
 function breakName(name){
@@ -2182,6 +2270,18 @@ async function boot(){
       if(!isOpen) section.classList.add('expanded');
     }
   });
+
+  // Alert modal tier selection
+  document.getElementById('alertModal')?.addEventListener('click', e => {
+    const tier = e.target.closest('.alert-tier');
+    if(!tier) return;
+    tier.closest('.alert-tiers')?.querySelectorAll('.alert-tier').forEach(t => t.classList.remove('is-selected'));
+    tier.classList.add('is-selected');
+    tier.querySelector('input').checked = true;
+  });
+
+  // Expose submit handler globally (called from onsubmit attr)
+  window._submitAlertModal = _submitAlertModal;
 
   // Country search wiring — full ALL_COUNTRIES list, flags, outbreak count
   const csInput = document.getElementById('countrySearch');

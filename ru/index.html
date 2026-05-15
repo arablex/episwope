@@ -1522,6 +1522,98 @@
   .cp-sub-btn:hover { opacity:.92; }
   .cp-sub-btn:disabled { opacity:.5; cursor:wait; }
   .cp-sub-status { font-size:11.5px; color:var(--muted); margin-top:8px; min-height:14px; }
+
+  /* ── Alert Modal ──────────────────────────────────────── */
+  .alert-modal{
+    position:fixed; inset:0; z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    padding:16px;
+  }
+  .alert-modal-bg{
+    position:absolute; inset:0;
+    background:rgba(20,18,14,0.48);
+    backdrop-filter:blur(4px);
+    opacity:0; transition:opacity .22s;
+  }
+  .alert-modal.is-open .alert-modal-bg{ opacity:1; }
+  .alert-modal-card{
+    position:relative; z-index:1;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:24px;
+    width:100%; max-width:420px;
+    box-shadow:0 24px 60px -12px rgba(20,18,14,0.28);
+    transform:translateY(14px) scale(0.97);
+    opacity:0; transition:transform .22s, opacity .22s;
+  }
+  .alert-modal.is-open .alert-modal-card{ transform:none; opacity:1; }
+  .alert-modal-hd{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    margin-bottom:20px;
+  }
+  .alert-modal-title{ font-size:17px; font-weight:800; letter-spacing:-0.02em; }
+  .alert-modal-sub{ font-size:12px; color:var(--muted); margin-top:3px; }
+  .alert-modal-x{
+    width:30px; height:30px; border-radius:50%; flex:none;
+    background:rgba(232,228,217,0.7); border:1px solid var(--line);
+    display:grid; place-items:center; color:var(--ink-2);
+    transition:background .15s;
+  }
+  .alert-modal-x:hover{ background:#fff; }
+
+  .alert-tiers{ display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+  .alert-tier{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 14px; border-radius:12px;
+    border:1.5px solid var(--line);
+    cursor:pointer; transition:border-color .15s, background .15s;
+    position:relative;
+  }
+  .alert-tier input{ position:absolute; opacity:0; pointer-events:none; }
+  .alert-tier.is-selected{
+    border-color:var(--accent);
+    background:rgba(232,89,12,0.04);
+  }
+  .alert-tier-ico{ font-size:18px; flex:none; line-height:1; }
+  .alert-tier-body{ flex:1; min-width:0; }
+  .alert-tier-name{ font-size:13px; font-weight:700; color:var(--ink); }
+  .alert-tier-desc{ font-size:11px; color:var(--muted); margin-top:2px; }
+  .alert-tier-check{
+    width:18px; height:18px; border-radius:50%; flex:none;
+    border:2px solid var(--line); transition:all .15s;
+  }
+  .alert-tier.is-selected .alert-tier-check{
+    background:var(--accent); border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(232,89,12,0.18);
+  }
+  .alert-tier.is-selected .alert-tier-check::after{
+    content:''; display:block; width:6px; height:6px;
+    background:#fff; border-radius:50%; margin:4px auto 0;
+  }
+
+  .alert-modal-form{ display:flex; gap:8px; margin-bottom:12px; }
+  .alert-modal-email{
+    flex:1; height:42px; padding:0 14px;
+    border:1.5px solid var(--line); border-radius:var(--r-pill);
+    font:inherit; font-size:13px; background:#fff; color:var(--ink);
+    transition:border-color .15s; outline:none;
+  }
+  .alert-modal-email:focus{ border-color:var(--accent); }
+  .alert-modal-submit{
+    height:42px; padding:0 18px; border-radius:var(--r-pill);
+    background:var(--accent); color:#fff; font:inherit; font-size:13px; font-weight:700;
+    white-space:nowrap; transition:opacity .15s;
+  }
+  .alert-modal-submit:hover{ opacity:.88; }
+  .alert-modal-submit:disabled{ opacity:.5; cursor:wait; }
+
+  .alert-modal-ok{
+    display:flex; align-items:center; gap:10px;
+    font-size:13.5px; font-weight:600; color:var(--ink);
+    padding:12px 0; margin-bottom:8px;
+  }
+  .alert-modal-note{ font-size:10.5px; color:var(--muted); text-align:center; }
 </style>
 </head>
 <body>
@@ -1932,7 +2024,7 @@
 
       <div class="panel-section">
         <div class="actions">
-          <button class="btn primary">
+          <button class="btn primary" id="alertBtn">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.4 0z"/></svg>
             Установить алерт
           </button>
@@ -1989,6 +2081,62 @@
     <div class="events-row" id="list"></div>
   </section>
 
+</div>
+
+<!-- ── Alert Modal ─────────────────────────────────────── -->
+<div id="alertModal" class="alert-modal" style="display:none" role="dialog" aria-modal="true">
+  <div class="alert-modal-bg" onclick="closeAlertModal()"></div>
+  <div class="alert-modal-card">
+    <div class="alert-modal-hd">
+      <div>
+        <div class="alert-modal-title">Установить алерт</div>
+        <div class="alert-modal-sub" id="alertModalSub"></div>
+      </div>
+      <button class="alert-modal-x" onclick="closeAlertModal()" aria-label="Закрыть">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="alert-tiers">
+      <label class="alert-tier">
+        <input type="radio" name="alertTier" value="global">
+        <div class="alert-tier-ico">🌍</div>
+        <div class="alert-tier-body">
+          <div class="alert-tier-name">Глобальный дайджест</div>
+          <div class="alert-tier-desc">Еженедельный отчёт по всем регионам</div>
+        </div>
+        <div class="alert-tier-check"></div>
+      </label>
+      <label class="alert-tier">
+        <input type="radio" name="alertTier" value="country" checked>
+        <div class="alert-tier-ico">📍</div>
+        <div class="alert-tier-body">
+          <div class="alert-tier-name" id="alertTierCountryName">По стране</div>
+          <div class="alert-tier-desc">При новых вспышках в этой стране</div>
+        </div>
+        <div class="alert-tier-check"></div>
+      </label>
+      <label class="alert-tier">
+        <input type="radio" name="alertTier" value="specific">
+        <div class="alert-tier-ico">🔴</div>
+        <div class="alert-tier-body">
+          <div class="alert-tier-name" id="alertTierSpecificName">Точный алерт</div>
+          <div class="alert-tier-desc">При изменении статуса этой вспышки</div>
+        </div>
+        <div class="alert-tier-check"></div>
+      </label>
+    </div>
+
+    <form id="alertModalForm" class="alert-modal-form" onsubmit="_submitAlertModal(event)">
+      <input type="email" id="alertModalEmail" class="alert-modal-email" placeholder="ваш@email.com" required autocomplete="email">
+      <button type="submit" class="alert-modal-submit">Подписаться</button>
+    </form>
+    <div id="alertModalOk" class="alert-modal-ok" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#19A463" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Готово — пришлём уведомление
+    </div>
+    <div class="alert-modal-note">Без спама · Отписка в один клик</div>
+  </div>
 </div>
 
 <!-- Hidden form for Netlify form detection -->
