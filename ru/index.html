@@ -1575,7 +1575,16 @@
     border-color:var(--accent);
     background:rgba(232,89,12,0.04);
   }
-  .alert-tier-ico{ font-size:18px; flex:none; line-height:1; }
+  .alert-tier-ico{
+    width:34px; height:34px; border-radius:9px; flex:none;
+    display:grid; place-items:center;
+    background:var(--bg); border:1px solid var(--line);
+    color:var(--muted); transition:all .15s;
+  }
+  .alert-tier.is-selected .alert-tier-ico{
+    background:rgba(232,89,12,0.1); border-color:rgba(232,89,12,0.25);
+    color:var(--accent);
+  }
   .alert-tier-body{ flex:1; min-width:0; }
   .alert-tier-name{ font-size:13px; font-weight:700; color:var(--ink); }
   .alert-tier-desc{ font-size:11px; color:var(--muted); margin-top:2px; }
@@ -2103,7 +2112,7 @@
     <div class="alert-tiers">
       <label class="alert-tier">
         <input type="radio" name="alertTier" value="global">
-        <div class="alert-tier-ico">🌍</div>
+        <div class="alert-tier-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
         <div class="alert-tier-body">
           <div class="alert-tier-name">Глобальный дайджест</div>
           <div class="alert-tier-desc">Еженедельный отчёт по всем регионам</div>
@@ -2112,7 +2121,7 @@
       </label>
       <label class="alert-tier">
         <input type="radio" name="alertTier" value="country" checked>
-        <div class="alert-tier-ico">📍</div>
+        <div class="alert-tier-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <div class="alert-tier-body">
           <div class="alert-tier-name" id="alertTierCountryName">По стране</div>
           <div class="alert-tier-desc">При новых вспышках в этой стране</div>
@@ -2121,7 +2130,7 @@
       </label>
       <label class="alert-tier">
         <input type="radio" name="alertTier" value="specific">
-        <div class="alert-tier-ico">🔴</div>
+        <div class="alert-tier-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
         <div class="alert-tier-body">
           <div class="alert-tier-name" id="alertTierSpecificName">Точный алерт</div>
           <div class="alert-tier-desc">При изменении статуса этой вспышки</div>
