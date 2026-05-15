@@ -2384,6 +2384,7 @@ async function loadLiveData(){
       renderPopup();
       addGLMarkers();
       renderCatLists();
+      updateMobPeek();
     }
   } catch(e){
     console.warn('[EpiScope] Live data unavailable:', e.message);
@@ -2407,6 +2408,8 @@ async function boot(){
   renderMyCountries();
   renderCatLists();
   updateUserBtn();
+  initBottomSheet();
+  updateMobPeek();
 
   // Load live data after globe is visible
   loadLiveData();
@@ -2485,6 +2488,92 @@ async function boot(){
   }
 }
 boot();
+
+/* =========================================================
+   MOBILE BOTTOM SHEET
+   ========================================================= */
+
+function updateMobPeek(){
+  if(!isMob()) return;
+  const c = OUTBREAKS.filter(o=>o.sev==='critical').length;
+  const a = OUTBREAKS.filter(o=>o.sev==='alert').length;
+  const t = OUTBREAKS.length;
+  const ec = document.getElementById('mpsC'); if(ec) ec.textContent = c;
+  const ea = document.getElementById('mpsA'); if(ea) ea.textContent = a;
+  const et = document.getElementById('mpsT'); if(et) et.textContent = t;
+}
+
+function mobSnapTo(state){
+  const sb = document.querySelector('.sidebar');
+  if(!sb) return;
+  sb.style.height = '';          // clear any drag-set inline height
+  sb.classList.remove('mob-mid','mob-full','mob-visible');
+  if(state === 'mid')  sb.classList.add('mob-mid');
+  if(state === 'full') sb.classList.add('mob-full');
+  const chev = document.getElementById('mobPeekChev');
+  if(chev) chev.style.transform = state === 'collapsed' ? '' : 'rotate(180deg)';
+}
+
+function mobSnapToggle(){
+  const sb = document.querySelector('.sidebar');
+  if(!sb) return;
+  const isMid  = sb.classList.contains('mob-mid');
+  const isFull = sb.classList.contains('mob-full');
+  if(isFull)       mobSnapTo('mid');
+  else if(isMid)   mobSnapTo('collapsed');
+  else             mobSnapTo('mid');
+}
+
+function initBottomSheet(){
+  if(!isMob()) return;
+  const sb   = document.querySelector('.sidebar');
+  const peek = document.getElementById('mobPeek');
+  if(!sb || !peek) return;
+
+  let startY = 0, startH = 0, dragging = false;
+  const COLLAPSED = 68;
+  const getMid  = () => window.innerHeight * 0.58;
+  const getFull = () => window.innerHeight - 52;
+
+  peek.addEventListener('touchstart', e=>{
+    startY = e.touches[0].clientY;
+    startH = sb.offsetHeight;
+    dragging = true;
+    sb.style.transition = 'none';
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    const dy  = startY - e.touches[0].clientY;
+    const newH = Math.max(COLLAPSED, Math.min(getFull(), startH + dy));
+    sb.style.height = newH + 'px';
+  }, {passive:true});
+
+  document.addEventListener('touchend', e=>{
+    if(!dragging) return;
+    dragging = false;
+    sb.style.transition = '';
+    const curH  = sb.offsetHeight;
+    const velUp = (startY - e.changedTouches[0].clientY) > 30;
+    const velDn = (startY - e.changedTouches[0].clientY) < -30;
+    const mid   = getMid();
+    const full  = getFull();
+
+    if(velDn || curH < (COLLAPSED + mid) / 2)      mobSnapTo('collapsed');
+    else if(velUp || curH > (mid + full) / 2)       mobSnapTo('full');
+    else                                             mobSnapTo('mid');
+  }, {passive:true});
+
+  // Update overview tab to use bottom sheet instead of old mob-visible overlay
+  document.querySelectorAll('.mob-nav-btn[data-action="overview"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const isOpen = sb.classList.contains('mob-mid') || sb.classList.contains('mob-full');
+      mobSnapTo(isOpen ? 'collapsed' : 'mid');
+    });
+  });
+
+  updateMobPeek();
+}
 
 setInterval(()=>{
   const d = new Date();
