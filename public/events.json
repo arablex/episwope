@@ -1,15 +1,34 @@
 {
   "meta": {
-    "updated_at": "2026-05-15T08:17:51.202380+00:00",
-    "total_events": 17,
-    "total_alerts": 7,
-    "mode": "regex (free)",
+    "updated_at": "2026-05-15T08:37:51.965792+00:00",
+    "total_events": 33,
+    "total_alerts": 13,
+    "mode": "gemini (free)",
     "sources": [
       "GDACS",
       "WHO DON"
     ]
   },
   "events": [
+    {
+      "id": "who-30",
+      "type": "epidemic",
+      "disease": "Marburg virus disease",
+      "country": "Tanzania",
+      "iso": "TZ",
+      "region": "AFRO",
+      "lat": -6.4,
+      "lng": 34.9,
+      "cases": null,
+      "deaths": null,
+      "severity": "critical",
+      "summary": "On 13 March 2025, the Ministry of Health of the United Republic of Tanzania declared the end of the Marburg virus disease (MVD) outbreak. This declaration came after two consecutive incubation periods (a total of 42 days) since the last person confirmed with MVD died on 28 January 2025 and was given",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON559",
+      "date": "2025-03-13T19:00:00Z",
+      "fetched_at": "2026-05-15T08:37:27.036605+00:00"
+    },
     {
       "id": "who-12",
       "type": "epidemic",
@@ -27,7 +46,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON589",
       "date": "2025-12-01T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.827545+00:00"
+      "fetched_at": "2026-05-15T08:37:18.154000+00:00"
     },
     {
       "id": "who-7",
@@ -46,7 +65,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON592",
       "date": "2026-01-26T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.823893+00:00"
+      "fetched_at": "2026-05-15T08:37:16.186389+00:00"
     },
     {
       "id": "who-6",
@@ -65,7 +84,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON593",
       "date": "2026-01-30T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.823757+00:00"
+      "fetched_at": "2026-05-15T08:37:15.835889+00:00"
     },
     {
       "id": "who-5",
@@ -84,7 +103,102 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON594",
       "date": "2026-02-06T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.823526+00:00"
+      "fetched_at": "2026-05-15T08:37:15.383878+00:00"
+    },
+    {
+      "id": "who-28",
+      "type": "epidemic",
+      "disease": "Cholera",
+      "country": "Angola",
+      "iso": "AO",
+      "region": "AFRO",
+      "lat": -11.2,
+      "lng": 17.9,
+      "cases": 8543,
+      "deaths": 329,
+      "severity": "alert",
+      "summary": "Since January 2025, Angola has been experiencing a substantial cholera outbreak. As of 23 March 2025, a total of 8543 cases and 329 deaths (Case Fatality Rate (CFR) 3.9%) have been reported, with one-third of the deaths occurring in the community. The outbreak has rapidly spread to 16 out of Angola’",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON562",
+      "date": "2025-03-28T19:00:00Z",
+      "fetched_at": "2026-05-15T08:37:26.332277+00:00"
+    },
+    {
+      "id": "who-27",
+      "type": "epidemic",
+      "disease": "Meningitis",
+      "country": "Saudi Arabia",
+      "iso": "SA",
+      "region": "EMRO",
+      "lat": 24.0,
+      "lng": 45.0,
+      "cases": 11,
+      "deaths": null,
+      "severity": "alert",
+      "summary": "On 13 March 2025, the International Health Regulations (IHR) National Focal Point (NFP) for the Kingdom of Saudi Arabia (KSA) reported 11 cases of invasive meningococcal disease (IMD) to WHO. Additionally, between 11 February and 18 March 2025, the WHO Eastern Mediterranean Regional IHR contact poin",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON563",
+      "date": "2025-04-11T10:58:47Z",
+      "fetched_at": "2026-05-15T08:37:25.984967+00:00"
+    },
+    {
+      "id": "who-26",
+      "type": "epidemic",
+      "disease": "Avian influenza",
+      "country": "Mexico",
+      "iso": "MX",
+      "region": "AMRO",
+      "lat": 23.6,
+      "lng": -102.6,
+      "cases": null,
+      "deaths": null,
+      "severity": "alert",
+      "summary": "On 2 April 2025, the International Health Regulations (IHR) National Focal Point (NFP) for Mexico notified the World Health Organization (WHO) of the country’s first laboratory-confirmed human infection with an avian influenza A(H5N1) virus in the state of Durango.\r\nIn response, local and national h",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON564",
+      "date": "2025-04-17T18:08:00Z",
+      "fetched_at": "2026-05-15T08:37:25.543294+00:00"
+    },
+    {
+      "id": "who-19",
+      "type": "epidemic",
+      "disease": "Avian influenza",
+      "country": "Cambodia",
+      "iso": "KH",
+      "region": "WPRO",
+      "lat": 12.6,
+      "lng": 104.9,
+      "cases": 11,
+      "deaths": null,
+      "severity": "alert",
+      "summary": "Between 1 January and 1 July 2025, the World Health Organization (WHO) was notified by Cambodia’s International Health Regulations (IHR) National Focal Point (NFP) of 11 laboratory-confirmed cases of human infection with avian influenza A(H5N1) virus. Seven of the 11 cases were reported in June, an",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON575",
+      "date": "2025-07-05T05:41:27Z",
+      "fetched_at": "2026-05-15T08:37:22.049091+00:00"
+    },
+    {
+      "id": "who-16",
+      "type": "epidemic",
+      "disease": "Cholera",
+      "country": null,
+      "iso": null,
+      "region": null,
+      "lat": null,
+      "lng": null,
+      "cases": null,
+      "deaths": 4738,
+      "severity": "alert",
+      "summary": "The global cholera situation continues to deteriorate, driven by conflict and poverty, posing a significant public health challenge across multiple WHO regions. Between 1 January and 17 August 2025, a total of 409 222 cholera/Acute Watery Diarrhoea (AWD) cases and 4738 deaths were reported globally,",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON579",
+      "date": "2025-08-29T18:00:00Z",
+      "fetched_at": "2026-05-15T08:37:20.638127+00:00"
     },
     {
       "id": "who-11",
@@ -103,7 +217,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON590",
       "date": "2025-12-05T16:36:27Z",
-      "fetched_at": "2026-05-15T08:17:29.827505+00:00"
+      "fetched_at": "2026-05-15T08:37:17.710515+00:00"
     },
     {
       "id": "who-3",
@@ -122,10 +236,10 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON597",
       "date": "2026-04-10T13:51:44Z",
-      "fetched_at": "2026-05-15T08:17:29.821745+00:00"
+      "fetched_at": "2026-05-15T08:37:14.163791+00:00"
     },
     {
-      "id": "gdacs-DR-16",
+      "id": "gdacs-DR-32",
       "type": "disaster",
       "disaster_type": "DR",
       "disease": "Severe Drought",
@@ -142,7 +256,159 @@
       "source": "GDACS",
       "link": "https://www.gdacs.org/report.aspx?eventtype=DR&eventid=1018431",
       "date": "Thu, 30 Apr 2026 13:07:35 GMT",
-      "fetched_at": "2026-05-15T08:17:51.202351+00:00"
+      "fetched_at": "2026-05-15T08:37:51.965761+00:00"
+    },
+    {
+      "id": "who-31",
+      "type": "epidemic",
+      "disease": "Zika virus",
+      "country": "India",
+      "iso": "IN",
+      "region": "SEARO",
+      "lat": 20.6,
+      "lng": 78.9,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "Between 1 January and 31 December 2024, a cumulative total of 151 Zika virus disease (ZVD) cases were reported from three states in India (Gujarat, Karnataka, and Maharashtra states).  \r\nMaharashtra State reported a cumulative total of 140 ZVD cases through the Integrated Disease Surveillance Progra",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON549",
+      "date": "2025-01-29T19:00:00Z",
+      "fetched_at": "2026-05-15T08:37:29.516879+00:00"
+    },
+    {
+      "id": "who-29",
+      "type": "epidemic",
+      "disease": "Measles",
+      "country": "United States",
+      "iso": "US",
+      "region": "AMRO",
+      "lat": 37.1,
+      "lng": -95.7,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "On 11 March 2025, the World Health Organization (WHO) received a report from the International Health Regulation (2005) (IHR) National Focal Point (NFP) of the United States of America (United States) on the ongoing measles outbreak in the country, notified under IHR because it is an unusual event w",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON561",
+      "date": "2025-03-27T19:00:00Z",
+      "fetched_at": "2026-05-15T08:37:26.680935+00:00"
+    },
+    {
+      "id": "who-25",
+      "type": "epidemic",
+      "disease": "Measles",
+      "country": null,
+      "iso": null,
+      "region": null,
+      "lat": null,
+      "lng": null,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "As of 18 April 2025, a total of 2318 measles cases, including three deaths, have been confirmed in six countries in the WHO Region of the Americas, an 11-fold increase compared to the same period in 2024. The majority of cases have occurred among people between 1 to 29 years, who are either unvaccin",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON565",
+      "date": "2025-04-28T18:00:00Z",
+      "fetched_at": "2026-05-15T08:37:24.837800+00:00"
+    },
+    {
+      "id": "who-24",
+      "type": "epidemic",
+      "disease": "Measles",
+      "country": "Morocco",
+      "iso": "MA",
+      "region": "EMRO",
+      "lat": 31.8,
+      "lng": -7.1,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "Since late 2023, Morocco has been experiencing a widespread measles outbreak. Cases have been recorded across all regions of the country, particularly among children and people who are unvaccinated.\r\nIn response, the Ministry of Health and Social Protection (MOHSP), in collaboration with relevant se",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON568",
+      "date": "2025-05-13T18:00:00Z",
+      "fetched_at": "2026-05-15T08:37:23.806084+00:00"
+    },
+    {
+      "id": "who-23",
+      "type": "epidemic",
+      "disease": "Yellow fever",
+      "country": "Brazil",
+      "iso": "BR",
+      "region": "AMRO",
+      "lat": -14.2,
+      "lng": -51.9,
+      "cases": null,
+      "deaths": 85,
+      "severity": "warning",
+      "summary": "From 29 December 2024 and as of 26 April 2025 (with data for Ecuador updated as of 2 May 2025), a total of 212 confirmed human cases of yellow fever, including 85 deaths, have been reported to WHO by five countries in the Region of the Americas (case fatality rate (CFR) 40%). The cases have been rep",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON570",
+      "date": "2025-05-16T18:00:00Z",
+      "fetched_at": "2026-05-15T08:37:23.459573+00:00"
+    },
+    {
+      "id": "who-22",
+      "type": "epidemic",
+      "disease": "Polio",
+      "country": "Papua New Guinea",
+      "iso": "PG",
+      "region": "WPRO",
+      "lat": -6.3,
+      "lng": 143.9,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "On 9 May 2025, the International Health Regulations (IHR) National Focal Point (NFP) for Papua New Guinea (PNG) notified WHO of the detection of circulating vaccine-derived poliovirus type 2 (cVDPV2) from stool specimens of two healthy children from Morobe province, Papua New Guinea (PNG). The detec",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON571",
+      "date": "2025-05-20T13:26:10Z",
+      "fetched_at": "2026-05-15T08:37:23.106593+00:00"
+    },
+    {
+      "id": "who-20",
+      "type": "epidemic",
+      "disease": "Anthrax",
+      "country": "Thailand",
+      "iso": "TH",
+      "region": "SEARO",
+      "lat": 15.9,
+      "lng": 100.9,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "In early May 2025, the International Health Regulations National Focal Point (IHR NFP) for Thailand notified WHO of four cases of cutaneous anthrax.  One of the affected individuals died as a result of disease complications, while the remaining three cases were hospitalized and received appropriate",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON573",
+      "date": "2025-05-29T16:05:07Z",
+      "fetched_at": "2026-05-15T08:37:22.395413+00:00"
+    },
+    {
+      "id": "who-17",
+      "type": "epidemic",
+      "disease": "Polio",
+      "country": null,
+      "iso": null,
+      "region": null,
+      "lat": null,
+      "lng": null,
+      "cases": null,
+      "deaths": null,
+      "severity": "warning",
+      "summary": "On 4 August 2025, Israel notified WHO of a circulating vaccine-derived poliovirus type 1 (cVDPV1) outbreak. Between February and July 2025, nine genetically linked virus isolates were found in environmental samples from seven sites, mainly in Jerusalem and the Central Region. No human cases of paral",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON578",
+      "date": "2025-08-20T16:06:59Z",
+      "fetched_at": "2026-05-15T08:37:20.984700+00:00"
     },
     {
       "id": "who-15",
@@ -161,7 +427,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON581",
       "date": "2025-10-03T11:25:30Z",
-      "fetched_at": "2026-05-15T08:17:29.829330+00:00"
+      "fetched_at": "2026-05-15T08:37:19.564492+00:00"
     },
     {
       "id": "who-14",
@@ -180,7 +446,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON584",
       "date": "2025-11-05T15:07:26Z",
-      "fetched_at": "2026-05-15T08:17:29.828285+00:00"
+      "fetched_at": "2026-05-15T08:37:19.206077+00:00"
     },
     {
       "id": "who-13",
@@ -199,7 +465,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/DON588",
       "date": "2025-11-21T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.827887+00:00"
+      "fetched_at": "2026-05-15T08:37:18.495211+00:00"
     },
     {
       "id": "who-10",
@@ -218,7 +484,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON587",
       "date": "2025-12-05T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.826967+00:00"
+      "fetched_at": "2026-05-15T08:37:17.360301+00:00"
     },
     {
       "id": "who-4",
@@ -237,7 +503,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON595",
       "date": "2026-02-14T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.823242+00:00"
+      "fetched_at": "2026-05-15T08:37:15.007458+00:00"
     },
     {
       "id": "who-2",
@@ -256,7 +522,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON598",
       "date": "2026-04-23T12:58:07Z",
-      "fetched_at": "2026-05-15T08:17:29.821689+00:00"
+      "fetched_at": "2026-05-15T08:37:13.719849+00:00"
     },
     {
       "id": "who-1",
@@ -275,7 +541,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON600",
       "date": "2026-05-08T18:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.820188+00:00"
+      "fetched_at": "2026-05-15T08:37:12.900801+00:00"
     },
     {
       "id": "who-0",
@@ -294,7 +560,45 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON601",
       "date": "2026-05-13T18:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.818163+00:00"
+      "fetched_at": "2026-05-15T08:37:12.530154+00:00"
+    },
+    {
+      "id": "who-21",
+      "type": "epidemic",
+      "disease": "COVID-19",
+      "country": null,
+      "iso": null,
+      "region": null,
+      "lat": null,
+      "lng": null,
+      "cases": null,
+      "deaths": null,
+      "severity": "monitoring",
+      "summary": "Since mid-February 2025, according to data available from sentinel sites, global SARS-CoV-2 activity has been increasing, with the test positivity rate reaching 11%, levels that have not been observed since July 2024. This rise is primarily observed in countries in the Eastern Mediterranean, South-E",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON572",
+      "date": "2025-05-28T09:21:09Z",
+      "fetched_at": "2026-05-15T08:37:22.760495+00:00"
+    },
+    {
+      "id": "who-18",
+      "type": "epidemic",
+      "disease": "Rabies",
+      "country": null,
+      "iso": null,
+      "region": null,
+      "lat": null,
+      "lng": null,
+      "cases": null,
+      "deaths": null,
+      "severity": "monitoring",
+      "summary": "On 17 May 2025, the Timor-Leste government reported to the World Health Organization (WHO) a fatal human case of rabies from Ermera Municipality. Between May and mid-June 2025, Timor-Leste confirmed four human rabies deaths in the municipalities of Bobonaro (n=2), Ermera (n=1) and Oecusse (n=1). All",
+      "summary_ru": "",
+      "source": "WHO DON",
+      "link": "https://www.who.int/2025-DON576",
+      "date": "2025-07-24T18:00:00Z",
+      "fetched_at": "2026-05-15T08:37:21.689167+00:00"
     },
     {
       "id": "who-9",
@@ -313,7 +617,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON586",
       "date": "2025-12-10T19:00:00Z",
-      "fetched_at": "2026-05-15T08:17:29.825984+00:00"
+      "fetched_at": "2026-05-15T08:37:17.009252+00:00"
     },
     {
       "id": "who-8",
@@ -332,7 +636,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON591",
       "date": "2025-12-24T05:38:07Z",
-      "fetched_at": "2026-05-15T08:17:29.824821+00:00"
+      "fetched_at": "2026-05-15T08:37:16.553521+00:00"
     }
   ]
 }
