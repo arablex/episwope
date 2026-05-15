@@ -732,6 +732,7 @@ function toggleCat(key){
   const section = document.querySelector(`.cat-section[data-cat="${key}"]`);
   if(toggle)  toggle.classList.toggle('is-on', !!state.cats[key]);
   if(section) section.classList.toggle('cat-off', !state.cats[key]);
+  if(key === 'air' && map) showAQILayer(state.cats.air);
   renderList();
   applyGLFilters();
 }
@@ -964,6 +965,272 @@ const state = {
 let map = null;
 let _markerClicked = false;
 
+/* ── AQI Layer (WAQI real-time air quality) ───────────────────── */
+let _aqiActive  = false;
+let _aqiTimer   = null;
+
+const AQI_CATS = [
+  { max:  50, color:'#19A463', label:'Good',             labelRu:'Хорошее' },
+  { max: 100, color:'#E4B514', label:'Moderate',         labelRu:'Умеренное' },
+  { max: 150, color:'#E8590C', label:'Unhealthy (SG)',   labelRu:'Вредно (чувств.)' },
+  { max: 200, color:'#C92A2A', label:'Unhealthy',        labelRu:'Вредное' },
+  { max: 300, color:'#8B1A1A', label:'Very Unhealthy',   labelRu:'Очень вредное' },
+  { max: 999, color:'#5C2010', label:'Hazardous',        labelRu:'Опасное' },
+];
+
+function aqiCat(val){
+  return AQI_CATS.find(c => val <= c.max) || AQI_CATS[AQI_CATS.length - 1];
+}
+
+// Sample stations for dev/fallback (real data via /api/aqi in production)
+const AQI_SAMPLE = [
+  {lon:77.2,lat:28.6,aqi:285,uid:1,station:{name:'Delhi — Anand Vihar'}},
+  {lon:116.4,lat:39.9,aqi:158,uid:2,station:{name:'Beijing — Dongcheng'}},
+  {lon:90.4,lat:23.7,aqi:320,uid:3,station:{name:'Dhaka — Dhanmondi'}},
+  {lon:67.0,lat:24.9,aqi:172,uid:4,station:{name:'Karachi — Keamari'}},
+  {lon:120.9,lat:14.6,aqi:88,uid:5,station:{name:'Manila — Taguig'}},
+  {lon:106.8,lat:-6.2,aqi:145,uid:6,station:{name:'Jakarta — South Jakarta'}},
+  {lon:36.8,lat:34.7,aqi:62,uid:7,station:{name:'Adana'}},
+  {lon:31.2,lat:30.0,aqi:109,uid:8,station:{name:'Cairo — Helwan'}},
+  {lon:28.0,lat:-26.2,aqi:48,uid:9,station:{name:'Johannesburg — Bram Fischer'}},
+  {lon:-43.2,lat:-22.9,aqi:74,uid:10,station:{name:'Rio de Janeiro — Centro'}},
+  {lon:-58.4,lat:-34.6,aqi:39,uid:11,station:{name:'Buenos Aires — Palermo'}},
+  {lon:-99.1,lat:19.4,aqi:131,uid:12,station:{name:'Mexico City — Pedregal'}},
+  {lon:-74.1,lat:4.7,aqi:56,uid:13,station:{name:'Bogotá — Las Ferias'}},
+  {lon:2.4,lat:48.9,aqi:44,uid:14,station:{name:'Paris — Les Halles'}},
+  {lon:13.4,lat:52.5,aqi:33,uid:15,station:{name:'Berlin — Mitte'}},
+  {lon:37.6,lat:55.8,aqi:67,uid:16,station:{name:'Moscow — Botanichesky'}},
+  {lon:72.9,lat:19.1,aqi:189,uid:17,station:{name:'Mumbai — Worli'}},
+  {lon:80.3,lat:13.0,aqi:95,uid:18,station:{name:'Chennai — Manali'}},
+  {lon:88.4,lat:22.6,aqi:210,uid:19,station:{name:'Kolkata — Rabindra Sarani'}},
+  {lon:103.8,lat:1.4,aqi:42,uid:20,station:{name:'Singapore — Woodlands'}},
+  {lon:126.9,lat:37.5,aqi:78,uid:21,station:{name:'Seoul — Jongno-gu'}},
+  {lon:139.7,lat:35.7,aqi:52,uid:22,station:{name:'Tokyo — Shinjuku'}},
+  {lon:100.5,lat:13.7,aqi:114,uid:23,station:{name:'Bangkok — Din Daeng'}},
+  {lon:21.0,lat:52.2,aqi:55,uid:24,station:{name:'Warsaw — Marszalkowska'}},
+  {lon:-87.6,lat:41.9,aqi:29,uid:25,station:{name:'Chicago — CDOT — 18'}},
+  {lon:-118.2,lat:34.1,aqi:61,uid:26,station:{name:'Los Angeles — Reseda'}},
+  {lon:-0.1,lat:51.5,aqi:37,uid:27,station:{name:'London — Marylebone Road'}},
+  {lon:151.2,lat:-33.9,aqi:22,uid:28,station:{name:'Sydney — Parramatta North'}},
+];
+
+async function fetchAQI(){
+  if(!map || !_aqiActive) return;
+  const b = map.getBounds();
+  const isProd = location.hostname !== 'localhost' && !location.hostname.startsWith('192.') && !location.hostname.startsWith('127.');
+  let stations = [];
+  if(isProd){
+    try {
+      const params = `lat1=${b.getSouth().toFixed(1)}&lon1=${b.getWest().toFixed(1)}&lat2=${b.getNorth().toFixed(1)}&lon2=${b.getEast().toFixed(1)}`;
+      const res  = await fetch(`/api/aqi?${params}`, { signal: AbortSignal.timeout(6000) });
+      const json = await res.json();
+      if(json.status === 'ok' && Array.isArray(json.data)) stations = json.data;
+    } catch(e){ console.warn('[AQI]', e); }
+  }
+  // Dev fallback: use sample data filtered to current bounds
+  if(!stations.length){
+    stations = AQI_SAMPLE.filter(s =>
+      s.lat >= b.getSouth() && s.lat <= b.getNorth() &&
+      s.lon >= b.getWest()  && s.lon <= b.getEast()
+    );
+    if(!stations.length) stations = AQI_SAMPLE; // show all if zoomed out
+  }
+  try {
+    const json = { status:'ok', data: stations };
+    if(json.status !== 'ok' || !Array.isArray(json.data)) return;
+
+    const features = json.data
+      .filter(s => typeof s.aqi === 'number' && s.aqi >= 0)
+      .map(s => {
+        const cat = aqiCat(s.aqi);
+        return {
+          type: 'Feature',
+          geometry: { type:'Point', coordinates:[s.lon, s.lat] },
+          properties: {
+            uid:     s.uid,
+            station: s.station?.name || '',
+            aqi:     s.aqi,
+            aqiStr:  String(s.aqi),
+            color:   cat.color,
+          },
+        };
+      });
+
+    const gj = { type:'FeatureCollection', features };
+    const src = map.getSource('aqi-src');
+    if(src){
+      src.setData(gj);
+      ['aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
+        if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','visible');
+      });
+      return;
+    }
+
+    map.addSource('aqi-src', { type:'geojson', data:gj });
+
+    // Heatmap glow (background wash)
+    map.addLayer({
+      id: 'aqi-heat',
+      type: 'heatmap',
+      source: 'aqi-src',
+      maxzoom: 8,
+      paint: {
+        'heatmap-weight':     ['interpolate',['linear'],['get','aqi'], 0,0, 100,0.4, 200,0.7, 300,1],
+        'heatmap-intensity':  ['interpolate',['linear'],['zoom'], 0,0.6, 8,1.2],
+        'heatmap-color': [
+          'interpolate',['linear'],['heatmap-density'],
+          0,   'rgba(25,164,99,0)',
+          0.2, 'rgba(25,164,99,0.35)',
+          0.4, 'rgba(228,181,20,0.5)',
+          0.6, 'rgba(232,89,12,0.6)',
+          0.8, 'rgba(201,42,42,0.7)',
+          1,   'rgba(92,32,16,0.82)',
+        ],
+        'heatmap-radius':  ['interpolate',['linear'],['zoom'], 0,20, 5,40, 10,60],
+        'heatmap-opacity': 0.72,
+      },
+    }, 'waterway-label');
+
+    // Station circles
+    map.addLayer({
+      id: 'aqi-circles',
+      type: 'circle',
+      source: 'aqi-src',
+      minzoom: 2,
+      paint: {
+        'circle-radius':       ['interpolate',['linear'],['zoom'], 2,5, 6,10, 9,16],
+        'circle-color':        ['get','color'],
+        'circle-stroke-width': 1.5,
+        'circle-stroke-color': 'rgba(255,255,255,0.85)',
+        'circle-opacity':      0.92,
+      },
+    });
+
+    // AQI numbers (visible from zoom 5+)
+    map.addLayer({
+      id: 'aqi-labels',
+      type: 'symbol',
+      source: 'aqi-src',
+      minzoom: 5,
+      layout: {
+        'text-field':          ['get','aqiStr'],
+        'text-font':           ['DIN Pro Bold','Arial Unicode MS Bold'],
+        'text-size':           ['interpolate',['linear'],['zoom'], 5,8, 9,12],
+        'text-allow-overlap':  true,
+        'text-ignore-placement': true,
+      },
+      paint: { 'text-color':'#fff', 'text-halo-color':'rgba(0,0,0,0.15)', 'text-halo-width':0.5 },
+    });
+
+    // Click on station
+    map.on('click','aqi-circles', e => {
+      _markerClicked = true;
+      const p = e.features[0]?.properties;
+      if(p) renderAQIPanel(p);
+    });
+    map.on('mouseenter','aqi-circles', () => { map.getCanvas().style.cursor='pointer'; });
+    map.on('mouseleave','aqi-circles', () => { map.getCanvas().style.cursor=''; });
+
+  } catch(e){ console.warn('[AQI]', e); }
+}
+
+function showAQILayer(on){
+  _aqiActive = on;
+  clearTimeout(_aqiTimer);
+  if(on){
+    fetchAQI();
+    // auto-refresh on map move
+    map.on('moveend', _onAQIMove);
+  } else {
+    map.off('moveend', _onAQIMove);
+    ['aqi-heat','aqi-circles','aqi-labels'].forEach(id => {
+      if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','none');
+    });
+  }
+}
+
+function _onAQIMove(){
+  if(!_aqiActive) return;
+  clearTimeout(_aqiTimer);
+  _aqiTimer = setTimeout(fetchAQI, 600);
+}
+
+function renderAQIPanel(p){
+  const aqi = p.aqi;
+  const cat = aqiCat(aqi);
+  const label = LANG === 'ru' ? cat.labelRu : cat.label;
+  const name  = p.station || (LANG === 'ru' ? 'Станция мониторинга' : 'Monitoring station');
+
+  // Open panel
+  const panel = document.getElementById('panel');
+  if(panel && window.innerWidth <= 768) panel.classList.add('mob-open');
+
+  const panelScroll = document.querySelector('.panel-scroll');
+  if(!panelScroll) return;
+
+  panelScroll.innerHTML = `
+    <div style="padding:16px 18px 24px">
+      <div style="font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">
+        ${LANG==='ru'?'Качество воздуха · WAQI':'Air Quality · WAQI'}
+      </div>
+
+      <!-- AQI Hero -->
+      <div style="background:${cat.color};border-radius:14px;padding:18px 20px 16px;margin-bottom:16px;color:#fff">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-size:48px;font-weight:900;letter-spacing:-0.04em;line-height:1">${aqi}</div>
+          <div>
+            <div style="font-size:17px;font-weight:700;margin-bottom:3px">${label}</div>
+            <div style="font-size:11px;opacity:0.82">US AQI</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Station name -->
+      <div style="font-size:16px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px">${name}</div>
+
+      <!-- AQI scale bar -->
+      <div style="margin:16px 0 20px">
+        <div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">
+          ${LANG==='ru'?'Шкала AQI':'AQI Scale'}
+        </div>
+        <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:1px">
+          ${AQI_CATS.map((c,i)=>`<div style="flex:1;background:${c.color};${aqi<=(i===0?c.max:AQI_CATS[i-1].max)?'':''}opacity:${aqiCat(aqi)===c?1:0.35}"></div>`).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--muted)">
+          <span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>300+</span>
+        </div>
+      </div>
+
+      <!-- Health advice -->
+      <div style="background:var(--line-2,#F2F0E8);border-radius:11px;padding:13px 14px;font-size:12.5px;line-height:1.55;color:var(--ink-2)">
+        ${_aqiAdvice(aqi)}
+      </div>
+
+      <div style="margin-top:16px;font-size:10px;color:var(--muted)">
+        ${LANG==='ru'?'Данные: WAQI · aqicn.org':'Source: WAQI · aqicn.org'}
+      </div>
+    </div>
+  `;
+}
+
+function _aqiAdvice(aqi){
+  if(LANG === 'ru'){
+    if(aqi <=  50) return 'Качество воздуха хорошее. Активности на улице безопасны.';
+    if(aqi <= 100) return 'Приемлемо. Чувствительным людям рекомендуется ограничить длительное пребывание на улице.';
+    if(aqi <= 150) return 'Вредно для чувствительных групп: астматики, дети, пожилые. Остальным — умеренная активность.';
+    if(aqi <= 200) return 'Вредно для всех. Ограничьте продолжительное пребывание на улице, носите маску N95.';
+    if(aqi <= 300) return 'Очень вредно. Оставайтесь в помещении, закройте окна, используйте очиститель воздуха.';
+    return 'Опасно. Санитарное предупреждение — избегайте улицы. Используйте N95, очиститель воздуха.';
+  } else {
+    if(aqi <=  50) return 'Air quality is good. Outdoor activities are safe for everyone.';
+    if(aqi <= 100) return 'Acceptable. Sensitive individuals should limit prolonged outdoor exertion.';
+    if(aqi <= 150) return 'Unhealthy for sensitive groups: asthmatics, children, elderly. Others may continue normally.';
+    if(aqi <= 200) return 'Unhealthy for all. Limit prolonged outdoor exposure. Consider wearing an N95 mask.';
+    if(aqi <= 300) return 'Very unhealthy. Stay indoors, close windows, use an air purifier.';
+    return 'Hazardous. Health alert — avoid going outside. Use N95 mask and air purifier.';
+  }
+}
+
 const SEV_COLOR_EXPR = ['match', ['get','sev'],
   'monitoring',   '#A09F95',
   'low',          '#E4B514',
@@ -1010,6 +1277,7 @@ function initMap(){
     map.on('zoom', () => { positionPopup(); updateClock(); });
     map.on('resize', positionPopup);
     updateClock();
+    if(state.cats.air) showAQILayer(true);
   });
 
   // Click on empty map → deselect (skip if a marker layer just handled it)
