@@ -2099,7 +2099,7 @@ if(_searchEl){
    ========================================================= */
 
 // Severity mapping: API strings → OUTBREAKS sev keys
-const SEV_MAP = { critical:'critical', high:'alert', medium:'warning', low:'monitoring' };
+const SEV_MAP = { critical:'critical', alert:'alert', high:'alert', warning:'warning', medium:'warning', low:'monitoring', monitoring:'monitoring' };
 
 // Country name → {iso2, isoNum, lat, lng} fallback when API doesn't return coords
 const COUNTRY_COORDS = {
@@ -2211,10 +2211,13 @@ async function loadLiveData(){
 
       const coords = resolveCoords(ev);
 
+      const liveSev = SEV_MAP[ev.severity] || 'monitoring';
       OUTBREAKS.unshift({
         id: evId,
+        type: ev.type || 'epidemic',
         code: `LIVE-${ev.source}-${new Date(ev.fetched_at||ev.date).toISOString().slice(0,10)}`,
         name: ev.disease,
+        name_ru: ev.name_ru || ev.disease,
         pathogen: ev.disease,
         country: ev.country,
         iso: coords.isoNum,
@@ -2222,17 +2225,17 @@ async function loadLiveData(){
         place: ev.country,
         lat: coords.lat,
         lon: coords.lng,
-        sev: SEV_MAP[ev.severity] || 'monitoring',
-        who: `${ev.source} · live feed`,
+        sev: liveSev,
+        who: ev.source ? `${ev.source} · live` : 'live feed',
         cases: ev.cases || 0,
         deaths: ev.deaths || 0,
         cfr: ev.cases && ev.deaths ? parseFloat(((ev.deaths/ev.cases)*100).toFixed(1)) : 0,
         rt: 1.0,
         new24: 0,
-        sevIdx: {critical:80,alert:60,warning:40,monitoring:20}[SEV_MAP[ev.severity]||'monitoring'],
+        sevIdx: {critical:80,alert:60,warning:40,monitoring:20}[liveSev],
         trend: [0,0,0,0,0,0,0, ev.cases||0],
         blurb: ev.summary || '',
-        blurb_ru: ev.summary_ru || '',
+        blurb_ru: ev.summary_ru || ev.summary || '',
         events: [],
         _live: true,
         _link: ev.link,

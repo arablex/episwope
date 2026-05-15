@@ -197,7 +197,7 @@ EXTRACTION_PROMPT = """Extract disease outbreak info from this text. Return ONLY
 Text: {text}
 
 JSON structure:
-{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"ISO alpha-2 or null","cases":integer_or_null,"deaths":integer_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence plain English summary","lat":number_or_null,"lng":number_or_null}}
+{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"ISO alpha-2 or null","cases":integer_or_null,"deaths":integer_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence plain English summary","summary_ru":"1-2 sentence Russian translation of summary","lat":number_or_null,"lng":number_or_null}}
 
 If not a disease outbreak return {{"disease":null}}"""
 
@@ -340,6 +340,15 @@ GDACS_DISEASE_RISK = {
     "TS": "Tsunami → waterborne disease risk in affected coastal communities",
 }
 
+GDACS_NAMES = {
+    "FL": "Catastrophic Flood",
+    "TC": "Tropical Cyclone",
+    "EQ": "Earthquake",
+    "VO": "Volcanic Eruption",
+    "DR": "Severe Drought",
+    "TS": "Tsunami",
+}
+
 def fetch_gdacs() -> list[dict]:
     """Fetch GDACS Orange/Red disaster alerts — direct disease-risk triggers."""
     print("Fetching GDACS …", flush=True)
@@ -452,6 +461,7 @@ def main():
 
         event = {
             "id": f"{raw['source']}-{len(events)}",
+            "type":     "epidemic",
             "disease":  extracted.get("disease"),
             "country":  extracted.get("country"),
             "iso":      extracted.get("iso"),
@@ -461,7 +471,8 @@ def main():
             "cases":    extracted.get("cases"),
             "deaths":   extracted.get("deaths"),
             "severity": severity,
-            "summary":  extracted.get("summary", raw["title"])[:300],
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
             "source":   raw["source"].upper(),
             "link":     raw["link"],
             "date":     raw["pub_date"],
@@ -488,7 +499,7 @@ def main():
             "id":            f"gdacs-{gev.get('disaster_type','?')}-{len(events)}",
             "type":          "disaster",
             "disaster_type": gev.get("disaster_type", ""),
-            "disease":       f"{gev.get('disaster_type','Disaster')} Alert",
+            "disease":       GDACS_NAMES.get(gev.get('disaster_type',''), 'Disaster Alert'),
             "country":       gev.get("country", ""),
             "iso":           iso,
             "region":        region,
