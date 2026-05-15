@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>EpiScope · Вход…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <style>
+    :root { color-scheme: light; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center;
+           background:#F4F2EE; font-family:"Inter",-apple-system,sans-serif;
+           color:#0F0E0C; padding:24px; }
+    .card { max-width:440px; width:100%; background:#fff; border:1px solid #ECEAE2;
+            border-radius:14px; padding:36px 32px; text-align:center; }
+    .icon { font-size:36px; margin-bottom:14px; }
+    h1 { font-size:20px; font-weight:800; letter-spacing:-0.02em; margin:0 0 10px; }
+    p  { font-size:14px; line-height:1.55; color:#3B3A36; margin:0 0 6px; }
+    .plan { display:inline-block; margin-top:10px; padding:3px 10px;
+            border-radius:20px; font-size:12px; font-weight:700;
+            background:#FFF3DC; color:#B87A00; }
+    .plan.free { background:#F0F0EC; color:#807E76; }
+    a.back { display:inline-block; margin-top:22px; background:#0F0E0C; color:#fff;
+             text-decoration:none; font-size:13px; font-weight:600;
+             padding:10px 20px; border-radius:10px; }
+    .spinner { width:32px; height:32px; border:3px solid #ECEAE2;
+               border-top-color:#0F0E0C; border-radius:50%;
+               animation:spin .8s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .err { color:#C0392B; }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="spinner" id="spinner"></div>
+    <h1 id="title">Входим…</h1>
+    <p id="msg">Проверяем ссылку…</p>
+  </div>
+
+  <script>
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const token  = params.get('token');
+
+      const spinner = document.getElementById('spinner');
+      const title   = document.getElementById('title');
+      const msg     = document.getElementById('msg');
+
+      if (!token) {
+        spinner.style.display = 'none';
+        title.textContent = 'Неверная ссылка';
+        msg.textContent   = 'Токен не найден в этой ссылке.';
+        msg.className     = 'err';
+        return;
+      }
+
+      try {
+        const res  = await fetch(`/api/auth/verify?token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+          spinner.style.display = 'none';
+          const ERRS = {
+            token_expired:     'Ссылка истекла. Запроси новую.',
+            invalid_signature: 'Ссылка недействительна или повреждена.',
+            invalid_token:     'Ссылка недействительна.',
+          };
+          title.textContent = 'Ошибка ссылки';
+          msg.textContent   = ERRS[data.error] || 'Что-то пошло не так.';
+          msg.className     = 'err';
+          return;
+        }
+
+        localStorage.setItem('episwope_jwt', token);
+
+        const isPro = data.plan === 'pro';
+        spinner.style.display = 'none';
+        title.textContent = isPro ? 'Добро пожаловать в EpiScope Pro!' : 'Вход выполнен!';
+        document.getElementById('card').innerHTML += `
+          <p style="color:#807E76;font-size:13px">${data.email}</p>
+          <span class="plan ${isPro ? '' : 'free'}">${isPro ? '⭐ Pro' : 'Бесплатный план'}</span>
+          <br><a class="back" href="/ru/">Открыть EpiScope →</a>
+        `;
+
+        setTimeout(() => { location.href = '/ru/'; }, 2000);
+
+      } catch (e) {
+        spinner.style.display = 'none';
+        title.textContent = 'Ошибка соединения';
+        msg.textContent   = 'Попробуй ещё раз.';
+        msg.className     = 'err';
+      }
+    })();
+  </script>
+</body>
+</html>

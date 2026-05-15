@@ -467,6 +467,10 @@ function countryTravelRisk(country){
 /* ── Watched regions (localStorage) ─────────────────────── */
 let WATCHED = new Set(JSON.parse(localStorage.getItem('episwope_watched') || '[]'));
 function toggleWatch(country){
+  if(!WATCHED.has(country) && !isPaid() && WATCHED.size >= FREE_COUNTRY_LIMIT){
+    showProGate();
+    return;
+  }
   if(WATCHED.has(country)) WATCHED.delete(country);
   else WATCHED.add(country);
   localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
@@ -474,6 +478,128 @@ function toggleWatch(country){
   // additional re-render is triggered by the caller (renderPanel or renderCountryPanel)
 }
 function isWatched(country){ return WATCHED.has(country); }
+
+/* ── Session / Auth ─────────────────────────────────────── */
+const FREE_COUNTRY_LIMIT = 3;
+
+function getSession() {
+  try {
+    const jwt = localStorage.getItem('episwope_jwt');
+    if (!jwt) return null;
+    const [, body] = jwt.split('.');
+    const payload = JSON.parse(atob(body.replace(/-/g,'+').replace(/_/g,'/')));
+    if (payload.exp && payload.exp < Date.now() / 1000) {
+      localStorage.removeItem('episwope_jwt');
+      return null;
+    }
+    return payload; // { email, plan, paid_until, iat, exp }
+  } catch { return null; }
+}
+
+function isPaid() {
+  const s = getSession();
+  if (!s || s.plan !== 'pro') return false;
+  return !s.paid_until || new Date(s.paid_until) > new Date();
+}
+
+function showProGate() {
+  const msg = LANG === 'ru'
+    ? 'Бесплатно — до 3 стран. <a href="/pricing">Перейти на Pro →</a>'
+    : 'Free plan: up to 3 countries. <a href="/pricing">Upgrade to Pro →</a>';
+  let t = document.getElementById('_proGateToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_proGateToast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0F0E0C;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .25s;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.18)';
+    document.body.appendChild(t);
+  }
+  t.innerHTML = msg;
+  const a = t.querySelector('a');
+  if (a) a.style.cssText = 'color:#F5A623;text-decoration:none;font-weight:600';
+  t.style.opacity = '1';
+  t.style.pointerEvents = 'auto';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.pointerEvents = 'none'; }, 3500);
+}
+
+function updateUserBtn() {
+  const btn = document.getElementById('userBtn');
+  if (!btn) return;
+  const s = getSession();
+  if (s) {
+    btn.style.color = 'var(--accent)';
+    btn.title = s.email + (isPaid() ? ' · Pro' : ' · Free');
+  } else {
+    btn.style.color = '';
+    btn.title = LANG === 'ru' ? 'Войти' : 'Sign in';
+  }
+}
+
+function toggleAuthPopover() {
+  let pop = document.getElementById('_authPop');
+  if (pop && pop.style.display !== 'none') { pop.style.display = 'none'; return; }
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = '_authPop';
+    pop.style.cssText = 'position:absolute;top:52px;right:0;background:#fff;border:1px solid #ECEAE2;border-radius:12px;padding:16px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:1000;font-size:13px;';
+    document.querySelector('.top-actions').style.position = 'relative';
+    document.querySelector('.top-actions').appendChild(pop);
+  }
+  const s = getSession();
+  if (s) {
+    const isPro = isPaid();
+    pop.innerHTML = `
+      <div style="font-weight:700;margin-bottom:4px">${s.email}</div>
+      <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? 'Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
+      <button onclick="localStorage.removeItem('episwope_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid #ECEAE2;border-radius:8px;background:#fff;cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
+  } else {
+    const hint = LANG === 'ru' ? 'Введи email — пришлём ссылку для входа.' : 'Enter your email — we\'ll send a login link.';
+    const placeholder = LANG === 'ru' ? 'твой@email.com' : 'your@email.com';
+    const btnTxt = LANG === 'ru' ? 'Отправить ссылку' : 'Send login link';
+    const sentTxt = LANG === 'ru' ? 'Проверь почту ✓' : 'Check your email ✓';
+    pop.innerHTML = `
+      <p style="margin:0 0 10px;color:#3B3A36">${hint}</p>
+      <input id="_authEmail" type="email" placeholder="${placeholder}" style="width:100%;padding:8px 10px;border:1px solid #ECEAE2;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:8px">
+      <button id="_authSend" onclick="sendMagicLink()" style="width:100%;padding:8px;background:#0F0E0C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">${btnTxt}</button>
+      <div id="_authMsg" style="margin-top:8px;font-size:12px;color:#807E76;min-height:16px"></div>`;
+    pop._sentTxt = sentTxt;
+  }
+  pop.style.display = 'block';
+  setTimeout(() => {
+    const handler = (e) => {
+      if (!pop.contains(e.target) && e.target.id !== 'userBtn') {
+        pop.style.display = 'none';
+        document.removeEventListener('click', handler);
+      }
+    };
+    document.addEventListener('click', handler);
+  }, 0);
+}
+
+async function sendMagicLink() {
+  const input = document.getElementById('_authEmail');
+  const msgEl = document.getElementById('_authMsg');
+  const btn   = document.getElementById('_authSend');
+  const pop   = document.getElementById('_authPop');
+  if (!input || !input.value.includes('@')) return;
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  try {
+    await fetch('/api/magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: input.value.trim(), lang: LANG }),
+    });
+    msgEl.textContent = pop._sentTxt || 'Check your email ✓';
+    msgEl.style.color = '#2D9B6A';
+    input.disabled = true;
+    btn.style.display = 'none';
+  } catch {
+    msgEl.textContent = 'Error. Try again.';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
 
 /** Render the "My countries" sidebar section from the WATCHED Set.
  *  Empty state explains how to add countries. Each row clicks to the
@@ -2280,6 +2406,7 @@ async function boot(){
   renderPopup();
   renderMyCountries();
   renderCatLists();
+  updateUserBtn();
 
   // Load live data after globe is visible
   loadLiveData();
