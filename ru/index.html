@@ -1660,6 +1660,9 @@
 
     <div class="top-actions">
       <a href="/" class="lang-btn" title="English version">EN</a>
+      <button class="icon-btn" id="bellBtn" title="Включить push-уведомления" onclick="togglePushSubscription()">
+        <svg id="bellIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
       <button class="pill-btn">
         <span class="accent-dot"></span>
         Новый алерт
@@ -2378,6 +2381,75 @@ document.getElementById('eventsToggle')?.addEventListener('click', ()=>{
     }
   });
 })();
+</script>
+
+<script>
+/* ── PWA Service Worker + Push ── */
+const VAPID_PUBLIC = 'BI-O61Uw8jEnn0_Qx-cBxDUiTt7wvzTM7Km1Spqa5Oq4HX8297kfE18eDfKVOCHIYt8ke64YYrzovBoJCtEeQFI';
+
+let _swReg = null;
+let _pushSub = null;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    _swReg = reg;
+    return reg.pushManager.getSubscription();
+  }).then(sub => {
+    _pushSub = sub;
+    _updateBellIcon();
+  }).catch(() => {});
+}
+
+function _updateBellIcon() {
+  const btn = document.getElementById('bellBtn');
+  const ico = document.getElementById('bellIcon');
+  if (!btn || !ico) return;
+  const active = !!_pushSub;
+  btn.style.background = active ? 'var(--accent)' : '';
+  btn.style.borderColor = active ? 'var(--accent)' : '';
+  ico.style.stroke      = active ? '#fff' : '';
+  ico.setAttribute('fill', active ? 'currentColor' : 'none');
+}
+
+async function togglePushSubscription() {
+  if (!('PushManager' in window)) {
+    alert('Push-уведомления не поддерживаются в этом браузере.');
+    return;
+  }
+  if (!_swReg) return;
+
+  if (_pushSub) {
+    await _pushSub.unsubscribe();
+    await fetch('/api/push-subscribe', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ subscription: _pushSub.toJSON(), action:'unsubscribe' }) });
+    _pushSub = null;
+    _updateBellIcon();
+    return;
+  }
+
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') return;
+
+  try {
+    const sub = await _swReg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: _urlB64ToUint8Array(VAPID_PUBLIC),
+    });
+    _pushSub = sub;
+    await fetch('/api/push-subscribe', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ subscription: sub.toJSON(), lang:'ru', action:'subscribe' }) });
+    _updateBellIcon();
+  } catch (e) {
+    console.error('Push subscribe error', e);
+  }
+}
+
+function _urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
 </script>
 </body>
 </html>

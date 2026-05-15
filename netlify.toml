@@ -2,6 +2,12 @@
   publish = "."
   command = ""   # static site, no build step
 
+# Service worker must never be cached — browser needs fresh version check
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
 # Cache headers for static assets
 [[headers]]
   for = "/public/*"
