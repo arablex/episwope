@@ -1259,31 +1259,37 @@ function openAlertModal(o){
   if(!modal) return;
 
   const isRu = LANG === 'ru';
-  const disName = diseaseName(o);
+  const hasCtx = o != null;
+  const disName = hasCtx ? diseaseName(o) : '';
 
   // Fill context labels
   const sub = modal.querySelector('#alertModalSub');
-  if(sub) sub.textContent = `${disName} · ${o.country}`;
+  if(sub) sub.textContent = hasCtx ? `${disName} · ${o.country}` : (isRu ? 'Глобальный мониторинг' : 'Global monitoring');
 
   const ctryName = modal.querySelector('#alertTierCountryName');
-  if(ctryName) ctryName.textContent = isRu ? `По стране: ${o.country}` : `By country: ${o.country}`;
+  if(ctryName) ctryName.textContent = hasCtx
+    ? (isRu ? `По стране: ${o.country}` : `By country: ${o.country}`)
+    : (isRu ? 'По стране' : 'By country');
 
   const specName = modal.querySelector('#alertTierSpecificName');
-  if(specName) specName.textContent = isRu ? `Точный алерт: ${disName}` : `Specific alert: ${disName}`;
+  if(specName) specName.textContent = hasCtx
+    ? (isRu ? `Точный алерт: ${disName}` : `Specific alert: ${disName}`)
+    : (isRu ? 'Точный алерт' : 'Specific alert');
 
   // Store context on form for submission
   const form = modal.querySelector('#alertModalForm');
   if(form){
-    form.dataset.outbreak = o.id;
-    form.dataset.country  = o.country;
+    form.dataset.outbreak = hasCtx ? o.id : '';
+    form.dataset.country  = hasCtx ? o.country : '';
     form.dataset.disease  = disName;
   }
 
-  // Default tier: country
-  const defaultRadio = modal.querySelector('input[value="country"]');
+  // Default tier: global when no context, country otherwise
+  const defaultTier = hasCtx ? 'country' : 'global';
+  const defaultRadio = modal.querySelector(`input[value="${defaultTier}"]`);
   if(defaultRadio) defaultRadio.checked = true;
   modal.querySelectorAll('.alert-tier').forEach(el => {
-    el.classList.toggle('is-selected', el.querySelector('input')?.value === 'country');
+    el.classList.toggle('is-selected', el.querySelector('input')?.value === defaultTier);
   });
 
   // Reset form state
