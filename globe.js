@@ -542,6 +542,7 @@ function selectCountry(country){
   if(country) renderCountryPanel(country);
   else renderPanel();
   renderMyCountries();
+  if(country && window.innerWidth <= 768 && typeof window.mobOpenDetail === 'function') window.mobOpenDetail(true);
 }
 
 function generateRecommendation(country, outbreaks){
@@ -727,17 +728,43 @@ const CATEGORY_META = {
 function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
 function toggleCat(key){
   state.cats[key] = !state.cats[key];
-  // Monochrome chrome: only the .is-active class drives the visual.
-  const btn = document.querySelector(`.cat-toggle[data-cat="${key}"]`);
-  if(btn){
-    btn.classList.toggle('is-active', state.cats[key]);
-    // Clear any inline colour overrides left over from older revisions
-    btn.style.borderColor = '';
-    btn.style.background  = '';
-    btn.style.color       = '';
-  }
+  const toggle  = document.querySelector(`.sw-toggle[data-cat="${key}"]`);
+  const section = document.querySelector(`.cat-section[data-cat="${key}"]`);
+  if(toggle)  toggle.classList.toggle('is-on', !!state.cats[key]);
+  if(section) section.classList.toggle('cat-off', !state.cats[key]);
   renderList();
-  applyMarkerFilters();
+  applyGLFilters();
+}
+
+function renderCatLists(){
+  const CATS = ['epidemic','disaster','air','food','humanitarian'];
+  for(const cat of CATS){
+    const items = OUTBREAKS.filter(o => (o.type||'epidemic') === cat);
+    const countEl = document.getElementById(`catCount-${cat}`);
+    if(countEl) countEl.textContent = items.length;
+
+    const listEl = document.getElementById(`catList-${cat}`);
+    if(!listEl) continue;
+
+    listEl.innerHTML = items.map(o => {
+      const sev  = SEV[o.sev] || SEV.warning;
+      const c    = sev.color;
+      const bg   = hexA(c, 0.12);
+      const loc  = o.country ? (countryName(o.country)||o.country) : '';
+      return `<div class="cat-item${o.id===state.selectedId?' is-selected':''}" data-id="${o.id}">
+        <span class="cat-item-dot" style="background:${c}"></span>
+        <div class="cat-item-info">
+          <div class="cat-item-name">${diseaseName(o)}</div>
+          <div class="cat-item-loc">${loc}</div>
+        </div>
+        <span class="cat-item-sev" style="background:${bg};color:${c}">${sev.label}</span>
+      </div>`;
+    }).join('') || '';
+
+    listEl.querySelectorAll('.cat-item').forEach(el => {
+      el.addEventListener('click', () => selectOutbreak(el.dataset.id));
+    });
+  }
 }
 
 /* ── Demo data for new categories ───────────────────────── */
@@ -935,7 +962,17 @@ const state = {
 };
 
 let map = null;
-const markersById = {};
+let _markerClicked = false;
+
+const SEV_COLOR_EXPR = ['match', ['get','sev'],
+  'monitoring',   '#A09F95',
+  'low',          '#E4B514',
+  'warning',      '#E8590C',
+  'alert',        '#C92A2A',
+  'critical',     '#8B1A1A',
+  'catastrophic', '#5C2010',
+  '#888'
+];
 
 function initMap(){
   map = new mapboxgl.Map({
@@ -968,15 +1005,18 @@ function initMap(){
   });
 
   map.on('load', () => {
-    addOutbreakMarkers();
+    addGLMarkers();
     map.on('move', positionPopup);
     map.on('zoom', () => { positionPopup(); updateClock(); });
     map.on('resize', positionPopup);
     updateClock();
   });
 
-  // Click on empty map → deselect
-  map.on('click', () => deselect());
+  // Click on empty map → deselect (skip if a marker layer just handled it)
+  map.on('click', () => {
+    if(_markerClicked){ _markerClicked = false; return; }
+    deselect();
+  });
 
   // Popup close button
   document.getElementById('popClose')?.addEventListener('click', (e) => {
@@ -985,62 +1025,138 @@ function initMap(){
   });
 }
 
-function addOutbreakMarkers(){
-  if(!map) return;
-  const currentIds = new Set(OUTBREAKS.map(o => o.id));
-  // Remove stale markers
-  for(const id of Object.keys(markersById)){
-    if(!currentIds.has(id)){
-      markersById[id].remove();
-      delete markersById[id];
-    }
-  }
-  // Add new markers
-  for(const o of OUTBREAKS){
-    if(markersById[o.id]) continue;
-    const el = document.createElement('div');
-    // base severity class + air variant for air-quality events
-    const sevClass = o.sev === 'critical' ? 'crit' : o.sev;
-    const isAir = (o.type === 'air');
-    el.className = `ep-marker ${sevClass}${isAir ? ' is-air' : ''}`;
-    // halo radius — air clouds get their size from CSS (.is-air.<sev>),
-    // outbreak markers scale with case load (log).
-    if(isAir){
-      // Do not set --r inline; let CSS pick by severity class
-    } else {
-      const cases = Number(o.cases) || 0;
-      // 22px base → 56px at 1M+ cases
-      const r = Math.round(22 + Math.min(34, Math.log10(Math.max(10, cases)) * 6));
-      el.style.setProperty('--r', `${r}px`);
-    }
-    el.dataset.id = o.id;
-    el.title = (o.name || '') + ' — ' + (o.country || '');
-    el.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      selectOutbreak(o.id);
-    });
-    el.addEventListener('mouseenter', () => { state.hoveredId = o.id; });
-    el.addEventListener('mouseleave', () => { state.hoveredId = null; });
-    const lon = o.lon ?? o.lng;
-    if(typeof lon !== 'number' || typeof o.lat !== 'number') continue;
-    const marker = new mapboxgl.Marker({ element: el })
-      .setLngLat([lon, o.lat])
-      .addTo(map);
-    markersById[o.id] = marker;
-  }
-  applyMarkerFilters();
+function buildGeoJSON(){
+  return {
+    type: 'FeatureCollection',
+    features: OUTBREAKS
+      .filter(o => { const lon = o.lon ?? o.lng; return typeof lon === 'number' && typeof o.lat === 'number'; })
+      .map(o => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [o.lon ?? o.lng, o.lat] },
+        properties: { id: o.id, sev: o.sev || 'monitoring', type: o.type || 'epidemic', cases: Number(o.cases) || 0 }
+      }))
+  };
 }
 
-function applyMarkerFilters(){
-  for(const o of OUTBREAKS){
-    const marker = markersById[o.id]; if(!marker) continue;
-    const el = marker.getElement();
-    const cat = o.type || 'epidemic';
-    const sevMatch = state.filter === 'all' || o.sev === state.filter || (state.filter === 'warning' && o.sev === 'low');
-    const catMatch = state.cats[cat] !== false;
-    el.style.display = (sevMatch && catMatch) ? '' : 'none';
-    el.classList.toggle('is-sel', o.id === state.selectedId);
-  }
+function addGLMarkers(){
+  if(!map) return;
+
+  // If source already exists (e.g. live data refresh), just update data
+  const existing = map.getSource('outbreaks');
+  if(existing){ existing.setData(buildGeoJSON()); applyGLFilters(); return; }
+
+  map.addSource('outbreaks', { type: 'geojson', data: buildGeoJSON() });
+
+  // Gradient halo: 3 stacked rings for soft fade effect
+  map.addLayer({
+    id: 'outbreaks-halo-outer', type: 'circle', source: 'outbreaks',
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 40, 34],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 0.06,
+      'circle-stroke-width': 0,
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+  map.addLayer({
+    id: 'outbreaks-halo-mid', type: 'circle', source: 'outbreaks',
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 28, 23],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 0.13,
+      'circle-stroke-width': 0,
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+  map.addLayer({
+    id: 'outbreaks-halo', type: 'circle', source: 'outbreaks',
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 18, 15],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 0.22,
+      'circle-stroke-width': 0,
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+
+  // Inner dot
+  map.addLayer({
+    id: 'outbreaks-dot', type: 'circle', source: 'outbreaks',
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 9, 7],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 1,
+      'circle-stroke-width': 1.5,
+      'circle-stroke-color': 'rgba(255,255,255,0.8)',
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+
+  // Selected halo
+  map.addLayer({
+    id: 'outbreaks-sel-halo', type: 'circle', source: 'outbreaks',
+    filter: ['==', ['get','id'], ''],
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 32, 26],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 0.40,
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+
+  // Selected dot (white border)
+  map.addLayer({
+    id: 'outbreaks-sel-dot', type: 'circle', source: 'outbreaks',
+    filter: ['==', ['get','id'], ''],
+    paint: {
+      'circle-radius': ['case', ['==', ['get','type'],'air'], 11, 9],
+      'circle-color': SEV_COLOR_EXPR,
+      'circle-opacity': 1,
+      'circle-stroke-width': 2.5,
+      'circle-stroke-color': '#ffffff',
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+
+  map.on('click', 'outbreaks-dot', (e) => {
+    _markerClicked = true;
+    selectOutbreak(e.features[0].properties.id);
+  });
+  map.on('mouseenter', 'outbreaks-dot', () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', 'outbreaks-dot', () => { map.getCanvas().style.cursor = ''; });
+
+  applyGLFilters();
+}
+
+function applyGLFilters(){
+  if(!map || !map.getLayer('outbreaks-halo')) return;
+
+  const activeCats = Object.entries(state.cats).filter(([,v])=>v).map(([k])=>k);
+  const catFilter = activeCats.length
+    ? ['in', ['get','type'], ['literal', activeCats]]
+    : ['boolean', false];
+
+  const sevFilter = state.filter === 'all'
+    ? ['boolean', true]
+    : state.filter === 'warning'
+      ? ['in', ['get','sev'], ['literal', ['warning','low']]]
+      : ['==', ['get','sev'], state.filter];
+
+  const baseFilter = ['all', catFilter, sevFilter];
+  map.setFilter('outbreaks-halo-outer', baseFilter);
+  map.setFilter('outbreaks-halo-mid',   baseFilter);
+  map.setFilter('outbreaks-halo',       baseFilter);
+  map.setFilter('outbreaks-dot',        baseFilter);
+
+  const selId = state.selectedId || '';
+  map.setFilter('outbreaks-sel-halo', ['all', ['==', ['get','id'], selId], catFilter, sevFilter]);
+  map.setFilter('outbreaks-sel-dot',  ['all', ['==', ['get','id'], selId], catFilter, sevFilter]);
 }
 
 /* (Canvas rendering removed — Mapbox handles globe rendering & resize) */
@@ -1112,7 +1228,7 @@ function fmtDeg(v, ax){
 
 /* =========================================================
    INTERACTIONS — drag/zoom/click are handled natively by Mapbox.
-   Marker click & hover are wired up in addOutbreakMarkers().
+   Marker clicks are wired up in addGLMarkers() via map.on('click','outbreaks-dot').
    ========================================================= */
 document.getElementById('zIn').onclick     = () => map && map.zoomIn();
 document.getElementById('zOut').onclick    = () => map && map.zoomOut();
@@ -1139,7 +1255,9 @@ function deselect(){
   state.selectedId = null;
   state.selectedCountry = null;
   if(popup) popup.classList.remove('is-on');
-  applyMarkerFilters();
+  applyGLFilters();
+  renderCatLists();
+  document.getElementById('crumbsBar')?.style.setProperty('display','none');
 }
 
 function selectOutbreak(id){
@@ -1150,8 +1268,11 @@ function selectOutbreak(id){
   renderList();
   renderPanel();
   renderPopup();
-  applyMarkerFilters();
+  applyGLFilters();
+  renderCatLists();
   positionPopup();
+  document.getElementById('crumbsBar')?.style.setProperty('display','flex');
+  if(window.innerWidth <= 768 && typeof window.mobOpenDetail === 'function') window.mobOpenDetail(false);
 }
 
 function flyTo(o){
@@ -1382,7 +1503,12 @@ function renderPanel(){
 
   // crumb
   document.getElementById('crumbRegion').textContent   = regionName(o.region || '');
-  document.getElementById('crumbCountry').textContent  = countryName(o.country);
+  const crumbCntry = document.getElementById('crumbCountry');
+  if(crumbCntry){
+    crumbCntry.textContent = countryName(o.country);
+    crumbCntry.style.cursor = 'pointer';
+    crumbCntry.onclick = () => selectCountry(o.country);
+  }
   document.getElementById('crumbOutbreak').textContent = diseaseName(o);
 
   // Travel advisory section
@@ -1463,7 +1589,7 @@ document.getElementById('chips').addEventListener('click', e=>{
   b.classList.add('is-active');
   state.filter = b.dataset.f;
   renderList();
-  applyMarkerFilters();
+  applyGLFilters();
 });
 
 /* Global header search — searches outbreaks AND countries in one dropdown.
@@ -1548,6 +1674,23 @@ if(_searchEl){
         _searchEl.blur();
       });
     });
+
+    // Mirror results to mobile search overlay
+    const mobResults = document.getElementById('mobSearchResults');
+    if(mobResults){
+      mobResults.innerHTML = html;
+      mobResults.querySelectorAll('.g-row').forEach(el => {
+        el.addEventListener('click', () => {
+          if(el.dataset.kind === 'outbreak') selectOutbreak(el.dataset.id);
+          else if(el.dataset.kind === 'country') selectCountry(el.dataset.name);
+          const searchOv = document.getElementById('mobSearchOverlay');
+          if(searchOv) searchOv.classList.remove('mob-active');
+          const mi = document.getElementById('mobSearchInput');
+          if(mi) mi.value = '';
+          _searchEl.value = '';
+        });
+      });
+    }
   };
 
   _searchEl.addEventListener('focus', () => renderGlobal(_searchEl.value));
@@ -1727,7 +1870,8 @@ async function loadLiveData(){
       renderList();
       renderPanel();
       renderPopup();
-      addOutbreakMarkers();
+      addGLMarkers();
+      renderCatLists();
     }
   } catch(e){
     console.warn('[EpiScope] Live data unavailable:', e.message);
@@ -1749,16 +1893,26 @@ async function boot(){
   renderPanel();
   renderPopup();
   renderMyCountries();
+  renderCatLists();
 
   // Load live data after globe is visible
   loadLiveData();
   // Refresh every 30 minutes
   setInterval(loadLiveData, 30 * 60 * 1000);
 
-  // Category toggle wiring
-  document.getElementById('catToggles')?.addEventListener('click', e=>{
-    const btn = e.target.closest('.cat-toggle'); if(!btn) return;
-    toggleCat(btn.dataset.cat);
+  // Category sections wiring: expand/collapse + switch toggle
+  document.getElementById('catSections')?.addEventListener('click', e=>{
+    const toggle = e.target.closest('.sw-toggle');
+    if(toggle){ toggleCat(toggle.dataset.cat); return; }
+    const expand = e.target.closest('.sw-expand');
+    if(expand){
+      const section = expand.closest('.cat-section');
+      if(!section) return;
+      const isOpen = section.classList.contains('expanded');
+      // close all, then open clicked (accordion)
+      document.querySelectorAll('.cat-section').forEach(s => s.classList.remove('expanded'));
+      if(!isOpen) section.classList.add('expanded');
+    }
   });
 
   // Country search wiring — full ALL_COUNTRIES list, flags, outbreak count
@@ -1943,27 +2097,23 @@ function switchView(name){
   if(!VIEW_NAMES.includes(name)) return;
   currentView = name;
   APP.className = `app v-${name}`;
-  // Show/hide view containers
+  // Both 'globe' and 'heatmap' reuse view-globe (flat vs sphere Mapbox projection)
   VIEW_NAMES.forEach(v => {
     const el = document.getElementById(`view-${v}`);
-    if(el) el.classList.toggle('is-active', v === name);
+    if(el) el.classList.toggle('is-active', (name === 'heatmap') ? v === 'globe' : v === name);
   });
-  // Update tab buttons via data-view (more robust than index)
   document.querySelectorAll('.top-tab[data-view]').forEach(tab => {
     tab.classList.toggle('is-active', tab.dataset.view === name);
   });
-  // Sidebar visibility (only globe sidebar exists now)
   const sg = document.querySelector('.sidebar-globe');
   if(sg) sg.classList.remove('hidden');
 
-  // Switch Mapbox projection between globe/mercator
+  // Switch Mapbox projection
   if(map){
     if(name === 'globe')   map.setProjection({ name:'globe' });
     if(name === 'heatmap') map.setProjection({ name:'mercator' });
+    if(name === 'list')    map.setProjection({ name:'globe' });
   }
-  // Initialize content
-  if(name === 'heatmap')    renderHeatmap && renderHeatmap();
-  if(name === 'list')       { /* bottom row already always-on; list view expands it */ }
 }
 
 // Wire up top tabs by data-view (3D / Карта / Список)

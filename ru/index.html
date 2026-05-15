@@ -110,6 +110,21 @@
     font-size:11.5px; font-weight:600; color:var(--muted); display:inline-flex; align-items:center; gap:4px;
   }
   .events-bar-h .all:hover{ color:var(--accent); }
+  .bar-status{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:10px; color:var(--muted);
+  }
+  .bar-status b{ color:var(--ink); font-weight:700; }
+  .bar-status .sep{ opacity:0.35; }
+  .events-toggle{
+    width:24px; height:24px; border-radius:50%; background:transparent; border:1px solid var(--line);
+    color:var(--muted); font-size:11px; cursor:pointer; display:grid; place-items:center;
+    transition:transform .2s, color .15s;
+  }
+  .events-toggle:hover{ color:var(--ink); }
+  .events-bar.collapsed .events-toggle{ transform:rotate(-90deg); }
+  .events-bar.collapsed .events-row{ display:none; }
+  .events-bar.collapsed{ padding-bottom:14px; }
   .events-row{
     display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
     scrollbar-width:thin; scrollbar-color:#d6d3c8 transparent;
@@ -137,7 +152,7 @@
   .ev-card .country{ font-size:9.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-2); display:inline-flex; align-items:center; gap:6px; min-width:0; flex:1; }
   .ev-card .country .dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
   .ev-card .country .nm-c{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ev-card .sev-tag{ font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:3px 8px; border-radius:6px; flex-shrink:0; }
+  .ev-card .sev-tag{ font-size:9px; font-weight:700; letter-spacing:0; padding:3px 8px; border-radius:6px; flex-shrink:0; }
   .ev-card .name{ font-size:14.5px; font-weight:800; letter-spacing:-0.012em; line-height:1.2; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .ev-card .stats{ display:flex; gap:20px; margin-top:auto; padding-top:2px; }
   .ev-card .stat .v{ font-size:20px; font-weight:800; letter-spacing:-0.032em; line-height:1; color:var(--ink); }
@@ -182,7 +197,7 @@
       inset 0 1px 0 rgba(255,255,255,0.38);
   }
   .brand-name{ font-weight:800; font-size:15px; letter-spacing:-0.02em; line-height:1;}
-  .brand-sub{ font-size:9px; color:var(--muted); letter-spacing:0.2em; text-transform:uppercase; margin-top:3px;}
+  .brand-sub{ font-size:9px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-top:2px; white-space:nowrap;}
 
   .top-divider{ width:1px; height:24px; background:linear-gradient(180deg, transparent, var(--line), transparent); margin:0 4px;}
 
@@ -275,7 +290,7 @@
   .side-section{ padding:18px 20px; border-bottom:1px solid rgba(229,227,220,0.6); }
   .side-section:last-of-type{ border-bottom:0; }
   .side-h{
-    font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+    font-size:11px; font-weight:600; letter-spacing:0;
     color:var(--muted); margin-bottom:14px;
     display:flex; align-items:center; justify-content:space-between;
   }
@@ -295,16 +310,7 @@
     border:1px solid rgba(229,227,220,0.55);
     border-radius:var(--r-md);
     padding:14px 14px 16px;
-    position:relative; overflow:hidden;
   }
-  .stat::before{
-    content:""; position:absolute; left:0; top:0; bottom:0; width:2px;
-    background:var(--ink); opacity:0;
-  }
-  .stat.acc::before{ opacity:0.85; }
-  .stat.acc.s2::before{ background:var(--s2); }
-  .stat.acc.s3::before{ background:var(--s3); }
-  .stat.acc.s4::before{ background:var(--s4); }
   .stat-num{
     font-size:30px; font-weight:900; letter-spacing:-0.04em; line-height:1;
     font-family:var(--display);
@@ -314,8 +320,9 @@
   .stat-num.s3{ color:var(--s3); }
   .stat-num.s4{ color:var(--s4); }
   .stat-label{
-    font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+    font-size:10px; font-weight:500; letter-spacing:0;
     color:var(--muted); margin-top:9px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .stat-delta{
     margin-top:6px; font-size:10px; font-weight:700; color:var(--s3); display:flex; align-items:center; gap:3px;
@@ -346,7 +353,7 @@
   .list-h{
     padding:16px 20px 8px;
     display:flex; justify-content:space-between; align-items:center;
-    font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted);
+    font-size:11px; font-weight:600; letter-spacing:0; color:var(--muted);
   }
   .list-wrap{
     flex:1; overflow-y:auto;
@@ -387,7 +394,7 @@
     font-size:13px; font-weight:800; letter-spacing:-0.015em;
     font-variant-numeric:tabular-nums; text-align:right;
   }
-  .out-row .ct small{ display:block; font-size:8.5px; font-weight:600; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;}
+  .out-row .ct small{ display:block; font-size:8.5px; font-weight:600; color:var(--muted); letter-spacing:0; margin-top:2px;}
 
   .status-foot{
     padding:12px 18px;
@@ -401,7 +408,7 @@
     display:inline-flex; align-items:center; gap:6px;
     height:24px; padding:0 10px; border-radius:var(--r-pill);
     background:rgba(25,164,99,0.10); color:#0c7a47;
-    font-size:10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    font-size:10px; font-weight:700; letter-spacing:0;
   }
   .live-pill .dot{ width:6px; height:6px; border-radius:50%; background:#19A463; animation:livepulse 2.4s ease-in-out infinite; }
 
@@ -416,81 +423,10 @@
   #globe .mapboxgl-ctrl-attrib{ background:rgba(255,255,255,0.7); }
   #globe .mapboxgl-ctrl-attrib a{ color:rgba(20,18,14,0.5); }
   #globe .mapboxgl-ctrl-logo{ opacity:.5; }
-  /* ─── Map markers (Yandex/Google Maps refined style) ────────
-     Outer transparent halo = impact radius (scaled by .cases via inline --r)
-     Inner solid dot = severity color
-     Pulse on critical = subtle attention without noise */
-  .ep-marker{
-    --r: 28px;                /* halo radius — set inline by JS based on cases */
-    --c: #C92A2A;             /* severity colour — set per .crit/.alert/.warning */
-    position:absolute; top:0; left:0; will-change:transform;
-    width:var(--r); height:var(--r);
-    cursor:pointer;
-    display:grid; place-items:center;
-  }
-  /* halo */
-  .ep-marker::before{
-    content:'';
-    position:absolute; inset:0;
-    border-radius:50%;
-    background:var(--c);
-    opacity:.16;
-    transition:opacity .2s ease, transform .2s ease;
-  }
-  /* dot */
-  .ep-marker::after{
-    content:'';
-    width:9px; height:9px; border-radius:50%;
-    background:var(--c);
-    box-shadow:0 0 0 2px #fff, 0 1px 4px rgba(20,18,14,0.25);
-    position:relative; z-index:1;
-    transition:transform .15s ease, box-shadow .15s ease;
-  }
-  .ep-marker:hover::before{ opacity:.28; transform:scale(1.10); }
-  .ep-marker:hover::after { transform:scale(1.18); }
-  .ep-marker.is-sel::after{
-    transform:scale(1.3);
-    box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--c), 0 2px 8px rgba(20,18,14,0.30);
-  }
-  .ep-marker.is-sel::before{ opacity:.30; }
-  .ep-marker.crit{ --c:#C92A2A; }
-  .ep-marker.alert{ --c:#E8590C; }
-  .ep-marker.warning{ --c:#C28B0E; }
-  .ep-marker.monitoring{ --c:#1D6FA4; }
-  .ep-marker.low{ --c:#1D6FA4; }
-  /* Critical pulse — subtle, no aggressive flashing */
-  .ep-marker.crit::before{ animation: ep-pulse 2.8s ease-in-out infinite; }
   @keyframes ep-pulse{
     0%,100%{ opacity:.16; transform:scale(1); }
     50%    { opacity:.30; transform:scale(1.12); }
   }
-  /* ─── Air-quality layer: large diffuse cloud over the affected region.
-     Radius scales with AQI severity. Centre dot is hidden — the whole
-     visual IS the data. Soft breathing animation hints at "live, drifting".
-     Colour ramp: hazardous=red → unhealthy=orange → moderate=amber → good=green. */
-  .ep-marker.is-air{ --r:240px; --c:#19A463; }
-  .ep-marker.is-air::before{
-    background:radial-gradient(circle,
-      color-mix(in srgb, var(--c) 55%, transparent) 0%,
-      color-mix(in srgb, var(--c) 35%, transparent) 18%,
-      color-mix(in srgb, var(--c) 18%, transparent) 45%,
-      transparent 78%);
-    opacity:1;
-    filter:blur(4px);
-    animation:ep-air-breath 6s ease-in-out infinite;
-  }
-  .ep-marker.is-air::after{ display:none; }
-  .ep-marker.is-air.crit       { --r:300px; --c:#C92A2A; }  /* AQI > 200 hazardous   */
-  .ep-marker.is-air.alert      { --r:240px; --c:#E8590C; }  /* AQI 150-200 unhealthy */
-  .ep-marker.is-air.warning    { --r:190px; --c:#E4B514; }  /* AQI 100-150 moderate  */
-  .ep-marker.is-air.monitoring { --r:130px; --c:#19A463; }  /* AQI < 100 good        */
-  .ep-marker.is-air.low        { --r:130px; --c:#19A463; }
-  @keyframes ep-air-breath{
-    0%, 100% { opacity:0.95; transform:scale(1); }
-    50%      { opacity:0.75; transform:scale(1.08); }
-  }
-  /* Selected air marker — slight saturation boost, no resize */
-  .ep-marker.is-air.is-sel::before{ opacity:1; filter:blur(2px) saturate(1.15); }
 
   /* floating UI on stage */
   .stage-corner{
@@ -554,14 +490,14 @@
     min-width:380px;
   }
   .legend-h{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
-  .legend-h span{ font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);}
+  .legend-h span{ font-size:10px; font-weight:600; letter-spacing:0; color:var(--muted);}
   .legend-h em{ font-style:normal; font-size:10.5px; color:var(--ink-2); letter-spacing:-0.005em; opacity:.8;}
   .scale{
     display:flex; height:10px; border-radius:var(--r-pill); overflow:hidden;
     box-shadow:inset 0 1px 1px rgba(0,0,0,0.08);
   }
   .scale > i{ flex:1; display:block; }
-  .scale-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:9.5px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; font-weight:700;}
+  .scale-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:9.5px; color:var(--muted); letter-spacing:0; font-weight:700;}
 
   .clock{
     pointer-events:auto;
@@ -618,7 +554,7 @@
   .popup #popGoCountry:hover{ background:var(--bg); }
   .popup-bar{ height:4px; background:var(--accent-deep); }
   .popup-body{ padding:14px 16px 0; }
-  .popup-id{ font-size:9.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); }
+  .popup-id{ font-size:10px; font-weight:500; letter-spacing:0; color:var(--muted); }
   .popup-name{
     font-size:24px; font-weight:900; letter-spacing:-0.035em;
     font-family:var(--display);
@@ -647,7 +583,7 @@
     background:rgba(255,255,255,0.55);
     border:1px solid rgba(229,227,220,0.6);
   }
-  .popup-metrics .k{ font-size:9.5px; font-weight:700; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase;}
+  .popup-metrics .k{ font-size:10px; font-weight:500; color:var(--muted); letter-spacing:0;}
   .popup-metrics .v{ font-size:22px; font-weight:900; letter-spacing:-0.03em; margin-top:2px; font-variant-numeric:tabular-nums;}
   .popup-survey{
     background:linear-gradient(160deg, #C92A2A, #8B1A1A);
@@ -656,7 +592,7 @@
     border-radius:0 0 var(--r-lg) var(--r-lg);
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);
   }
-  .popup-survey .lbl{ font-size:9.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; opacity:.8;}
+  .popup-survey .lbl{ font-size:10px; font-weight:500; letter-spacing:0; opacity:.8;}
   .popup-survey .big{ font-size:22px; font-weight:900; letter-spacing:-0.025em; margin-top:4px; line-height:1.05;}
   .popup-survey .sub{ font-size:11px; opacity:.9; margin-top:4px;}
 
@@ -676,7 +612,7 @@
 
   .panel-head{ padding:22px 24px 20px; border-bottom:1px solid rgba(229,227,220,0.6); }
   .panel-eyebrow{
-    font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+    font-size:10px; font-weight:600; letter-spacing:0;
     color:var(--muted); display:flex; align-items:center; justify-content:space-between;
   }
   .panel-eyebrow .x{
@@ -706,16 +642,16 @@
     display:flex; align-items:center; justify-content:space-between;
     box-shadow:0 8px 20px -10px rgba(201,42,42,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
   }
-  .panel-status .l{ font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; opacity:.85;}
+  .panel-status .l{ font-size:10px; font-weight:600; letter-spacing:0; opacity:.85;}
   .panel-status .v{ font-size:13px; font-weight:800; letter-spacing:-0.01em;}
 
   .panel-section{ padding:18px 22px; border-bottom:1px solid rgba(229,227,220,0.5); }
   .panel-section .lbl{
-    font-size:10px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+    font-size:11px; font-weight:600; letter-spacing:0;
     color:var(--muted); margin-bottom:12px;
     display:flex; align-items:center; justify-content:space-between;
   }
-  .lbl em{ font-style:normal; font-size:9.5px; color:var(--ink-2); letter-spacing:0.06em; opacity:.7;}
+  .lbl em{ font-style:normal; font-size:10px; color:var(--ink-2); letter-spacing:0; opacity:.7;}
 
   .metric-grid{
     display:grid; grid-template-columns:1fr 1fr; gap:6px;
@@ -726,7 +662,7 @@
     background:rgba(255,255,255,0.6);
     border:1px solid rgba(229,227,220,0.6);
   }
-  .metric .k{ font-size:9.5px; font-weight:700; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase;}
+  .metric .k{ font-size:10px; font-weight:500; color:var(--muted); letter-spacing:0;}
   .metric .v{ font-size:26px; font-weight:900; letter-spacing:-0.035em; margin-top:6px; font-variant-numeric:tabular-nums;}
   .metric .delta{ font-size:10px; font-weight:700; margin-top:4px;}
   .metric .delta.up{ color:var(--s3);}
@@ -757,7 +693,7 @@
   }
   .sev-key{
     display:flex; justify-content:space-between; margin-top:10px;
-    font-size:9.5px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; font-weight:700;
+    font-size:9.5px; color:var(--muted); letter-spacing:0; font-weight:700;
   }
 
   /* sparkline */
@@ -769,7 +705,7 @@
   }
   .spark-top{ display:flex; justify-content:space-between; align-items:baseline;}
   .spark-big{ font-size:26px; font-weight:900; letter-spacing:-0.035em; font-variant-numeric:tabular-nums; line-height:1;}
-  .spark-cap{ font-size:10px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; font-weight:700; margin-top:4px;}
+  .spark-cap{ font-size:10px; color:var(--muted); letter-spacing:0; font-weight:500; margin-top:4px;}
   .spark-trend{
     font-size:11px; font-weight:800; letter-spacing:-0.005em;
     padding:4px 10px; border-radius:var(--r-pill); color:#fff;
@@ -787,7 +723,7 @@
   }
   .ai-card .ai-top{ display:flex; justify-content:space-between; align-items:center; }
   .ai-card .lbl{
-    font-size:9.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; opacity:.75;
+    font-size:9.5px; font-weight:700; letter-spacing:0; opacity:.75;
     display:flex; align-items:center; gap:6px;
   }
   .ai-card .lbl::before{
@@ -805,7 +741,7 @@
 
   /* ── Risk block ── */
   .risk-block{ display:flex; flex-direction:column; gap:6px; }
-  .risk-title{ font-size:10.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .risk-title{ font-size:10.5px; font-weight:600; letter-spacing:0; color:var(--muted); margin-bottom:4px; }
   .risk-row{ display:flex; align-items:center; justify-content:space-between; }
   .risk-who{ font-size:12px; color:var(--ink-2); }
   .risk-level{ font-size:11px; font-weight:600; padding:3px 9px; border-radius:var(--r-pill); letter-spacing:0.03em; }
@@ -813,7 +749,7 @@
 
   /* ── Travel advisory ── */
   .travel-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
-  .travel-lbl{ font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+  .travel-lbl{ font-size:10px; font-weight:600; letter-spacing:0; color:var(--muted); }
   .travel-verdict{ font-size:13px; font-weight:600; color:var(--ink); }
   .travel-others{ margin-top:10px; display:flex; flex-wrap:wrap; gap:4px; align-items:baseline; }
   .travel-others-lbl{ font-size:10px; color:var(--muted); width:100%; margin-bottom:3px; }
@@ -823,7 +759,7 @@
   .cp-head{ padding:18px 18px 14px; border-bottom:1px solid var(--line); }
   .cp-back{ font-size:11px; color:var(--muted); cursor:pointer; margin-bottom:10px; }
   .cp-back:hover{ color:var(--ink); }
-  .cp-eyebrow{ font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .cp-eyebrow{ font-size:10px; font-weight:700; letter-spacing:0; color:var(--muted); margin-bottom:4px; }
   .cp-country-name{ font-size:26px; font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:12px; font-family:var(--display); }
   .cp-advisory{ padding:8px 14px; border-radius:var(--r-md); font-size:13px; font-weight:600; display:inline-block; }
   .cp-stats-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--line); border-bottom:1px solid var(--line); }
@@ -831,7 +767,7 @@
   .cp-stat-val{ font-size:20px; font-weight:800; letter-spacing:-0.03em; }
   .cp-stat-lbl{ font-size:10px; color:var(--muted); margin-top:2px; }
   .cp-section{ padding:14px 18px; border-bottom:1px solid var(--line); }
-  .cp-section-title{ font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .cp-section-title{ font-size:10px; font-weight:700; letter-spacing:0; color:var(--muted); margin-bottom:10px; }
   .cp-threat-row{ display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-2); }
   .cp-threat-row:last-child{ border-bottom:0; }
   .cp-threat-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
@@ -844,30 +780,94 @@
   .cp-rec-text{ font-size:12.5px; line-height:1.65; color:var(--ink-2); }
   .cp-watch-btn{ width:100%; }
 
-  /* ── Category toggles (monochrome + small severity dot accent) ── */
-  .cat-toggles{ display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px; }
-  .cat-toggle{
-    display:inline-flex; align-items:center; gap:6px;
-    height:28px; padding:0 11px;
-    border-radius:var(--r-pill);
-    font-size:11.5px; font-weight:600;
-    border:1px solid var(--line);
-    color:var(--muted);
-    cursor:pointer;
+  /* ── Category sections with switch toggles + collapsible lists ── */
+  .cat-sections{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .cat-section{ border-bottom:1px solid var(--line-2); }
+  .cat-section:last-child{ border-bottom:0; }
+
+  .sw-row{
+    display:flex; align-items:center;
+    padding:0 14px 0 20px; height:42px;
+  }
+  .sw-expand{
+    display:flex; align-items:center; gap:9px;
+    flex:1; min-width:0; cursor:pointer;
+    padding-right:10px;
+  }
+  .sw-icon{
+    width:26px; height:26px; border-radius:8px;
+    display:grid; place-items:center; flex-shrink:0;
+    background:rgba(22,21,19,0.07); color:var(--ink-2);
+    transition:background .15s, color .15s, opacity .2s;
+  }
+  .sw-icon svg{ display:block; }
+  .cat-section.cat-off .sw-icon{ opacity:.38; }
+  .sw-label{
+    font-size:12.5px; font-weight:600; color:var(--ink);
+    flex:1; transition:color .15s;
+  }
+  .cat-section.cat-off .sw-label{ color:var(--muted); }
+  .sw-count{
+    font-size:9.5px; font-weight:700;
+    padding:1px 6px; border-radius:99px;
+    background:var(--line); color:var(--muted); flex-shrink:0;
+    transition:opacity .2s;
+  }
+  .cat-section.cat-off .sw-count{ opacity:.4; }
+  .sw-chevron{
+    flex-shrink:0; color:var(--muted-2); font-size:9px;
+    transition:transform .2s; margin-left:4px;
+  }
+  .cat-section.expanded .sw-chevron{ transform:rotate(180deg); }
+
+  /* iOS-style toggle switch */
+  .sw-toggle{
+    width:34px; height:20px; border-radius:10px; flex-shrink:0;
+    background:#D1D0CA; position:relative; cursor:pointer;
+    transition:background .2s; border:none; outline:none;
+  }
+  .sw-toggle::after{
+    content:''; position:absolute;
+    top:2px; left:2px;
+    width:16px; height:16px; border-radius:50%;
     background:#fff;
-    transition:border-color .15s, background .15s, color .15s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.22);
+    transition:transform .2s;
   }
-  .cat-toggle:hover{ border-color:#bcb9ad; color:var(--ink-2); }
-  .cat-toggle.is-active{
-    background:var(--ink);
-    border-color:var(--ink);
-    color:#fff;
+  .sw-toggle.is-on{ background:var(--accent); }
+  .sw-toggle.is-on::after{ transform:translateX(14px); }
+
+  /* Category outbreak list */
+  .cat-list{
+    display:none; flex-direction:column;
+    padding-bottom:6px;
   }
-  .cat-toggle .cat-icon{
-    width:13px; height:13px; display:inline-flex; align-items:center; justify-content:center;
-    color:currentColor;
+  .cat-section.expanded .cat-list{ display:flex; }
+
+  .cat-item{
+    display:flex; align-items:center; gap:9px;
+    padding:7px 14px 7px 20px;
+    cursor:pointer; transition:background .12s;
   }
-  .cat-toggle .cat-icon svg{ display:block; }
+  .cat-item:hover{ background:rgba(232,89,12,0.05); }
+  .cat-item.is-selected{ background:rgba(232,89,12,0.09); }
+  .cat-item-dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .cat-item-info{ flex:1; min-width:0; }
+  .cat-item-name{
+    font-size:11.5px; font-weight:600; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .cat-item-loc{
+    font-size:10px; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .cat-item-sev{
+    font-size:9px; font-weight:700;
+    padding:2px 7px; border-radius:5px; flex-shrink:0;
+  }
 
   /* ── Country search ── */
   .country-search-wrap{ display:none; }
@@ -913,7 +913,7 @@
   .g-drop::-webkit-scrollbar-thumb{ background:#D6D3C8; border-radius:99px; }
   .g-drop-h{
     padding:9px 14px 5px;
-    font-size:10px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase;
+    font-size:10px; font-weight:700; letter-spacing:0;
     color:var(--muted);
   }
   .g-drop-h:first-child{ padding-top:12px; }
@@ -976,7 +976,7 @@
     background:rgba(232,89,12,0.04);
   }
   .sub-label{
-    font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    font-size:10px; font-weight:700; letter-spacing:0;
     color:var(--muted); margin-bottom:8px;
   }
   .sub-row{ display:flex; gap:6px; }
@@ -1056,19 +1056,16 @@
   .app.v-pathogens .panel,
   .app.v-reports .panel{ display:none; }
 
-  /* Events-bar visibility per view (PM critique: redundant in 3D, useful in Карта/Список):
-     - 3D view  → bar hidden, map fills extra row
-     - Карта view → bar visible horizontally at bottom (default 3-row grid)
-     - Список view → bar takes over freed stage+panel area as a grid */
-  .app.v-globe .events-bar{ display:none; }
-  .app.v-globe{ grid-template-rows:56px 1fr; }
+  /* Globe/Map: no events bar — full height for map */
+  .app.v-globe, .app.v-heatmap{ grid-template-rows:56px 1fr; }
+  .app.v-globe .events-bar, .app.v-heatmap .events-bar{ display:none; }
   .app.v-list .stage{ display:none; }
   .app.v-list .panel{ display:none; }
   .app.v-list .events-bar{ grid-row:2 / 4; grid-column:2 / -1; overflow-y:auto; }
-  .app.v-list .events-row{ flex-wrap:wrap; align-content:flex-start; }
-  .app.v-list .ev-card{ flex:0 0 calc(25% - 8px); }
+  .app.v-list .events-row{ flex-wrap:wrap; align-content:flex-start; overflow-y:visible; }
+  .app.v-list .ev-card{ flex:0 0 calc(33.33% - 8px); }
   @media (max-width: 1100px){
-    .app.v-list .ev-card{ flex:0 0 calc(33.33% - 8px); }
+    .app.v-list .ev-card{ flex:0 0 calc(50% - 6px); }
   }
 
   /* ============ HEATMAP ============ */
@@ -1118,7 +1115,7 @@
   .hmap-tooltip .t-name{ font-size:14px; font-weight:800; letter-spacing:-0.02em; }
   .hmap-tooltip .t-loc{ font-size:11px; color:var(--muted); margin-top:3px; }
   .hmap-tooltip .t-row{ display:flex; gap:18px; margin-top:10px; }
-  .hmap-tooltip .t-k{ font-size:9.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .hmap-tooltip .t-k{ font-size:9.5px; font-weight:700; color:var(--muted); letter-spacing:0; }
   .hmap-tooltip .t-v{ font-size:16px; font-weight:900; letter-spacing:-0.02em; margin-top:2px; font-variant-numeric:tabular-nums; }
 
   /* ============ PATHOGENS ============ */
@@ -1131,8 +1128,8 @@
     padding:20px 22px 0; flex-shrink:0;
   }
   .view-toolbar-title{
-    font-size:10px; font-weight:700; letter-spacing:0.16em;
-    text-transform:uppercase; color:var(--muted);
+    font-size:10px; font-weight:700; letter-spacing:0;
+    color:var(--muted);
   }
   .view-meta{ margin-left:auto; font-size:11px; color:var(--muted); }
   .view-meta b{ color:var(--ink); font-weight:700; }
@@ -1168,7 +1165,7 @@
   .path-sev-dot{ width:8px; height:8px; border-radius:50%; flex:none; margin-top:4px; }
   .path-name{ font-size:13.5px; font-weight:800; letter-spacing:-0.02em; line-height:1.2; flex:1; }
   .path-short{
-    font-size:9.5px; font-weight:700; letter-spacing:0.10em; text-transform:uppercase;
+    font-size:9.5px; font-weight:700; letter-spacing:0;
     color:var(--muted); background:rgba(255,255,255,0.75);
     border:1px solid rgba(229,227,220,0.7); border-radius:var(--r-pill);
     padding:3px 8px; flex:none; white-space:nowrap;
@@ -1180,7 +1177,7 @@
     background:rgba(255,255,255,0.58); border:1px solid rgba(229,227,220,0.6);
     border-radius:var(--r-sm);
   }
-  .path-stat .k{ font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+  .path-stat .k{ font-size:9px; font-weight:700; color:var(--muted); letter-spacing:0; }
   .path-stat .v{ font-size:16px; font-weight:900; letter-spacing:-0.025em; margin-top:2px; font-variant-numeric:tabular-nums; }
   .path-stat .v.sm{ font-size:12px; letter-spacing:0; }
   .path-footer{ display:flex; flex-wrap:wrap; gap:5px; margin-top:auto; }
@@ -1281,7 +1278,7 @@
     .app {
       padding: 0;
       grid-template-columns: 1fr;
-      grid-template-rows: 52px 1fr auto;
+      grid-template-rows: 52px 1fr;
       gap: 0;
       height: 100dvh;
     }
@@ -1297,31 +1294,47 @@
     }
 
     /* Hide desktop-only topbar elements */
-    .top-divider,
-    .top-tabs,
-    .top-meta,
-    .pill-btn { display: none !important; }
+    .top-divider, .top-meta, .search-wrap, .top-tabs { display: none !important; }
 
-    /* Keep brand + search + lang btn visible */
-    .search { max-width: none; flex: 1; margin: 0 8px; }
+    /* RU + Get Alerts pinned to right */
+    .top-actions { margin-left: auto; gap: 8px; }
+    .pill-btn {
+      display: inline-flex !important;
+      height: 34px; padding: 0 12px;
+      font-size: 12px; gap: 5px;
+    }
+    .pill-btn .accent-dot { width: 6px; height: 6px; }
+    .lang-btn { height: 32px; padding: 0 10px; font-size: 12px; }
 
     /* Globe stage — fills available space */
     .stage {
       grid-column: 1;
       border-radius: 0;
       border: none;
-      height: calc(100dvh - 52px - 56px);
+      height: calc(100dvh - 52px);
       position: relative;
     }
 
-    /* Sidebar → hidden on mobile (content shown in bottom sheet) */
+    /* Sidebar → hidden on mobile; shown as overlay by JS */
     .sidebar { display: none; }
+    .sidebar.mob-visible {
+      display: flex !important;
+      flex-direction: column;
+      position: fixed;
+      top: 52px; bottom: 60px;
+      left: 0; right: 0;
+      z-index: 150;
+      background: var(--bg);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
 
-    /* Right panel → slides in from bottom as a sheet */
+    /* Right panel → slides up from bottom */
     .panel {
+      display: block !important;
       position: fixed;
       left: 0; right: 0;
-      bottom: 56px;         /* above bottom nav */
+      bottom: 60px;
       top: auto;
       height: 0;
       border-radius: var(--r-xl) var(--r-xl) 0 0;
@@ -1330,14 +1343,14 @@
       transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
       box-shadow: 0 -8px 32px -8px rgba(22,21,19,0.18);
+      background: var(--bg-card);
     }
-    .panel.mob-open {
-      height: 72vh;
-    }
-    .panel-scroll {
-      height: 100%;
-    }
-    /* drag handle on top of panel */
+    .panel.mob-open { height: 75vh; }
+    .panel.mob-full { height: calc(100dvh - 52px) !important; bottom: 0 !important; border-radius: 0 !important; }
+
+    .panel-scroll { height: 100%; overflow-y: auto; }
+
+    /* drag handle */
     .panel::before {
       content: '';
       display: block;
@@ -1347,70 +1360,115 @@
       margin: 10px auto 0;
       flex-shrink: 0;
     }
+    .panel.mob-full::before { display: none; }
 
-    /* Bottom outbreak sheet (outbreak list) */
+    /* Back button in panel — only on mobile */
+    .mob-panel-back {
+      display: flex;
+      align-items: center; gap: 8px;
+      padding: 13px 16px 11px;
+      font-size: 14px; font-weight: 600; color: var(--accent);
+      cursor: pointer;
+      border-bottom: 1px solid var(--line-2);
+    }
+
+    /* Action buttons: stacked full-width */
+    .actions { grid-template-columns: 1fr; }
+    .btn { height: 48px; font-size: 14px; }
+
+    /* Events overlay (mob-sheet) */
     .mob-sheet {
       position: fixed;
       left: 0; right: 0;
-      bottom: 56px;
-      border-radius: var(--r-xl) var(--r-xl) 0 0;
-      background: var(--glass-bg);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      border: 1px solid var(--glass-bd);
-      border-bottom: none;
-      box-shadow: 0 -6px 28px -6px rgba(22,21,19,0.14);
+      top: 52px; bottom: 60px;
+      background: var(--bg);
       z-index: 150;
-      transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
-      height: 120px;  /* collapsed: shows handle + 2 rows */
+      display: none;
+      flex-direction: column;
       overflow: hidden;
     }
-    .mob-sheet.expanded { height: 52vh; }
-    .mob-sheet.hidden   { height: 0; }
-
-    .mob-sheet-handle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px 8px;
-      cursor: pointer;
+    .mob-sheet.mob-active { display: flex; }
+    .mob-sheet-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid var(--line);
       flex-shrink: 0;
     }
-    .mob-sheet-handle::before {
-      content: '';
-      position: absolute;
-      top: 8px; left: 50%;
-      transform: translateX(-50%);
-      width: 36px; height: 4px;
-      background: var(--muted-2);
-      border-radius: 2px;
-    }
     .mob-sheet-title {
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted);
-      padding-top: 4px;
+      font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink);
     }
     .mob-sheet-count {
-      font-size: 11px; font-weight: 600;
+      font-size: 11px; font-weight: 700;
       background: var(--accent); color: #fff;
-      padding: 2px 7px; border-radius: var(--r-pill);
+      padding: 2px 8px; border-radius: var(--r-pill);
     }
     .mob-sheet-list {
+      flex: 1; overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    /* Bigger outbreak rows in mobile events list */
+    .mob-sheet .out-row {
+      padding: 14px 18px;
+      min-height: 72px;
+      border-bottom: 1px solid var(--line-2);
+      border-radius: 0;
+    }
+    .mob-sheet .out-row .nm { font-size: 15px; font-weight: 700; }
+    .mob-sheet .out-row .lo { font-size: 12px; margin-top: 2px; }
+    .mob-sheet .out-row .ct { font-size: 12px; }
+    .mob-sheet .out-row .ct small { font-size: 10px; }
+
+    /* Subscribe overlay */
+    .mob-subs-overlay {
+      position: fixed;
+      left: 0; right: 0;
+      top: 52px; bottom: 60px;
+      background: var(--bg);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
       overflow-y: auto;
-      height: calc(100% - 52px);
-      padding: 0 12px 12px;
+      overscroll-behavior: contain;
+    }
+    .mob-subs-overlay.mob-active { display: flex; }
+
+    /* Search overlay */
+    #mobSearchOverlay {
+      top: 52px !important;
+      bottom: 60px !important;
+      display: none;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      padding: 0 !important;
+      background: var(--bg) !important;
+      z-index: 250 !important;
+      overflow-y: auto;
+    }
+    #mobSearchOverlay.mob-active { display: flex !important; }
+    #mobSearchOverlay .mob-search-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    #mobSearchOverlay #mobSearchInput {
+      flex: 1; font-size: 15px; border: 0; outline: 0;
+      background: transparent; color: var(--ink);
+    }
+    #mobSearchOverlay .mob-search-results {
+      flex: 1; overflow-y: auto;
     }
 
     /* Bottom navigation bar */
     .mob-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      height: 56px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(28px) saturate(160%);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      border-top: 1px solid var(--glass-bd);
+      height: 60px;
+      background: rgba(244,242,238,0.96);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid var(--line);
       display: flex;
       align-items: center;
       justify-content: space-around;
@@ -1420,32 +1478,25 @@
     .mob-nav-btn {
       display: flex; flex-direction: column;
       align-items: center; gap: 3px;
-      padding: 6px 16px;
-      border-radius: var(--r-sm);
+      flex: 1;
+      padding: 6px 4px;
       font-size: 10px; font-weight: 600;
       color: var(--muted);
-      letter-spacing: 0.03em;
       cursor: pointer;
       transition: color .15s;
       background: none; border: none;
     }
-    .mob-nav-btn svg { opacity: 0.55; transition: opacity .15s; }
+    .mob-nav-btn svg { opacity: 0.45; transition: opacity .15s; }
     .mob-nav-btn.is-active { color: var(--accent); }
     .mob-nav-btn.is-active svg { opacity: 1; }
 
-    /* Adjust out-row for touch */
-    .out-row { min-height: 52px; padding: 10px 12px; }
-    .out-row .nm { font-size: 13px; }
-    .out-row .lo { font-size: 11px; }
-
     /* Panel adjustments for mobile */
-    .panel-head { padding: 8px 16px 12px; }
+    .panel-head { padding: 6px 16px 14px; }
     .panel-name { font-size: 22px; }
     .metric-grid { grid-template-columns: 1fr 1fr; }
 
     /* Hide desktop elements in mobile panel */
-    .hmap-wrap,
-    .rep-list { display: none; }
+    .hmap-wrap, .rep-list { display: none; }
 
     /* Sparkline smaller */
     .spark { height: 50px; }
@@ -1485,7 +1536,7 @@
       <span class="brand-mark">E</span>
       <div>
         <div class="brand-name">EpiScope</div>
-        <div class="brand-sub">Система эпиднадзора · v4.2</div>
+        <div class="brand-sub">Угрозы · Воздух · Еда · v4.2</div>
       </div>
     </div>
 
@@ -1515,12 +1566,6 @@
       </button>
     </div>
 
-    <div class="top-meta">
-      <span><span class="live-dot"></span>&nbsp;&nbsp;В эфире · ВОЗ · ProMED · ECDC</span>
-      <span id="dataUpdated">Данные: загрузка…</span>
-      <span>Время <b id="topClock">--:-- UTC</b></span>
-    </div>
-
     <div class="top-actions">
       <a href="/" class="lang-btn" title="English version">EN</a>
       <button class="pill-btn">
@@ -1538,10 +1583,10 @@
       <div class="side-section">
         <div class="side-h">Обзор <span class="count">24 ч</span></div>
         <div class="stats-grid">
-          <div class="stat acc s2"><div class="stat-num s2">142</div><div class="stat-label">Активных вспышек</div><div class="stat-delta">+6 сегодня</div></div>
-          <div class="stat acc s4"><div class="stat-num s4">8 341</div><div class="stat-label">Смертей · 30 дн.</div><div class="stat-delta">+312</div></div>
-          <div class="stat acc s3"><div class="stat-num s3">17</div><div class="stat-label">Критических алертов</div><div class="stat-delta">+2</div></div>
-          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Стран</div><div class="stat-delta dn">−1</div></div>
+          <div class="stat s2"><div class="stat-num s2">142</div><div class="stat-label">Вспышки</div><div class="stat-delta">+6 сегодня</div></div>
+          <div class="stat s4"><div class="stat-num s4">8 341</div><div class="stat-label">Смертей / 30 дн.</div><div class="stat-delta">+312</div></div>
+          <div class="stat s3"><div class="stat-num s3">17</div><div class="stat-label">Крит. алерты</div><div class="stat-delta">+2</div></div>
+          <div class="stat"><div class="stat-num">63</div><div class="stat-label">Страны</div><div class="stat-delta dn">−1</div></div>
         </div>
       </div>
 
@@ -1561,22 +1606,78 @@
         </div>
       </div>
 
-        <div class="cat-toggles" id="catToggles">
-          <button class="cat-toggle is-active" data-cat="epidemic"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>Эпидемии</button>
-          <button class="cat-toggle is-active" data-cat="disaster"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>Катастрофы</button>
-          <button class="cat-toggle" data-cat="air"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>Воздух</button>
-          <button class="cat-toggle" data-cat="food"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>Еда</button>
-          <button class="cat-toggle" data-cat="humanitarian"><span class="cat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>Гуманитар.</button>
+        <div class="cat-sections" id="catSections">
+
+          <div class="cat-section expanded" data-cat="epidemic">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="epidemic">
+                <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>
+                <span class="sw-label">Эпидемии</span>
+                <span class="sw-count" id="catCount-epidemic">—</span>
+                <span class="sw-chevron">▾</span>
+              </div>
+              <button class="sw-toggle is-on" data-cat="epidemic" title="Показать на карте"></button>
+            </div>
+            <div class="cat-list" id="catList-epidemic"></div>
+          </div>
+
+          <div class="cat-section expanded" data-cat="disaster">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="disaster">
+                <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+                <span class="sw-label">Катастрофы</span>
+                <span class="sw-count" id="catCount-disaster">—</span>
+                <span class="sw-chevron">▾</span>
+              </div>
+              <button class="sw-toggle is-on" data-cat="disaster" title="Показать на карте"></button>
+            </div>
+            <div class="cat-list" id="catList-disaster"></div>
+          </div>
+
+          <div class="cat-section cat-off" data-cat="air">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="air">
+                <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>
+                <span class="sw-label">Воздух</span>
+                <span class="sw-count" id="catCount-air">—</span>
+                <span class="sw-chevron">▾</span>
+              </div>
+              <button class="sw-toggle" data-cat="air" title="Показать на карте"></button>
+            </div>
+            <div class="cat-list" id="catList-air"></div>
+          </div>
+
+          <div class="cat-section cat-off" data-cat="food">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="food">
+                <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>
+                <span class="sw-label">Еда</span>
+                <span class="sw-count" id="catCount-food">—</span>
+                <span class="sw-chevron">▾</span>
+              </div>
+              <button class="sw-toggle" data-cat="food" title="Показать на карте"></button>
+            </div>
+            <div class="cat-list" id="catList-food"></div>
+          </div>
+
+          <div class="cat-section cat-off" data-cat="humanitarian">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="humanitarian">
+                <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>
+                <span class="sw-label">Гуманитар.</span>
+                <span class="sw-count" id="catCount-humanitarian">—</span>
+                <span class="sw-chevron">▾</span>
+              </div>
+              <button class="sw-toggle" data-cat="humanitarian" title="Показать на карте"></button>
+            </div>
+            <div class="cat-list" id="catList-humanitarian"></div>
+          </div>
+
         </div>
       <div class="side-section country-search-wrap">
           <input id="countrySearch" placeholder="Поиск по стране…" autocomplete="off">
           <div id="countryDropdown"></div>
         </div>
-      <div class="list-h">
-        <span>Вспышки</span><span class="count" id="listCount">12</span>
-      </div>
-      <div class="list-wrap" id="list"></div>
-
       <div class="status-foot">
         <span class="live-pill"><span class="dot"></span>В эфире</span>
         <span>обновлено <b id="lastSync">--:--:-- UTC</b></span>
@@ -1638,12 +1739,12 @@
     <div id="globe"></div>
 
     <div class="stage-corner">
-      <div class="crumbs">
+      <div class="crumbs" id="crumbsBar" style="display:none">
         <span class="pin"></span>
-        <span id="crumbRegion">Африка</span><span class="sep">/</span>
-        <b id="crumbCountry">Uganda</b>
+        <span id="crumbRegion"></span><span class="sep">/</span>
+        <b id="crumbCountry"></b>
         <span class="sep">·</span>
-        <b id="crumbOutbreak">Ebola Sudan-virus</b>
+        <b id="crumbOutbreak"></b>
       </div>
     </div>
 
@@ -1676,11 +1777,6 @@
         <div class="scale-labels">
           <span>Монит.</span><span>Низкий</span><span>Внимание</span><span>Алерт</span><span>Критич.</span><span>Катастрофа</span>
         </div>
-      </div>
-      <div class="clock">
-        <span>ШИР<b id="lat">+1.37°</b></span>
-        <span>ДОЛ<b id="lon">+32.29°</b></span>
-        <span>М<b id="zo">1.00×</b></span>
       </div>
     </div>
 
@@ -1762,6 +1858,10 @@
 
   <!-- ============ RIGHT PANEL ============ -->
   <aside class="panel" id="panel">
+    <div class="mob-panel-back" id="mobPanelBack" style="display:none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Назад
+    </div>
     <div class="panel-scroll">
       <div class="panel-head">
         <div class="panel-eyebrow"><span id="panEy">Вспышка · EPI-2026-UGA-0142</span><button class="x">×</button></div>
@@ -1873,7 +1973,18 @@
   <section class="events-bar" id="eventsBar">
     <div class="events-bar-h">
       <span class="t">Активные события</span>
-      <a class="all" href="#" id="eventsAllLink">Все <span id="listCount">12</span> →</a>
+      <div class="bar-status">
+        <span class="live-dot"></span>
+        <span>В эфире · ВОЗ · ProMED · ECDC</span>
+        <span class="sep">·</span>
+        <span id="dataUpdated">Данные: загрузка…</span>
+        <span class="sep">·</span>
+        <span>Время <b id="topClock">--:-- UTC</b></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <a class="all" href="#" id="eventsAllLink">Все <span id="listCount">12</span> →</a>
+        <button class="events-toggle" id="eventsToggle" title="Свернуть">▾</button>
+      </div>
     </div>
     <div class="events-row" id="list"></div>
   </section>
@@ -1902,72 +2013,152 @@
 /* ── Mobile UI controller ── */
 (function(){
   const isMob = () => window.innerWidth <= 768;
+  const LANG_MOB = document.documentElement.lang === 'ru' ? 'ru' : 'en';
+  const T = (en, ru) => LANG_MOB === 'ru' ? ru : en;
 
-  // Inject bottom nav + sheet into DOM
+  let currentTab = 'events';
+
+  function setMobTab(action){
+    currentTab = action;
+    const nav = document.getElementById('mobNav');
+    if(nav){
+      nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
+      nav.querySelector(`[data-action="${action}"]`)?.classList.add('is-active');
+    }
+    document.querySelector('.sidebar')?.classList.remove('mob-visible');
+    const sheet = document.getElementById('mobSheet');
+    if(sheet) sheet.classList.remove('mob-active');
+    const subsOv = document.querySelector('.mob-subs-overlay');
+    if(subsOv) subsOv.classList.remove('mob-active');
+    const searchOv = document.getElementById('mobSearchOverlay');
+    if(searchOv) searchOv.classList.remove('mob-active');
+
+    const panel = document.getElementById('panel');
+    if(action !== 'detail' && panel){
+      panel.classList.remove('mob-open','mob-full');
+      const back = document.getElementById('mobPanelBack');
+      if(back) back.style.display = 'none';
+    }
+
+    if(action === 'overview'){
+      document.querySelector('.sidebar')?.classList.add('mob-visible');
+    } else if(action === 'search'){
+      if(searchOv){ searchOv.classList.add('mob-active'); }
+      setTimeout(()=>{
+        document.getElementById('mobSearchInput')?.focus();
+        const si = document.getElementById('searchInput');
+        if(si) si.dispatchEvent(new Event('input', {bubbles:true}));
+      }, 80);
+    } else if(action === 'events'){
+      if(sheet) sheet.classList.add('mob-active');
+    } else if(action === 'subs'){
+      if(subsOv) subsOv.classList.add('mob-active');
+    } else if(action === 'detail'){
+      if(panel){ panel.classList.add('mob-open'); panel.classList.remove('mob-full'); }
+      const back = document.getElementById('mobPanelBack');
+      if(back) back.style.display = 'none';
+    }
+  }
+
+  window.mobOpenDetail = function(full){
+    setMobTab('detail');
+    const panel = document.getElementById('panel');
+    const back  = document.getElementById('mobPanelBack');
+    if(full && panel){
+      panel.classList.add('mob-full');
+      if(back) back.style.display = 'flex';
+    }
+  };
+
   function injectMobileUI(){
     if(!isMob() || document.getElementById('mobNav')) return;
 
-    // Bottom nav
+    // ── Bottom nav ──
     const nav = document.createElement('nav');
     nav.id = 'mobNav';
     nav.className = 'mob-nav';
     nav.innerHTML = `
-      <button class="mob-nav-btn is-active" data-view="globe" id="mnGlobe">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-        Глобус
+      <button class="mob-nav-btn" data-action="overview">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        ${T('Overview','Обзор')}
       </button>
-      <button class="mob-nav-btn" data-view="list" id="mnList">
+      <button class="mob-nav-btn" data-action="search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        ${T('Search','Поиск')}
+      </button>
+      <button class="mob-nav-btn is-active" data-action="events">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        Список
+        ${T('Events','События')}
       </button>
-      <button class="mob-nav-btn" data-view="detail" id="mnDetail">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Детали
+      <button class="mob-nav-btn" data-action="subs">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        ${T('Subscribe','Подписка')}
       </button>
     `;
     document.body.appendChild(nav);
+    nav.addEventListener('click', e=>{
+      const btn = e.target.closest('.mob-nav-btn'); if(!btn) return;
+      setMobTab(btn.dataset.action);
+    });
 
-    // Bottom sheet
+    // ── Events sheet ──
     const sheet = document.createElement('div');
     sheet.id = 'mobSheet';
-    sheet.className = 'mob-sheet';
+    sheet.className = 'mob-sheet mob-active';
     sheet.innerHTML = `
-      <div class="mob-sheet-handle" id="mobSheetHandle">
-        <span class="mob-sheet-title">Вспышки</span>
-        <span class="mob-sheet-count" id="mobSheetCount">12</span>
+      <div class="mob-sheet-hd">
+        <span class="mob-sheet-title">${T('Outbreaks','События')}</span>
+        <span class="mob-sheet-count" id="mobSheetCount">0</span>
       </div>
       <div class="mob-sheet-list" id="mobSheetList"></div>
     `;
     document.body.appendChild(sheet);
 
-    // Sheet toggle
-    document.getElementById('mobSheetHandle').addEventListener('click', ()=>{
-      sheet.classList.toggle('expanded');
-    });
+    // ── Subscribe overlay ──
+    const subsOv = document.createElement('div');
+    subsOv.className = 'mob-subs-overlay';
+    subsOv.innerHTML = `
+      <div style="padding:24px 20px 16px">
+        <div style="font-size:20px;font-weight:800;letter-spacing:-0.025em;margin-bottom:6px">${T('Get Alerts','Оповещения')}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:24px">${T('Subscribe to weekly digests and critical outbreak alerts for the countries you follow.','Подписывайтесь на еженедельные дайджесты и критические алерты по нужным странам.')}</div>
+        <form id="mobSubForm" style="display:flex;flex-direction:column;gap:10px">
+          <input type="email" id="mobSubEmail" placeholder="your@email.com"
+            style="height:48px;padding:0 16px;border:1.5px solid var(--line);border-radius:var(--r-pill);font:inherit;font-size:15px;color:var(--ink);background:#fff;outline:none">
+          <button type="submit" id="mobSubBtn"
+            style="height:48px;background:linear-gradient(180deg,#C92A2A,#8B1A1A);color:#fff;border:none;border-radius:var(--r-pill);font:inherit;font-size:15px;font-weight:700;cursor:pointer">
+            ${T('Subscribe','Подписаться')}
+          </button>
+          <div style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:2px">
+            ${T('Critical alerts only · Unsubscribe anytime','Только критические алерты · Отписка в любой момент')}
+          </div>
+        </form>
+        <div id="mobSubOk" style="display:none;margin-top:16px;padding:14px;background:rgba(25,164,99,0.1);border:1px solid rgba(25,164,99,0.22);border-radius:var(--r-md);color:#0c7a47;font-size:13.5px;font-weight:600;text-align:center">
+          ${T('✓ Check your inbox to confirm','✓ Проверьте почту для подтверждения')}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(subsOv);
 
-    // Nav switching
-    nav.addEventListener('click', e=>{
-      const btn = e.target.closest('.mob-nav-btn'); if(!btn) return;
-      nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      const view = btn.dataset.view;
-
-      const panel = document.getElementById('panel');
-      const mSheet = document.getElementById('mobSheet');
-
-      if(view === 'globe'){
-        if(panel) panel.classList.remove('mob-open');
-        if(mSheet){ mSheet.classList.remove('expanded','hidden'); }
-      } else if(view === 'list'){
-        if(panel) panel.classList.remove('mob-open');
-        if(mSheet){ mSheet.classList.add('expanded'); mSheet.classList.remove('hidden'); }
-      } else if(view === 'detail'){
-        if(panel) panel.classList.add('mob-open');
-        if(mSheet) mSheet.classList.add('hidden');
+    document.getElementById('mobSubForm')?.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const btn = document.getElementById('mobSubBtn');
+      const email = document.getElementById('mobSubEmail')?.value;
+      if(!email) return;
+      btn.disabled = true; btn.textContent = '…';
+      try{
+        await fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, country: 'global', lang: LANG_MOB }) });
+        document.getElementById('mobSubForm').style.display = 'none';
+        document.getElementById('mobSubOk').style.display = 'block';
+      } catch(_){
+        btn.disabled = false; btn.textContent = T('Subscribe','Подписаться');
       }
     });
 
-    // Sync sheet list with outbreak list
+    // ── Panel back button ──
+    document.getElementById('mobPanelBack')?.addEventListener('click', ()=>{
+      setMobTab('events');
+    });
+
     syncSheetList();
   }
 
@@ -1977,43 +2168,46 @@
     const cnt  = document.getElementById('mobSheetCount');
     if(!src || !dest) return;
     dest.innerHTML = src.innerHTML;
-    if(cnt) cnt.textContent = src.querySelectorAll('.out-row').length;
-    // wire clicks
-    dest.querySelectorAll('.out-row').forEach(el=>{
+    const items = src.querySelectorAll('[data-id]');
+    if(cnt) cnt.textContent = items.length;
+    dest.querySelectorAll('[data-id]').forEach(el=>{
       el.addEventListener('click', ()=>{
-        // mirror click to main list
         const mainRow = src.querySelector(`[data-id="${el.dataset.id}"]`);
         if(mainRow) mainRow.click();
-        // switch to detail view
-        const nav = document.getElementById('mobNav');
-        if(nav){
-          nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
-          const detBtn = nav.querySelector('[data-view="detail"]');
-          if(detBtn) detBtn.classList.add('is-active');
-        }
-        const panel = document.getElementById('panel');
-        const mSheet = document.getElementById('mobSheet');
-        if(panel) panel.classList.add('mob-open');
-        if(mSheet) mSheet.classList.add('hidden');
+        setMobTab('detail');
       });
     });
   }
 
-  // Run after globe.js populates the list
   window.addEventListener('load', ()=>{
     if(isMob()){
       injectMobileUI();
-      // re-sync when list updates
       const obs = new MutationObserver(()=>{ syncSheetList(); });
       const list = document.getElementById('list');
       if(list) obs.observe(list, {childList:true, subtree:true});
     }
   });
 
-  window.addEventListener('resize', ()=>{
-    if(isMob()) injectMobileUI();
-  });
+  window.addEventListener('resize', ()=>{ if(isMob()) injectMobileUI(); });
 })();
+</script>
+
+<!-- Mobile search overlay (full-screen) -->
+<div id="mobSearchOverlay" style="position:fixed;left:0;right:0;z-index:250;">
+  <div class="mob-search-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.45"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="mobSearchInput" placeholder="Поиск страны, болезни, региона…" autocomplete="off"
+      oninput="var d=document.getElementById('searchInput');if(d){d.value=this.value;d.dispatchEvent(new Event('input',{bubbles:true}));}">
+    <button id="mobSearchClose" onclick="(function(){var o=document.getElementById('mobSearchOverlay');if(o)o.classList.remove('mob-active');var n=document.getElementById('mobNav');if(n){n.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));var ev=n.querySelector('[data-action=\"events\"]');if(ev)ev.classList.add('is-active');}var mi=document.getElementById('mobSearchInput');if(mi)mi.value='';var si=document.getElementById('searchInput');if(si)si.value='';})()" style="background:none;border:0;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;padding:0 2px">✕</button>
+  </div>
+  <div class="mob-search-results" id="mobSearchResults"></div>
+</div>
+
+<script>
+// Events bar collapse toggle
+document.getElementById('eventsToggle')?.addEventListener('click', ()=>{
+  document.getElementById('eventsBar')?.classList.toggle('collapsed');
+});
 </script>
 <script src="/globe.js"></script>
 <script>
