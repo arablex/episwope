@@ -76,7 +76,11 @@ export default async (req) => {
     const lang = sub.lang || 'en';
     try {
       const { subject, html, text } = renderAlertEmail({ events: newEvs, lang });
-      await sendEmail({ to: sub.email, subject, html, text });
+      const origin = new URL(req.url).origin;
+      const listUnsubscribeUrl = sub.unsubToken
+        ? `${origin}/api/unsubscribe?t=${sub.unsubToken}`
+        : undefined;
+      await sendEmail({ to: sub.email, subject, html, text, listUnsubscribeUrl });
       notified++;
 
       /* Mark events as alerted so we don't re-notify */

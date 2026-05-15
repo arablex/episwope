@@ -63,7 +63,7 @@ export async function handleSubscribe(input, deps) {
       unsubUrl,
       lang: rec.lang,
     });
-    await deps.sendEmail({ to: rec.email, subject, html, text });
+    await deps.sendEmail({ to: rec.email, subject, html, text, listUnsubscribeUrl: unsubUrl });
   }
 
   return { status: 200, body: { ok: true } };
