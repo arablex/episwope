@@ -31,7 +31,7 @@ import urllib.request, urllib.error, urllib.parse
 # ---------------------------------------------------------------------------
 
 MAX_EVENT_AGE_DAYS = 90   # skip events older than this
-MAX_EVENTS         = 80   # cap total output
+MAX_EVENTS         = 200  # cap total output (was 80 — starved GDELT/epidemics)
 MAX_PER_FEED       = 20
 
 OUTPUT_DIR = Path(__file__).parent.parent / "public"
@@ -1285,7 +1285,12 @@ def fetch_eonet() -> list:
             "link":    (e.get("sources") or [{}])[0].get("url") or e.get("link", "https://eonet.gsfc.nasa.gov/"),
             "date":    (g.get("date") or "")[:10],
         })
-    print(f"  → {len(out)} EONET open events", flush=True)
+    # Cap EONET — dozens of wildfires/storms otherwise crowd out epidemic
+    # signal. Keep the most severe, then most recent.
+    _sord = {"critical": 3, "alert": 2, "warning": 1}
+    out.sort(key=lambda x: (_sord.get(x["severity"], 0), x.get("date", "")), reverse=True)
+    out = out[:20]
+    print(f"  → {len(out)} EONET open events (capped from raw)", flush=True)
     return out
 
 # ---------------------------------------------------------------------------
