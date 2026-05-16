@@ -1300,7 +1300,7 @@ async function buildRiskReport(country, purpose){
           <div style="display:flex;align-items:center;gap:10px">
             <span style="width:118px;font-size:12px;font-weight:600;color:#0F0E0C;flex-shrink:0">${p.l}${p.note?` <span style="color:#807E76;font-weight:400">· ${p.note}</span>`:''}</span>
             <span style="flex:1;height:7px;background:#F2F0E8;border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
-            <span style="width:44px;text-align:right;font-size:12px;font-weight:700;color:#0F0E0C;font-variant-numeric:tabular-nums">${p.v}/${p.max}</span>
+            <span style="width:42px;text-align:right;font-size:12.5px;font-weight:800;color:${p.c};font-variant-numeric:tabular-nums">${Math.round(pct)}%</span>
           </div>
           <div style="font-size:10.5px;color:#807E76;margin:3px 0 0 0;line-height:1.4">${p.desc||''}</div>
         </div>`;
