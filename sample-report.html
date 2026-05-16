@@ -4,632 +4,244 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EpiScope — Country Risk Report (Sample)</title>
+  <meta name="robots" content="noindex">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F4F2EE;
+      color:#0F0E0C;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+    svg{display:block}
 
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #F4F2EE;
-      color: #0F0E0C;
-      font-size: 14px;
-      line-height: 1.5;
-    }
+    .sample-banner{background:#0F0E0C;color:#fff;text-align:center;padding:11px 20px;
+      font-size:12.5px;font-weight:600;letter-spacing:.01em;position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .sample-banner svg{opacity:.85}
+    .sample-banner a{color:#F5A623;text-decoration:none;font-weight:700}
+    .sample-banner a:hover{text-decoration:underline}
 
-    .sample-banner {
-      background: #E8590C;
-      color: white;
-      text-align: center;
-      padding: 11px 20px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .sample-banner a {
-      color: white;
-      text-decoration: underline;
-      margin-left: 16px;
-      opacity: 0.9;
-    }
+    .report{max-width:880px;margin:0 auto;padding:30px 20px 70px}
+    .report-header{display:flex;justify-content:space-between;align-items:flex-start;
+      gap:16px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand .mk{width:34px;height:34px;border-radius:9px;
+      background:linear-gradient(150deg,#E8590C,#C92A2A);color:#fff;display:grid;
+      place-items:center;font-weight:900;font-size:16px;letter-spacing:-.03em}
+    .logo{font-size:19px;font-weight:900;letter-spacing:-.035em}
+    .logo span{color:#E8590C}
+    .logo-sub{font-size:10.5px;color:#807E76;font-weight:500;margin-top:1px;letter-spacing:.02em}
+    .report-meta{text-align:right;color:#807E76;font-size:11.5px;line-height:1.85}
+    .report-meta strong{color:#0F0E0C;font-weight:700}
 
-    .report {
-      max-width: 880px;
-      margin: 0 auto;
-      padding: 32px 20px 80px;
-    }
+    .card{background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:24px;margin-bottom:14px}
+    .card-title{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+      color:#B0ADA6;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    .card-title svg{color:#E8590C}
 
-    .report-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 24px;
-    }
+    .country-hero{display:flex;align-items:center;gap:26px;padding:26px;background:#fff;
+      border:1px solid #ECEAE2;border-radius:14px;margin-bottom:14px}
+    .country-info{flex:1;min-width:0}
+    .country-name{font-size:30px;font-weight:900;letter-spacing:-.03em;margin-bottom:3px;
+      filter:blur(9px);user-select:none}
+    .country-region{color:#807E76;font-size:13px;margin-bottom:14px;filter:blur(6px);user-select:none}
+    .badge-row{display:flex;gap:6px;flex-wrap:wrap}
+    .sev-badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:10px;
+      font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .sev-badge.critical{background:#FDEDEC;color:#C0392B}
+    .sev-badge.alert{background:#FEF0EC;color:#D35400}
+    .sev-badge.warning{background:#FEF9E7;color:#B7950B}
+    .sev-badge.monitoring{background:#EBF5FB;color:#2471A3}
+    .hero-note{margin-top:14px;font-size:11.5px;color:#B0ADA6;line-height:1.55}
+    .gauge-wrap{flex-shrink:0}
+    .flag-ph{flex-shrink:0;width:64px;height:46px;border-radius:7px;background:#ECEAE2;
+      filter:blur(7px);user-select:none}
 
-    .logo {
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      color: #0F0E0C;
-    }
-    .logo span { color: #E8590C; }
-    .logo-sub {
-      font-size: 11px;
-      color: #807E76;
-      font-weight: 500;
-      margin-top: 2px;
-      letter-spacing: 0.02em;
-    }
+    .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    .metric-card{background:#fff;border:1px solid #ECEAE2;border-radius:12px;padding:16px 18px}
+    .metric-label{font-size:10px;color:#B0ADA6;font-weight:700;margin-bottom:7px;
+      text-transform:uppercase;letter-spacing:.07em}
+    .metric-value{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1;margin-bottom:5px}
+    .metric-sub{font-size:11px;color:#B0ADA6}
+    .trend-up{color:#C0392B}.trend-down{color:#27AE60}.trend-flat{color:#95A5A6}
 
-    .report-meta {
-      text-align: right;
-      color: #807E76;
-      font-size: 12px;
-      line-height: 1.9;
-    }
-    .report-meta strong { color: #0F0E0C; font-weight: 700; }
+    .ai-summary{position:relative;min-height:120px}
+    .ai-text{font-size:14px;line-height:1.78;color:#0F0E0C;filter:blur(5px);user-select:none}
+    .lock-overlay{position:absolute;inset:-4px;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:8px;
+      background:rgba(255,255,255,.55);backdrop-filter:blur(2px);border-radius:10px}
+    .lock-ic{width:34px;height:34px;border-radius:50%;background:#0F0E0C;color:#fff;
+      display:grid;place-items:center}
+    .lock-label{font-size:12.5px;font-weight:600;color:#0F0E0C}
+    .lock-cta{display:inline-flex;align-items:center;gap:6px;background:#E8590C;color:#fff;
+      padding:8px 18px;border-radius:100px;font-size:12.5px;font-weight:700;text-decoration:none}
+    .lock-cta:hover{background:#d04f0a}
 
-    .card {
-      background: #fff;
-      border: 1px solid #ECEAE2;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 14px;
-    }
+    table{width:100%;border-collapse:collapse}
+    th{font-size:10px;font-weight:700;color:#B0ADA6;text-align:left;padding:0 12px 10px;
+      border-bottom:1px solid #ECEAE2;text-transform:uppercase;letter-spacing:.07em}
+    td{padding:12px;border-bottom:1px solid #F4F2EE;font-size:13px;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    .disease-name{font-weight:700}
+    .disease-type{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .blurred{filter:blur(5px);user-select:none}
 
-    .card-title {
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: #B0ADA6;
-      margin-bottom: 18px;
-    }
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .two-col .card{margin-bottom:0}
 
-    /* ── Country hero ── */
-    .country-hero {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      padding: 28px;
-      background: #fff;
-      border: 1px solid #ECEAE2;
-      border-radius: 12px;
-      margin-bottom: 14px;
-    }
+    .breakdown-row{margin-bottom:14px}.breakdown-row:last-child{margin-bottom:0}
+    .breakdown-label-row{display:flex;justify-content:space-between;margin-bottom:6px}
+    .breakdown-label{font-size:13px;font-weight:600}
+    .breakdown-score{font-size:13px;font-weight:800}
+    .bar-bg{height:6px;background:#F4F2EE;border-radius:100px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:100px}
 
-    .country-info { flex: 1; }
+    .vacc-group{margin-bottom:16px}.vacc-group:last-child{margin-bottom:0}
+    .vacc-group-label{font-size:10px;font-weight:800;text-transform:uppercase;
+      letter-spacing:.08em;color:#B0ADA6;margin-bottom:8px}
+    .vacc-item{display:flex;align-items:center;gap:10px;padding:8px 0;
+      border-bottom:1px solid #F4F2EE;font-size:13px}
+    .vacc-item:last-child{border-bottom:none}
+    .vacc-item-name{font-weight:600}
+    .vacc-item-note{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .vacc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot-required{background:#C0392B}.dot-recommended{background:#E8590C}.dot-consider{background:#BDC3C7}
+    .vacc-alert{margin-top:14px;padding:11px 13px;background:#FEF9E7;border-radius:9px;
+      font-size:11.5px;color:#7D6608;line-height:1.55;display:flex;gap:9px}
+    .vacc-alert svg{flex-shrink:0;color:#B7950B;margin-top:1px}
 
-    .country-name {
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      margin-bottom: 3px;
-      filter: blur(9px);
-      user-select: none;
-      color: #0F0E0C;
-    }
-    .country-region {
-      color: #807E76;
-      font-size: 13px;
-      margin-bottom: 14px;
-      filter: blur(6px);
-      user-select: none;
-    }
+    .advisory-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:11px 0;border-bottom:1px solid #F4F2EE}
+    .advisory-item:last-child{border-bottom:none}
+    .advisory-org{display:flex;align-items:center;gap:11px;font-size:13px;min-width:0}
+    .org-chip{width:34px;height:34px;border-radius:8px;background:#F4F2EE;color:#807E76;
+      display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0;letter-spacing:-.02em}
+    .advisory-org-name{font-weight:700}
+    .advisory-org-date{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .adv-chip{padding:4px 11px;border-radius:100px;font-size:11px;font-weight:800;
+      flex-shrink:0;white-space:nowrap}
+    .adv-critical{background:#FDEDEC;color:#C0392B}
+    .adv-high{background:#FEF0EC;color:#D35400}
+    .adv-medium{background:#FEF9E7;color:#B7950B}
+    .advisory-note{margin-top:13px;font-size:12px;color:#9b3026;line-height:1.6;
+      padding:11px 13px;background:#FDEDEC;border-radius:9px}
 
-    .badge-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .infra-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .infra-item{padding:14px 15px;background:#F9F8F5;border-radius:10px}
+    .infra-label{font-size:11px;color:#B0ADA6;margin-bottom:6px}
+    .infra-value{font-size:20px;font-weight:900;letter-spacing:-.02em}
+    .infra-sub{font-size:11px;color:#B0ADA6;margin-top:3px}
 
-    .sev-badge {
-      display: inline-block;
-      padding: 3px 9px;
-      border-radius: 5px;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .sev-badge.critical { background: #FDEDEC; color: #C0392B; }
-    .sev-badge.alert    { background: #FEF0EC; color: #D35400; }
-    .sev-badge.warning  { background: #FEF9E7; color: #B7950B; }
-    .sev-badge.monitoring { background: #EBF5FB; color: #2471A3; }
+    .nearby-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .nearby-item{padding:13px 15px;background:#F9F8F5;border-radius:10px;display:flex;
+      justify-content:space-between;align-items:center}
+    .nearby-name{font-size:13px;font-weight:600;filter:blur(5px);user-select:none}
+    .nearby-role{font-size:11px;color:#B0ADA6;margin-top:2px}
+    .nearby-score{font-size:18px;font-weight:900;letter-spacing:-.02em}
 
-    .hero-note {
-      margin-top: 14px;
-      font-size: 11.5px;
-      color: #B0ADA6;
-      line-height: 1.55;
-    }
+    .checklist-item{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #F4F2EE;
+      font-size:13px;line-height:1.55}
+    .checklist-item:last-child{border-bottom:none}
+    .check-icon{color:#27AE60;flex-shrink:0;margin-top:1px}
 
-    /* ── Gauge SVG ── */
-    .gauge-wrap { flex-shrink: 0; }
+    .contacts-wrap{position:relative}
+    .contact-item{display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:11px 0;border-bottom:1px solid #F4F2EE}
+    .contact-item:last-child{border-bottom:none}
+    .contact-label{font-size:13px;font-weight:600}
+    .contact-value{font-size:13px;color:#807E76}
+    .contact-value.hidden{filter:blur(5px);user-select:none}
 
-    /* ── Flag ── */
-    .flag-placeholder {
-      flex-shrink: 0;
-      width: 68px; height: 68px;
-      border-radius: 8px;
-      background: #ECEAE2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 38px;
-      filter: blur(7px);
-      user-select: none;
-    }
+    .sources-row{display:flex;gap:7px;flex-wrap:wrap}
+    .source-badge{padding:5px 11px;background:#F4F2EE;border-radius:100px;font-size:11px;
+      font-weight:700;color:#807E76}
+    .methodology{margin-top:13px;font-size:12px;color:#B0ADA6;line-height:1.65}
 
-    /* ── Metrics row ── */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .metric-card {
-      background: #fff;
-      border: 1px solid #ECEAE2;
-      border-radius: 10px;
-      padding: 16px 18px;
-    }
-    .metric-label {
-      font-size: 10.5px;
-      color: #B0ADA6;
-      font-weight: 600;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-    .metric-value {
-      font-size: 27px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 5px;
-    }
-    .metric-sub { font-size: 11px; color: #B0ADA6; }
+    .report-footer{text-align:center;padding:46px 24px;background:#0F0E0C;color:#fff;
+      border-radius:18px;margin-top:22px}
+    .footer-title{font-size:24px;font-weight:900;letter-spacing:-.025em;margin-bottom:10px}
+    .footer-sub{color:rgba(255,255,255,.62);font-size:14px;margin-bottom:30px;max-width:520px;
+      margin-left:auto;margin-right:auto;line-height:1.6}
+    .price-options{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .price-option{background:#1b1916;border:1.5px solid #2c2925;border-radius:14px;
+      padding:20px 26px;text-align:center;min-width:158px}
+    .price-option.featured{border-color:#E8590C;background:#241a13}
+    .price-count{font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:5px;font-weight:600}
+    .price-option.featured .price-count{color:#F5A623}
+    .price-amount{font-size:32px;font-weight:900;letter-spacing:-.035em;margin-bottom:2px}
+    .price-option.featured .price-amount{color:#F5A623}
+    .price-per{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:15px}
+    .buy-btn{display:block;width:100%;background:#E8590C;color:#fff;border:1.5px solid transparent;
+      border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;
+      font-family:inherit;text-decoration:none}
+    .buy-btn:hover{background:#d04f0a}
+    .buy-btn.ghost{background:transparent;color:#fff;border-color:#3a3631}
+    .buy-btn.ghost:hover{border-color:#5a554e}
+    .footer-fine{margin-top:20px;font-size:11.5px;color:rgba(255,255,255,.4)}
 
-    .trend-up   { color: #C0392B; }
-    .trend-down { color: #27AE60; }
-    .trend-flat { color: #95A5A6; }
-
-    /* ── AI Summary ── */
-    .ai-summary { position: relative; min-height: 120px; }
-    .ai-text {
-      font-size: 14px;
-      line-height: 1.78;
-      color: #0F0E0C;
-      filter: blur(5px);
-      user-select: none;
-    }
-    .lock-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: rgba(255,255,255,0.72);
-      border-radius: 8px;
-    }
-    .lock-icon { font-size: 26px; }
-    .lock-label { font-size: 12px; font-weight: 600; color: #0F0E0C; }
-    .lock-cta {
-      display: inline-block;
-      background: #E8590C;
-      color: #fff;
-      padding: 6px 18px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      margin-top: 2px;
-    }
-
-    /* ── Table ── */
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: #B0ADA6;
-      text-align: left;
-      padding: 0 12px 10px;
-      border-bottom: 1px solid #ECEAE2;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-    td {
-      padding: 11px 12px;
-      border-bottom: 1px solid #F4F2EE;
-      font-size: 13px;
-      vertical-align: middle;
-    }
-    tr:last-child td { border-bottom: none; }
-    .disease-name { font-weight: 600; }
-    .disease-type { font-size: 11px; color: #B0ADA6; margin-top: 1px; }
-    .blurred { filter: blur(5px); user-select: none; }
-
-    /* ── Two-col ── */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-    .two-col .card { margin-bottom: 0; }
-
-    /* ── Risk breakdown bars ── */
-    .breakdown-row { margin-bottom: 14px; }
-    .breakdown-row:last-child { margin-bottom: 0; }
-    .breakdown-label-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-    }
-    .breakdown-label { font-size: 13px; font-weight: 500; }
-    .breakdown-score { font-size: 13px; font-weight: 700; }
-    .bar-bg {
-      height: 5px;
-      background: #F4F2EE;
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .bar-fill { height: 100%; border-radius: 100px; }
-
-    /* ── Vaccination ── */
-    .vacc-group { margin-bottom: 14px; }
-    .vacc-group:last-child { margin-bottom: 0; }
-    .vacc-group-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #B0ADA6;
-      margin-bottom: 8px;
-    }
-    .vacc-item {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 0;
-      border-bottom: 1px solid #F4F2EE;
-      font-size: 13px;
-    }
-    .vacc-item:last-child { border-bottom: none; }
-    .vacc-item-info { }
-    .vacc-item-name { font-weight: 500; }
-    .vacc-item-note { font-size: 11px; color: #B0ADA6; }
-    .vacc-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .dot-required    { background: #C0392B; }
-    .dot-recommended { background: #E8590C; }
-    .dot-consider    { background: #BDC3C7; }
-
-    .vacc-alert {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #FEF9E7;
-      border-radius: 8px;
-      font-size: 11.5px;
-      color: #7D6608;
-      line-height: 1.55;
-    }
-
-    /* ── Advisories ── */
-    .advisory-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #F4F2EE;
-    }
-    .advisory-item:last-child { border-bottom: none; }
-    .advisory-org {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 13px;
-    }
-    .advisory-org-name { font-weight: 600; }
-    .advisory-org-date { font-size: 11px; color: #B0ADA6; }
-    .adv-chip {
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .adv-critical { background: #FDEDEC; color: #C0392B; }
-    .adv-high     { background: #FEF0EC; color: #D35400; }
-    .adv-medium   { background: #FEF9E7; color: #B7950B; }
-    .advisory-note {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #807E76;
-      line-height: 1.65;
-      padding: 10px 12px;
-      background: #FDEDEC;
-      border-radius: 8px;
-    }
-
-    /* ── Infrastructure ── */
-    .infra-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .infra-item {
-      padding: 13px 14px;
-      background: #F9F8F5;
-      border-radius: 9px;
-    }
-    .infra-label { font-size: 11px; color: #B0ADA6; margin-bottom: 5px; }
-    .infra-value { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
-    .infra-sub   { font-size: 11px; color: #B0ADA6; margin-top: 2px; }
-
-    /* ── Nearby ── */
-    .nearby-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .nearby-item {
-      padding: 12px 14px;
-      background: #F9F8F5;
-      border-radius: 9px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .nearby-name { font-size: 13px; font-weight: 500; filter: blur(5px); user-select: none; }
-    .nearby-role { font-size: 11px; color: #B0ADA6; margin-top: 2px; }
-    .nearby-score { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
-
-    /* ── Checklist ── */
-    .checklist-item {
-      display: flex;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #F4F2EE;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    .checklist-item:last-child { border-bottom: none; }
-    .check-icon { color: #27AE60; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
-
-    /* ── Emergency contacts ── */
-    .contacts-wrap { position: relative; }
-    .contact-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #F4F2EE;
-    }
-    .contact-item:last-child { border-bottom: none; }
-    .contact-label { font-size: 13px; font-weight: 500; }
-    .contact-value { font-size: 13px; color: #807E76; }
-    .contact-value.hidden { filter: blur(5px); user-select: none; }
-
-    /* ── Sources ── */
-    .sources-row { display: flex; gap: 7px; flex-wrap: wrap; }
-    .source-badge {
-      padding: 4px 10px;
-      background: #F4F2EE;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #807E76;
-    }
-    .methodology {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #B0ADA6;
-      line-height: 1.65;
-    }
-
-    /* ── Pricing CTA ── */
-    .report-footer {
-      text-align: center;
-      padding: 44px 24px;
-      background: #fff;
-      border: 1px solid #ECEAE2;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-    .footer-title {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      margin-bottom: 8px;
-    }
-    .footer-sub { color: #807E76; font-size: 14px; margin-bottom: 28px; }
-    .price-options {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .price-option {
-      border: 1.5px solid #ECEAE2;
-      border-radius: 12px;
-      padding: 18px 26px;
-      text-align: center;
-      min-width: 150px;
-    }
-    .price-option.featured {
-      border-color: #E8590C;
-      background: #FFF8F5;
-    }
-    .price-count { font-size: 12px; color: #807E76; margin-bottom: 4px; font-weight: 500; }
-    .price-option.featured .price-count { color: #E8590C; font-weight: 600; }
-    .price-amount {
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: -0.035em;
-      margin-bottom: 2px;
-    }
-    .price-option.featured .price-amount { color: #E8590C; }
-    .price-per { font-size: 11px; color: #B0ADA6; margin-bottom: 14px; }
-    .buy-btn {
-      display: block;
-      width: 100%;
-      background: #E8590C;
-      color: #fff;
-      border: 1.5px solid transparent;
-      border-radius: 8px;
-      padding: 9px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .buy-btn.ghost {
-      background: transparent;
-      color: #0F0E0C;
-      border-color: #ECEAE2;
-    }
-    .footer-fine {
-      margin-top: 18px;
-      font-size: 12px;
-      color: #B0ADA6;
-    }
-
-    hr { border: none; border-top: 1px solid #ECEAE2; margin: 18px 0; }
-
-    /* ── Mobile ── */
-    @media (max-width: 640px) {
-      .sample-banner {
-        font-size: 12px;
-        padding: 9px 12px;
-        line-height: 1.4;
-      }
-      .sample-banner a { display: block; margin: 4px 0 0; }
-
-      .report { padding: 16px 12px 60px; }
-
-      .report-header {
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 16px;
-      }
-      .report-meta { text-align: left; }
-
-      .country-hero {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 18px;
-      }
-      .gauge-wrap { align-self: center; }
-      .flag-placeholder { display: none; }
-      .country-name { font-size: 22px; }
-
-      .metrics-row {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-      .metric-value { font-size: 22px; }
-
-      .two-col {
-        grid-template-columns: 1fr;
-      }
-
-      .card { padding: 16px; }
-
-      /* Table horizontal scroll */
-      .card table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-      .infra-grid { grid-template-columns: 1fr 1fr; }
-
-      .nearby-grid { grid-template-columns: 1fr; gap: 8px; }
-
-      .advisory-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-
-      .contact-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 3px;
-      }
-      .contact-value { font-size: 13px; }
-
-      .report-footer { padding: 24px 16px; }
-      .footer-title { font-size: 18px; }
-      .price-options { flex-direction: column; }
-      .price-option { min-width: unset; width: 100%; padding: 14px 18px; }
-      .price-amount { font-size: 26px; }
+    @media(max-width:640px){
+      .sample-banner{font-size:11.5px;padding:10px 14px}
+      .report{padding:16px 12px 56px}
+      .report-header{flex-direction:column;gap:12px;margin-bottom:16px}
+      .report-meta{text-align:left}
+      .country-hero{flex-direction:column;align-items:flex-start;gap:18px;padding:18px}
+      .gauge-wrap{align-self:center}
+      .flag-ph{display:none}
+      .country-name{font-size:23px}
+      .metrics-row{grid-template-columns:1fr 1fr;gap:8px}
+      .metric-value{font-size:22px}
+      .two-col{grid-template-columns:1fr}
+      .card{padding:17px}
+      .card table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .nearby-grid{grid-template-columns:1fr;gap:8px}
+      .advisory-item{flex-direction:column;align-items:flex-start;gap:7px}
+      .contact-item{flex-direction:column;align-items:flex-start;gap:3px}
+      .report-footer{padding:26px 16px}
+      .footer-title{font-size:19px}
+      .price-options{flex-direction:column}
+      .price-option{min-width:unset;width:100%}
     }
   </style>
 </head>
 <body>
 
 <div class="sample-banner">
-  Демо-образец — часть данных скрыта &nbsp;·&nbsp; Полный отчёт разблокируется после оплаты
-  <a href="#pricing">Купить отчёт ↓</a>
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+  Sample preview — some data is hidden. Full report unlocks after payment.
+  <a href="#pricing">Get the report ↓</a>
 </div>
 
 <div class="report">
 
-  <!-- ── Header ── -->
   <div class="report-header">
-    <div>
-      <div class="logo">Epi<span>Scope</span></div>
-      <div class="logo-sub">Global Disease Surveillance</div>
+    <div class="brand">
+      <span class="mk">E</span>
+      <div>
+        <div class="logo">Epi<span>Scope</span></div>
+        <div class="logo-sub">Global Disease Surveillance</div>
+      </div>
     </div>
     <div class="report-meta">
       <strong>Country Risk Report</strong><br>
       Generated: May 16, 2026 · 09:42 UTC<br>
       Data updated: 2 hours ago<br>
-      <span style="color:#B0ADA6;">Report ID: ESC-SAMPLE</span>
+      <span style="color:#B0ADA6">Report ID: ESC-SAMPLE</span>
     </div>
   </div>
 
-  <!-- ── Country hero ── -->
   <div class="country-hero">
-
-    <!-- Gauge -->
     <div class="gauge-wrap">
       <svg width="138" height="138" viewBox="0 0 138 138">
-        <!-- Background track (270°) -->
-        <circle cx="69" cy="69" r="52"
-          fill="none"
-          stroke="#F0EEE9"
-          stroke-width="10"
-          stroke-linecap="round"
-          stroke-dasharray="245.0 81.7"
-          transform="rotate(135 69 69)"/>
-        <!-- Score arc (67% × 270° = 181°) -->
-        <circle cx="69" cy="69" r="52"
-          fill="none"
-          stroke="#E8590C"
-          stroke-width="10"
-          stroke-linecap="round"
-          stroke-dasharray="164.1 162.6"
-          transform="rotate(135 69 69)"/>
-        <!-- Score number -->
-        <text x="69" y="64" text-anchor="middle"
-          font-family="Inter,sans-serif"
-          font-weight="900" font-size="34"
-          fill="#0F0E0C" letter-spacing="-1.5">67</text>
-        <text x="69" y="80" text-anchor="middle"
-          font-family="Inter,sans-serif"
-          font-weight="500" font-size="10"
-          fill="#B0ADA6">из 100</text>
-        <text x="69" y="100" text-anchor="middle"
-          font-family="Inter,sans-serif"
-          font-weight="700" font-size="11"
-          fill="#C0392B" letter-spacing="0.05em">HIGH RISK</text>
+        <circle cx="69" cy="69" r="52" fill="none" stroke="#F0EEE9" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="245 81.7" transform="rotate(135 69 69)"/>
+        <circle cx="69" cy="69" r="52" fill="none" stroke="#E8590C" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="164 162.6" transform="rotate(135 69 69)"/>
+        <text x="69" y="64" text-anchor="middle" font-family="Inter,sans-serif"
+          font-weight="900" font-size="34" fill="#0F0E0C" letter-spacing="-1.5">67</text>
+        <text x="69" y="80" text-anchor="middle" font-family="Inter,sans-serif"
+          font-weight="500" font-size="10" fill="#B0ADA6">/ 100</text>
+        <text x="69" y="100" text-anchor="middle" font-family="Inter,sans-serif"
+          font-weight="800" font-size="11" fill="#C0392B" letter-spacing="0.05em">HIGH RISK</text>
       </svg>
     </div>
-
-    <!-- Country info -->
     <div class="country-info">
       <div class="country-name">██████████ ███████</div>
       <div class="country-region">Sub-Saharan Africa · Central Region</div>
@@ -643,532 +255,200 @@
         environmental hazards (20%) · infrastructure (15%)
       </div>
     </div>
-
-    <!-- Flag -->
-    <div class="flag-placeholder">🏳</div>
-
+    <div class="flag-ph"></div>
   </div>
 
-  <!-- ── Key metrics ── -->
   <div class="metrics-row">
     <div class="metric-card">
       <div class="metric-label">Active Outbreaks</div>
-      <div class="metric-value" style="color:#C0392B;">6</div>
+      <div class="metric-value" style="color:#C0392B">6</div>
       <div class="metric-sub">3 critical · 2 alert · 1 warning</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Estimated Cases</div>
       <div class="metric-value blurred">12,840</div>
-      <div class="metric-sub trend-up">↑ +18% за 30 дней</div>
+      <div class="metric-sub trend-up">↑ +18% in 30 days</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Healthcare Index</div>
-      <div class="metric-value" style="color:#E17055;">34<span style="font-size:14px;font-weight:500;color:#B0ADA6;">/100</span></div>
+      <div class="metric-value" style="color:#E17055">34<span style="font-size:14px;font-weight:600;color:#B0ADA6">/100</span></div>
       <div class="metric-sub">Low capacity</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Risk Trend (30d)</div>
-      <div class="metric-value trend-up" style="font-size:22px;">↑ +8 pts</div>
+      <div class="metric-value trend-up" style="font-size:22px">↑ +8 pts</div>
       <div class="metric-sub">Rapidly deteriorating</div>
     </div>
   </div>
 
-  <!-- ── AI Executive Summary ── -->
   <div class="card">
-    <div class="card-title">AI Executive Summary</div>
+    <div class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2zM9 22h6"/></svg>AI Executive Summary</div>
     <div class="ai-summary">
       <div class="ai-text">
-        The country is experiencing a compounding multi-pathogen emergency. Concurrent Ebola and Mpox outbreaks in the northern provinces are accelerating, driven by low vaccination coverage and overwhelmed contact-tracing capacity. A severe cholera surge across displacement camps in the south adds further strain to a healthcare system operating below 35% capacity. The US State Department and UK FCDO have both raised advisories to their highest travel warning levels. Yellow Fever vaccination is mandatory for entry; travelers should additionally secure coverage for Hepatitis A/B, Typhoid, Meningococcal, and Cholera. Medical evacuation is available via regional hubs with 6–12 hour average response time. Organizations with on-ground personnel should activate Duty of Care protocols immediately and establish daily check-in procedures with local security coordinators.
+        The country is experiencing a compounding multi-pathogen emergency. Concurrent Ebola and Mpox outbreaks in the northern provinces are accelerating, driven by low vaccination coverage and overwhelmed contact-tracing capacity. A severe cholera surge across displacement camps in the south adds further strain to a healthcare system operating below 35% capacity. The US State Department and UK FCDO have both raised advisories to their highest travel warning levels. Yellow Fever vaccination is mandatory for entry; travelers should additionally secure coverage for Hepatitis A/B, Typhoid, Meningococcal, and Cholera. Medical evacuation is available via regional hubs with 6–12 hour average response time. Organizations with on-ground personnel should activate Duty of Care protocols immediately.
       </div>
       <div class="lock-overlay">
-        <div class="lock-icon">🔒</div>
-        <div class="lock-label">Полный AI-анализ скрыт в образце</div>
-        <a href="#pricing" class="lock-cta">Разблокировать за $5</a>
+        <div class="lock-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="lock-label">Full AI analysis hidden in sample</div>
+        <a href="#pricing" class="lock-cta">Unlock for $5 →</a>
       </div>
     </div>
   </div>
 
-  <!-- ── Active Outbreaks ── -->
   <div class="card">
-    <div class="card-title">Active Outbreaks</div>
+    <div class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Active Outbreaks</div>
     <table>
-      <thead>
-        <tr>
-          <th>Disease</th>
-          <th>Severity</th>
-          <th>Est. Cases</th>
-          <th>7-day Trend</th>
-          <th>Region</th>
-          <th>Source</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Disease</th><th>Severity</th><th>Est. Cases</th><th>7-day Trend</th><th>Region</th><th>Source</th></tr></thead>
       <tbody>
-        <tr>
-          <td>
-            <div class="disease-name">Ebola (EVD)</div>
-            <div class="disease-type">Hemorrhagic fever · Direct contact</div>
-          </td>
-          <td><span class="sev-badge critical">Critical</span></td>
-          <td><span class="blurred">2,341</span></td>
-          <td><span class="trend-up" style="font-weight:700;">↑ +23%</span></td>
-          <td>Northern Province</td>
-          <td><span class="source-badge">WHO</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="disease-name">Mpox (Clade I)</div>
-            <div class="disease-type">Viral zoonosis · Skin / respiratory</div>
-          </td>
-          <td><span class="sev-badge critical">Critical</span></td>
-          <td><span class="blurred">5,102</span></td>
-          <td><span class="trend-up" style="font-weight:700;">↑ +9%</span></td>
-          <td>Central District</td>
-          <td><span class="source-badge">ProMED</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="disease-name">Cholera</div>
-            <div class="disease-type">Waterborne · IDP camp clusters</div>
-          </td>
-          <td><span class="sev-badge critical">Critical</span></td>
-          <td><span class="blurred">4,871</span></td>
-          <td><span class="trend-flat" style="font-weight:700;">→ +2%</span></td>
-          <td>South / IDP Camps</td>
-          <td><span class="source-badge">ECDC</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="disease-name">Yellow Fever</div>
-            <div class="disease-type">Arboviral · Aedes mosquito</div>
-          </td>
-          <td><span class="sev-badge alert">Alert</span></td>
-          <td><span class="blurred">318</span></td>
-          <td><span class="trend-down" style="font-weight:700;">↓ −5%</span></td>
-          <td>Eastern Border</td>
-          <td><span class="source-badge">WHO</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="disease-name">Malaria (P. falciparum)</div>
-            <div class="disease-type">Parasitic · Anopheles mosquito</div>
-          </td>
-          <td><span class="sev-badge alert">Alert</span></td>
-          <td><span class="blurred">—</span></td>
-          <td><span class="trend-up" style="font-weight:700;">↑ Seasonal peak</span></td>
-          <td>Nationwide</td>
-          <td><span class="source-badge">GDACS</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="disease-name">Meningitis (Men A)</div>
-            <div class="disease-type">Bacterial · Respiratory droplets</div>
-          </td>
-          <td><span class="sev-badge warning">Warning</span></td>
-          <td><span class="blurred">208</span></td>
-          <td><span class="trend-down" style="font-weight:700;">↓ −12%</span></td>
-          <td>Sahel Belt</td>
-          <td><span class="source-badge">ProMED</span></td>
-        </tr>
+        <tr><td><div class="disease-name">Ebola (EVD)</div><div class="disease-type">Hemorrhagic fever · Direct contact</div></td><td><span class="sev-badge critical">Critical</span></td><td><span class="blurred">2,341</span></td><td><span class="trend-up" style="font-weight:700">↑ +23%</span></td><td>Northern Province</td><td><span class="source-badge">WHO</span></td></tr>
+        <tr><td><div class="disease-name">Mpox (Clade I)</div><div class="disease-type">Viral zoonosis · Skin / respiratory</div></td><td><span class="sev-badge critical">Critical</span></td><td><span class="blurred">5,102</span></td><td><span class="trend-up" style="font-weight:700">↑ +9%</span></td><td>Central District</td><td><span class="source-badge">ECDC</span></td></tr>
+        <tr><td><div class="disease-name">Cholera</div><div class="disease-type">Waterborne · IDP camp clusters</div></td><td><span class="sev-badge critical">Critical</span></td><td><span class="blurred">4,871</span></td><td><span class="trend-flat" style="font-weight:700">→ +2%</span></td><td>South / IDP Camps</td><td><span class="source-badge">ECDC</span></td></tr>
+        <tr><td><div class="disease-name">Yellow Fever</div><div class="disease-type">Arboviral · Aedes mosquito</div></td><td><span class="sev-badge alert">Alert</span></td><td><span class="blurred">318</span></td><td><span class="trend-down" style="font-weight:700">↓ −5%</span></td><td>Eastern Border</td><td><span class="source-badge">WHO</span></td></tr>
+        <tr><td><div class="disease-name">Malaria (P. falciparum)</div><div class="disease-type">Parasitic · Anopheles mosquito</div></td><td><span class="sev-badge alert">Alert</span></td><td><span class="blurred">—</span></td><td><span class="trend-up" style="font-weight:700">↑ Seasonal peak</span></td><td>Nationwide</td><td><span class="source-badge">GDACS</span></td></tr>
+        <tr><td><div class="disease-name">Meningitis (Men A)</div><div class="disease-type">Bacterial · Respiratory droplets</div></td><td><span class="sev-badge warning">Warning</span></td><td><span class="blurred">208</span></td><td><span class="trend-down" style="font-weight:700">↓ −12%</span></td><td>Sahel Belt</td><td><span class="source-badge">CDC</span></td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- ── Risk Breakdown + 90-day Chart ── -->
   <div class="two-col">
-
     <div class="card">
       <div class="card-title">Risk Score Breakdown</div>
-
-      <div class="breakdown-row">
-        <div class="breakdown-label-row">
-          <span class="breakdown-label">Epidemic Activity</span>
-          <span class="breakdown-score" style="color:#C0392B;">78/100</span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:78%;background:#C0392B;"></div></div>
-      </div>
-
-      <div class="breakdown-row">
-        <div class="breakdown-label-row">
-          <span class="breakdown-label">Healthcare Capacity</span>
-          <span class="breakdown-score" style="color:#D35400;">34/100</span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:34%;background:#E8590C;"></div></div>
-      </div>
-
-      <div class="breakdown-row">
-        <div class="breakdown-label-row">
-          <span class="breakdown-label">Environmental Hazards</span>
-          <span class="breakdown-score" style="color:#B7950B;">52/100</span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:52%;background:#F39C12;"></div></div>
-      </div>
-
-      <div class="breakdown-row">
-        <div class="breakdown-label-row">
-          <span class="breakdown-label">Infrastructure</span>
-          <span class="breakdown-score" style="color:#95A5A6;">29/100</span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:29%;background:#BDC3C7;"></div></div>
-      </div>
-
-      <div class="breakdown-row">
-        <div class="breakdown-label-row">
-          <span class="breakdown-label">Cross-Border Spread Risk</span>
-          <span class="breakdown-score" style="color:#D35400;">61/100</span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:61%;background:#E8590C;"></div></div>
-      </div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Epidemic Activity</span><span class="breakdown-score" style="color:#C0392B">78/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:78%;background:#C0392B"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Healthcare Capacity</span><span class="breakdown-score" style="color:#D35400">34/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:34%;background:#E8590C"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Environmental Hazards</span><span class="breakdown-score" style="color:#B7950B">52/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:52%;background:#F39C12"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Infrastructure</span><span class="breakdown-score" style="color:#95A5A6">29/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:29%;background:#BDC3C7"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Cross-Border Spread</span><span class="breakdown-score" style="color:#D35400">61/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:61%;background:#E8590C"></div></div></div>
     </div>
-
-    <!-- 90-day chart -->
     <div class="card">
       <div class="card-title">90-Day Risk Trend</div>
-      <svg width="100%" viewBox="0 0 340 158" preserveAspectRatio="none" style="display:block;">
-        <!-- Grid -->
-        <line x1="0" y1="16"  x2="340" y2="16"  stroke="#F0EEE9" stroke-width="1"/>
-        <line x1="0" y1="56"  x2="340" y2="56"  stroke="#F0EEE9" stroke-width="1"/>
-        <line x1="0" y1="96"  x2="340" y2="96"  stroke="#F0EEE9" stroke-width="1"/>
-        <line x1="0" y1="136" x2="340" y2="136" stroke="#F0EEE9" stroke-width="1"/>
-        <!-- Y labels -->
-        <text x="2" y="14"  font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">100</text>
-        <text x="2" y="54"  font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">75</text>
-        <text x="2" y="94"  font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">50</text>
+      <svg width="100%" viewBox="0 0 340 158" preserveAspectRatio="none" style="display:block">
+        <line x1="0" y1="16" x2="340" y2="16" stroke="#F0EEE9"/><line x1="0" y1="56" x2="340" y2="56" stroke="#F0EEE9"/><line x1="0" y1="96" x2="340" y2="96" stroke="#F0EEE9"/><line x1="0" y1="136" x2="340" y2="136" stroke="#F0EEE9"/>
+        <text x="2" y="14" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">100</text>
+        <text x="2" y="54" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">75</text>
+        <text x="2" y="94" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">50</text>
         <text x="2" y="134" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">25</text>
-        <!-- Area fill -->
-        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110
-                 C168,106 188,94 208,84 C224,76 238,80 258,70
-                 C275,62 295,54 315,50 L315,158 L22,158 Z"
-              fill="rgba(232,89,12,0.07)"/>
-        <!-- Line -->
-        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110
-                 C168,106 188,94 208,84 C224,76 238,80 258,70
-                 C275,62 295,54 315,50"
-              fill="none" stroke="#E8590C" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Start -->
-        <circle cx="22"  cy="118" r="3.5" fill="#B0ADA6"/>
-        <text x="16" y="110" font-family="Inter,sans-serif" font-size="10" fill="#B0ADA6">45</text>
-        <!-- End -->
-        <circle cx="315" cy="50"  r="4.5" fill="#E8590C"/>
-        <text x="304" y="42" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#E8590C">67</text>
-        <!-- X labels -->
-        <text x="22"  y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">Feb 15</text>
+        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110 C168,106 188,94 208,84 C224,76 238,80 258,70 C275,62 295,54 315,50 L315,158 L22,158 Z" fill="rgba(232,89,12,0.07)"/>
+        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110 C168,106 188,94 208,84 C224,76 238,80 258,70 C275,62 295,54 315,50" fill="none" stroke="#E8590C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="118" r="3.5" fill="#B0ADA6"/><text x="16" y="110" font-family="Inter,sans-serif" font-size="10" fill="#B0ADA6">45</text>
+        <circle cx="315" cy="50" r="4.5" fill="#E8590C"/><text x="304" y="42" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#E8590C">67</text>
+        <text x="22" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">Feb 15</text>
         <text x="168" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">Apr 1</text>
         <text x="315" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">May 16</text>
       </svg>
-      <div style="font-size:11.5px;color:#B0ADA6;margin-top:8px;">
-        Risk score вырос с <strong style="color:#0F0E0C;">45 → 67</strong> за 90 дней (+49%) — устойчивый негативный тренд
+      <div style="font-size:11.5px;color:#B0ADA6;margin-top:8px">
+        Risk score rose <strong style="color:#0F0E0C">45 → 67</strong> over 90 days (+49%) — sustained negative trend
       </div>
     </div>
-
   </div>
 
-  <!-- ── Vaccinations + Advisories ── -->
   <div class="two-col">
-
     <div class="card">
       <div class="card-title">Vaccination Requirements</div>
-
       <div class="vacc-group">
         <div class="vacc-group-label">Required for entry</div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-required"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Yellow Fever</div>
-            <div class="vacc-item-note">Mandatory certificate at border crossing</div>
-          </div>
-        </div>
+        <div class="vacc-item"><div class="vacc-dot dot-required"></div><div><div class="vacc-item-name">Yellow Fever</div><div class="vacc-item-note">Mandatory certificate at border crossing</div></div></div>
       </div>
-
       <div class="vacc-group">
         <div class="vacc-group-label">WHO recommended</div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-recommended"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Hepatitis A & B</div>
-          </div>
-        </div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-recommended"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Typhoid</div>
-          </div>
-        </div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-recommended"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Meningococcal (MenACWY)</div>
-          </div>
-        </div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-recommended"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Cholera (Dukoral)</div>
-          </div>
-        </div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Hepatitis A &amp; B</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Typhoid</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Meningococcal (MenACWY)</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Cholera (Dukoral)</div></div>
       </div>
-
       <div class="vacc-group">
         <div class="vacc-group-label">Consider</div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-consider"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Rabies (pre-exposure)</div>
-          </div>
-        </div>
-        <div class="vacc-item">
-          <div class="vacc-dot dot-consider"></div>
-          <div class="vacc-item-info">
-            <div class="vacc-item-name">Mpox (if unvaccinated)</div>
-          </div>
-        </div>
+        <div class="vacc-item"><div class="vacc-dot dot-consider"></div><div class="vacc-item-name">Rabies (pre-exposure)</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-consider"></div><div class="vacc-item-name">Mpox (if unvaccinated)</div></div>
       </div>
-
       <div class="vacc-alert">
-        ⚠️ Malaria prophylaxis strongly recommended.<br>
-        Consult a travel medicine specialist 4–6 weeks before departure.
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <div>Malaria prophylaxis strongly recommended. Consult a travel-medicine specialist 4–6 weeks before departure.</div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">Travel Advisories</div>
-
-      <div class="advisory-item">
-        <div class="advisory-org">
-          <span>🇺🇸</span>
-          <div>
-            <div class="advisory-org-name">US State Department</div>
-            <div class="advisory-org-date">Updated May 12, 2026</div>
-          </div>
-        </div>
-        <span class="adv-chip adv-critical">Level 3 — Reconsider</span>
-      </div>
-
-      <div class="advisory-item">
-        <div class="advisory-org">
-          <span>🇬🇧</span>
-          <div>
-            <div class="advisory-org-name">UK FCDO</div>
-            <div class="advisory-org-date">Updated May 10, 2026</div>
-          </div>
-        </div>
-        <span class="adv-chip adv-critical">Advise Against Travel</span>
-      </div>
-
-      <div class="advisory-item">
-        <div class="advisory-org">
-          <span>🇪🇺</span>
-          <div>
-            <div class="advisory-org-name">EU Travel Advisory</div>
-            <div class="advisory-org-date">Updated May 8, 2026</div>
-          </div>
-        </div>
-        <span class="adv-chip adv-high">High Risk</span>
-      </div>
-
-      <div class="advisory-item">
-        <div class="advisory-org">
-          <span>🌍</span>
-          <div>
-            <div class="advisory-org-name">WHO</div>
-            <div class="advisory-org-date">PHEIC declared Apr 3, 2026</div>
-          </div>
-        </div>
-        <span class="adv-chip adv-critical">Emergency</span>
-      </div>
-
-      <div class="advisory-note">
-        WHO declared a Public Health Emergency of International Concern (PHEIC) for the Ebola outbreak on April 3, 2026. All non-essential travel is strongly discouraged.
-      </div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">US</span><div><div class="advisory-org-name">US State Department</div><div class="advisory-org-date">Updated May 12, 2026</div></div></div><span class="adv-chip adv-critical">Level 3 — Reconsider</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">UK</span><div><div class="advisory-org-name">UK FCDO</div><div class="advisory-org-date">Updated May 10, 2026</div></div></div><span class="adv-chip adv-critical">Advise Against Travel</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">EU</span><div><div class="advisory-org-name">EU Travel Advisory</div><div class="advisory-org-date">Updated May 8, 2026</div></div></div><span class="adv-chip adv-high">High Risk</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">WHO</span><div><div class="advisory-org-name">WHO</div><div class="advisory-org-date">PHEIC declared Apr 3, 2026</div></div></div><span class="adv-chip adv-critical">Emergency</span></div>
+      <div class="advisory-note">WHO declared a Public Health Emergency of International Concern (PHEIC) for the Ebola outbreak on April 3, 2026. All non-essential travel is strongly discouraged.</div>
     </div>
-
   </div>
 
-  <!-- ── Healthcare Infrastructure ── -->
   <div class="card">
     <div class="card-title">Healthcare Infrastructure</div>
     <div class="infra-grid">
-      <div class="infra-item">
-        <div class="infra-label">Hospital beds per 1,000 people</div>
-        <div class="infra-value" style="color:#D35400;">0.8</div>
-        <div class="infra-sub">WHO minimum: 2.5</div>
-      </div>
-      <div class="infra-item">
-        <div class="infra-label">Healthcare Response Index</div>
-        <div class="infra-value" style="color:#C0392B;">34<span style="font-size:14px;font-weight:500;color:#B0ADA6;"> /100</span></div>
-        <div class="infra-sub">Critically low capacity</div>
-      </div>
-      <div class="infra-item">
-        <div class="infra-label">Medical Evacuation</div>
-        <div class="infra-value" style="font-size:16px;color:#27AE60;font-weight:700;">Available</div>
-        <div class="infra-sub">Avg. response 6–12 hours</div>
-      </div>
-      <div class="infra-item">
-        <div class="infra-label">Nearest International Hospital</div>
-        <div class="infra-value blurred" style="font-size:15px;">████████ Clinic</div>
-        <div class="infra-sub">~340 km away</div>
-      </div>
+      <div class="infra-item"><div class="infra-label">Hospital beds per 1,000 people</div><div class="infra-value" style="color:#D35400">0.8</div><div class="infra-sub">WHO minimum: 2.5</div></div>
+      <div class="infra-item"><div class="infra-label">Healthcare Response Index</div><div class="infra-value" style="color:#C0392B">34<span style="font-size:14px;font-weight:600;color:#B0ADA6"> /100</span></div><div class="infra-sub">Critically low capacity</div></div>
+      <div class="infra-item"><div class="infra-label">Medical Evacuation</div><div class="infra-value" style="font-size:16px;color:#27AE60;font-weight:800">Available</div><div class="infra-sub">Avg. response 6–12 hours</div></div>
+      <div class="infra-item"><div class="infra-label">Nearest International Hospital</div><div class="infra-value blurred" style="font-size:15px">████████ Clinic</div><div class="infra-sub">~340 km away</div></div>
     </div>
   </div>
 
-  <!-- ── Neighboring Countries ── -->
   <div class="card">
     <div class="card-title">Neighboring Countries Risk</div>
     <div class="nearby-grid">
-      <div class="nearby-item">
-        <div>
-          <div class="nearby-name">████████████</div>
-          <div class="nearby-role">Northern neighbor</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="nearby-score" style="color:#C0392B;">71</div>
-          <span class="sev-badge critical" style="font-size:9px;">HIGH</span>
-        </div>
-      </div>
-      <div class="nearby-item">
-        <div>
-          <div class="nearby-name">███████</div>
-          <div class="nearby-role">Western neighbor</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="nearby-score" style="color:#B7950B;">48</div>
-          <span class="sev-badge warning" style="font-size:9px;">MEDIUM</span>
-        </div>
-      </div>
-      <div class="nearby-item">
-        <div>
-          <div class="nearby-name">█████████</div>
-          <div class="nearby-role">Eastern neighbor</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="nearby-score" style="color:#D35400;">56</div>
-          <span class="sev-badge alert" style="font-size:9px;">HIGH</span>
-        </div>
-      </div>
+      <div class="nearby-item"><div><div class="nearby-name">████████████</div><div class="nearby-role">Northern neighbor</div></div><div style="text-align:right"><div class="nearby-score" style="color:#C0392B">71</div><span class="sev-badge critical" style="font-size:9px">HIGH</span></div></div>
+      <div class="nearby-item"><div><div class="nearby-name">███████</div><div class="nearby-role">Western neighbor</div></div><div style="text-align:right"><div class="nearby-score" style="color:#B7950B">48</div><span class="sev-badge warning" style="font-size:9px">MEDIUM</span></div></div>
+      <div class="nearby-item"><div><div class="nearby-name">█████████</div><div class="nearby-role">Eastern neighbor</div></div><div style="text-align:right"><div class="nearby-score" style="color:#D35400">56</div><span class="sev-badge alert" style="font-size:9px">HIGH</span></div></div>
     </div>
   </div>
 
-  <!-- ── Pre-Trip Checklist ── -->
   <div class="card">
     <div class="card-title">Pre-Trip Checklist</div>
-
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Сделать прививку от <strong>Жёлтой лихорадки</strong> минимум за 10 дней до вылета — обязательно для въезда</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Записаться в клинику travel medicine за <strong>4–6 недель</strong> для полного курса вакцинации (Hep A/B, Typhoid, Meningococcal)</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Начать <strong>противомалярийную профилактику</strong> (Доксициклин или Малярон) по назначению врача</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Оформить страховку с <strong>покрытием медицинской эвакуации</strong> — минимум $250 000</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Взять <strong>таблетки для очистки воды</strong> (Aquatabs) — водопроводная вода опасна по всей стране</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Зарегистрировать поездку в посольстве своей страны для получения экстренных уведомлений</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Взять <strong>стерильный медицинский набор</strong> (иглы, перчатки) — местные запасы ненадёжны</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-icon">✓</div>
-      <div>Настроить <strong>EpiScope-алерты</strong> на эту страну — получать уведомления об изменениях угрозы в реальном времени</div>
-    </div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Get the <strong>Yellow Fever</strong> vaccine at least 10 days before departure — mandatory for entry</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Book a travel-medicine clinic <strong>4–6 weeks</strong> ahead for the full vaccination course (Hep A/B, Typhoid, Meningococcal)</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Start <strong>malaria prophylaxis</strong> (Doxycycline or Malarone) as prescribed</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Get insurance with <strong>medical-evacuation cover</strong> — minimum $250,000</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Pack <strong>water-purification tablets</strong> (Aquatabs) — tap water is unsafe nationwide</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Register your trip with your country's embassy for emergency notifications</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Carry a <strong>sterile medical kit</strong> (needles, gloves) — local supplies are unreliable</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Set up <strong>EpiScope alerts</strong> for this country — real-time notifications when the threat level changes</div></div>
   </div>
 
-  <!-- ── Emergency Contacts ── -->
   <div class="card">
     <div class="card-title">Emergency Contacts</div>
     <div class="contacts-wrap">
       <div>
-        <div class="contact-item">
-          <div class="contact-label">Местный номер экстренной помощи</div>
-          <div class="contact-value hidden">+███ ███ ████</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">Ближайшее посольство США</div>
-          <div class="contact-value hidden">+███ ████ ████</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">Ближайшее посольство Великобритании</div>
-          <div class="contact-value hidden">+███ ████ ████</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">International SOS (круглосуточно)</div>
-          <div class="contact-value">+1 215 942 8226</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">MSF Emergency Line</div>
-          <div class="contact-value hidden">+███ ████ ████</div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">Служба медицинской эвакуации</div>
-          <div class="contact-value hidden">████████ Air Rescue</div>
-        </div>
+        <div class="contact-item"><div class="contact-label">Local emergency number</div><div class="contact-value hidden">+███ ███ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Nearest US Embassy</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Nearest UK Embassy</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">International SOS (24/7)</div><div class="contact-value">+1 215 942 8226</div></div>
+        <div class="contact-item"><div class="contact-label">MSF Emergency Line</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Medical evacuation service</div><div class="contact-value hidden">████████ Air Rescue</div></div>
       </div>
-      <div class="lock-overlay" style="background:rgba(255,255,255,0.78);">
-        <div class="lock-icon">🔒</div>
-        <div class="lock-label">Контакты доступны в полном отчёте</div>
-        <a href="#pricing" class="lock-cta">Разблокировать за $5</a>
+      <div class="lock-overlay">
+        <div class="lock-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="lock-label">Contacts available in the full report</div>
+        <a href="#pricing" class="lock-cta">Unlock for $5 →</a>
       </div>
     </div>
   </div>
 
-  <!-- ── Data Sources ── -->
   <div class="card">
-    <div class="card-title">Data Sources & Methodology</div>
+    <div class="card-title">Data Sources &amp; Methodology</div>
     <div class="sources-row">
       <span class="source-badge">WHO Disease Outbreak News</span>
-      <span class="source-badge">ProMED-mail</span>
-      <span class="source-badge">ECDC Surveillance</span>
+      <span class="source-badge">ECDC CDTR</span>
+      <span class="source-badge">CDC Travel Notices</span>
       <span class="source-badge">GDACS</span>
       <span class="source-badge">US State Department</span>
       <span class="source-badge">UK FCDO</span>
     </div>
     <div class="methodology">
-      Risk Score рассчитывается как взвешенная сумма: эпидемическая активность (40%), мощность системы здравоохранения (25%), экологические риски (20%), инфраструктура (15%). Данные обновляются каждые 12 часов из официальных источников. AI-сводки формируются на основе актуальных данных вспышек.
+      The risk score is a weighted composite: epidemic activity (40%), healthcare capacity (25%), environmental hazards (20%), infrastructure (15%). Data refreshed every 12 hours from official sources. AI summaries are generated from current outbreak data. Not medical advice.
     </div>
   </div>
 
-  <!-- ── Pricing CTA ── -->
   <div class="report-footer" id="pricing">
-    <div class="footer-title">Разблокировать полный отчёт</div>
-    <div class="footer-sub">
-      Полный AI-анализ · все цифры по случаям · контакты · соседние страны без цензуры
-    </div>
+    <div class="footer-title">Unlock the full report</div>
+    <div class="footer-sub">Complete AI analysis · all case figures · emergency contacts · neighboring countries — uncensored</div>
     <div class="price-options">
-      <div class="price-option">
-        <div class="price-count">1 отчёт</div>
-        <div class="price-amount">$5</div>
-        <div class="price-per">$5.00 за отчёт</div>
-        <button class="buy-btn ghost">Купить</button>
-      </div>
-      <div class="price-option featured">
-        <div class="price-count">3 отчёта · популярный</div>
-        <div class="price-amount">$10</div>
-        <div class="price-per">$3.33 за отчёт — экономия 33%</div>
-        <button class="buy-btn">Купить</button>
-      </div>
-      <div class="price-option">
-        <div class="price-count">10 отчётов</div>
-        <div class="price-amount">$20</div>
-        <div class="price-per">$2.00 за отчёт — действуют 1 год</div>
-        <button class="buy-btn ghost">Купить</button>
-      </div>
+      <div class="price-option"><div class="price-count">1 report</div><div class="price-amount">$5</div><div class="price-per">$5.00 per report</div><a class="buy-btn ghost" href="mailto:hello@episcope.ru?subject=EpiScope%20report">Buy</a></div>
+      <div class="price-option featured"><div class="price-count">3 reports · popular</div><div class="price-amount">$10</div><div class="price-per">$3.33 each — save 33%</div><a class="buy-btn" href="mailto:hello@episcope.ru?subject=EpiScope%20reports%20x3">Buy</a></div>
+      <div class="price-option"><div class="price-count">10 reports</div><div class="price-amount">$20</div><div class="price-per">$2.00 each — valid 1 year</div><a class="buy-btn ghost" href="mailto:hello@episcope.ru?subject=EpiScope%20reports%20x10">Buy</a></div>
     </div>
-    <div class="footer-fine">
-      Кредиты действуют 12 месяцев · Оплата через Stripe · Мгновенный доступ · Возврат если отчёт пустой
-    </div>
+    <div class="footer-fine">Credits valid 12 months · Stripe checkout · Instant access · Refund if the report is empty</div>
   </div>
 
 </div>

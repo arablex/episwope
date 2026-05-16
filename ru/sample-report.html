@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EpiScope — Отчёт по рискам страны (образец)</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F4F2EE;
+      color:#0F0E0C;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+    svg{display:block}
+    .sample-banner{background:#0F0E0C;color:#fff;text-align:center;padding:11px 20px;
+      font-size:12.5px;font-weight:600;letter-spacing:.01em;position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .sample-banner svg{opacity:.85}
+    .sample-banner a{color:#F5A623;text-decoration:none;font-weight:700}
+    .sample-banner a:hover{text-decoration:underline}
+    .report{max-width:880px;margin:0 auto;padding:30px 20px 70px}
+    .report-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand .mk{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,#E8590C,#C92A2A);
+      color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px;letter-spacing:-.03em}
+    .logo{font-size:19px;font-weight:900;letter-spacing:-.035em}
+    .logo span{color:#E8590C}
+    .logo-sub{font-size:10.5px;color:#807E76;font-weight:500;margin-top:1px;letter-spacing:.02em}
+    .report-meta{text-align:right;color:#807E76;font-size:11.5px;line-height:1.85}
+    .report-meta strong{color:#0F0E0C;font-weight:700}
+    .card{background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:24px;margin-bottom:14px}
+    .card-title{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+      color:#B0ADA6;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    .card-title svg{color:#E8590C}
+    .country-hero{display:flex;align-items:center;gap:26px;padding:26px;background:#fff;
+      border:1px solid #ECEAE2;border-radius:14px;margin-bottom:14px}
+    .country-info{flex:1;min-width:0}
+    .country-name{font-size:30px;font-weight:900;letter-spacing:-.03em;margin-bottom:3px;filter:blur(9px);user-select:none}
+    .country-region{color:#807E76;font-size:13px;margin-bottom:14px;filter:blur(6px);user-select:none}
+    .badge-row{display:flex;gap:6px;flex-wrap:wrap}
+    .sev-badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:10px;
+      font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .sev-badge.critical{background:#FDEDEC;color:#C0392B}
+    .sev-badge.alert{background:#FEF0EC;color:#D35400}
+    .sev-badge.warning{background:#FEF9E7;color:#B7950B}
+    .hero-note{margin-top:14px;font-size:11.5px;color:#B0ADA6;line-height:1.55}
+    .gauge-wrap{flex-shrink:0}
+    .flag-ph{flex-shrink:0;width:64px;height:46px;border-radius:7px;background:#ECEAE2;filter:blur(7px);user-select:none}
+    .metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    .metric-card{background:#fff;border:1px solid #ECEAE2;border-radius:12px;padding:16px 18px}
+    .metric-label{font-size:10px;color:#B0ADA6;font-weight:700;margin-bottom:7px;text-transform:uppercase;letter-spacing:.07em}
+    .metric-value{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1;margin-bottom:5px}
+    .metric-sub{font-size:11px;color:#B0ADA6}
+    .trend-up{color:#C0392B}.trend-down{color:#27AE60}.trend-flat{color:#95A5A6}
+    .ai-summary{position:relative;min-height:120px}
+    .ai-text{font-size:14px;line-height:1.78;color:#0F0E0C;filter:blur(5px);user-select:none}
+    .lock-overlay{position:absolute;inset:-4px;display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:8px;background:rgba(255,255,255,.55);backdrop-filter:blur(2px);border-radius:10px}
+    .lock-ic{width:34px;height:34px;border-radius:50%;background:#0F0E0C;color:#fff;display:grid;place-items:center}
+    .lock-label{font-size:12.5px;font-weight:600;color:#0F0E0C}
+    .lock-cta{display:inline-flex;align-items:center;gap:6px;background:#E8590C;color:#fff;
+      padding:8px 18px;border-radius:100px;font-size:12.5px;font-weight:700;text-decoration:none}
+    .lock-cta:hover{background:#d04f0a}
+    table{width:100%;border-collapse:collapse}
+    th{font-size:10px;font-weight:700;color:#B0ADA6;text-align:left;padding:0 12px 10px;
+      border-bottom:1px solid #ECEAE2;text-transform:uppercase;letter-spacing:.07em}
+    td{padding:12px;border-bottom:1px solid #F4F2EE;font-size:13px;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    .disease-name{font-weight:700}
+    .disease-type{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .blurred{filter:blur(5px);user-select:none}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .two-col .card{margin-bottom:0}
+    .breakdown-row{margin-bottom:14px}.breakdown-row:last-child{margin-bottom:0}
+    .breakdown-label-row{display:flex;justify-content:space-between;margin-bottom:6px}
+    .breakdown-label{font-size:13px;font-weight:600}
+    .breakdown-score{font-size:13px;font-weight:800}
+    .bar-bg{height:6px;background:#F4F2EE;border-radius:100px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:100px}
+    .vacc-group{margin-bottom:16px}.vacc-group:last-child{margin-bottom:0}
+    .vacc-group-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#B0ADA6;margin-bottom:8px}
+    .vacc-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F4F2EE;font-size:13px}
+    .vacc-item:last-child{border-bottom:none}
+    .vacc-item-name{font-weight:600}
+    .vacc-item-note{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .vacc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dot-required{background:#C0392B}.dot-recommended{background:#E8590C}.dot-consider{background:#BDC3C7}
+    .vacc-alert{margin-top:14px;padding:11px 13px;background:#FEF9E7;border-radius:9px;
+      font-size:11.5px;color:#7D6608;line-height:1.55;display:flex;gap:9px}
+    .vacc-alert svg{flex-shrink:0;color:#B7950B;margin-top:1px}
+    .advisory-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F4F2EE}
+    .advisory-item:last-child{border-bottom:none}
+    .advisory-org{display:flex;align-items:center;gap:11px;font-size:13px;min-width:0}
+    .org-chip{width:34px;height:34px;border-radius:8px;background:#F4F2EE;color:#807E76;
+      display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0;letter-spacing:-.02em}
+    .advisory-org-name{font-weight:700}
+    .advisory-org-date{font-size:11px;color:#B0ADA6;margin-top:1px}
+    .adv-chip{padding:4px 11px;border-radius:100px;font-size:11px;font-weight:800;flex-shrink:0;white-space:nowrap}
+    .adv-critical{background:#FDEDEC;color:#C0392B}
+    .adv-high{background:#FEF0EC;color:#D35400}
+    .adv-medium{background:#FEF9E7;color:#B7950B}
+    .advisory-note{margin-top:13px;font-size:12px;color:#9b3026;line-height:1.6;padding:11px 13px;background:#FDEDEC;border-radius:9px}
+    .infra-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .infra-item{padding:14px 15px;background:#F9F8F5;border-radius:10px}
+    .infra-label{font-size:11px;color:#B0ADA6;margin-bottom:6px}
+    .infra-value{font-size:20px;font-weight:900;letter-spacing:-.02em}
+    .infra-sub{font-size:11px;color:#B0ADA6;margin-top:3px}
+    .nearby-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .nearby-item{padding:13px 15px;background:#F9F8F5;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+    .nearby-name{font-size:13px;font-weight:600;filter:blur(5px);user-select:none}
+    .nearby-role{font-size:11px;color:#B0ADA6;margin-top:2px}
+    .nearby-score{font-size:18px;font-weight:900;letter-spacing:-.02em}
+    .checklist-item{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #F4F2EE;font-size:13px;line-height:1.55}
+    .checklist-item:last-child{border-bottom:none}
+    .check-icon{color:#27AE60;flex-shrink:0;margin-top:1px}
+    .contacts-wrap{position:relative}
+    .contact-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F4F2EE}
+    .contact-item:last-child{border-bottom:none}
+    .contact-label{font-size:13px;font-weight:600}
+    .contact-value{font-size:13px;color:#807E76}
+    .contact-value.hidden{filter:blur(5px);user-select:none}
+    .sources-row{display:flex;gap:7px;flex-wrap:wrap}
+    .source-badge{padding:5px 11px;background:#F4F2EE;border-radius:100px;font-size:11px;font-weight:700;color:#807E76}
+    .methodology{margin-top:13px;font-size:12px;color:#B0ADA6;line-height:1.65}
+    .report-footer{text-align:center;padding:46px 24px;background:#0F0E0C;color:#fff;border-radius:18px;margin-top:22px}
+    .footer-title{font-size:24px;font-weight:900;letter-spacing:-.025em;margin-bottom:10px}
+    .footer-sub{color:rgba(255,255,255,.62);font-size:14px;margin-bottom:30px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.6}
+    .price-options{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .price-option{background:#1b1916;border:1.5px solid #2c2925;border-radius:14px;padding:20px 26px;text-align:center;min-width:158px}
+    .price-option.featured{border-color:#E8590C;background:#241a13}
+    .price-count{font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:5px;font-weight:600}
+    .price-option.featured .price-count{color:#F5A623}
+    .price-amount{font-size:32px;font-weight:900;letter-spacing:-.035em;margin-bottom:2px}
+    .price-option.featured .price-amount{color:#F5A623}
+    .price-per{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:15px}
+    .buy-btn{display:block;width:100%;background:#E8590C;color:#fff;border:1.5px solid transparent;
+      border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}
+    .buy-btn:hover{background:#d04f0a}
+    .buy-btn.ghost{background:transparent;color:#fff;border-color:#3a3631}
+    .buy-btn.ghost:hover{border-color:#5a554e}
+    .footer-fine{margin-top:20px;font-size:11.5px;color:rgba(255,255,255,.4)}
+    @media(max-width:640px){
+      .sample-banner{font-size:11.5px;padding:10px 14px}
+      .report{padding:16px 12px 56px}
+      .report-header{flex-direction:column;gap:12px;margin-bottom:16px}
+      .report-meta{text-align:left}
+      .country-hero{flex-direction:column;align-items:flex-start;gap:18px;padding:18px}
+      .gauge-wrap{align-self:center}.flag-ph{display:none}.country-name{font-size:23px}
+      .metrics-row{grid-template-columns:1fr 1fr;gap:8px}.metric-value{font-size:22px}
+      .two-col{grid-template-columns:1fr}.card{padding:17px}
+      .card table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .nearby-grid{grid-template-columns:1fr;gap:8px}
+      .advisory-item{flex-direction:column;align-items:flex-start;gap:7px}
+      .contact-item{flex-direction:column;align-items:flex-start;gap:3px}
+      .report-footer{padding:26px 16px}.footer-title{font-size:19px}
+      .price-options{flex-direction:column}.price-option{min-width:unset;width:100%}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sample-banner">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+  Демо-образец — часть данных скрыта. Полный отчёт открывается после оплаты.
+  <a href="#pricing">Получить отчёт ↓</a>
+</div>
+
+<div class="report">
+
+  <div class="report-header">
+    <div class="brand">
+      <span class="mk">E</span>
+      <div>
+        <div class="logo">Epi<span>Scope</span></div>
+        <div class="logo-sub">Глобальный эпиднадзор</div>
+      </div>
+    </div>
+    <div class="report-meta">
+      <strong>Отчёт по рискам страны</strong><br>
+      Сформирован: 16 мая 2026 · 09:42 UTC<br>
+      Данные обновлены: 2 часа назад<br>
+      <span style="color:#B0ADA6">ID отчёта: ESC-SAMPLE</span>
+    </div>
+  </div>
+
+  <div class="country-hero">
+    <div class="gauge-wrap">
+      <svg width="138" height="138" viewBox="0 0 138 138">
+        <circle cx="69" cy="69" r="52" fill="none" stroke="#F0EEE9" stroke-width="10" stroke-linecap="round" stroke-dasharray="245 81.7" transform="rotate(135 69 69)"/>
+        <circle cx="69" cy="69" r="52" fill="none" stroke="#E8590C" stroke-width="10" stroke-linecap="round" stroke-dasharray="164 162.6" transform="rotate(135 69 69)"/>
+        <text x="69" y="64" text-anchor="middle" font-family="Inter,sans-serif" font-weight="900" font-size="34" fill="#0F0E0C" letter-spacing="-1.5">67</text>
+        <text x="69" y="80" text-anchor="middle" font-family="Inter,sans-serif" font-weight="500" font-size="10" fill="#B0ADA6">из 100</text>
+        <text x="69" y="100" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="10.5" fill="#C0392B" letter-spacing="0.04em">ВЫСОКИЙ</text>
+      </svg>
+    </div>
+    <div class="country-info">
+      <div class="country-name">██████████ ███████</div>
+      <div class="country-region">Африка к югу от Сахары · Центральный регион</div>
+      <div class="badge-row">
+        <span class="sev-badge critical">3 критич.</span>
+        <span class="sev-badge alert">2 алерт</span>
+        <span class="sev-badge warning">1 внимание</span>
+      </div>
+      <div class="hero-note">
+        Индекс риска: эпид-активность (40%) · здравоохранение (25%)<br>
+        экологические угрозы (20%) · инфраструктура (15%)
+      </div>
+    </div>
+    <div class="flag-ph"></div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">Активные вспышки</div>
+      <div class="metric-value" style="color:#C0392B">6</div>
+      <div class="metric-sub">3 критич. · 2 алерт · 1 внимание</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Оценка случаев</div>
+      <div class="metric-value blurred">12 840</div>
+      <div class="metric-sub trend-up">↑ +18% за 30 дней</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Индекс здравоохранения</div>
+      <div class="metric-value" style="color:#E17055">34<span style="font-size:14px;font-weight:600;color:#B0ADA6">/100</span></div>
+      <div class="metric-sub">Низкая мощность</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Тренд риска (30 дн)</div>
+      <div class="metric-value trend-up" style="font-size:22px">↑ +8 п.</div>
+      <div class="metric-sub">Быстро ухудшается</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2zM9 22h6"/></svg>AI-резюме</div>
+    <div class="ai-summary">
+      <div class="ai-text">
+        В стране — наслаивающаяся мульти-патогенная чрезвычайная ситуация. Параллельные вспышки Эболы и оспы обезьян в северных провинциях ускоряются на фоне низкого охвата вакцинацией и перегруженного контактного трассирования. Тяжёлый всплеск холеры в лагерях перемещённых лиц на юге дополнительно нагружает систему здравоохранения, работающую ниже 35% мощности. Госдеп США и МИД Великобритании повысили рекомендации до наивысшего уровня. Прививка от жёлтой лихорадки обязательна для въезда; путешественникам также следует обеспечить гепатит A/B, брюшной тиф, менингококк и холеру. Медэвакуация доступна через региональные хабы со средним временем отклика 6–12 часов. Организациям с персоналом на местах следует немедленно активировать протоколы Duty of Care.
+      </div>
+      <div class="lock-overlay">
+        <div class="lock-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="lock-label">Полный AI-анализ скрыт в образце</div>
+        <a href="#pricing" class="lock-cta">Разблокировать за $5 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Активные вспышки</div>
+    <table>
+      <thead><tr><th>Болезнь</th><th>Уровень</th><th>Случаи</th><th>Тренд 7 дн</th><th>Регион</th><th>Источник</th></tr></thead>
+      <tbody>
+        <tr><td><div class="disease-name">Эбола (БВВЭ)</div><div class="disease-type">Геморр. лихорадка · контактный путь</div></td><td><span class="sev-badge critical">Критич.</span></td><td><span class="blurred">2 341</span></td><td><span class="trend-up" style="font-weight:700">↑ +23%</span></td><td>Северная провинция</td><td><span class="source-badge">ВОЗ</span></td></tr>
+        <tr><td><div class="disease-name">Оспа обезьян (Clade I)</div><div class="disease-type">Вирусный зооноз · кожа / дыхание</div></td><td><span class="sev-badge critical">Критич.</span></td><td><span class="blurred">5 102</span></td><td><span class="trend-up" style="font-weight:700">↑ +9%</span></td><td>Центральный округ</td><td><span class="source-badge">ECDC</span></td></tr>
+        <tr><td><div class="disease-name">Холера</div><div class="disease-type">Водный путь · лагеря ВПЛ</div></td><td><span class="sev-badge critical">Критич.</span></td><td><span class="blurred">4 871</span></td><td><span class="trend-flat" style="font-weight:700">→ +2%</span></td><td>Юг / лагеря ВПЛ</td><td><span class="source-badge">ECDC</span></td></tr>
+        <tr><td><div class="disease-name">Жёлтая лихорадка</div><div class="disease-type">Арбовирус · комар Aedes</div></td><td><span class="sev-badge alert">Алерт</span></td><td><span class="blurred">318</span></td><td><span class="trend-down" style="font-weight:700">↓ −5%</span></td><td>Восточная граница</td><td><span class="source-badge">ВОЗ</span></td></tr>
+        <tr><td><div class="disease-name">Малярия (P. falciparum)</div><div class="disease-type">Паразит · комар Anopheles</div></td><td><span class="sev-badge alert">Алерт</span></td><td><span class="blurred">—</span></td><td><span class="trend-up" style="font-weight:700">↑ Сезонный пик</span></td><td>По всей стране</td><td><span class="source-badge">GDACS</span></td></tr>
+        <tr><td><div class="disease-name">Менингит (Men A)</div><div class="disease-type">Бактерия · воздушно-капельный</div></td><td><span class="sev-badge warning">Внимание</span></td><td><span class="blurred">208</span></td><td><span class="trend-down" style="font-weight:700">↓ −12%</span></td><td>Пояс Сахеля</td><td><span class="source-badge">CDC</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Разбивка индекса риска</div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Эпид-активность</span><span class="breakdown-score" style="color:#C0392B">78/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:78%;background:#C0392B"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Здравоохранение</span><span class="breakdown-score" style="color:#D35400">34/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:34%;background:#E8590C"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Экологические угрозы</span><span class="breakdown-score" style="color:#B7950B">52/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:52%;background:#F39C12"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Инфраструктура</span><span class="breakdown-score" style="color:#95A5A6">29/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:29%;background:#BDC3C7"></div></div></div>
+      <div class="breakdown-row"><div class="breakdown-label-row"><span class="breakdown-label">Риск трансгран. распростр.</span><span class="breakdown-score" style="color:#D35400">61/100</span></div><div class="bar-bg"><div class="bar-fill" style="width:61%;background:#E8590C"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Тренд риска за 90 дней</div>
+      <svg width="100%" viewBox="0 0 340 158" preserveAspectRatio="none" style="display:block">
+        <line x1="0" y1="16" x2="340" y2="16" stroke="#F0EEE9"/><line x1="0" y1="56" x2="340" y2="56" stroke="#F0EEE9"/><line x1="0" y1="96" x2="340" y2="96" stroke="#F0EEE9"/><line x1="0" y1="136" x2="340" y2="136" stroke="#F0EEE9"/>
+        <text x="2" y="14" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">100</text>
+        <text x="2" y="54" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">75</text>
+        <text x="2" y="94" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">50</text>
+        <text x="2" y="134" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6">25</text>
+        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110 C168,106 188,94 208,84 C224,76 238,80 258,70 C275,62 295,54 315,50 L315,158 L22,158 Z" fill="rgba(232,89,12,0.07)"/>
+        <path d="M22,118 C50,114 75,110 100,106 C118,102 128,114 148,110 C168,106 188,94 208,84 C224,76 238,80 258,70 C275,62 295,54 315,50" fill="none" stroke="#E8590C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="118" r="3.5" fill="#B0ADA6"/><text x="16" y="110" font-family="Inter,sans-serif" font-size="10" fill="#B0ADA6">45</text>
+        <circle cx="315" cy="50" r="4.5" fill="#E8590C"/><text x="304" y="42" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#E8590C">67</text>
+        <text x="22" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">15 фев</text>
+        <text x="168" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">1 апр</text>
+        <text x="315" y="154" font-family="Inter,sans-serif" font-size="9" fill="#B0ADA6" text-anchor="middle">16 мая</text>
+      </svg>
+      <div style="font-size:11.5px;color:#B0ADA6;margin-top:8px">
+        Индекс вырос <strong style="color:#0F0E0C">45 → 67</strong> за 90 дней (+49%) — устойчивый негативный тренд
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Рекомендуемые прививки</div>
+      <div class="vacc-group">
+        <div class="vacc-group-label">Обязательно для въезда</div>
+        <div class="vacc-item"><div class="vacc-dot dot-required"></div><div><div class="vacc-item-name">Жёлтая лихорадка</div><div class="vacc-item-note">Сертификат обязателен на границе</div></div></div>
+      </div>
+      <div class="vacc-group">
+        <div class="vacc-group-label">Рекомендовано ВОЗ</div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Гепатит A и B</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Брюшной тиф</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Менингококк (MenACWY)</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-recommended"></div><div class="vacc-item-name">Холера (Dukoral)</div></div>
+      </div>
+      <div class="vacc-group">
+        <div class="vacc-group-label">Рассмотреть</div>
+        <div class="vacc-item"><div class="vacc-dot dot-consider"></div><div class="vacc-item-name">Бешенство (до контакта)</div></div>
+        <div class="vacc-item"><div class="vacc-dot dot-consider"></div><div class="vacc-item-name">Оспа обезьян (если не привит)</div></div>
+      </div>
+      <div class="vacc-alert">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <div>Настоятельно рекомендована противомалярийная профилактика. Проконсультируйтесь с врачом-инфекционистом за 4–6 недель до поездки.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Рекомендации по поездкам</div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">США</span><div><div class="advisory-org-name">Госдеп США</div><div class="advisory-org-date">Обновлено 12 мая 2026</div></div></div><span class="adv-chip adv-critical">Ур. 3 — пересмотреть</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">UK</span><div><div class="advisory-org-name">МИД Великобритании</div><div class="advisory-org-date">Обновлено 10 мая 2026</div></div></div><span class="adv-chip adv-critical">Не рекомендуют</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">ЕС</span><div><div class="advisory-org-name">Рекомендации ЕС</div><div class="advisory-org-date">Обновлено 8 мая 2026</div></div></div><span class="adv-chip adv-high">Высокий риск</span></div>
+      <div class="advisory-item"><div class="advisory-org"><span class="org-chip">ВОЗ</span><div><div class="advisory-org-name">ВОЗ</div><div class="advisory-org-date">PHEIC объявлен 3 апр 2026</div></div></div><span class="adv-chip adv-critical">ЧС</span></div>
+      <div class="advisory-note">ВОЗ объявила чрезвычайную ситуацию международного значения (PHEIC) по вспышке Эболы 3 апреля 2026. Все несущественные поездки настоятельно не рекомендуются.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Инфраструктура здравоохранения</div>
+    <div class="infra-grid">
+      <div class="infra-item"><div class="infra-label">Койко-мест на 1 000 человек</div><div class="infra-value" style="color:#D35400">0,8</div><div class="infra-sub">Минимум ВОЗ: 2,5</div></div>
+      <div class="infra-item"><div class="infra-label">Индекс готовности здравоохранения</div><div class="infra-value" style="color:#C0392B">34<span style="font-size:14px;font-weight:600;color:#B0ADA6"> /100</span></div><div class="infra-sub">Критически низкая мощность</div></div>
+      <div class="infra-item"><div class="infra-label">Медицинская эвакуация</div><div class="infra-value" style="font-size:16px;color:#27AE60;font-weight:800">Доступна</div><div class="infra-sub">Ср. отклик 6–12 часов</div></div>
+      <div class="infra-item"><div class="infra-label">Ближайшая международная клиника</div><div class="infra-value blurred" style="font-size:15px">████████ Clinic</div><div class="infra-sub">~340 км</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Риск соседних стран</div>
+    <div class="nearby-grid">
+      <div class="nearby-item"><div><div class="nearby-name">████████████</div><div class="nearby-role">Северный сосед</div></div><div style="text-align:right"><div class="nearby-score" style="color:#C0392B">71</div><span class="sev-badge critical" style="font-size:9px">ВЫСОКИЙ</span></div></div>
+      <div class="nearby-item"><div><div class="nearby-name">███████</div><div class="nearby-role">Западный сосед</div></div><div style="text-align:right"><div class="nearby-score" style="color:#B7950B">48</div><span class="sev-badge warning" style="font-size:9px">СРЕДНИЙ</span></div></div>
+      <div class="nearby-item"><div><div class="nearby-name">█████████</div><div class="nearby-role">Восточный сосед</div></div><div style="text-align:right"><div class="nearby-score" style="color:#D35400">56</div><span class="sev-badge alert" style="font-size:9px">ВЫСОКИЙ</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Чек-лист перед поездкой</div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Сделать прививку от <strong>жёлтой лихорадки</strong> минимум за 10 дней до вылета — обязательно для въезда</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Записаться в клинику travel-medicine за <strong>4–6 недель</strong> на полный курс (Гепатит A/B, тиф, менингококк)</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Начать <strong>противомалярийную профилактику</strong> (Доксициклин или Малярон) по назначению врача</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Оформить страховку с <strong>покрытием медэвакуации</strong> — минимум $250 000</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Взять <strong>таблетки для очистки воды</strong> (Aquatabs) — водопроводная вода опасна по всей стране</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Зарегистрировать поездку в посольстве своей страны для экстренных уведомлений</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Взять <strong>стерильный медицинский набор</strong> (иглы, перчатки) — местные запасы ненадёжны</div></div>
+    <div class="checklist-item"><span class="check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div>Настроить <strong>EpiScope-алерты</strong> на эту страну — уведомления об изменении уровня угрозы в реальном времени</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Экстренные контакты</div>
+    <div class="contacts-wrap">
+      <div>
+        <div class="contact-item"><div class="contact-label">Местный номер экстренной помощи</div><div class="contact-value hidden">+███ ███ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Ближайшее посольство США</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Ближайшее посольство Великобритании</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">International SOS (круглосуточно)</div><div class="contact-value">+1 215 942 8226</div></div>
+        <div class="contact-item"><div class="contact-label">Горячая линия MSF</div><div class="contact-value hidden">+███ ████ ████</div></div>
+        <div class="contact-item"><div class="contact-label">Служба медэвакуации</div><div class="contact-value hidden">████████ Air Rescue</div></div>
+      </div>
+      <div class="lock-overlay">
+        <div class="lock-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+        <div class="lock-label">Контакты доступны в полном отчёте</div>
+        <a href="#pricing" class="lock-cta">Разблокировать за $5 →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Источники данных и методика</div>
+    <div class="sources-row">
+      <span class="source-badge">WHO Disease Outbreak News</span>
+      <span class="source-badge">ECDC CDTR</span>
+      <span class="source-badge">CDC Travel Notices</span>
+      <span class="source-badge">GDACS</span>
+      <span class="source-badge">Госдеп США</span>
+      <span class="source-badge">МИД Великобритании</span>
+    </div>
+    <div class="methodology">
+      Индекс риска — взвешенная сумма: эпид-активность (40%), мощность здравоохранения (25%), экологические угрозы (20%), инфраструктура (15%). Данные обновляются каждые 12 часов из официальных источников. AI-сводки формируются по актуальным данным вспышек. Не является медицинской консультацией.
+    </div>
+  </div>
+
+  <div class="report-footer" id="pricing">
+    <div class="footer-title">Разблокировать полный отчёт</div>
+    <div class="footer-sub">Полный AI-анализ · все цифры по случаям · экстренные контакты · соседние страны — без цензуры</div>
+    <div class="price-options">
+      <div class="price-option"><div class="price-count">1 отчёт</div><div class="price-amount">$5</div><div class="price-per">$5.00 за отчёт</div><a class="buy-btn ghost" href="mailto:hello@episcope.ru?subject=EpiScope%20otchet">Купить</a></div>
+      <div class="price-option featured"><div class="price-count">3 отчёта · популярный</div><div class="price-amount">$10</div><div class="price-per">$3.33 за отчёт — экономия 33%</div><a class="buy-btn" href="mailto:hello@episcope.ru?subject=EpiScope%20otchety%20x3">Купить</a></div>
+      <div class="price-option"><div class="price-count">10 отчётов</div><div class="price-amount">$20</div><div class="price-per">$2.00 за отчёт — действуют 1 год</div><a class="buy-btn ghost" href="mailto:hello@episcope.ru?subject=EpiScope%20otchety%20x10">Купить</a></div>
+    </div>
+    <div class="footer-fine">Кредиты действуют 12 месяцев · Оплата через Stripe · Мгновенный доступ · Возврат, если отчёт пустой</div>
+  </div>
+
+</div>
+</body>
+</html>
