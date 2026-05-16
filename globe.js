@@ -778,17 +778,35 @@ function openProWaitlist(source) {
   });
 }
 
+const ACCOUNT_URL = (window.EPISWOPE_LANG === 'ru') ? '/ru/account.html' : '/account.html';
+
 function updateUserBtn() {
   const btn = document.getElementById('userBtn');
   if (!btn) return;
   const s = getSession();
+  const paid = isPaid();
+  // remove any previous Pro badge
+  const old = btn.querySelector('._proBadge');
+  if (old) old.remove();
   if (s) {
     btn.style.color = 'var(--accent)';
-    btn.title = s.email + (isPaid() ? ' · Pro' : ' · Free');
+    btn.title = s.email + (paid ? ' · Pro' : ' · Free');
+    if (paid) {
+      btn.style.position = 'relative';
+      const b = document.createElement('span');
+      b.className = '_proBadge';
+      b.textContent = '✦';
+      b.style.cssText = 'position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:linear-gradient(180deg,#F5A623,#E8930C);color:#fff;font-size:8px;line-height:14px;text-align:center;font-weight:800;box-shadow:0 0 0 2px var(--bg-card)';
+      btn.appendChild(b);
+    }
   } else {
     btn.style.color = '';
     btn.title = LANG === 'ru' ? 'Войти' : 'Sign in';
   }
+  // Hide the header "Pro" upgrade pill for paying users — nothing to upsell
+  document.querySelectorAll('.pro-pill').forEach(p => {
+    p.style.display = paid ? 'none' : '';
+  });
 }
 
 function toggleAuthPopover() {
@@ -806,7 +824,9 @@ function toggleAuthPopover() {
     const isPro = isPaid();
     pop.innerHTML = `
       <div style="font-weight:700;margin-bottom:4px">${s.email}</div>
-      <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? 'Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
+      <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? '✦ Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
+      <a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:#0F0E0C;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px">${LANG==='ru'?'Мой профиль':'My profile'}</a>
+      ${isPro ? '' : `<a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:8px">${LANG==='ru'?'✦ Перейти на Pro':'✦ Upgrade to Pro'}</a>`}
       <button onclick="localStorage.removeItem('episwope_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid #ECEAE2;border-radius:8px;background:#fff;cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
   } else {
     const hint = LANG === 'ru' ? 'Введи email — пришлём ссылку для входа.' : 'Enter your email — we\'ll send a login link.';
