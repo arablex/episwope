@@ -1786,55 +1786,35 @@ const AQI_SAMPLE = [
   {lon:151.2,lat:-33.9,aqi:22,uid:28,station:{name:'Sydney — Parramatta North'}},
 ];
 
-/* Ray-casting point-in-polygon over the loaded world-atlas countries.
-   Returns the country name for a land point, or null for ocean. */
-function _landCountryAt(lon, lat){
-  const feats = state.countries;
-  if(!feats || !feats.length) return undefined; // atlas not loaded → unknown
-  for(const f of feats){
-    const g = f.geometry; if(!g) continue;
-    const polys = g.type === 'Polygon' ? [g.coordinates]
-                : g.type === 'MultiPolygon' ? g.coordinates : [];
-    for(const poly of polys){
-      const ring = poly[0]; if(!ring || ring.length < 4) continue;
-      let inside = false;
-      for(let i=0, j=ring.length-1; i<ring.length; j=i++){
-        const xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
-        if(((yi>lat)!==(yj>lat)) && (lon < (xj-xi)*(lat-yi)/(yj-yi)+xi)) inside=!inside;
-      }
-      if(inside) return f.properties?.name || f.properties?.NAME || '';
-    }
-  }
-  return null; // ocean
+/* World cities (pop ≥ 200k) — geo anchors for AQI, loaded once.
+   Format: [[lat, lon, "Name"], ...] sorted by population desc. */
+let CITIES = [];
+async function loadCities(){
+  if(CITIES.length) return;
+  try{
+    const base = window.EPISWOPE_BASE || './';
+    const res  = await fetch(base + 'public/cities.json');
+    if(res.ok) CITIES = await res.json();
+  }catch(e){ console.warn('[AQI] cities.json', e); }
 }
 
 async function fetchAQI(){
   if(!map || !_aqiActive) return;
+  await loadCities();
   const b = map.getBounds();
   const S=b.getSouth(), N=b.getNorth(), W=b.getWest(), E=b.getEast();
+  const MAX_PTS = 45;
 
-  // Build a grid over the visible bounds; keep only land points.
-  // Density scales with zoom → effectively per-city when zoomed in,
-  // global spread when zoomed out. Open-Meteo is a global model
-  // (every point on Earth), free, no key — no station blind spots.
-  const COLS=10, ROWS=7, MAX_PTS=44;
-  const lonSpan = (E - W + 360) % 360 || 360;
-  const grid = [];
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const lat = S + (N - S) * (r + 0.5) / ROWS;
-      let lon = W + lonSpan * (c + 0.5) / COLS;
-      if(lon > 180) lon -= 360;
-      const country = _landCountryAt(lon, lat);
-      if(country === null) continue;        // ocean → skip
-      grid.push({ lat:+lat.toFixed(3), lon:+lon.toFixed(3), name: country || '' });
-    }
-  }
-  // If atlas not loaded (undefined) we still kept points (name undefined→'')
-  let pts = grid;
-  if(pts.length > MAX_PTS){
-    const step = pts.length / MAX_PTS;
-    pts = Array.from({length:MAX_PTS}, (_,i)=> pts[Math.floor(i*step)]);
+  // Anchor AQI to REAL cities in view (not a mechanical grid).
+  // CITIES is pop-sorted, so first-N-in-bounds = the most significant
+  // cities → looks geographic, never a lattice.
+  const inBounds = c => {
+    const la=c[0], lo=c[1];
+    return la>=S && la<=N && (W<=E ? (lo>=W && lo<=E) : (lo>=W || lo<=E));
+  };
+  let pts = [];
+  for(const c of CITIES){
+    if(inBounds(c)){ pts.push({ lat:c[0], lon:c[1], name:c[2] }); if(pts.length>=MAX_PTS) break; }
   }
 
   let stations = [];
@@ -3190,6 +3170,9 @@ async function boot(){
 
   // Load historical time-series
   loadHistory();
+
+  // Preload city anchors for the AQI layer
+  loadCities();
 
   // Load live data after globe is visible
   loadLiveData();
