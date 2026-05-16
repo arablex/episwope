@@ -478,6 +478,36 @@ const FLAG = iso2 => {
 
 /* A food recall → standard OUTBREAKS event (type:'food'), so it shows in
    the unified "Food" category list + detail panel like every other event. */
+/* Short, localized ≤2-word label for a food hazard/disease.
+   Derives a specific label from hazard+reason text; falls back to a
+   clean generic so the RU UI never shows English or long strings. */
+function shortFoodLabel(hazard, reason){
+  const s = `${hazard||''} ${reason||''}`.toLowerCase();
+  const M = [
+    [/listeria|листери/,                         {en:'Listeria',    ru:'Листерия'}],
+    [/salmonell|сальмонел/,                       {en:'Salmonella',  ru:'Сальмонелла'}],
+    [/e\.?\s*coli|escherichia|stec|o157/,         {en:'E. coli',     ru:'E. coli'}],
+    [/botulism|clostridium|ботулизм/,             {en:'Botulism',    ru:'Ботулизм'}],
+    [/norovirus|норовирус/,                       {en:'Norovirus',   ru:'Норовирус'}],
+    [/hepatitis\s*a|гепатит\s*a/,                 {en:'Hepatitis A', ru:'Гепатит A'}],
+    [/cronobacter|кронобактер/,                   {en:'Cronobacter', ru:'Кронобактер'}],
+    [/gluten|wheat|глютен|пшениц/,                {en:'Gluten',      ru:'Глютен'}],
+    [/\bmilk|dairy|молок|молоч/,                  {en:'Milk allergen', ru:'Молоко'}],
+    [/peanut|tree nut|\bnut\b|орех|арахис/,       {en:'Nut allergen',  ru:'Орехи'}],
+    [/\bsoy|соя|соев/,                            {en:'Soy allergen',  ru:'Соя'}],
+    [/\begg|яйц/,                                 {en:'Egg allergen',  ru:'Яйцо'}],
+    [/sesame|кунжут/,                             {en:'Sesame',      ru:'Кунжут'}],
+    [/shellfish|crustace|mollusc|моллюск|ракообраз/, {en:'Shellfish', ru:'Моллюски'}],
+    [/\bfish|рыб/,                                {en:'Fish allergen', ru:'Рыба'}],
+    [/sulphite|sulfite|сульфит/,                  {en:'Sulphites',   ru:'Сульфиты'}],
+    [/undeclared|allergen|аллерг/,                {en:'Allergen',    ru:'Аллерген'}],
+    [/metal|glass|plastic|foreign|посторон|металл|стекл|пластик/, {en:'Contamination', ru:'Загрязнение'}],
+    [/insecurit|famine|hunger|голод|нехватк|продовольств/,        {en:'Food crisis',   ru:'Дефицит еды'}],
+  ];
+  for(const [re,lab] of M){ if(re.test(s)) return lab; }
+  return { en:'Food recall', ru:'Отзыв продукта' };
+}
+
 function recallToEvent(r){
   const c = findCountry(r.country) ||
             (r.iso && typeof COUNTRY_BY_ISO2 !== 'undefined' ? COUNTRY_BY_ISO2[r.iso] : null);
@@ -488,11 +518,12 @@ function recallToEvent(r){
   const sum  = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
   const sev  = ['critical','alert','warning','monitoring'].includes(r.severity) ? r.severity : 'warning';
   const country = r.country || (r.iso === 'EU' ? 'European Union' : '');
+  const lab = shortFoodLabel(r.hazard, r.reason);
   return {
     id: r.id, type: 'food', _recall: true, _live: true,
     code: `RECALL-${src}-${(r.date||'').slice(0,10)}`,
-    name: r.hazard || 'Food recall',
-    name_ru: r.hazard || 'Отзыв продукта',
+    name: lab.en,
+    name_ru: lab.ru,
     pathogen: r.hazard || 'Food safety',
     country,
     iso: c?.num || 0,
@@ -3106,12 +3137,13 @@ async function loadLiveData(){
       const coords = resolveCoords(ev);
 
       const liveSev = SEV_MAP[ev.severity] || 'monitoring';
+      const _fl = (ev.type === 'food') ? shortFoodLabel(ev.disease, ev.summary) : null;
       OUTBREAKS.unshift({
         id: evId,
         type: ev.type || 'epidemic',
         code: `LIVE-${ev.source}-${new Date(ev.fetched_at||ev.date).toISOString().slice(0,10)}`,
-        name: ev.disease,
-        name_ru: ev.name_ru || ev.disease,
+        name: _fl ? _fl.en : ev.disease,
+        name_ru: _fl ? _fl.ru : (ev.name_ru || ev.disease),
         pathogen: ev.disease,
         country: ev.country,
         iso: coords.isoNum,
