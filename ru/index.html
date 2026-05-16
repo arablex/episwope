@@ -1781,6 +1781,17 @@
     padding:12px 0; margin-bottom:8px;
   }
   .alert-modal-note{ font-size:10.5px; color:var(--muted); text-align:center; }
+
+  /* Print: only the risk report, as a clean document */
+  @media print {
+    body * { visibility: hidden !important; }
+    #_riskOv, #_riskOv * { visibility: visible !important; }
+    #_riskOv { position:absolute !important; inset:0 !important; background:#fff !important;
+               backdrop-filter:none !important; display:block !important; padding:0 !important; }
+    #_riskCard { box-shadow:none !important; max-height:none !important; max-width:100% !important;
+                 border-radius:0 !important; overflow:visible !important; }
+    #_riskX, #_riskPrint { display:none !important; }
+  }
 </style>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">

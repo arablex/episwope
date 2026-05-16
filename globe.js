@@ -778,6 +778,187 @@ function openProWaitlist(source) {
   });
 }
 
+/* ════════════════════════════════════════════════════════════
+   RISK REPORT — purpose-tailored country assessment (Pro feature)
+   ════════════════════════════════════════════════════════════ */
+const RISK_PURPOSES = [
+  { id:'tourist',    icon:'🧳', en:'Tourist trip',  ru:'Турпоездка' },
+  { id:'business',   icon:'💼', en:'Business trip',  ru:'Командировка' },
+  { id:'relocation', icon:'🏠', en:'Relocation',     ru:'Переезд' },
+  { id:'family',     icon:'👨‍👩‍👧', en:'Family / kids', ru:'Семья / дети' },
+];
+
+function _riskVerdict(country, outbreaks){
+  const worst = outbreaks.reduce((m,o)=> (SEV[o.sev]?.idx ?? 0) > (SEV[m?.sev]?.idx ?? -1) ? o : m, null);
+  const risk = countryTravelRisk(country);
+  const map = {
+    en:{ low:'Low risk', medium:'Moderate risk', high:'High risk', extreme:'Severe risk' },
+    ru:{ low:'Низкий риск', medium:'Умеренный риск', high:'Высокий риск', extreme:'Серьёзный риск' },
+  };
+  let lvl = risk==='high'?'high':risk==='medium'?'medium':'low';
+  if(worst && SEV[worst.sev]?.idx >= 4) lvl='extreme';
+  else if(worst && SEV[worst.sev]?.idx >= 3 && lvl!=='high') lvl='high';
+  const color = {low:'#19A463', medium:'#E4B514', high:'#E8590C', extreme:'#C92A2A'}[lvl];
+  return { lvl, color, label:(map[LANG==='ru'?'ru':'en'])[lvl] };
+}
+
+function _purposeGuidance(purpose, country, outbreaks){
+  const ru = LANG==='ru';
+  const hasResp = outbreaks.some(o=>/flu|influenza|covid|measles|respir|tubercul|грипп|корь|тубер/i.test(o.name||o.disease||''));
+  const hasVec  = outbreaks.some(o=>/dengue|malaria|zika|chikungunya|yellow fever|denge|маляри|лихорад/i.test(o.name||o.disease||''));
+  const hasGI   = outbreaks.some(o=>/cholera|salmonell|e\.?\s*coli|hepatitis a|typhoid|холер|сальмонелл|тиф|гепатит a/i.test(o.name||o.disease||''));
+  const L=[];
+  if(purpose==='tourist'){
+    L.push(ru?'Проверьте рекомендованные прививки за 4–6 недель до поездки.':'Check recommended vaccinations 4–6 weeks before travel.');
+    if(hasVec) L.push(ru?'Активны трансмиссивные инфекции — репелленты, одежда с длинным рукавом, антимоскитные сетки.':'Vector-borne disease active — repellent, long sleeves, bed nets.');
+    if(hasGI)  L.push(ru?'Риск кишечных инфекций — только бутилированная вода, термически обработанная еда.':'Foodborne risk — bottled water only, well-cooked food.');
+    L.push(ru?'Оформите страховку с медицинской эвакуацией.':'Get travel insurance with medical evacuation cover.');
+  } else if(purpose==='business'){
+    L.push(ru?'Duty of care: уведомьте HR/безопасность о поездке, маршруте и сроках.':'Duty of care: notify HR/security of trip, route and dates.');
+    L.push(ru?'Подготовьте план эвакуации и контакты ближайшей клиники международного уровня.':'Prepare an evacuation plan and contacts of the nearest international-standard clinic.');
+    if(hasResp) L.push(ru?'Респираторные инфекции в обороте — маски на совещаниях/транспорте, тест при симптомах.':'Respiratory infections circulating — masks in meetings/transit, test if symptomatic.');
+    L.push(ru?'Заложите резерв в график на случай карантинных ограничений.':'Build schedule buffer for possible quarantine measures.');
+  } else if(purpose==='relocation'){
+    L.push(ru?'Оцените устойчивость местной системы здравоохранения и доступ к мед.помощи.':'Assess local healthcare system resilience and access to care.');
+    L.push(ru?'Изучите тренд угроз за период (вкладка «История») — направление важнее моментального снимка.':'Review the multi-period threat trend (History tab) — direction matters more than a snapshot.');
+    if(hasVec||hasGI) L.push(ru?'Эндемичные инфекции — спланируйте вакцинацию всей семьи и профилактику.':'Endemic infections — plan family vaccination and prophylaxis.');
+    L.push(ru?'Уточните покрытие международной медицинской страховки в регионе.':'Confirm international health-insurance coverage for the region.');
+  } else { // family
+    L.push(ru?'Дети и пожилые — в группе повышенного риска; обновите календарь прививок.':'Children and elderly are higher-risk; update the vaccination schedule.');
+    if(hasResp) L.push(ru?'Респираторные вспышки — ограничьте посещение людных мест с детьми.':'Respiratory outbreaks — limit crowded places with children.');
+    if(hasGI)  L.push(ru?'Строгая гигиена рук и контроль воды/еды для детей.':'Strict hand hygiene and water/food control for children.');
+    L.push(ru?'Соберите аптечку: жаропонижающее, регидратация, средства от насекомых.':'Pack a kit: antipyretics, rehydration salts, insect protection.');
+  }
+  return L;
+}
+
+async function _reportAir(country){
+  const c = findCountry ? findCountry(country) : null;
+  const meta = c || (typeof COUNTRY_COORDS!=='undefined' ? COUNTRY_COORDS[(country||'').toLowerCase()] : null);
+  const lat = meta?.lat, lon = meta?.lng ?? meta?.lon;
+  if(typeof lat!=='number' || typeof lon!=='number') return null;
+  try{
+    const r = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`, {signal:AbortSignal.timeout(6000)});
+    const j = await r.json();
+    const a = j?.current?.us_aqi;
+    return typeof a==='number' ? Math.round(a) : null;
+  }catch{ return null; }
+}
+
+let _riskUsed = +(localStorage.getItem('episwope_risk_used')||0);
+
+function openRiskReport(country){
+  const ru = LANG==='ru';
+  // Gate: Pro unlimited; free → 1 trial then waitlist
+  if(!isPaid() && _riskUsed >= 1){
+    openProWaitlist('assess_risk');
+    return;
+  }
+  let ov = document.getElementById('_riskOv');
+  if(ov) ov.remove();
+  ov = document.createElement('div');
+  ov.id = '_riskOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(8,7,6,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto';
+  ov.innerHTML = `<div id="_riskCard" style="background:#fff;max-width:560px;width:100%;border-radius:20px;padding:26px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);max-height:92vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${ru?'Оценка рисков':'Risk assessment'}</span>
+      <button id="_riskX" style="border:0;background:none;cursor:pointer;color:#807E76;font-size:22px;line-height:1">×</button>
+    </div>
+    <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">${countryName(country)}</div>
+    <div style="font-size:13px;color:#807E76;margin-bottom:18px">${ru?'Выберите цель — соберём детальный отчёт':'Pick a purpose — we’ll build a detailed report'}</div>
+    <div id="_riskPick" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid #ECEAE2;border-radius:14px;background:#FAFAF8;cursor:pointer;font:inherit;font-size:14px;font-weight:600;color:#0F0E0C;text-align:left">${p.icon} ${ru?p.ru:p.en}</button>`).join('')}
+    </div>
+    <div id="_riskBody"></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
+  ov.querySelector('#_riskX').onclick=close;
+  ov.querySelectorAll('._rp').forEach(b=>{
+    b.onclick=async()=>{
+      const purpose=b.dataset.p;
+      if(!isPaid()){ _riskUsed++; localStorage.setItem('episwope_risk_used',_riskUsed); }
+      if(window.ym) ym(109240834,'reachGoal','risk_report',{purpose});
+      ov.querySelector('#_riskPick').style.display='none';
+      const body=ov.querySelector('#_riskBody');
+      body.innerHTML=`<div style="padding:30px 0;text-align:center;color:#807E76;font-size:13px">${ru?'Собираем отчёт…':'Building report…'}</div>`;
+      body.innerHTML = await buildRiskReport(country, purpose);
+      const pr=document.getElementById('_riskPrint');
+      if(pr) pr.onclick=()=>window.print();
+    };
+  });
+}
+
+async function buildRiskReport(country, purpose){
+  const ru = LANG==='ru';
+  const obs = OUTBREAKS.filter(o=> o.country===country);
+  const recalls = (typeof FOOD_RECALLS!=='undefined'?FOOD_RECALLS:[]).filter(r=>{
+    const c = findCountry ? findCountry(country) : null;
+    return c && (r.iso===c.iso2);
+  });
+  const v = _riskVerdict(country, obs);
+  const pObj = RISK_PURPOSES.find(p=>p.id===purpose) || RISK_PURPOSES[0];
+  const air = await _reportAir(country);
+  const hs = (typeof historySeries==='function') ? historySeries(country) : null;
+  let trendTxt='';
+  if(hs && hs.total.length>1){
+    const d = (hs.total[hs.total.length-1]||0) - (hs.total[0]||0);
+    trendTxt = d>0 ? (ru?`растёт (+${d} за ${hs.dates.length} дн.)`:`rising (+${d} over ${hs.dates.length}d)`)
+            : d<0 ? (ru?`снижается (${d})`:`falling (${d})`)
+            : (ru?'стабилен':'stable');
+  }
+  const adv = (TRAVEL_ADVISORY[LANG]||TRAVEL_ADVISORY.en)[countryTravelRisk(country)];
+  const threats = obs.length
+    ? obs.sort((a,b)=>(SEV[b.sev]?.idx??0)-(SEV[a.sev]?.idx??0)).map(o=>{
+        const s=SEV[o.sev]; const sum=(LANG==='ru'&&o.blurb_ru)?o.blurb_ru:(o.blurb||o.summary||'');
+        return `<div style="padding:10px 0;border-bottom:1px solid #F2F0E8">
+          <div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${diseaseName(o.name||o.disease)}</b><span style="font-size:11px;font-weight:700;color:${s.color}">${s.label}</span></div>
+          ${sum?`<div style="font-size:12px;color:#3B3A36;line-height:1.5;margin-top:3px">${sum}</div>`:''}
+        </div>`;}).join('')
+    : `<div style="font-size:12.5px;color:#807E76;padding:8px 0">${ru?'Активных вспышек по официальным источникам нет.':'No active outbreaks per official sources.'}</div>`;
+  const guidance = _purposeGuidance(purpose, country, obs)
+    .map(g=>`<li style="font-size:12.5px;color:#3B3A36;line-height:1.55;margin:5px 0">${g}</li>`).join('');
+  const airTxt = air==null ? (ru?'нет данных':'no data')
+    : air<=50?(ru?`хорошее (${air})`:`good (${air})`)
+    : air<=100?(ru?`умеренное (${air})`:`moderate (${air})`)
+    : air<=150?(ru?`вредно для чувств. (${air})`:`unhealthy-sensitive (${air})`)
+    : air<=200?(ru?`вредное (${air})`:`unhealthy (${air})`)
+    :(ru?`опасное (${air})`:`hazardous (${air})`);
+
+  return `
+  <div id="_riskReport" style="margin-top:8px">
+    <div style="display:flex;align-items:center;gap:10px;background:${v.color}14;border:1px solid ${v.color}55;border-radius:14px;padding:14px;margin-bottom:16px">
+      <span style="width:10px;height:10px;border-radius:50%;background:${v.color};flex-shrink:0"></span>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:${v.color}">${v.label}</div>
+        <div style="font-size:12px;color:#3B3A36">${pObj.icon} ${ru?pObj.ru:pObj.en} · ${countryName(country)} · ${new Date().toLocaleDateString(LANG)}</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:14px 0 6px">${ru?'Сводка':'Summary'}</div>
+    <div style="font-size:12.5px;color:#3B3A36;line-height:1.6">
+      ${ru?'Рекомендация по поездкам':'Travel advisory'}: <b>${adv?.label||'—'}</b>.
+      ${trendTxt?(ru?` Динамика угроз: <b>${trendTxt}</b>.`:` Threat trend: <b>${trendTxt}</b>.`):''}
+      ${` ${ru?'Качество воздуха':'Air quality'}: <b>${airTxt}</b>.`}
+      ${recalls.length?` ${ru?`Активных отзывов продуктов: <b>${recalls.length}</b>.`:`Active food recalls: <b>${recalls.length}</b>.`}`:''}
+    </div>
+
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:18px 0 6px">${ru?'Активные угрозы':'Active threats'}</div>
+    ${threats}
+
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:18px 0 6px">${ru?`Рекомендации · ${pObj.ru}`:`Recommendations · ${pObj.en}`}</div>
+    <ul style="margin:0;padding-left:18px">${guidance}</ul>
+
+    <div style="font-size:10px;color:#B6B3AA;margin-top:18px;line-height:1.5">
+      ${ru?'Отчёт сформирован по данным WHO/CDC/ECDC/GDACS/Open-Meteo. Не является медицинской консультацией. Источники могут быть неполными по ряду стран.':'Generated from WHO/CDC/ECDC/GDACS/Open-Meteo data. Not medical advice. Source coverage is limited for some countries.'}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button id="_riskPrint" style="flex:1;height:42px;border:0;border-radius:11px;background:#0F0E0C;color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer">${ru?'Скачать / Печать (PDF)':'Download / Print (PDF)'}</button>
+    </div>
+  </div>`;
+}
+
 const ACCOUNT_URL = (window.EPISWOPE_LANG === 'ru') ? '/ru/account.html' : '/account.html';
 
 function updateUserBtn() {
@@ -1214,7 +1395,7 @@ function renderCountryPanel(country){
   }
   // "Assess risks" → premium report (validation: route to Pro waitlist)
   const assessBtn = document.getElementById('cpAssessBtn');
-  if (assessBtn) assessBtn.addEventListener('click', () => openProWaitlist('assess_risk'));
+  if (assessBtn) assessBtn.addEventListener('click', () => openRiskReport(country));
 
   // Wire back button
   document.getElementById('cpBack').addEventListener('click', ()=>{
@@ -1578,26 +1759,79 @@ const AQI_SAMPLE = [
   {lon:151.2,lat:-33.9,aqi:22,uid:28,station:{name:'Sydney — Parramatta North'}},
 ];
 
+/* Ray-casting point-in-polygon over the loaded world-atlas countries.
+   Returns the country name for a land point, or null for ocean. */
+function _landCountryAt(lon, lat){
+  const feats = state.countries;
+  if(!feats || !feats.length) return undefined; // atlas not loaded → unknown
+  for(const f of feats){
+    const g = f.geometry; if(!g) continue;
+    const polys = g.type === 'Polygon' ? [g.coordinates]
+                : g.type === 'MultiPolygon' ? g.coordinates : [];
+    for(const poly of polys){
+      const ring = poly[0]; if(!ring || ring.length < 4) continue;
+      let inside = false;
+      for(let i=0, j=ring.length-1; i<ring.length; j=i++){
+        const xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
+        if(((yi>lat)!==(yj>lat)) && (lon < (xj-xi)*(lat-yi)/(yj-yi)+xi)) inside=!inside;
+      }
+      if(inside) return f.properties?.name || f.properties?.NAME || '';
+    }
+  }
+  return null; // ocean
+}
+
 async function fetchAQI(){
   if(!map || !_aqiActive) return;
   const b = map.getBounds();
-  const isProd = location.hostname !== 'localhost' && !location.hostname.startsWith('192.') && !location.hostname.startsWith('127.');
-  let stations = [];
-  if(isProd){
-    try {
-      const params = `lat1=${b.getSouth().toFixed(1)}&lon1=${b.getWest().toFixed(1)}&lat2=${b.getNorth().toFixed(1)}&lon2=${b.getEast().toFixed(1)}`;
-      const res  = await fetch(`/api/aqi?${params}`, { signal: AbortSignal.timeout(6000) });
-      const json = await res.json();
-      if(json.status === 'ok' && Array.isArray(json.data)) stations = json.data;
-    } catch(e){ console.warn('[AQI]', e); }
+  const S=b.getSouth(), N=b.getNorth(), W=b.getWest(), E=b.getEast();
+
+  // Build a grid over the visible bounds; keep only land points.
+  // Density scales with zoom → effectively per-city when zoomed in,
+  // global spread when zoomed out. Open-Meteo is a global model
+  // (every point on Earth), free, no key — no station blind spots.
+  const COLS=10, ROWS=7, MAX_PTS=44;
+  const lonSpan = (E - W + 360) % 360 || 360;
+  const grid = [];
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const lat = S + (N - S) * (r + 0.5) / ROWS;
+      let lon = W + lonSpan * (c + 0.5) / COLS;
+      if(lon > 180) lon -= 360;
+      const country = _landCountryAt(lon, lat);
+      if(country === null) continue;        // ocean → skip
+      grid.push({ lat:+lat.toFixed(3), lon:+lon.toFixed(3), name: country || '' });
+    }
   }
-  // Dev fallback: use sample data filtered to current bounds
+  // If atlas not loaded (undefined) we still kept points (name undefined→'')
+  let pts = grid;
+  if(pts.length > MAX_PTS){
+    const step = pts.length / MAX_PTS;
+    pts = Array.from({length:MAX_PTS}, (_,i)=> pts[Math.floor(i*step)]);
+  }
+
+  let stations = [];
+  if(pts.length){
+    try{
+      const lats = pts.map(p=>p.lat).join(',');
+      const lons = pts.map(p=>p.lon).join(',');
+      const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lats}&longitude=${lons}&current=us_aqi`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(7000) });
+      const j = await res.json();
+      const arr = Array.isArray(j) ? j : [j];   // multi→array, single→object
+      stations = arr.map((o,i)=>{
+        const aqi = o?.current?.us_aqi;
+        if(aqi == null) return null;
+        const p = pts[i] || {};
+        return { lat:p.lat, lon:p.lon, aqi:Math.round(aqi), uid:`om-${i}`,
+                 station:{ name: p.name || (LANG==='ru'?'Качество воздуха':'Air quality') } };
+      }).filter(Boolean);
+    }catch(e){ console.warn('[AQI] open-meteo', e); }
+  }
+  // Last-resort fallback: bundled sample within bounds
   if(!stations.length){
-    stations = AQI_SAMPLE.filter(s =>
-      s.lat >= b.getSouth() && s.lat <= b.getNorth() &&
-      s.lon >= b.getWest()  && s.lon <= b.getEast()
-    );
-    if(!stations.length) stations = AQI_SAMPLE; // show all if zoomed out
+    stations = AQI_SAMPLE.filter(s => s.lat>=S && s.lat<=N && s.lon>=W && s.lon<=E);
+    if(!stations.length) stations = AQI_SAMPLE;
   }
   try {
     const json = { status:'ok', data: stations };
