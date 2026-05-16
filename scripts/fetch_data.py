@@ -45,6 +45,10 @@ RSS_FEEDS = [
     {"name": "Eurosurveillance", "url": "https://www.eurosurveillance.org/rss/content/all/latest?fmt=rss",  "tag": "ESurv"},
     # ECDC surveillance news
     {"name": "ECDC",             "url": "https://www.ecdc.europa.eu/en/news-events/rss",                    "tag": "ECDC"},
+    # ECDC Communicable Disease Threats Report — weekly, covers EU + Russia/CIS region
+    {"name": "ECDC CDTR",        "url": "https://www.ecdc.europa.eu/en/taxonomy/term/2942/feed",            "tag": "ECDC-CDTR"},
+    # CIDRAP — global infectious-disease news, regularly covers Russia/China/CIS outbreaks
+    {"name": "CIDRAP",           "url": "https://www.cidrap.umn.edu/rss.xml",                               "tag": "CIDRAP"},
     # Africa CDC
     {"name": "Africa CDC",       "url": "https://africacdc.org/feed/",                                      "tag": "AfricaCDC"},
     # PAHO news (Americas)
@@ -438,15 +442,30 @@ def _extract_number(text: str, pattern: str):
 # ---------------------------------------------------------------------------
 
 # Keywords to filter Rospotrebnadzor RSS items (epidemiology-relevant)
+# Strong outbreak signals only — specific diseases + explicit outbreak phrases.
+# Broad admin terms ("эпидемиолог", "санитарно-эпидемиологическ", "инфекц")
+# were removed: they match PR/greetings/conference press releases, not events.
 RU_EPIDEMIC_KEYWORDS = [
-    "вспышка", "эпидемия", "эпидемиолог", "заболева", "инфекц",
-    "вирус", "бактери", "холера", "грипп", "корь", "гепатит",
-    "туберкулёз", "туберкулез", "чума", "сибирская язва", "менингит",
-    "коклюш", "полиомиелит", "лихорадка", "ботулизм", "сальмонелл",
-    "дизентерия", "энцефалит", "боррелиоз", "малярия", "клещевой",
-    "бруцеллёз", "бруцеллез", "листериоз", "легионелл", "карантин",
-    "очаг заболева", "санитарно-эпидемиологическ", "геморрагическ",
-    "бешенство", "лептоспироз", "трихинелл", "иерсиниоз",
+    "вспышк", "эпидемия", "очаг заболева", "зарегистрирован случа",
+    "зарегистрированы случа", "случаи заболевания", "случаев заболевания",
+    "массовое заболевание", "карантин",
+    "холера", "грипп птиц", "птичий грипп", "корь", "гепатит а",
+    "гепатит e", "туберкул", "чума", "сибирская язва", "менингит",
+    "коклюш", "полиомиелит", "геморрагическ лихорад", "лихорадка денге",
+    "лихорадка западного нила", "ботулизм", "сальмонелл", "дизентерия",
+    "энцефалит", "боррелиоз", "малярия", "клещев", "бруцелл",
+    "листериоз", "легионелл", "бешенство", "лептоспироз", "трихинелл",
+    "иерсиниоз", "норовирус", "ротавирус", "кишечн инфекц",
+    "острая кишечная", "covid", "оспа обезьян",
+]
+
+# Press-release / non-event noise — skip outright even if a keyword matched.
+RU_PR_NOISE = [
+    "поздравлени", "приветственн", "годовщин", "конференц", "форум",
+    "день гигиены", "горячую линию", "горячая линия", "блокировк интернет",
+    "интернет-ресурс", "вебинар", "выставк", "награжден", "соглашение о",
+    "меморандум", "рабочая встреча", "рабочую встречу", "делегаци",
+    "поручениям президента", "нацпроект", "национальный проект",
 ]
 
 # Russian disease names → (English name, severity)
@@ -781,6 +800,8 @@ def fetch_rospotrebnadzor() -> list:
             pass
 
         combined = (title + " " + desc).lower()
+        if any(noise in combined for noise in RU_PR_NOISE):
+            continue
         if not any(kw in combined for kw in RU_EPIDEMIC_KEYWORDS):
             continue
 
