@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EpiScope weekly digest sender.
+Vigilo weekly digest sender.
 
 Reads:
   - public/events.json     (latest data, written by fetch_data.py earlier in the cron run)
@@ -22,8 +22,8 @@ RESEND_URL = "https://api.resend.com/emails"
 
 STRINGS = {
     "en": {
-        "subj_one":   "EpiScope · {country} — this week",
-        "subj_many":  "EpiScope · {n} countries — this week",
+        "subj_one":   "Vigilo · {country} — this week",
+        "subj_many":  "Vigilo · {n} countries — this week",
         "section_h":  "{country} — risk: {risk}",
         "threats_h":  "ACTIVE THREATS",
         "no_threats": "No active threats this week. {country} remains calm.",
@@ -32,8 +32,8 @@ STRINGS = {
         "unsub":      "Unsubscribe",
     },
     "ru": {
-        "subj_one":   "EpiScope · {country} — на этой неделе",
-        "subj_many":  "EpiScope · {n} стран — на этой неделе",
+        "subj_one":   "Vigilo · {country} — на этой неделе",
+        "subj_many":  "Vigilo · {n} стран — на этой неделе",
         "section_h":  "{country} — уровень: {risk}",
         "threats_h":  "АКТИВНЫЕ УГРОЗЫ",
         "no_threats": "На этой неделе угроз нет. {country} спокойна.",
@@ -86,7 +86,7 @@ def render_section(country_en, lang, events):
         f'</article>'
     )
 
-def render_digest(sub, events_json, site_origin="https://episcope.ru"):
+def render_digest(sub, events_json, site_origin="https://vigilo.cc"):
     lang = sub.get("lang", "en")
     L = STRINGS.get(lang, STRINGS["en"])
     countries = sub.get("countries", [])
@@ -147,7 +147,7 @@ def plan_sends(subs, events_json, now):
 
 def send_via_resend(message, to_email, api_key):
     body = {
-        "from": "EpiScope <noreply@episcope.ru>",
+        "from": "Vigilo <noreply@vigilo.cc>",
         "to": [to_email],
         "subject": message["subject"],
         "html": message["html"],

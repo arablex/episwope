@@ -1,5 +1,5 @@
 /* =========================================================
-   EpiScope v2 — refined globe + 2026 UI bindings
+   Vigilo v2 — refined globe + 2026 UI bindings
    ========================================================= */
 
 /* ── i18n ────────────────────────────────────────────────── */
@@ -568,7 +568,7 @@ async function loadFoodRecalls() {
     if (typeof addGLMarkers === 'function') addGLMarkers();
     renderMyFeed();
   } catch (e) {
-    console.warn('[EpiScope] food_recalls.json unavailable:', e.message);
+    console.warn('[Vigilo] food_recalls.json unavailable:', e.message);
   }
 }
 
@@ -581,7 +581,7 @@ async function loadHistory() {
     if (!res.ok) return;
     HISTORY = await res.json();
   } catch (e) {
-    console.warn('[EpiScope] history.json unavailable:', e.message);
+    console.warn('[Vigilo] history.json unavailable:', e.message);
   }
 }
 
@@ -684,14 +684,14 @@ function toggleFoodRecalls() {
 }
 
 /* ── Watched regions (localStorage + server sync) ────────── */
-let WATCHED = new Set(JSON.parse(localStorage.getItem('episwope_watched') || '[]'));
+let WATCHED = new Set(JSON.parse(localStorage.getItem('vigilo_watched') || '[]'));
 
 /** Debounce timer for server sync */
 let _syncTimer = null;
 
 /** PATCH /api/my-countries with current WATCHED set (debounced 1s). */
 function syncCountries() {
-  const jwt = localStorage.getItem('episwope_jwt');
+  const jwt = localStorage.getItem('vigilo_jwt');
   if (!jwt) return;                              // not logged in — no sync
   clearTimeout(_syncTimer);
   _syncTimer = setTimeout(async () => {
@@ -710,7 +710,7 @@ function syncCountries() {
 /** On login / page-load: pull server countries and merge into WATCHED.
  *  Server list wins for any country not already in local list. */
 async function loadServerCountries() {
-  const jwt = localStorage.getItem('episwope_jwt');
+  const jwt = localStorage.getItem('vigilo_jwt');
   if (!jwt) return;
   try {
     const res  = await fetch('/api/my-countries', {
@@ -721,7 +721,7 @@ async function loadServerCountries() {
     if (!Array.isArray(data.countries)) return;
     // Merge: union of local + server
     data.countries.forEach(c => WATCHED.add(c));
-    localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
+    localStorage.setItem('vigilo_watched', JSON.stringify([...WATCHED]));
     renderMyCountries();
     renderMyFeed();
     updateMobPeek();
@@ -737,7 +737,7 @@ function toggleWatch(country){
   }
   if(WATCHED.has(country)) WATCHED.delete(country);
   else WATCHED.add(country);
-  localStorage.setItem('episwope_watched', JSON.stringify([...WATCHED]));
+  localStorage.setItem('vigilo_watched', JSON.stringify([...WATCHED]));
   renderMyCountries();
   renderMyFeed();
   syncCountries();  // push to server if logged in
@@ -750,12 +750,12 @@ const FREE_COUNTRY_LIMIT = 3;
 
 function getSession() {
   try {
-    const jwt = localStorage.getItem('episwope_jwt');
+    const jwt = localStorage.getItem('vigilo_jwt');
     if (!jwt) return null;
     const [, body] = jwt.split('.');
     const payload = JSON.parse(atob(body.replace(/-/g,'+').replace(/_/g,'/')));
     if (payload.exp && payload.exp < Date.now() / 1000) {
-      localStorage.removeItem('episwope_jwt');
+      localStorage.removeItem('vigilo_jwt');
       return null;
     }
     return payload; // { email, plan, paid_until, iat, exp }
@@ -775,7 +775,7 @@ function showProGate() {
 
 const _PRO_T = {
   en: {
-    eyebrow: 'EpiScope Pro',
+    eyebrow: 'Vigilo Pro',
     title: 'Unlimited watchlist, real-time alerts &amp; PDF reports',
     price: '$4.99/mo',
     sub: 'Launching soon. Leave your email — get <b>50% off</b> at launch.',
@@ -786,7 +786,7 @@ const _PRO_T = {
     feats: ['Unlimited watched countries', 'Real-time alerts (no 24h delay)', 'Personal risk radar by location', 'Monthly PDF risk reports', 'API access'],
   },
   ru: {
-    eyebrow: 'EpiScope Pro',
+    eyebrow: 'Vigilo Pro',
     title: 'Безлимит стран, алерты в реальном времени и PDF-отчёты',
     price: '$4.99/мес',
     sub: 'Запускаем скоро. Оставь email — <b>−50%</b> на старте.',
@@ -1086,7 +1086,7 @@ async function _reportAir(country){
   }catch{ return null; }
 }
 
-let _riskUsed = +(localStorage.getItem('episwope_risk_used')||0);
+let _riskUsed = +(localStorage.getItem('vigilo_risk_used')||0);
 
 function openRiskReport(country){
   const ru = LANG==='ru';
@@ -1119,7 +1119,7 @@ function openRiskReport(country){
   ov.querySelectorAll('._rp').forEach(b=>{
     b.onclick=async()=>{
       const purpose=b.dataset.p;
-      if(!isPaid()){ _riskUsed++; localStorage.setItem('episwope_risk_used',_riskUsed); }
+      if(!isPaid()){ _riskUsed++; localStorage.setItem('vigilo_risk_used',_riskUsed); }
       if(window.ym) ym(109240834,'reachGoal','risk_report',{purpose});
       ov.querySelector('#_riskPick').style.display='none';
       const body=ov.querySelector('#_riskBody');
@@ -1340,7 +1340,7 @@ function toggleAuthPopover() {
       <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? '✦ Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
       <a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:#0F0E0C;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px">${LANG==='ru'?'Мой профиль':'My profile'}</a>
       ${isPro ? '' : `<a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:8px">${LANG==='ru'?'✦ Перейти на Pro':'✦ Upgrade to Pro'}</a>`}
-      <button onclick="localStorage.removeItem('episwope_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid #ECEAE2;border-radius:8px;background:#fff;cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
+      <button onclick="localStorage.removeItem('vigilo_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid #ECEAE2;border-radius:8px;background:#fff;cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
   } else {
     const hint = LANG === 'ru' ? 'Введи email — пришлём ссылку для входа.' : 'Enter your email — we\'ll send a login link.';
     const placeholder = LANG === 'ru' ? 'твой@email.com' : 'your@email.com';
@@ -2458,7 +2458,7 @@ function initMap(){
   map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
   map.on('error', (e) => {
-    console.error('[EpiScope] Mapbox error:', e.error?.message || e);
+    console.error('[Vigilo] Mapbox error:', e.error?.message || e);
   });
 
   map.on('style.load', () => {
@@ -3425,7 +3425,7 @@ async function loadLiveData(){
     }
 
     if(injected > 0){
-      console.log(`[EpiScope] Injected ${injected} live events`);
+      console.log(`[Vigilo] Injected ${injected} live events`);
       renderList();
       renderPanel();
       renderPopup();
@@ -3434,7 +3434,7 @@ async function loadLiveData(){
       updateMobPeek();
     }
   } catch(e){
-    console.warn('[EpiScope] Live data unavailable:', e.message);
+    console.warn('[Vigilo] Live data unavailable:', e.message);
   }
 }
 

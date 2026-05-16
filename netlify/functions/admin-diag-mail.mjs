@@ -28,7 +28,7 @@ export default async (req) => {
     RESEND_API_KEY_len: key.length,
     RESEND_API_KEY_prefix: key ? key.slice(0, 4) : null, // "re_" expected
     JWT_SECRET_set: !!process.env.JWT_SECRET,
-    from: 'EpiScope <noreply@episcope.ru>',
+    from: 'Vigilo <noreply@vigilo.cc>',
   };
 
   if (req.method === 'GET') {
@@ -63,9 +63,9 @@ export default async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'EpiScope <noreply@episcope.ru>',
+        from: 'Vigilo <noreply@vigilo.cc>',
         to: [String(to).trim().toLowerCase()],
-        subject: 'EpiScope mail diagnostic',
+        subject: 'Vigilo mail diagnostic',
         html: '<p>If you received this, Resend + domain are working.</p>',
         text: 'If you received this, Resend + domain are working.',
       }),
@@ -81,7 +81,7 @@ export default async (req) => {
     env: envReport,
     resend: { status: resendStatus, body: resendBody, exception: threw },
     hint: resendStatus === 403 || (resendBody && /domain/i.test(resendBody))
-      ? 'Likely: episcope.ru is not a verified domain in Resend. Add the domain in Resend → verify DKIM/SPF DNS records.'
+      ? 'Likely: vigilo.cc is not a verified domain in Resend. Add the domain in Resend → verify DKIM/SPF DNS records.'
       : resendStatus === 401
       ? 'Likely: RESEND_API_KEY is invalid or revoked.'
       : null,

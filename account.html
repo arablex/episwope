@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>My Profile · EpiScope</title>
+  <title>My Profile · Vigilo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
@@ -50,7 +50,7 @@
 <body>
   <div class="wrap">
     <div class="top">
-      <a class="brand" href="/app.html"><span class="badge">E</span> EpiScope</a>
+      <a class="brand" href="/app.html"><span class="badge">V</span> Vigilo</a>
       <a class="back" href="/app.html">← Back to map</a>
     </div>
     <h1 id="hTitle">My Profile</h1>
@@ -63,9 +63,9 @@ const T=(en,ru)=>LANG==='ru'?ru:en;
 
 function session(){
   try{
-    const jwt=localStorage.getItem('episwope_jwt'); if(!jwt) return null;
+    const jwt=localStorage.getItem('vigilo_jwt'); if(!jwt) return null;
     const p=JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
-    if(p.exp && p.exp < Date.now()/1000){ localStorage.removeItem('episwope_jwt'); return null; }
+    if(p.exp && p.exp < Date.now()/1000){ localStorage.removeItem('vigilo_jwt'); return null; }
     return p;
   }catch{ return null; }
 }
@@ -96,7 +96,7 @@ async function loggedInView(s){
   // alerts
   let alertsHtml=`<div class="empty">${T('Loading…','Загрузка…')}</div>`;
   try{
-    const r=await fetch('/api/my-countries',{headers:{Authorization:'Bearer '+localStorage.getItem('episwope_jwt')}});
+    const r=await fetch('/api/my-countries',{headers:{Authorization:'Bearer '+localStorage.getItem('vigilo_jwt')}});
     if(r.ok){
       const d=await r.json();
       const cs=d.countries||[];
@@ -165,7 +165,7 @@ async function render(){
   }
   root.innerHTML=await loggedInView(s);
   const out=document.getElementById('outBtn');
-  if(out) out.onclick=()=>{ localStorage.removeItem('episwope_jwt'); location.href='/'; };
+  if(out) out.onclick=()=>{ localStorage.removeItem('vigilo_jwt'); location.href='/'; };
   const up=document.getElementById('upBtn');
   if(up) up.onclick=()=>joinWaitlist(s.email,up);
 }

@@ -9,16 +9,16 @@ function escapeHtml(s) {
 
 const STRINGS = {
   en: {
-    verifySubject: 'Confirm your EpiScope subscription',
-    verifyHeadline: 'Confirm your EpiScope subscription',
+    verifySubject: 'Confirm your Vigilo subscription',
+    verifyHeadline: 'Confirm your Vigilo subscription',
     verifyBody: 'You asked to follow these countries:',
     verifyCta: 'Confirm subscription',
     verifyFooter: "If you didn't sign up, ignore this email or",
     unsubscribeWord: 'unsubscribe',
   },
   ru: {
-    verifySubject: 'Подтверди подписку на EpiScope',
-    verifyHeadline: 'Подтверди подписку на EpiScope',
+    verifySubject: 'Подтверди подписку на Vigilo',
+    verifyHeadline: 'Подтверди подписку на Vigilo',
     verifyBody: 'Ты подписываешься на эти страны:',
     verifyCta: 'Подтвердить подписку',
     verifyFooter: 'Если ты не подписывался — проигнорируй или',
@@ -63,24 +63,24 @@ ${L.verifyFooter} ${L.unsubscribeWord}: ${unsubUrl}
 export function renderMagicLinkEmail({ loginUrl, lang }) {
   const L = {
     en: {
-      subject:  'Your EpiScope login link',
-      headline: 'Log in to EpiScope Pro',
+      subject:  'Your Vigilo login link',
+      headline: 'Log in to Vigilo Pro',
       body:     'Click the button below to access your account. The link is valid for 30 days.',
-      cta:      'Log in to EpiScope',
+      cta:      'Log in to Vigilo',
       footer:   "If you didn't request this link, you can safely ignore this email.",
     },
     ru: {
-      subject:  'Ссылка для входа в EpiScope',
-      headline: 'Войти в EpiScope Pro',
+      subject:  'Ссылка для входа в Vigilo',
+      headline: 'Войти в Vigilo Pro',
       body:     'Нажми кнопку ниже чтобы войти в аккаунт. Ссылка действует 30 дней.',
-      cta:      'Войти в EpiScope',
+      cta:      'Войти в Vigilo',
       footer:   'Если ты не запрашивал эту ссылку — просто проигнорируй письмо.',
     },
   }[lang] ?? {
-    subject:  'Your EpiScope login link',
-    headline: 'Log in to EpiScope Pro',
+    subject:  'Your Vigilo login link',
+    headline: 'Log in to Vigilo Pro',
     body:     'Click the button below to access your account. The link is valid for 30 days.',
-    cta:      'Log in to EpiScope',
+    cta:      'Log in to Vigilo',
     footer:   "If you didn't request this link, you can safely ignore this email.",
   };
 
@@ -117,23 +117,23 @@ export function renderAlertEmail({ events, lang = 'en' }) {
 
   const STRINGS = {
     en: {
-      subject:  (n) => `EpiScope Alert: ${n} new outbreak${n !== 1 ? 's' : ''} in your watched countries`,
+      subject:  (n) => `Vigilo Alert: ${n} new outbreak${n !== 1 ? 's' : ''} in your watched countries`,
       headline: 'Outbreak Alert',
       intro:    'New disease activity was detected in countries you follow:',
-      cta:      'Open EpiScope',
-      ctaUrl:   'https://episcope.ru/',
-      footer:   'You are receiving these alerts because you subscribed to EpiScope outbreak monitoring.',
+      cta:      'Open Vigilo',
+      ctaUrl:   'https://vigilo.cc/',
+      footer:   'You are receiving these alerts because you subscribed to Vigilo outbreak monitoring.',
       critical: '🔴 Critical',
       alert:    '🟠 Alert',
       warning:  '🟡 Warning',
     },
     ru: {
-      subject:  (n) => `EpiScope: ${n} нов${n === 1 ? 'ая вспышка' : 'ых вспышки'} в ваших странах`,
+      subject:  (n) => `Vigilo: ${n} нов${n === 1 ? 'ая вспышка' : 'ых вспышки'} в ваших странах`,
       headline: 'Уведомление о вспышке',
       intro:    'Обнаружена новая эпидемическая активность в странах, которые вы отслеживаете:',
-      cta:      'Открыть EpiScope',
-      ctaUrl:   'https://episcope.ru/ru/',
-      footer:   'Вы получаете эти уведомления, потому что подписались на мониторинг вспышек EpiScope.',
+      cta:      'Открыть Vigilo',
+      ctaUrl:   'https://vigilo.cc/ru/',
+      footer:   'Вы получаете эти уведомления, потому что подписались на мониторинг вспышек Vigilo.',
       critical: '🔴 Критическая',
       alert:    '🟠 Тревога',
       warning:  '🟡 Предупреждение',

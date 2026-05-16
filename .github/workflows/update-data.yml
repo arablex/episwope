@@ -38,7 +38,7 @@ jobs:
         run: |
           curl -sf \
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
-            https://episcope.ru/api/admin/export-subs \
+            https://vigilo.cc/api/admin/export-subs \
             -o public/_subscribers.json || echo "[]" > public/_subscribers.json
 
       - name: Send weekly digests (Mondays only)
@@ -57,12 +57,12 @@ jobs:
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
             -H "Content-Type: application/json" \
             --data-binary "@public/_digest_sent.json" \
-            https://episcope.ru/api/admin/update-sent
+            https://vigilo.cc/api/admin/update-sent
 
       - name: Commit data if changed
         run: |
-          git config user.name  "EpiScope Bot"
-          git config user.email "bot@episcope.noreply"
+          git config user.name  "Vigilo Bot"
+          git config user.email "bot@vigilo.noreply"
           git add public/events.json public/alerts.json public/food_recalls.json public/history.json
           # Only commit if there are actual changes
           if git diff --cached --quiet; then
@@ -84,5 +84,5 @@ jobs:
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
             -H "Content-Type: application/json" \
             -d "{\"events\": ${EVENTS}}" \
-            https://episcope.ru/api/alert-check \
+            https://vigilo.cc/api/alert-check \
           || echo "⚠ alert-check failed (non-critical)"

@@ -6,7 +6,7 @@ const RESEND_URL = 'https://api.resend.com/emails';
  *  Throws on non-2xx. Caller decides whether to swallow or surface.
  *
  *  Deliverability:
- *   - default Reply-To: hello@episcope.ru (legitimate reply address)
+ *   - default Reply-To: hello@vigilo.cc (legitimate reply address)
  *   - listUnsubscribeUrl → adds RFC 8058 one-click List-Unsubscribe headers
  *     (the single strongest Gmail/Yahoo bulk-sender trust signal)
  *   - extra `headers` are merged last (caller can override)
@@ -23,9 +23,9 @@ export async function sendEmail({ to, subject, html, text, replyTo, listUnsubscr
   Object.assign(mailHeaders, headers || {});
 
   const body = {
-    from: 'EpiScope <noreply@episcope.ru>',
+    from: 'Vigilo <noreply@vigilo.cc>',
     to: Array.isArray(to) ? to : [to],
-    reply_to: replyTo || 'hello@episcope.ru',
+    reply_to: replyTo || 'hello@vigilo.cc',
     subject,
     html,
     text,

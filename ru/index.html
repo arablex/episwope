@@ -3,205 +3,532 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EpiScope — Живая карта вспышек заболеваний и радар глобальных рисков</title>
+<title>Vigilo — Живая карта вспышек заболеваний и радар глобальных рисков</title>
 <meta name="description" content="Вспышки болезней, отзывы продуктов, качество воздуха и катастрофы по всему миру на одном интерактивном глобусе. Данные ВОЗ, CDC, ECDC в реальном времени. Бесплатно.">
 <meta name="keywords" content="карта вспышек заболеваний, эпидемиологический мониторинг, ВОЗ вспышки, риски для поездок, отзывы продуктов, качество воздуха">
-<meta name="author" content="EpiScope">
+<meta name="author" content="Vigilo">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<link rel="canonical" href="https://episcope.ru/ru/">
-<link rel="alternate" hreflang="ru" href="https://episcope.ru/ru/">
-<link rel="alternate" hreflang="en" href="https://episcope.ru/">
-<link rel="alternate" hreflang="x-default" href="https://episcope.ru/">
-<meta name="theme-color" content="#E8590C">
+<link rel="canonical" href="https://vigilo.cc/ru/">
+<link rel="alternate" hreflang="ru" href="https://vigilo.cc/ru/">
+<link rel="alternate" hreflang="en" href="https://vigilo.cc/">
+<link rel="alternate" hreflang="x-default" href="https://vigilo.cc/">
+<meta name="theme-color" content="#F4F2EE">
 <link rel="manifest" href="/ru/manifest.json">
 <link rel="apple-touch-icon" href="/icon.svg">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://episcope.ru/ru/">
-<meta property="og:title" content="EpiScope — Живая карта вспышек заболеваний">
+<meta property="og:url" content="https://vigilo.cc/ru/">
+<meta property="og:title" content="Vigilo — Живая карта вспышек заболеваний">
 <meta property="og:description" content="Один глобус для глобальных угроз здоровью: вспышки, отзывы продуктов, воздух, катастрофы — данные ВОЗ/CDC/ECDC в реальном времени.">
-<meta property="og:image" content="https://episcope.ru/og.png">
+<meta property="og:image" content="https://vigilo.cc/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="EpiScope — Живая карта вспышек">
+<meta name="twitter:title" content="Vigilo — Живая карта вспышек">
 <meta name="twitter:description" content="Вспышки, отзывы продуктов, воздух и катастрофы по миру. Данные ВОЗ/CDC в реальном времени.">
-<meta name="twitter:image" content="https://episcope.ru/og.png">
+<meta name="twitter:image" content="https://vigilo.cc/og.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"EpiScope","url":"https://episcope.ru/ru/","applicationCategory":"HealthApplication","operatingSystem":"Web","inLanguage":["ru","en"],"offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"},"description":"Глобальный мониторинг вспышек, продбезопасности, качества воздуха и катастроф в реальном времени на интерактивном глобусе."}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Vigilo","url":"https://vigilo.cc/ru/","applicationCategory":"HealthApplication","operatingSystem":"Web","inLanguage":["ru","en"],"offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"},"description":"Глобальный мониторинг вспышек, продбезопасности, качества воздуха и катастроф в реальном времени на интерактивном глобусе."}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
 <style>
   :root{
-    --bg:#F4F2EE; --card:#fff; --ink:#0F0E0C; --ink2:#3B3A36;
-    --muted:#807E76; --muted2:#B6B3AA; --line:#ECEAE2;
+    --bg:#F4F2EE; --bg2:#EFEDE6; --card:#FFFFFF;
+    --ink:#0F0E0C; --ink2:#46443E; --muted:#86847B; --faint:#B4B1A8;
+    --line:#E8E5DC; --line2:#DEDBD0;
     --accent:#E8590C; --accent2:#C92A2A; --ok:#19A463;
+    --s-crit:#C92A2A; --s-alert:#E8590C; --s-warn:#E0A90E; --s-info:#A6A49A;
     --sans:"Inter",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    --sh-sm:0 1px 2px rgba(22,19,12,.05), 0 10px 24px -16px rgba(22,19,12,.12);
+    --sh-md:0 1px 3px rgba(22,19,12,.05), 0 26px 50px -26px rgba(22,19,12,.18);
+    --sh-lg:0 2px 6px rgba(22,19,12,.05), 0 44px 84px -34px rgba(22,19,12,.24);
+    --r:18px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);
-    -webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.011em}
+    -webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-.011em}
   a{color:inherit;text-decoration:none}
   img{max-width:100%;display:block}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
-  .btn{display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 26px;
-    border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;border:0;transition:transform .15s}
-  .btn:hover{transform:translateY(-1px)}
-  .btn-pri{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;
-    box-shadow:0 12px 28px -12px rgba(201,42,42,.5)}
-  .btn-gho{background:var(--card);color:var(--ink);border:1px solid var(--line)}
-  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-  header{position:sticky;top:0;z-index:50;background:rgba(244,242,238,.82);
-    backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;gap:14px;height:64px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em}
-  .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(150deg,#E8590C,#C92A2A);
-    color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px}
+  ::selection{background:rgba(232,89,12,.18)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;
+    letter-spacing:.04em;color:var(--accent);background:rgba(232,89,12,.08);
+    border:1px solid rgba(232,89,12,.16);padding:6px 13px;border-radius:999px}
+  .eyebrow .pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 4px rgba(232,89,12,.18)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;
+    padding:0 26px;border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;
+    border:0;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+  .btn-pri{background:var(--ink);color:#fff}
+  .btn-pri:hover{transform:translateY(-2px);box-shadow:0 16px 30px -14px rgba(15,14,12,.5)}
+  .btn-acc{background:linear-gradient(180deg,#F0631A,var(--accent));color:#fff;
+    box-shadow:0 14px 26px -14px rgba(232,89,12,.6)}
+  .btn-acc:hover{transform:translateY(-2px);box-shadow:0 20px 34px -14px rgba(232,89,12,.65)}
+  .btn-gho{background:var(--card);color:var(--ink);border:1px solid var(--line2)}
+  .btn-gho:hover{transform:translateY(-2px);box-shadow:var(--sh-sm)}
+
+  header{position:sticky;top:0;z-index:60;background:rgba(244,242,238,.78);
+    backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid transparent;
+    transition:border-color .2s}
+  header.s{border-color:var(--line)}
+  .nav{display:flex;align-items:center;gap:16px;height:68px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(155deg,#F0631A,#C92A2A);
+    color:#fff;display:grid;place-items:center;font-weight:900;font-size:17px;
+    box-shadow:0 6px 14px -6px rgba(201,42,42,.55)}
+  .brand b{color:var(--accent)}
   .nav .sp{flex:1}
-  .nav-lnk{font-size:14px;font-weight:600;color:var(--muted);display:none}
+  .nav-lnk{font-size:14px;font-weight:600;color:var(--muted);display:none;transition:color .15s}
   .nav-lnk:hover{color:var(--ink)}
-  .lang{font-size:13px;font-weight:700;color:var(--muted);padding:7px 11px;border:1px solid var(--line);border-radius:9px}
-  .hbtn{height:40px;padding:0 16px;border-radius:11px;font-size:13.5px;font-weight:700;
-    background:var(--ink);color:#fff;display:inline-flex;align-items:center;gap:7px}
-  @media(min-width:860px){ .nav-lnk{display:inline} }
-  .hero{padding:64px 0 36px;text-align:center}
-  .hero h1{font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:-.035em;line-height:1.07;margin:18px auto 0;max-width:16ch}
-  .hero p{font-size:clamp(15px,2.4vw,19px);color:var(--ink2);max-width:580px;margin:18px auto 0;line-height:1.6}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-  .heroimg{margin:44px auto 0;max-width:920px;border-radius:20px;overflow:hidden;
-    border:1px solid var(--line);box-shadow:0 40px 80px -40px rgba(28,24,18,.35)}
-  .trust{margin:34px auto 0;display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:center;align-items:center}
-  .trust span{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--card);
-    border:1px solid var(--line);border-radius:999px;padding:6px 12px}
-  .trust .lbl{background:none;border:0;color:var(--muted2);padding:0;letter-spacing:.1em;text-transform:uppercase;font-size:10.5px}
-  section{padding:60px 0}
-  .sec-h{text-align:center;max-width:640px;margin:0 auto 44px}
-  .sec-h h2{font-size:clamp(25px,4vw,36px);font-weight:900;letter-spacing:-.03em;margin-top:10px;line-height:1.18}
-  .sec-h p{color:var(--ink2);margin-top:14px;font-size:16px}
-  .grid{display:grid;gap:16px;grid-template-columns:1fr}
-  @media(min-width:680px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:1fr 1fr 1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
-  .card .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
-    background:rgba(232,89,12,.1);color:var(--accent);margin-bottom:16px}
-  .card h3{font-size:17px;font-weight:800;letter-spacing:-.01em}
-  .card p{color:var(--ink2);font-size:14px;margin-top:8px;line-height:1.6}
-  .steps{counter-reset:s}
-  .step{display:flex;gap:18px;padding:22px 0;border-bottom:1px solid var(--line)}
+  .lang{font-size:13px;font-weight:700;color:var(--muted);padding:8px 12px;
+    border:1px solid var(--line2);border-radius:10px;transition:.15s}
+  .lang:hover{color:var(--ink);border-color:var(--ink)}
+  .hbtn{height:42px;padding:0 18px;border-radius:11px;font-size:13.5px;font-weight:700;
+    background:var(--ink);color:#fff;display:inline-flex;align-items:center;gap:7px;transition:transform .15s}
+  .hbtn:hover{transform:translateY(-1px)}
+  @media(min-width:880px){.nav-lnk{display:inline}}
+
+  .hero{padding:78px 0 26px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;
+    background:radial-gradient(640px 360px at 50% -8%,rgba(232,89,12,.10),transparent 70%)}
+  .hero h1{font-size:clamp(36px,6.2vw,68px);font-weight:900;letter-spacing:-.045em;
+    line-height:1.04;margin:22px auto 0;max-width:16ch}
+  .hero h1 .hl{color:var(--accent)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:var(--ink2);max-width:620px;
+    margin:22px auto 0;line-height:1.6}
+  .cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .micro{margin-top:16px;font-size:13px;color:var(--muted);display:flex;gap:7px;
+    align-items:center;justify-content:center}
+  .micro svg{color:var(--ok)}
+
+  .stage{margin:54px auto 0;max-width:1000px;position:relative}
+  .stage::after{content:"";position:absolute;left:8%;right:8%;bottom:-2px;height:60px;
+    background:radial-gradient(60% 100% at 50% 0,rgba(22,19,12,.16),transparent 70%);
+    filter:blur(8px);z-index:-1}
+  .device{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:var(--sh-lg);overflow:hidden;text-align:left}
+  .dbar{height:42px;display:flex;align-items:center;gap:7px;padding:0 16px;
+    background:#FBFAF6;border-bottom:1px solid var(--line)}
+  .dbar i{width:10px;height:10px;border-radius:50%;background:#E4E1D7}
+  .durl{margin-left:14px;font-size:12px;font-weight:600;color:var(--muted);
+    background:#fff;border:1px solid var(--line);padding:5px 14px;border-radius:8px;
+    display:flex;align-items:center;gap:7px}
+  .durl svg{color:var(--ok)}
+  .dbody{display:grid;grid-template-columns:1fr;min-height:340px}
+  @media(min-width:760px){.dbody{grid-template-columns:1.55fr 1fr}}
+  .map{position:relative;background:
+    radial-gradient(120% 120% at 30% 20%,#FBF9F3,#F1EFE6 70%,#EDEBE2);
+    display:grid;place-items:center;padding:26px;min-height:300px}
+  .map svg{width:100%;max-width:340px;height:auto}
+  .pin-card{position:absolute;left:22px;bottom:20px;width:min(252px,74%);
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--sh-md);overflow:hidden}
+  .pin-card .top{height:4px;background:var(--accent2)}
+  .pin-card .in{padding:13px 15px}
+  .pin-card .dn{font-size:15px;font-weight:800;letter-spacing:-.02em}
+  .pin-card .dl{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .pin-card .mx{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .pin-card .mx .v{font-size:16px;font-weight:900;letter-spacing:-.02em}
+  .pin-card .mx .k{font-size:9px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .rail{border-top:1px solid var(--line);padding:16px 18px;background:#fff}
+  @media(min-width:760px){.rail{border-top:0;border-left:1px solid var(--line)}}
+  .rail-h{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .rail-h .lv{margin-left:auto;display:flex;align-items:center;gap:5px;color:var(--ok);
+    font-size:10px;letter-spacing:.04em}
+  .rail-h .lv b{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+  .ri{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ri:last-child{border-bottom:0}
+  .ri .d{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .ri .rb{flex:1;min-width:0}
+  .ri .rt{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .ri .rm{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+  .sources{margin:46px auto 0;text-align:center}
+  .sources .lbl{font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint)}
+  .src-row{margin-top:16px;display:flex;flex-wrap:wrap;gap:9px 10px;justify-content:center}
+  .src-row span{font-size:12.5px;font-weight:700;color:var(--muted);background:var(--card);
+    border:1px solid var(--line);border-radius:999px;padding:7px 15px}
+
+  section{padding:84px 0}
+  .sec-h{text-align:center;max-width:660px;margin:0 auto 56px}
+  .sec-h h2{font-size:clamp(26px,4.2vw,41px);font-weight:900;letter-spacing:-.036em;
+    margin-top:14px;line-height:1.13}
+  .sec-h p{color:var(--ink2);margin-top:16px;font-size:17px;line-height:1.6}
+  .band{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+  .grid3{display:grid;gap:18px;grid-template-columns:1fr}
+  @media(min-width:720px){.grid3{grid-template-columns:repeat(3,1fr)}}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:30px 26px;transition:transform .18s,box-shadow .18s}
+  .pcard:hover{transform:translateY(-3px);box-shadow:var(--sh-sm)}
+  .pcard .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+    background:var(--bg);color:var(--ink);margin-bottom:18px}
+  .pcard h3{font-size:18px;font-weight:800;letter-spacing:-.018em}
+  .pcard p{color:var(--ink2);font-size:14.5px;margin-top:9px;line-height:1.62}
+
+  .steps{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:4px}
+  .step{display:flex;gap:22px;padding:26px 0;border-bottom:1px solid var(--line)}
   .step:last-child{border-bottom:0}
-  .step .n{counter-increment:s;flex-shrink:0;width:38px;height:38px;border-radius:50%;
-    background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:900;font-size:15px}
-  .step .n::before{content:counter(s)}
-  .step h3{font-size:18px;font-weight:800}
-  .step p{color:var(--ink2);font-size:14.5px;margin-top:5px}
-  .price{display:grid;gap:18px;grid-template-columns:1fr;max-width:760px;margin:0 auto}
+  .step .n{flex-shrink:0;width:42px;height:42px;border-radius:13px;
+    background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px}
+  .step h3{font-size:19px;font-weight:800;letter-spacing:-.02em}
+  .step p{color:var(--ink2);font-size:15px;margin-top:6px;line-height:1.6}
+
+  .fx{display:flex;flex-direction:column;gap:80px}
+  .fx-row{display:grid;gap:36px;align-items:center;grid-template-columns:1fr}
+  @media(min-width:880px){.fx-row{grid-template-columns:1fr 1.05fr;gap:64px}
+    .fx-row.rev .fx-txt{order:2}}
+  .fx-tag{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+  .fx-txt h3{font-size:clamp(22px,3vw,31px);font-weight:900;letter-spacing:-.032em;
+    margin:12px 0 0;line-height:1.16}
+  .fx-txt p{color:var(--ink2);font-size:16px;margin-top:14px;line-height:1.62}
+  .fx-list{list-style:none;margin:20px 0 0;display:flex;flex-direction:column;gap:11px}
+  .fx-list li{font-size:14px;color:var(--ink2);display:flex;gap:10px;align-items:flex-start}
+  .fx-list .c{flex-shrink:0;width:18px;height:18px;border-radius:50%;
+    background:rgba(232,89,12,.12);color:var(--accent);display:grid;place-items:center;
+    font-size:11px;font-weight:900;margin-top:1px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;
+    box-shadow:var(--sh-md);overflow:hidden}
+  .ph{height:38px;display:flex;align-items:center;gap:6px;padding:0 15px;
+    background:#FBFAF6;border-bottom:1px solid var(--line)}
+  .ph i{width:8px;height:8px;border-radius:50%;background:#E4E1D7}
+  .ph b{margin-left:9px;font-size:11px;font-weight:700;color:var(--muted)}
+  .glb{background:radial-gradient(120% 120% at 32% 22%,#FBF9F3,#F0EEE5 72%);
+    position:relative;display:grid;place-items:center;padding:24px;min-height:286px}
+  .glb svg{width:100%;max-width:280px}
+  .glb .pop{position:absolute;left:18px;bottom:16px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--sh-sm);padding:11px 14px;width:min(232px,70%)}
+  .glb .pop .pn{font-size:14px;font-weight:800;letter-spacing:-.02em}
+  .glb .pop .pl{font-size:11px;color:var(--muted);margin-top:1px}
+  .glb .pop .pm{margin-top:9px;font-size:11px;color:var(--ink2)}
+  .glb .pop .pm b{color:var(--s-crit)}
+  .feed{padding:6px 18px 16px}
+  .feed .fh{display:flex;align-items:center;padding:15px 0 11px;border-bottom:1px solid var(--line);
+    font-size:13px;font-weight:800}
+  .feed .fh .ct{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--muted);
+    background:var(--bg);padding:3px 10px;border-radius:999px}
+  .fi{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .fi:last-child{border-bottom:0}
+  .fi .fd{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .fi .fbd{flex:1;min-width:0}
+  .fi .ft{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px}
+  .fi .ft img{width:16px;height:12px;border-radius:2px;object-fit:cover;flex-shrink:0}
+  .fi .fm{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .fi .fg{font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;flex-shrink:0;align-self:center}
+  .g-o{background:rgba(201,42,42,.10);color:#C92A2A}
+  .g-f{background:rgba(232,89,12,.10);color:#E8590C}
+  .rg{padding:24px 22px 22px}
+  .rg svg{width:216px;max-width:100%;display:block;margin:0 auto 4px}
+  .bk{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+  .bk .r{display:flex;align-items:center;gap:12px}
+  .bk .r>span{font-size:11.5px;color:var(--ink2);width:140px;flex-shrink:0}
+  .bk .tr{flex:1;height:7px;background:var(--bg2);border-radius:999px;overflow:hidden}
+  .bk .tr i{display:block;height:100%;border-radius:999px}
+  .bk .r b{font-size:11.5px;font-weight:800;width:30px;text-align:right}
+  .unlock{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:12.5px;font-weight:700;color:var(--accent);background:rgba(232,89,12,.09);
+    border:1px solid rgba(232,89,12,.2);padding:11px;border-radius:11px}
+
+  .cred{display:grid;gap:18px;grid-template-columns:1fr;max-width:820px;margin:0 auto}
+  @media(min-width:680px){.cred{grid-template-columns:1fr 1fr}}
+  .cc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px}
+  .cc .t{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:800}
+  .cc .dot{width:9px;height:9px;border-radius:50%}
+  .cc p{color:var(--ink2);font-size:13.5px;margin-top:12px;line-height:1.62}
+  .note{font-size:12.5px;color:var(--muted);text-align:center;max-width:680px;
+    margin:26px auto 0;line-height:1.6}
+
+  .price{display:grid;gap:20px;grid-template-columns:1fr;max-width:800px;margin:0 auto}
   @media(min-width:680px){.price{grid-template-columns:1fr 1fr}}
-  .plan{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px}
-  .plan.pro{border:2px solid var(--accent);position:relative}
-  .plan .tag{position:absolute;top:-12px;right:24px;background:var(--accent);color:#fff;
-    font-size:11px;font-weight:800;padding:4px 12px;border-radius:999px;letter-spacing:.04em}
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 30px}
+  .plan.pro{border:1.5px solid var(--ink);position:relative;box-shadow:var(--sh-md)}
+  .plan .tag{position:absolute;top:-13px;right:26px;background:var(--accent);color:#fff;
+    font-size:11px;font-weight:800;padding:5px 13px;border-radius:999px;letter-spacing:.03em}
   .plan .pn{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-  .plan .pp{font-size:34px;font-weight:900;letter-spacing:-.03em;margin:8px 0 2px}
+  .plan .pp{font-size:38px;font-weight:900;letter-spacing:-.03em;margin:10px 0 2px}
   .plan .pp small{font-size:14px;font-weight:600;color:var(--muted)}
-  .plan ul{list-style:none;margin:18px 0 22px;display:flex;flex-direction:column;gap:9px}
-  .plan li{font-size:14px;color:var(--ink2);display:flex;gap:9px}
+  .plan ul{list-style:none;margin:20px 0 24px;display:flex;flex-direction:column;gap:11px}
+  .plan li{font-size:14px;color:var(--ink2);display:flex;gap:10px;align-items:flex-start}
   .plan li .c{color:var(--ok);font-weight:900;flex-shrink:0}
-  .plan .btn{width:100%;justify-content:center}
-  #wlMsg{font-size:12.5px;color:var(--ok);text-align:center;margin-top:10px;min-height:16px}
-  .ctaband{background:var(--ink);color:#fff;border-radius:24px;padding:54px 28px;text-align:center;margin:60px 0}
-  .ctaband h2{font-size:clamp(23px,4vw,32px);font-weight:900;letter-spacing:-.03em}
-  .ctaband p{color:rgba(255,255,255,.7);margin:14px auto 0;max-width:520px}
-  .ctaband .btn-pri{margin-top:26px}
-  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px}
-  .foot{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
-  footer a:hover{color:var(--ink)}
+  .plan .btn{width:100%}
+  #wlMsg{font-size:13px;color:var(--ok);text-align:center;margin-top:12px;min-height:18px;font-weight:600}
+  #wlEmail{width:100%;height:48px;padding:0 15px;border:1.5px solid var(--line2);
+    border-radius:12px;font:inherit;font-size:14px;background:#FBFAF6;outline:none;
+    margin-bottom:10px;transition:border-color .15s}
+  #wlEmail:focus{border-color:var(--accent)}
+
+  .final{margin:84px 0;text-align:center;border-radius:28px;padding:64px 28px;
+    background:linear-gradient(165deg,#FCEFE3,#F7E4D2);border:1px solid rgba(232,89,12,.22);
+    position:relative;overflow:hidden}
+  .final::before{content:"";position:absolute;inset:0;z-index:0;
+    background:radial-gradient(520px 280px at 50% 0,rgba(232,89,12,.16),transparent 70%)}
+  .final>*{position:relative;z-index:1}
+  .final h2{font-size:clamp(24px,3.8vw,36px);font-weight:900;letter-spacing:-.035em;line-height:1.13}
+  .final p{color:var(--ink2);margin:15px auto 0;max-width:500px;font-size:16px}
+  .final .btn{margin-top:28px}
+
+  footer{border-top:1px solid var(--line);padding:40px 0;color:var(--muted);font-size:13px}
+  .foot{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center}
   .foot .sp{flex:1}
-  .note{font-size:11px;color:var(--muted2);margin-top:14px;line-height:1.6}
+  footer a:hover{color:var(--ink)}
+  .fnote{font-size:11.5px;color:var(--faint);margin-top:16px;line-height:1.6}
 </style>
 </head>
 <body>
 
-<header>
+<header id="hdr">
   <div class="wrap nav">
-    <a class="brand" href="/ru/"><span class="logo">E</span> EpiScope</a>
+    <a class="brand" href="/ru/"><span class="logo">V</span>Vigi<b>lo</b></a>
     <span class="sp"></span>
-    <a class="nav-lnk" href="#how">Как работает</a>
+    <a class="nav-lnk" href="#how">Как это работает</a>
     <a class="nav-lnk" href="#features">Возможности</a>
     <a class="nav-lnk" href="#data">Данные</a>
     <a class="nav-lnk" href="#pricing">Тарифы</a>
     <a class="lang" href="/">EN</a>
-    <a class="hbtn" href="/ru/app.html">Открыть карту →</a>
+    <a class="hbtn" href="/ru/app.html">Приложение →</a>
   </div>
 </header>
 
 <main>
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow">Радар глобальных рисков для здоровья</span>
-      <h1>Все угрозы здоровью мира — на одной живой карте</h1>
-      <p>Вспышки болезней, отзывы продуктов, качество воздуха и катастрофы — агрегируем из ВОЗ, CDC, ECDC и 9+ официальных источников, обновление каждые 12 часов. Хватит листать пугающие новости. Получи структуру.</p>
+      <span class="eyebrow"><span class="pulse"></span> Радар глобальных угроз здоровью</span>
+      <h1>Видь угрозы здоровью в мире <span class="hl">раньше</span>, чем они дойдут до тебя</h1>
+      <p class="sub">Вспышки болезней, отзывы продуктов, качество воздуха и катастрофы — агрегировано из ВОЗ, CDC, ECDC и 9+ официальных источников на одной живой карте. Хватит думскроллить. Получи структуру.</p>
       <div class="cta">
-        <a class="btn btn-pri" href="/ru/app.html">Открыть живую карту →</a>
+        <a class="btn btn-acc" href="/ru/app.html">Открыть живую карту →</a>
         <a class="btn btn-gho" href="#pricing">Тарифы</a>
       </div>
-      <div class="trust">
-        <span class="lbl">Источники</span>
-        <span>ВОЗ</span><span>CDC</span><span>ECDC</span><span>GDACS</span><span>USGS</span><span>NASA EONET</span><span>WFP</span><span>FDA</span><span>RASFF</span>
+      <div class="micro">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+        Бесплатно и без регистрации
       </div>
-      <div class="heroimg"><img src="/og.png" alt="Глобальная карта вспышек EpiScope" width="1200" height="630" loading="eager"></div>
+
+      <div class="stage">
+        <div class="device">
+          <div class="dbar">
+            <i></i><i></i><i></i>
+            <span class="durl"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>vigilo.cc/app</span>
+          </div>
+          <div class="dbody">
+            <div class="map">
+              <svg viewBox="0 0 320 300" aria-hidden="true">
+                <defs>
+                  <radialGradient id="sphL" cx="38%" cy="32%" r="78%">
+                    <stop offset="0" stop-color="#FFFFFF"/><stop offset="60%" stop-color="#F4F1E8"/><stop offset="100%" stop-color="#EBE8DD"/>
+                  </radialGradient>
+                </defs>
+                <g transform="translate(160 150)">
+                  <circle r="132" fill="url(#sphL)" stroke="#DEDBCF"/>
+                  <g fill="none" stroke="#DCD9CD" stroke-width="1">
+                    <ellipse rx="132" ry="45"/><ellipse rx="132" ry="90"/><line x1="-132" x2="132" y1="0" y2="0"/>
+                    <ellipse rx="45" ry="132"/><ellipse rx="90" ry="132"/><line x1="0" x2="0" y1="-132" y2="132"/>
+                  </g>
+                  <g>
+                    <circle cx="-58" cy="-46" r="13" fill="#C92A2A" opacity=".16"/><circle cx="-58" cy="-46" r="5" fill="#C92A2A"/>
+                    <circle cx="46" cy="-68" r="12" fill="#E8590C" opacity=".16"/><circle cx="46" cy="-68" r="4.5" fill="#E8590C"/>
+                    <circle cx="76" cy="22" r="13" fill="#C92A2A" opacity=".16"/><circle cx="76" cy="22" r="5" fill="#C92A2A"/>
+                    <circle cx="-28" cy="60" r="10" fill="#E0A90E" opacity=".2"/><circle cx="-28" cy="60" r="4" fill="#E0A90E"/>
+                    <circle cx="106" cy="-12" r="12" fill="#E8590C" opacity=".16"/><circle cx="106" cy="-12" r="4.5" fill="#E8590C"/>
+                    <circle cx="6" cy="94" r="13" fill="#C92A2A" opacity=".16"/><circle cx="6" cy="94" r="5" fill="#C92A2A"/>
+                    <circle cx="-94" cy="20" r="12" fill="#E8590C" opacity=".16"/><circle cx="-94" cy="20" r="4.5" fill="#E8590C"/>
+                    <circle cx="52" cy="72" r="10" fill="#E0A90E" opacity=".2"/><circle cx="52" cy="72" r="4" fill="#E0A90E"/>
+                  </g>
+                </g>
+              </svg>
+              <div class="pin-card">
+                <div class="top"></div>
+                <div class="in">
+                  <div class="dn">Холера</div>
+                  <div class="dl">ДР Конго · Активна</div>
+                  <div class="mx">
+                    <div><div class="v">12 340</div><div class="k">Случаев</div></div>
+                    <div><div class="v">Март</div><div class="k">С</div></div>
+                    <div><div class="v" style="color:var(--s-crit)">↑18%</div><div class="k">30 дн</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rail">
+              <div class="rail-h">Живая лента <span class="lv"><b></b> live</span></div>
+              <div class="ri"><span class="d" style="background:var(--s-crit)"></span><div class="rb"><div class="rt">Холера — ДР Конго</div><div class="rm">WHO DON · 2 ч назад</div></div></div>
+              <div class="ri"><span class="d" style="background:var(--s-alert)"></span><div class="rb"><div class="rt">Всплеск денге — Бразилия</div><div class="rm">ECDC CDTR · 6 ч назад</div></div></div>
+              <div class="ri"><span class="d" style="background:var(--s-alert)"></span><div class="rb"><div class="rt">Отзыв листерии — США</div><div class="rm">FDA · 9 ч назад</div></div></div>
+              <div class="ri"><span class="d" style="background:var(--s-warn)"></span><div class="rb"><div class="rt">Качество воздуха — Дели</div><div class="rm">Open-Meteo · live</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sources">
+        <div class="lbl">Проверенные источники</div>
+        <div class="src-row">
+          <span>WHO</span><span>CDC</span><span>ECDC</span><span>GDACS</span><span>USGS</span><span>NASA EONET</span><span>WFP</span><span>FDA</span><span>EU RASFF</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section style="padding-top:20px">
+  <section style="padding-top:30px">
     <div class="wrap">
       <div class="sec-h">
         <span class="eyebrow">Проблема</span>
-        <h2>Новости пугают, но не информируют</h2>
+        <h2>Новости тебя пугают. Но не информируют.</h2>
         <p>Угрозы здоровью реальны — но разбросаны по сотням ведомств, на десятках языков, погребены под паническими заголовками.</p>
       </div>
-      <div class="grid c3">
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><h3>Разрозненно</h3><p>ВОЗ, CDC, ECDC, минздравы — каждый в своём силосе, формате и языке.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>Нет контекста</h3><p>Это рядом с тобой? Растёт или спадает? Насколько серьёзно — туристу или местному?</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><h3>Нет раннего сигнала</h3><p>Когда это в ленте — уже не новость. Нет алертов по местам, которые тебе важны.</p></div>
+      <div class="grid3">
+        <div class="pcard"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><h3>Фрагментарно</h3><p>ВОЗ, CDC, ECDC, нацминздравы — каждый в своём бункере, формате и языке.</p></div>
+        <div class="pcard"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>Нет контекста</h3><p>Это рядом с тобой? Растёт или спадает? Насколько серьёзно — для туриста и для жителя?</p></div>
+        <div class="pcard"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><h3>Нет раннего сигнала</h3><p>Когда это попадает в ленту — это уже старость. Нет алертов по важным тебе местам.</p></div>
       </div>
     </div>
   </section>
 
-  <section id="how" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <section id="how" class="band">
     <div class="wrap">
-      <div class="sec-h"><span class="eyebrow">Как работает</span><h2>От глобального шума — к твоему личному радару</h2></div>
-      <div class="steps" style="max-width:720px;margin:0 auto">
-        <div class="step"><span class="n"></span><div><h3>Открой живой глобус</h3><p>Все активные вспышки, катастрофы, отзывы продуктов и алерты воздуха — одна интерактивная 3D-карта с цветовой кодировкой угрозы.</p></div></div>
-        <div class="step"><span class="n"></span><div><h3>Следи за своими странами</h3><p>Выбери важные места — дом, семья за границей, следующая поездка. Они становятся твоим персональным фидом.</p></div></div>
-        <div class="step"><span class="n"></span><div><h3>Получай алерты и оценку риска</h3><p>Email-алерты при изменениях. Отчёт по рискам в один тап — для поездки, бизнеса или переезда, с индексом 0–100.</p></div></div>
+      <div class="sec-h"><span class="eyebrow">Как это работает</span><h2>От мирового шума — к твоему личному радару</h2></div>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><div><h3>Открой живой глобус</h3><p>Все активные вспышки, катастрофы, отзывы еды и алерты по воздуху — одна интерактивная карта по шкале серьёзности. Без регистрации.</p></div></div>
+        <div class="step"><span class="n">2</span><div><h3>Следи за своими странами</h3><p>Выбери важные места — дом, родные за границей, следующая поездка. Они станут твоей личной лентой.</p></div></div>
+        <div class="step"><span class="n">3</span><div><h3>Получай алерты и оценивай риск</h3><p>Email-алерты при изменениях. Отчёт по риску в один тап — поездка, бизнес или переезд — с индексом 0–100.</p></div></div>
       </div>
     </div>
   </section>
 
   <section id="features">
     <div class="wrap">
-      <div class="sec-h"><span class="eyebrow">Что внутри</span><h2>Один инструмент — все глобальные угрозы</h2></div>
-      <div class="grid c3">
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg></div><h3>Живой глобус вспышек</h3><p>WHO DON, CDC, ECDC, GDELT и новости — 80+ активных событий, обновление каждые 12ч.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></div><h3>Отзывы продуктов</h3><p>FDA, EU RASFF, UK FSA, Health Canada — заражённые продукты по странам.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.6 4.6A2 2 0 1 1 11 8H2M17.7 2.3A2.5 2.5 0 1 1 19.5 6.5H2M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></div><h3>Воздух где угодно</h3><p>AQI в реальном времени для любого города Земли (Open-Meteo) — не только столиц.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M19 9l-5 5-4-4-3 3"/></svg></div><h3>Отчёты + индекс риска</h3><p>Под цель (поездка/бизнес/переезд) с индексом 0–100, прививками и экстренными номерами.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-6"/></svg></div><h3>История и тренды</h3><p>Угроза растёт или спадает? Графики по странам за период.</p></div>
-        <div class="card"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor"/></svg></div><h3>Алерты и личный фид</h3><p>Email-алерты по твоим странам. Чистая лента — только то, что важно тебе.</p></div>
+      <div class="sec-h"><span class="eyebrow">Внутри Vigilo</span><h2>Посмотри до регистрации</h2>
+        <p>Реальные экраны живого приложения. Всё ниже — бесплатно.</p></div>
+
+      <div class="fx">
+
+        <div class="fx-row">
+          <div class="fx-txt">
+            <span class="fx-tag">Живой глобус</span>
+            <h3>Все активные угрозы на одной карте</h3>
+            <p>ВОЗ, CDC, ECDC, GDACS, USGS, NASA и новости — 80+ живых событий, по шкале серьёзности, обновление каждые 12&nbsp;часов. Нажми любой маркер — полная картина.</p>
+            <ul class="fx-list">
+              <li><span class="c">✓</span> Вспышки, катастрофы, отзывы еды и воздух — один экран</li>
+              <li><span class="c">✓</span> Шкала серьёзности 0–5, читается мгновенно</li>
+              <li><span class="c">✓</span> Тап по маркеру → случаи, тренд, источник</li>
+            </ul>
+          </div>
+          <div class="fx-vis">
+            <div class="panel">
+              <div class="ph"><i></i><i></i><i></i><b>Живая карта</b></div>
+              <div class="glb">
+                <svg viewBox="0 0 280 270" aria-hidden="true">
+                  <defs><radialGradient id="g2" cx="38%" cy="32%" r="78%">
+                    <stop offset="0" stop-color="#FFFFFF"/><stop offset="60%" stop-color="#F4F1E8"/><stop offset="100%" stop-color="#EBE8DD"/>
+                  </radialGradient></defs>
+                  <g transform="translate(140 135)">
+                    <circle r="116" fill="url(#g2)" stroke="#DEDBCF"/>
+                    <g fill="none" stroke="#DCD9CD" stroke-width="1">
+                      <ellipse rx="116" ry="40"/><ellipse rx="116" ry="80"/><line x1="-116" x2="116" y1="0" y2="0"/>
+                      <ellipse rx="40" ry="116"/><ellipse rx="80" ry="116"/><line x1="0" x2="0" y1="-116" y2="116"/>
+                    </g>
+                    <g>
+                      <circle cx="-50" cy="-40" r="12" fill="#C92A2A" opacity=".16"/><circle cx="-50" cy="-40" r="4.6" fill="#C92A2A"/>
+                      <circle cx="40" cy="-58" r="11" fill="#E8590C" opacity=".16"/><circle cx="40" cy="-58" r="4.2" fill="#E8590C"/>
+                      <circle cx="66" cy="18" r="12" fill="#C92A2A" opacity=".16"/><circle cx="66" cy="18" r="4.6" fill="#C92A2A"/>
+                      <circle cx="-22" cy="52" r="9" fill="#E0A90E" opacity=".2"/><circle cx="-22" cy="52" r="3.6" fill="#E0A90E"/>
+                      <circle cx="92" cy="-10" r="11" fill="#E8590C" opacity=".16"/><circle cx="92" cy="-10" r="4.2" fill="#E8590C"/>
+                      <circle cx="6" cy="82" r="12" fill="#C92A2A" opacity=".16"/><circle cx="6" cy="82" r="4.6" fill="#C92A2A"/>
+                    </g>
+                  </g>
+                </svg>
+                <div class="pop">
+                  <div class="pn">Холера</div>
+                  <div class="pl">ДР Конго · Активна</div>
+                  <div class="pm">12 340 случаев · <b>↑18%</b> 30 дн</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fx-row rev">
+          <div class="fx-txt">
+            <span class="fx-tag">Твой радар</span>
+            <h3>Только те места, что важны тебе</h3>
+            <p>Выбери страны — дом, родные за границей, следующая поездка. Vigilo фильтрует мировой шум в одну чистую ленту и пишет на почту, как только что-то меняется.</p>
+            <ul class="fx-list">
+              <li><span class="c">✓</span> Личная лента по всем типам угроз</li>
+              <li><span class="c">✓</span> Email-алерты при изменении — не через сутки</li>
+              <li><span class="c">✓</span> Подтверждено vs Сигнал — явно помечено</li>
+            </ul>
+          </div>
+          <div class="fx-vis">
+            <div class="panel">
+              <div class="ph"><i></i><i></i><i></i><b>Твоя лента</b></div>
+              <div class="feed">
+                <div class="fh">Отслеживаемые страны <span class="ct">3 страны</span></div>
+                <div class="fi"><span class="fd" style="background:var(--s-crit)"></span><div class="fbd"><div class="ft"><img src="https://flagcdn.com/cd.svg" alt="">Холера — ДР Конго</div><div class="fm">WHO DON · 2 ч назад</div></div><span class="fg g-o">Вспышка</span></div>
+                <div class="fi"><span class="fd" style="background:var(--s-alert)"></span><div class="fbd"><div class="ft"><img src="https://flagcdn.com/br.svg" alt="">Всплеск денге — Бразилия</div><div class="fm">ECDC CDTR · 6 ч назад</div></div><span class="fg g-o">Вспышка</span></div>
+                <div class="fi"><span class="fd" style="background:var(--s-alert)"></span><div class="fbd"><div class="ft"><img src="https://flagcdn.com/us.svg" alt="">Листерия — упакованные салаты</div><div class="fm">FDA · 9 ч назад</div></div><span class="fg g-f">Еда</span></div>
+                <div class="fi"><span class="fd" style="background:var(--s-warn)"></span><div class="fbd"><div class="ft"><img src="https://flagcdn.com/br.svg" alt="">Качество воздуха — Сан-Паулу</div><div class="fm">Open-Meteo · 12 ч назад</div></div><span class="fg g-f">Воздух</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fx-row">
+          <div class="fx-txt">
+            <span class="fx-tag">Отчёт по риску · Pro</span>
+            <h3>Ответ 0–100, а не паническая новость</h3>
+            <p>Один тап превращает ленту в отчёт под цель — поездка, бизнес или переезд — с композитным баллом риска, прививками и экстренными контактами.</p>
+            <ul class="fx-list">
+              <li><span class="c">✓</span> Композитный индекс риска 0–100 с гейджем</li>
+              <li><span class="c">✓</span> Разбивка: эпид · здравоохранение · среда · инфраструктура</li>
+              <li><span class="c">✓</span> Прививки, экстренные номера и экспорт в PDF</li>
+            </ul>
+          </div>
+          <div class="fx-vis">
+            <div class="panel">
+              <div class="ph"><i></i><i></i><i></i><b>Отчёт по риску — образец</b></div>
+              <div class="rg">
+                <svg viewBox="0 0 240 140" aria-hidden="true">
+                  <path d="M 28 124 A 92 92 0 0 1 212 124" fill="none" stroke="#EAE7DC" stroke-width="16" stroke-linecap="round"/>
+                  <path d="M 28 124 A 92 92 0 0 1 166.8 44.8" fill="none" stroke="#E8590C" stroke-width="16" stroke-linecap="round"/>
+                  <line x1="120" y1="124" x2="166.8" y2="44.8" stroke="#0F0E0C" stroke-width="3" stroke-linecap="round"/>
+                  <circle cx="120" cy="124" r="6" fill="#0F0E0C"/>
+                  <text x="120" y="102" text-anchor="middle" font-family="Inter,sans-serif" font-size="40" font-weight="900" fill="#0F0E0C">67</text>
+                  <text x="120" y="120" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="800" fill="#E8590C" letter-spacing="0.5">ВЫСОКИЙ РИСК</text>
+                </svg>
+                <div class="bk">
+                  <div class="r"><span>Эпид-активность</span><div class="tr"><i style="width:78%;background:#C92A2A"></i></div><b>78</b></div>
+                  <div class="r"><span>Дефицит медицины</span><div class="tr"><i style="width:59%;background:#E8590C"></i></div><b>59</b></div>
+                  <div class="r"><span>Среда</span><div class="tr"><i style="width:45%;background:#E0A90E"></i></div><b>45</b></div>
+                  <div class="r"><span>Инфраструктура</span><div class="tr"><i style="width:38%;background:#E0A90E"></i></div><b>38</b></div>
+                </div>
+                <div class="unlock">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                  Полный отчёт — $5
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <section id="data" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <section id="data" class="band">
     <div class="wrap">
       <div class="sec-h"><span class="eyebrow">Доверие</span><h2>Официальные источники. Честно о границах.</h2>
         <p>Агрегируем авторитетные фиды и помечаем уровень доверия. Никогда не выдаём слух за факт.</p></div>
-      <div class="grid c2" style="max-width:760px;margin:0 auto">
-        <div class="card"><h3>Подтверждено</h3><p>WHO Disease Outbreak News · ECDC CDTR · CDC Travel Notices · GDACS · USGS · NASA EONET · WFP HungerMapLIVE · FDA · EU RASFF.</p></div>
-        <div class="card"><h3>Сигналы</h3><p>Google News (7 языков) и GDELT — извлечено AI, дедуплицировано, явно помечено как неподтверждённое, не выше «критического».</p></div>
+      <div class="cred">
+        <div class="cc"><div class="t"><span class="dot" style="background:var(--ok)"></span> Подтверждено</div><p>WHO Disease Outbreak News · ECDC CDTR · CDC Travel Notices · GDACS · USGS · NASA EONET · WFP HungerMapLIVE · FDA · EU RASFF.</p></div>
+        <div class="cc"><div class="t"><span class="dot" style="background:var(--s-warn)"></span> Сигналы</div><p>Google News (7 языков) и GDELT — извлечено AI, дедуплицировано, явно помечено как неподтверждённое, не выше «критического».</p></div>
       </div>
-      <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0">Обновление каждые 12 часов автоматическим пайплайном. Покрытие источников по ряду стран (включая рутинный эпиднадзор РФ/Китая) структурно ограничено — и мы честно пишем это в приложении, а не маскируем.</p>
+      <p class="note">Обновление каждые 12 часов автоматическим пайплайном. Покрытие источников по ряду стран (включая рутинный эпиднадзор РФ/Китая) структурно ограничено — и мы честно пишем это в приложении, а не маскируем.</p>
     </div>
   </section>
 
@@ -231,8 +558,7 @@
             <li><span class="c">✓</span> Отчёты по рискам + экспорт PDF</li>
           </ul>
           <form id="wl" onsubmit="return wlSubmit(event)">
-            <input id="wlEmail" type="email" required placeholder="ваш@email.com"
-              style="width:100%;height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:14px;background:#FAFAF8;outline:none;margin-bottom:9px">
+            <input id="wlEmail" type="email" required placeholder="ваш@email.com">
             <button class="btn btn-pri" type="submit">В список ожидания</button>
           </form>
           <div id="wlMsg"></div>
@@ -242,24 +568,24 @@
   </section>
 
   <div class="wrap">
-    <div class="ctaband">
+    <div class="final">
       <h2>Мир шумный. Твой радар — нет.</h2>
       <p>Открой живую карту — регистрация не нужна, чтобы исследовать.</p>
-      <a class="btn btn-pri" href="/ru/app.html">Открыть EpiScope →</a>
+      <a class="btn btn-acc" href="/ru/app.html">Открыть Vigilo →</a>
     </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap foot">
-    <a class="brand" href="/ru/"><span class="logo">E</span> EpiScope</a>
+    <a class="brand" href="/ru/"><span class="logo">V</span>Vigi<b>lo</b></a>
     <span class="sp"></span>
     <a href="/ru/app.html">Живая карта</a>
     <a href="/ru/privacy.html">Конфиденциальность</a>
-    <a href="mailto:hello@episcope.ru">hello@episcope.ru</a>
+    <a href="mailto:hello@vigilo.cc">hello@vigilo.cc</a>
     <a href="/">English</a>
   </div>
-  <div class="wrap"><div class="note">© 2026 EpiScope · Не является медицинской консультацией. Агрегированные данные эпиднадзора для ситуационной осведомлённости.</div></div>
+  <div class="wrap"><div class="fnote">© 2026 Vigilo · Не является медицинской консультацией. Агрегированные данные эпиднадзора для ситуационной осведомлённости.</div></div>
 </footer>
 
 <script>
@@ -275,6 +601,8 @@ async function wlSubmit(e){
   document.getElementById('wlMsg').textContent='✓ Ты в списке — −50% на старте.';
   return false;
 }
+(function(){var h=document.getElementById('hdr');addEventListener('scroll',function(){
+  h.classList.toggle('s',scrollY>8);},{passive:true});})();
 </script>
 <!-- Yandex.Metrika -->
 <script type="text/javascript">

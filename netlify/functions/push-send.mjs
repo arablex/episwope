@@ -35,11 +35,11 @@ export default async (req) => {
     return new Response(JSON.stringify({ error: 'invalid_json' }), { status: 400, headers: cors() });
   }
 
-  const { title = 'EpiScope Alert', body: msgBody = '', url = '/', tag = 'episwope-alert', lang } = body;
+  const { title = 'Vigilo Alert', body: msgBody = '', url = '/', tag = 'vigilo-alert', lang } = body;
   if (!msgBody) return new Response(JSON.stringify({ error: 'body_required' }), { status: 400, headers: cors() });
 
   webpush.setVapidDetails(
-    'mailto:noreply@episcope.ru',
+    'mailto:noreply@vigilo.cc',
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY,
   );

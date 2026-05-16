@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>EpiScope · Signing in…</title>
+  <title>Vigilo · Signing in…</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <style>
@@ -71,15 +71,15 @@
           return;
         }
 
-        localStorage.setItem('episwope_jwt', token);
+        localStorage.setItem('vigilo_jwt', token);
 
         const isPro = data.plan === 'pro';
         spinner.style.display = 'none';
-        title.textContent = isPro ? 'Welcome to EpiScope Pro!' : 'Signed in!';
+        title.textContent = isPro ? 'Welcome to Vigilo Pro!' : 'Signed in!';
         document.getElementById('card').innerHTML += `
           <p style="color:#807E76;font-size:13px">${data.email}</p>
           <span class="plan ${isPro ? '' : 'free'}">${isPro ? '⭐ Pro' : 'Free plan'}</span>
-          <br><a class="back" href="/app.html">Go to EpiScope →</a>
+          <br><a class="back" href="/app.html">Go to Vigilo →</a>
         `;
 
         setTimeout(() => { location.href = '/app.html'; }, 2000);

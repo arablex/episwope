@@ -13,7 +13,7 @@ function makeDeps() {
     sendEmail: async (msg) => { sent.push(msg); return { id: 'mock' }; },
     now: () => new Date('2026-05-14T10:00:00Z'),
     randomToken: () => 'tok_' + (blobs.size + sent.length),
-    siteOrigin: 'https://episcope.ru',
+    siteOrigin: 'https://vigilo.cc',
   };
 }
 
@@ -31,7 +31,7 @@ test('valid new subscription creates pending record and sends verify email', asy
   assert.equal(rec.lang, 'ru');
   assert.equal(rec.status, 'pending');
   assert.equal(deps.sent.length, 1);
-  assert.match(deps.sent[0].html, /episcope\.ru\/api\/verify/);
+  assert.match(deps.sent[0].html, /vigilo\.cc\/api\/verify/);
 });
 
 test('subscribing same email to second country appends, sends one more verify', async () => {

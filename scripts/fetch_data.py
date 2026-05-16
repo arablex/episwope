@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EpiScope data fetcher — runs every 12 hours via GitHub Actions.
+Vigilo data fetcher — runs every 12 hours via GitHub Actions.
 
 Sources (in priority order):
   1. ReliefWeb API        — structured health/disease reports, JSON, no key needed
@@ -589,7 +589,7 @@ def fetch_reliefweb() -> list:
 
     # Use GET with query params — simpler and avoids 400 errors
     params = urllib.parse.urlencode([
-        ("appname", "episcope"),
+        ("appname", "vigilo"),
         ("filter[field]", "primary_type.name"),
         ("filter[value]", "Epidemic"),
         ("limit", "30"),
@@ -604,7 +604,7 @@ def fetch_reliefweb() -> list:
     ])
     req = urllib.request.Request(
         f"https://api.reliefweb.int/v2/reports?{params}",
-        headers={"User-Agent": "EpiScope/2.0 (episcope.ru)", "Accept": "application/json"},
+        headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)", "Accept": "application/json"},
     )
     results = []
     try:
@@ -655,7 +655,7 @@ def fetch_who_don_json() -> list:
     for url in endpoints:
         try:
             req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+                "User-Agent": "Mozilla/5.0 Vigilo/2.0",
                 "Accept": "application/json",
             })
             with urllib.request.urlopen(req, timeout=15) as resp:
@@ -708,7 +708,7 @@ def fetch_healthmap() -> list:
     )
     try:
         req = urllib.request.Request(url, headers={
-            "User-Agent": "EpiScope/2.0 (episcope.ru)",
+            "User-Agent": "Vigilo/2.0 (vigilo.cc)",
             "Accept": "application/json",
         })
         with urllib.request.urlopen(req, timeout=20) as resp:
@@ -949,7 +949,7 @@ def fetch_china_cdc_weekly() -> list:
     for home_url in ["https://weekly.chinacdc.cn/en/", "https://weekly.chinacdc.cn/"]:
         try:
             req = urllib.request.Request(home_url, headers={
-                "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+                "User-Agent": "Mozilla/5.0 Vigilo/2.0",
                 "Accept": "text/html,*/*",
             })
             with urllib.request.urlopen(req, timeout=12) as resp:
@@ -986,7 +986,7 @@ def fetch_china_cdc_weekly() -> list:
     for path in candidates[:40]:  # hard cap: 40 candidates max
         url = f"https://weekly.chinacdc.cn{path}"
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 EpiScope/2.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 Vigilo/2.0"})
             with urllib.request.urlopen(req, timeout=7) as resp:
                 html = resp.read().decode("utf-8", errors="replace")
             checked += 1
@@ -1017,7 +1017,7 @@ def fetch_rss(feed: dict) -> list:
         # Follow redirects (urllib handles 301/302 but not always 308)
         opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
         req = urllib.request.Request(feed["url"], headers={
-            "User-Agent": "Mozilla/5.0 EpiScope/2.0 (episcope.ru)",
+            "User-Agent": "Mozilla/5.0 Vigilo/2.0 (vigilo.cc)",
             "Accept": "application/rss+xml,application/xml,text/xml,*/*",
         })
         with opener.open(req, timeout=15) as resp:
@@ -1081,7 +1081,7 @@ def fetch_gdacs() -> list:
     print("Fetching GDACS …", flush=True)
     url = "https://www.gdacs.org/xml/rss.xml"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             content = resp.read()
     except Exception as e:
@@ -1183,7 +1183,7 @@ def fetch_usgs_quakes() -> list:
     print("Fetching USGS earthquakes …", flush=True)
     url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
         with urllib.request.urlopen(req, timeout=20) as resp:
             data = json.loads(resp.read())
     except Exception as e:
@@ -1247,7 +1247,7 @@ def fetch_eonet() -> list:
     print("Fetching NASA EONET …", flush=True)
     url = "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
         with urllib.request.urlopen(req, timeout=20) as resp:
             data = json.loads(resp.read())
     except Exception as e:
@@ -1301,7 +1301,7 @@ def fetch_wfp_hunger() -> list:
     print("Fetching WFP HungerMapLIVE …", flush=True)
     url = "https://api.hungermapdata.org/v1/foodsecurity/country"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
         with urllib.request.urlopen(req, timeout=20) as resp:
             data = json.loads(resp.read())
     except Exception as e:
@@ -1375,7 +1375,7 @@ def fetch_gdelt() -> list:
         last = attempt == ATTEMPTS - 1
         try:
             req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 (compatible; EpiScope/2.0; +https://episcope.ru)",
+                "User-Agent": "Mozilla/5.0 (compatible; Vigilo/2.0; +https://vigilo.cc)",
                 "Accept": "application/json",
             })
             with urllib.request.urlopen(req, timeout=35) as resp:
@@ -1588,7 +1588,7 @@ def fetch_fda_recalls() -> list:
     )
     try:
         req = urllib.request.Request(url, headers={
-            "User-Agent": "EpiScope/2.0 (episcope.ru)",
+            "User-Agent": "Vigilo/2.0 (vigilo.cc)",
             "Accept": "application/json",
         })
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -1660,7 +1660,7 @@ def fetch_food_rss_source(src: dict) -> list:
     """Fetch a food-safety RSS feed and parse into recall items."""
     try:
         req = urllib.request.Request(src["url"], headers={
-            "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+            "User-Agent": "Mozilla/5.0 Vigilo/2.0",
             "Accept": "application/rss+xml,application/xml,text/xml,*/*",
         })
         opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
@@ -1745,7 +1745,7 @@ def fetch_rasff() -> list:
     )
     try:
         req = urllib.request.Request(url, headers={
-            "User-Agent": "Mozilla/5.0 EpiScope/2.0",
+            "User-Agent": "Mozilla/5.0 Vigilo/2.0",
             "Accept": "application/json",
             "Referer": "https://webgate.ec.europa.eu/rasff-window/screen/search",
         })

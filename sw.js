@@ -1,4 +1,4 @@
-const CACHE = 'episwope-v3';   // bump → landing/app split, old cache cleared
+const CACHE = 'vigilo-v4';   // bump → rebrand EpiScope→Vigilo, old episwope-v3 purged
 const SHELL = [
   '/',
   '/ru/',
@@ -62,7 +62,7 @@ self.addEventListener('fetch', e => {
 
 // ── Push: show notification ───────────────────────────────────────────────────
 self.addEventListener('push', e => {
-  let data = { title: 'EpiScope', body: 'New outbreak alert', url: '/' };
+  let data = { title: 'Vigilo', body: 'New outbreak alert', url: '/' };
   try { data = { ...data, ...e.data.json() }; } catch (_) {}
 
   e.waitUntil(
@@ -70,7 +70,7 @@ self.addEventListener('push', e => {
       body:    data.body,
       icon:    '/icon.svg',
       badge:   '/icon.svg',
-      tag:     data.tag || 'episwope-alert',
+      tag:     data.tag || 'vigilo-alert',
       data:    { url: data.url },
       vibrate: [200, 100, 200],
       actions: [{ action: 'view', title: 'View' }],

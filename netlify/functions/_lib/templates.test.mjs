@@ -4,8 +4,8 @@ import { renderVerifyEmail } from './templates.mjs';
 
 const SAMPLE = {
   countries: ['Brazil', 'Vietnam'],
-  verifyUrl: 'https://episcope.ru/api/verify?t=abc',
-  unsubUrl: 'https://episcope.ru/api/unsubscribe?t=xyz',
+  verifyUrl: 'https://vigilo.cc/api/verify?t=abc',
+  unsubUrl: 'https://vigilo.cc/api/unsubscribe?t=xyz',
 };
 
 test('English verify email contains all dynamic fields', () => {
