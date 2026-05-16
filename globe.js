@@ -548,6 +548,33 @@ function shortFoodLabel(hazard, reason){
   return { en:'Food recall', ru:'Отзыв продукта' };
 }
 
+/* Localized Russian hazard label for the finite food-hazard label set
+   (from scripts/fetch_data.py FOOD_HAZARD_PATTERNS + RASFF/UK/CA passthrough).
+   Falls back to shortFoodLabel for unknown strings so RU is never raw English. */
+const FOOD_HAZARD_RU = {
+  'Listeria':'Листерия', 'E. coli':'Кишечная палочка (E. coli)',
+  'Salmonella':'Сальмонелла', 'Hepatitis A':'Гепатит A',
+  'Botulism':'Ботулизм', 'Norovirus':'Норовирус',
+  'Campylobacter':'Кампилобактер', 'Staphylococcus':'Стафилококк',
+  'Allergen: Milk':'Аллерген: молоко', 'Allergen: Peanuts':'Аллерген: арахис',
+  'Allergen: Tree nuts':'Аллерген: орехи', 'Allergen: Gluten':'Аллерген: глютен',
+  'Allergen: Shellfish':'Аллерген: моллюски', 'Allergen: Fish':'Аллерген: рыба',
+  'Allergen: Soy':'Аллерген: соя', 'Allergen: Eggs':'Аллерген: яйцо',
+  'Allergen: Sesame':'Аллерген: кунжут', 'Undeclared allergen':'Незаявленный аллерген',
+  'Foreign: Metal':'Посторонний предмет: металл',
+  'Foreign: Glass':'Посторонний предмет: стекло',
+  'Foreign: Plastic':'Посторонний предмет: пластик',
+  'Chemical contamination':'Химическое загрязнение',
+  'Mold/spoilage':'Плесень/порча', 'Food safety':'Пищевая безопасность',
+};
+function foodHazardRU(hazard, reason){
+  if(hazard && FOOD_HAZARD_RU[hazard]) return FOOD_HAZARD_RU[hazard];
+  return shortFoodLabel(hazard, reason).ru;
+}
+function foodHazardLoc(hazard, reason){
+  return LANG==='ru' ? foodHazardRU(hazard, reason) : (hazard || 'Food safety');
+}
+
 function recallToEvent(r){
   const c = findCountry(r.country) ||
             (r.iso && typeof COUNTRY_BY_ISO2 !== 'undefined' ? COUNTRY_BY_ISO2[r.iso] : null);
@@ -555,15 +582,19 @@ function recallToEvent(r){
   const lng = c?.lng ?? 10.0;
   const src  = r.source || 'Recall';
   const prod = (r.product || '').trim();
-  const sum  = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
+  const prodShort = prod.length > 38 ? prod.slice(0, 38).replace(/\s+\S*$/, '') + '…' : prod;
+  const sum   = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
+  const sumRu = `${foodHazardRU(r.hazard, r.reason)} — ${prod}`.trim();
   const sev  = ['critical','alert','warning','monitoring'].includes(r.severity) ? r.severity : 'warning';
   const country = r.country || (r.iso === 'EU' ? 'European Union' : '');
   const lab = shortFoodLabel(r.hazard, r.reason);
+  const hzEn = r.hazard || lab.en;
+  const hzRu = foodHazardRU(r.hazard, r.reason);
   return {
     id: r.id, type: 'food', _recall: true, _live: true,
     code: `RECALL-${src}-${(r.date||'').slice(0,10)}`,
-    name: lab.en,
-    name_ru: lab.ru,
+    name:    prodShort ? `${hzEn} · ${prodShort}` : hzEn,
+    name_ru: prodShort ? `${hzRu} · ${prodShort}` : hzRu,
     pathogen: r.hazard || 'Food safety',
     country,
     iso: c?.num || 0,
@@ -575,7 +606,7 @@ function recallToEvent(r){
     cases: 0, deaths: 0, cfr: 0, rt: 0, new24: 0,
     sevIdx: { critical:80, alert:60, warning:40, monitoring:20 }[sev] || 40,
     trend: [0,0,0,0,0,0,0,0],
-    blurb: sum, summary: sum, blurb_ru: sum, summary_ru: sum,
+    blurb: sum, summary: sum, blurb_ru: sumRu, summary_ru: sumRu,
     events: [],
     link: r.link || '', _link: r.link || '',
     date: r.date || '',
@@ -588,7 +619,16 @@ async function loadFoodRecalls() {
     const res  = await fetch(base + 'public/food_recalls.json?_=' + Date.now());
     if (!res.ok) return;
     const data = await res.json();
-    FOOD_RECALLS = data.recalls || [];
+    // Collapse genuine duplicates: same hazard + product + country reported by
+    // more than one feed (FDA/RASFF/UK/CA). Distinct cases are kept (product differs).
+    const _seen = new Set();
+    FOOD_RECALLS = (data.recalls || []).filter(r => {
+      if (!r) return false;
+      const k = `${(r.hazard||'').toLowerCase()}|${(r.product||'').slice(0,60).toLowerCase()}|${r.country||r.iso||''}`;
+      if (_seen.has(k)) return false;
+      _seen.add(k);
+      return true;
+    });
 
     // Merge recalls into OUTBREAKS as food events (idempotent on re-fetch)
     for (let i = OUTBREAKS.length - 1; i >= 0; i--) {
@@ -694,7 +734,7 @@ function renderFoodAlerts() {
     return `
       <div class="food-card" onclick="window.open('${r.link || '#'}','_blank')">
         <div class="food-card-head">
-          <span class="food-hbadge ${r.severity}">${r.hazard}</span>
+          <span class="food-hbadge ${r.severity}">${foodHazardLoc(r.hazard, r.reason)}</span>
           <span style="font-size:11px;color:var(--muted)">${flag} ${dateStr}</span>
         </div>
         <div class="food-product">${(r.product || '').slice(0, 90)}</div>
