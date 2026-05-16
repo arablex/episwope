@@ -933,6 +933,55 @@ function _riskVerdict(country, outbreaks){
   return { lvl, color, label:(map[LANG==='ru'?'ru':'en'])[lvl] };
 }
 
+/* Composite 0-100 risk score from all signals + component breakdown. */
+function _riskScore({ obs, country, air, recalls, hs }){
+  const ru = LANG==='ru';
+  const worstIdx = obs.reduce((m,o)=> Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
+  const sevPts   = Math.min(45, (worstIdx/5)*38 + Math.min(obs.length*3, 12));
+  const tr       = countryTravelRisk(country);
+  const advPts   = tr==='high'?30 : tr==='medium'?17 : 4;
+  const aqiPts   = air==null ? 4 : Math.max(0, Math.min(15, (air-40)/160*15));
+  const foodIns  = obs.some(o=>/insecur|food crisis|дефицит еды|нехватк/i.test((o.name||'')+(o.name_ru||'')));
+  const foodPts  = Math.min(10, recalls.length*1.5 + (foodIns?6:0));
+  let trendPts = 0, trendLbl = ru?'стабилен':'stable';
+  if(hs && hs.total.length>1){
+    const d=(hs.total[hs.total.length-1]||0)-(hs.total[0]||0);
+    if(d>0){ trendPts=6; trendLbl=ru?'растёт':'rising'; }
+    else if(d<0){ trendPts=-4; trendLbl=ru?'снижается':'falling'; }
+  }
+  const raw = sevPts + advPts + aqiPts + foodPts + trendPts;
+  const score = Math.max(0, Math.min(100, Math.round(raw)));
+  const band = score>=75 ? {k:'severe',  c:'#C92A2A', en:'Severe',   ru:'Серьёзный'}
+             : score>=50 ? {k:'high',    c:'#E8590C', en:'High',     ru:'Высокий'}
+             : score>=25 ? {k:'moderate',c:'#E4B514', en:'Moderate', ru:'Умеренный'}
+             :             {k:'low',     c:'#19A463', en:'Low',      ru:'Низкий'};
+  const parts = [
+    { l: ru?'Вспышки':'Outbreaks',    v: Math.round(sevPts), max:45, c:'#C92A2A' },
+    { l: ru?'Тревел-уровень':'Advisory', v: Math.round(advPts), max:30, c:'#E8590C' },
+    { l: ru?'Воздух':'Air quality',   v: Math.round(aqiPts), max:15, c:'#6B7F3A' },
+    { l: ru?'Еда':'Food',             v: Math.round(foodPts), max:10, c:'#A0522D' },
+    { l: ru?'Тренд':'Trend',          v: trendPts, max:6,  c:'#1D6FA4', note: trendLbl },
+  ];
+  return { score, band, parts };
+}
+
+/* Pro semicircle gauge (SVG). 0-100, colored arc + needle + big number. */
+function _riskGauge(score, color, label){
+  const W=240, H=140, cx=120, cy=124, r=92, sw=16;
+  const pol = (deg)=>{ const a=(180-deg)*Math.PI/180; return [cx + r*Math.cos(a), cy - r*Math.sin(a)]; };
+  const arc = (d0,d1)=>{ const [x0,y0]=pol(d0), [x1,y1]=pol(d1); const large = (d1-d0)>180?1:0; return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
+  const deg = score/100*180;
+  const [nx,ny] = pol(deg);
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:200px;max-width:100%;display:block;margin:2px auto 0">
+    <path d="${arc(0,180)}" fill="none" stroke="#ECEAE2" stroke-width="${sw}" stroke-linecap="round"/>
+    <path d="${arc(0,Math.max(0.5,deg))}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round"/>
+    <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#0F0E0C" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="6" fill="#0F0E0C"/>
+    <text x="${cx}" y="${cy-22}" text-anchor="middle" font-family="Inter,sans-serif" font-size="40" font-weight="900" fill="#0F0E0C">${score}</text>
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="${color}" letter-spacing="0.5">${label.toUpperCase()}</text>
+  </svg>`;
+}
+
 function _purposeGuidance(purpose, country, outbreaks){
   const ru = LANG==='ru';
   const hasResp = outbreaks.some(o=>/flu|influenza|covid|measles|respir|tubercul|грипп|корь|тубер/i.test(o.name||o.disease||''));
@@ -1032,6 +1081,7 @@ async function buildRiskReport(country, purpose){
   const pObj = RISK_PURPOSES.find(p=>p.id===purpose) || RISK_PURPOSES[0];
   const air = await _reportAir(country);
   const hs = (typeof historySeries==='function') ? historySeries(country) : null;
+  const rs = _riskScore({ obs, country, air, recalls, hs });
   let trendTxt='';
   if(hs && hs.total.length>1){
     const d = (hs.total[hs.total.length-1]||0) - (hs.total[0]||0);
@@ -1112,6 +1162,23 @@ async function buildRiskReport(country, purpose){
         ${trendTxt?chip(ru?'Тренд':'Trend', trendTxt, trendClr):''}
         ${chip(ru?'Воздух':'Air', airTxt, aqiClr)}
         ${recalls.length?chip(ru?'Отзывы':'Recalls', recalls.length, '#E8590C'):''}
+      </div>
+    </div>
+
+    ${_sec(ru?'Индекс риска':'Risk index','<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>')}
+    <div style="background:#fff;border:1px solid #ECEAE2;border-radius:16px;padding:16px 16px 18px">
+      ${_riskGauge(rs.score, rs.band.c, ru?rs.band.ru:rs.band.en)}
+      <div style="text-align:center;font-size:11px;color:#807E76;margin:2px 0 14px">${ru?'Композитный индекс · 0–100 · агрегирует все сигналы':'Composite index · 0–100 · aggregates all signals'}</div>
+      ${rs.parts.map(p=>{
+        const pct = Math.max(0, Math.min(100, (p.v/p.max)*100));
+        return `<div style="display:flex;align-items:center;gap:10px;margin:7px 0">
+          <span style="width:108px;font-size:11.5px;color:#3B3A36;flex-shrink:0">${p.l}${p.note?` <span style="color:#807E76">(${p.note})</span>`:''}</span>
+          <span style="flex:1;height:7px;background:#F2F0E8;border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
+          <span style="width:46px;text-align:right;font-size:11.5px;font-weight:700;color:#0F0E0C;font-variant-numeric:tabular-nums">${p.v}/${p.max}</span>
+        </div>`;
+      }).join('')}
+      <div style="font-size:10px;color:#B6B3AA;margin-top:12px;line-height:1.5;border-top:1px dashed #ECEAE2;padding-top:10px">
+        ${ru?'Методика: тяжесть вспышек (45) + тревел-уровень (30) + воздух (15) + еда (10) + тренд (±6). Покрытие источников по ряду стран ограничено.':'Method: outbreak severity (45) + travel advisory (30) + air (15) + food (10) + trend (±6). Source coverage is limited for some countries.'}
       </div>
     </div>
 
