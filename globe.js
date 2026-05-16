@@ -468,6 +468,42 @@ function countryTravelRisk(country){
   return 'low';
 }
 
+/* Curated development / health-system baseline — NOT an official advisory.
+   Used to normalise risk: the same nominal outbreak is far less dangerous to
+   a traveller in a high-capacity country than in a fragile one. */
+const BASELINE_LOW = new Set([
+  'United States','Canada','United Kingdom','Ireland','Germany','France','Italy',
+  'Spain','Portugal','Netherlands','Belgium','Luxembourg','Switzerland','Austria',
+  'Sweden','Norway','Finland','Denmark','Iceland','Estonia','Latvia','Lithuania',
+  'Poland','Czechia','Czech Republic','Slovakia','Slovenia','Hungary','Croatia',
+  'Greece','Japan','South Korea','Korea, Republic of','Singapore','Taiwan',
+  'Hong Kong','Australia','New Zealand','Israel','United Arab Emirates','Qatar',
+  'Kuwait','Bahrain','Cyprus','Malta',
+]);
+const BASELINE_HIGH = new Set([
+  'Afghanistan','Somalia','South Sudan','Sudan','Yemen','Syria',
+  'Syrian Arab Republic','Democratic Republic of the Congo',
+  'Democratic Republic of Congo','Central African Republic','Chad','Niger',
+  'Mali','Burkina Faso','Haiti','Libya','Myanmar','Burundi','Eritrea',
+  'Mozambique','Nigeria','Ethiopia','Venezuela',
+]);
+function countryBaselineRisk(country){
+  if(BASELINE_LOW.has(country))  return 'low';
+  if(BASELINE_HIGH.has(country)) return 'high';
+  return 'medium';
+}
+/* Capacity-aware effective tier: baseline blended with current worst *disease*
+   severity. Strong-system countries absorb more before escalating. */
+function countryRiskTier(country){
+  const base = countryBaselineRisk(country);
+  const dz = OUTBREAKS.filter(o => o.country===country &&
+    (o.type||'epidemic')!=='air' && (o.type||'epidemic')!=='food');
+  const worst = dz.reduce((m,o)=>Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
+  if(base==='low')  return worst>=5 ? 'medium' : 'low';
+  if(base==='high') return worst>=2 ? 'high'   : 'medium';
+  return worst>=4 ? 'high' : worst>=2 ? 'medium' : 'low';
+}
+
 /* ── Food Safety Recalls ─────────────────────────── */
 let FOOD_RECALLS = [];
 let _foodExpanded = false;
@@ -924,15 +960,14 @@ function _sec(label, svgPath){
 }
 
 function _riskVerdict(country, outbreaks){
-  const worst = outbreaks.reduce((m,o)=> (SEV[o.sev]?.idx ?? 0) > (SEV[m?.sev]?.idx ?? -1) ? o : m, null);
-  const risk = countryTravelRisk(country);
+  const worstIdx = outbreaks.reduce((m,o)=> Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
+  const risk = countryRiskTier(country);
   const map = {
     en:{ low:'Low risk', medium:'Moderate risk', high:'High risk', extreme:'Severe risk' },
     ru:{ low:'Низкий риск', medium:'Умеренный риск', high:'Высокий риск', extreme:'Серьёзный риск' },
   };
-  let lvl = risk==='high'?'high':risk==='medium'?'medium':'low';
-  if(worst && SEV[worst.sev]?.idx >= 4) lvl='extreme';
-  else if(worst && SEV[worst.sev]?.idx >= 3 && lvl!=='high') lvl='high';
+  let lvl = risk;                              // capacity-aware tier
+  if(risk==='high' && worstIdx >= 5) lvl='extreme';   // genuine catastrophe only
   const color = {low:'#19A463', medium:'#E4B514', high:'#E8590C', extreme:'#C92A2A'}[lvl];
   return { lvl, color, label:(map[LANG==='ru'?'ru':'en'])[lvl] };
 }
@@ -940,20 +975,32 @@ function _riskVerdict(country, outbreaks){
 /* Composite 0-100 risk score from all signals + component breakdown. */
 function _riskScore({ obs, country, air, recalls, hs }){
   const ru = LANG==='ru';
-  const worstIdx = obs.reduce((m,o)=> Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
-  const sevPts   = Math.min(45, (worstIdx/5)*38 + Math.min(obs.length*3, 12));
-  const tr       = countryTravelRisk(country);
-  const advPts   = tr==='high'?30 : tr==='medium'?17 : 4;
-  const aqiPts   = air==null ? 4 : Math.max(0, Math.min(15, (air-40)/160*15));
-  const foodIns  = obs.some(o=>/insecur|food crisis|дефицит еды|нехватк/i.test((o.name||'')+(o.name_ru||'')));
-  const foodPts  = Math.min(10, recalls.length*1.5 + (foodIns?6:0));
+  // Disease/disaster only — air & food have their own components (no triple-count).
+  const dz = obs.filter(o => { const t=o.type||'epidemic'; return t!=='air' && t!=='food'; });
+  const worstIdx = dz.reduce((m,o)=> Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
+  const serious  = dz.filter(o => (SEV[o.sev]?.idx ?? 0) >= 3).length;
+  // Health-system capacity factor: the same outbreak is far less dangerous to a
+  // traveller in a high-capacity country. Also kills reporting-volume bias —
+  // we no longer reward raw event count (transparent countries report more).
+  const base = countryBaselineRisk(country);
+  const cap  = base==='low' ? 0.42 : base==='high' ? 1.12 : 0.82;
+  const sevPts = Math.max(0, Math.min(45,
+    (worstIdx/5)*42*cap + Math.min(serious*2, 6)*cap));
+  // Honest baseline (development + health system) — NOT an official advisory,
+  // and decoupled from severity above so a single event isn't counted twice.
+  const advPts  = base==='high' ? 27 : base==='medium' ? 15 : 5;
+  const advBump = worstIdx>=5 ? 6 : worstIdx>=4 ? 3 : 0;  // truly catastrophic still matters
+  const aqiPts  = air==null ? 4 : Math.max(0, Math.min(15, (air-40)/160*15));
+  const foodIns = dz.some(o=>/insecur|food crisis|дефицит еды|нехватк/i.test((o.name||'')+(o.name_ru||'')));
+  const foodCap = base==='low' ? 0.5 : base==='high' ? 1 : 0.85; // recalls in strong-oversight systems = routine
+  const foodPts = Math.min(10, (recalls.length*1.5 + (foodIns?6:0)) * foodCap);
   let trendPts = 0, trendLbl = ru?'стабилен':'stable';
   if(hs && hs.total.length>1){
     const d=(hs.total[hs.total.length-1]||0)-(hs.total[0]||0);
     if(d>0){ trendPts=6; trendLbl=ru?'растёт':'rising'; }
     else if(d<0){ trendPts=-4; trendLbl=ru?'снижается':'falling'; }
   }
-  const raw = sevPts + advPts + aqiPts + foodPts + trendPts;
+  const raw = sevPts + advPts + advBump + aqiPts + foodPts + trendPts;
   const score = Math.max(0, Math.min(100, Math.round(raw)));
   const band = score>=75 ? {k:'severe',  c:'#C92A2A', en:'Severe',   ru:'Серьёзный'}
              : score>=50 ? {k:'high',    c:'#E8590C', en:'High',     ru:'Высокий'}
@@ -961,9 +1008,9 @@ function _riskScore({ obs, country, air, recalls, hs }){
              :             {k:'low',     c:'#19A463', en:'Low',      ru:'Низкий'};
   const parts = [
     { l: ru?'Вспышки':'Outbreaks',    v: Math.round(sevPts), max:45, c:'#C92A2A',
-      desc: ru?'Тяжесть и число активных вспышек болезней':'Severity and number of active disease outbreaks' },
-    { l: ru?'Тревел-уровень':'Advisory', v: Math.round(advPts), max:30, c:'#E8590C',
-      desc: ru?'Официальная рекомендация по поездкам в страну':'Official travel advisory level for the country' },
+      desc: ru?'Тяжесть вспышек с поправкой на систему здравоохранения':'Outbreak severity, adjusted for health-system capacity' },
+    { l: ru?'Базовый риск страны':'Country baseline', v: Math.round(advPts+advBump), max:30, c:'#E8590C',
+      desc: ru?'Развитость и система здравоохранения (не офиц. рекомендация)':'Development & health-system baseline (not an official advisory)' },
     { l: ru?'Воздух':'Air quality',   v: Math.round(aqiPts), max:15, c:'#6B7F3A',
       desc: ru?'Качество воздуха (индекс AQI)':'Air quality (AQI index)' },
     { l: ru?'Еда':'Food',             v: Math.round(foodPts), max:10, c:'#A0522D',
@@ -1150,7 +1197,7 @@ async function buildRiskReport(country, purpose){
             : d<0 ? (ru?`снижается (${d})`:`falling (${d})`)
             : (ru?'стабилен':'stable');
   }
-  const adv = (TRAVEL_ADVISORY[LANG]||TRAVEL_ADVISORY.en)[countryTravelRisk(country)];
+  const adv = (TRAVEL_ADVISORY[LANG]||TRAVEL_ADVISORY.en)[countryRiskTier(country)];
   const threats = obs.length
     ? obs.sort((a,b)=>(SEV[b.sev]?.idx??0)-(SEV[a.sev]?.idx??0)).map(o=>{
         const s=SEV[o.sev]; const sum=(LANG==='ru'&&o.blurb_ru)?o.blurb_ru:(o.blurb||o.summary||'');
