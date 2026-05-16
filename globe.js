@@ -478,7 +478,8 @@ const FLAG = iso2 => {
 
 async function loadFoodRecalls() {
   try {
-    const res  = await fetch('/food_recalls.json');
+    const base = window.EPISWOPE_BASE || './';
+    const res  = await fetch(base + 'public/food_recalls.json?_=' + Date.now());
     if (!res.ok) return;
     const data = await res.json();
     FOOD_RECALLS = data.recalls || [];
@@ -487,6 +488,62 @@ async function loadFoodRecalls() {
   } catch (e) {
     console.warn('[EpiScope] food_recalls.json unavailable:', e.message);
   }
+}
+
+/* ── Historical data (public/history.json) ───────────────────── */
+let HISTORY = null;
+async function loadHistory() {
+  try {
+    const base = window.EPISWOPE_BASE || './';
+    const res  = await fetch(base + 'public/history.json?_=' + Date.now());
+    if (!res.ok) return;
+    HISTORY = await res.json();
+  } catch (e) {
+    console.warn('[EpiScope] history.json unavailable:', e.message);
+  }
+}
+
+/* Build a {dates:[], total:[], crit:[]} series for a country (or global). */
+function historySeries(country) {
+  if (!HISTORY || !HISTORY.daily) return null;
+  const dates = Object.keys(HISTORY.daily).sort();
+  if (!dates.length) return null;
+  const total = [], crit = [], alert = [];
+  for (const d of dates) {
+    const day = HISTORY.daily[d];
+    const bucket = country
+      ? (day.countries && day.countries[country]) || {}
+      : (day.g || {});
+    total.push(bucket.t || 0);
+    crit.push(bucket.c || 0);
+    alert.push(bucket.a || 0);
+  }
+  return { dates, total, crit, alert };
+}
+
+/* Compact SVG area+line chart. series from historySeries(). */
+function renderHistoryChart(s, color) {
+  if (!s) return '';
+  const w = 320, h = 96, pad = 6;
+  const n = s.dates.length;
+  const mx = Math.max(1, ...s.total);
+  const sx = i => n <= 1 ? w / 2 : pad + (i / (n - 1)) * (w - pad * 2);
+  const sy = v => h - pad - (v / mx) * (h - pad * 2);
+  const lineFor = arr => arr.map((v, i) => `${i ? 'L' : 'M'} ${sx(i).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ');
+  const area = `M ${sx(0)} ${h - pad} ` +
+    s.total.map((v, i) => `L ${sx(i).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ') +
+    ` L ${sx(n - 1)} ${h - pad} Z`;
+  const dot = (arr, c) => n === 1
+    ? `<circle cx="${sx(0)}" cy="${sy(arr[0])}" r="3" fill="${c}"/>` : '';
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:96px;display:block">
+    <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${color}" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#hg)"/>
+    <path d="${lineFor(s.total)}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${lineFor(s.crit)}" fill="none" stroke="#C92A2A" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8"/>
+    ${dot(s.total, color)}
+  </svg>`;
 }
 
 function renderFoodAlerts() {
@@ -1002,10 +1059,40 @@ function renderCountryPanel(country){
   const sev = SEV[domSev];
 
   const labels = {
-    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'Watch country', watching:'Watching', back:'Back' },
-    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'Следить за страной', watching:'Слежу', back:'Назад' },
+    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'Watch country', watching:'Watching', back:'Back',
+          tabMain:'Overview', tabHist:'History', histTitle:'Threat activity over time', histEmpty:'History is accumulating — check back soon.', histDays:'days tracked', histPeak:'Peak threats', histNow:'Now', histTrend:'Trend', legendTotal:'Total threats', legendCrit:'Critical', assessRisk:'Assess risks →' },
+    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'Следить за страной', watching:'Слежу', back:'Назад',
+          tabMain:'Основное', tabHist:'История', histTitle:'Динамика угроз во времени', histEmpty:'История накапливается — загляните позже.', histDays:'дней данных', histPeak:'Пик угроз', histNow:'Сейчас', histTrend:'Тренд', legendTotal:'Всего угроз', legendCrit:'Критические', assessRisk:'Оценить риски →' },
   };
   const L = labels[LANG] || labels.en;
+
+  // ── History tab content ──────────────────────────────────────
+  const hs = historySeries(country);
+  let histBody;
+  if (!hs || hs.dates.length < 1) {
+    histBody = `<div class="cp-hist-empty">${L.histEmpty}</div>`;
+  } else {
+    const cur  = hs.total[hs.total.length - 1] || 0;
+    const peak = Math.max(...hs.total);
+    const first = hs.total.find(v => v > 0) ?? hs.total[0];
+    const delta = cur - (hs.total[0] || 0);
+    const trendTxt = delta > 0 ? `▲ +${delta}` : delta < 0 ? `▼ ${delta}` : '→ 0';
+    const trendClr = delta > 0 ? '#C92A2A' : delta < 0 ? '#3D8B5C' : 'var(--muted)';
+    histBody = `
+      <div class="cp-hist-title">${L.histTitle}</div>
+      <div class="cp-hist-chart">${renderHistoryChart(hs, sev.color)}</div>
+      <div class="cp-hist-legend">
+        <span><i style="background:${sev.color}"></i>${L.legendTotal}</span>
+        <span><i class="dash" style="background:#C92A2A"></i>${L.legendCrit}</span>
+      </div>
+      <div class="cp-hist-stats">
+        <div><div class="v">${hs.dates.length}</div><div class="k">${L.histDays}</div></div>
+        <div><div class="v">${peak}</div><div class="k">${L.histPeak}</div></div>
+        <div><div class="v">${cur}</div><div class="k">${L.histNow}</div></div>
+        <div><div class="v" style="color:${trendClr}">${trendTxt}</div><div class="k">${L.histTrend}</div></div>
+      </div>
+      <div class="cp-hist-note">${HISTORY?.meta?.from || ''} → ${HISTORY?.meta?.to || ''}</div>`;
+  }
 
   const threatsHtml = outbreaks.length
     ? outbreaks.map(o => {
@@ -1033,33 +1120,65 @@ function renderCountryPanel(country){
       </div>
     </div>
 
-    <div class="cp-stats-row">
-      <div class="cp-stat"><div class="cp-stat-val">${fmtNum(totalCases)}</div><div class="cp-stat-lbl">${L.totalCases}</div></div>
-      <div class="cp-stat"><div class="cp-stat-val" style="color:${sev.color}">${fmtNum(totalDeaths)}</div><div class="cp-stat-lbl">${L.totalDeaths}</div></div>
-      <div class="cp-stat"><div class="cp-stat-val">${outbreaks.length}</div><div class="cp-stat-lbl">${L.threats}</div></div>
+    <div class="cp-tabs" id="cpTabs">
+      <button class="cp-tab is-active" data-tab="main">${L.tabMain}</button>
+      <button class="cp-tab" data-tab="hist">${L.tabHist}</button>
     </div>
 
-    <div class="cp-section">
-      <div class="cp-section-title">${L.threats}</div>
-      ${threatsHtml}
+    <div class="cp-tabbody" data-body="main">
+      <div class="cp-stats-row">
+        <div class="cp-stat"><div class="cp-stat-val">${fmtNum(totalCases)}</div><div class="cp-stat-lbl">${L.totalCases}</div></div>
+        <div class="cp-stat"><div class="cp-stat-val" style="color:${sev.color}">${fmtNum(totalDeaths)}</div><div class="cp-stat-lbl">${L.totalDeaths}</div></div>
+        <div class="cp-stat"><div class="cp-stat-val">${outbreaks.length}</div><div class="cp-stat-lbl">${L.threats}</div></div>
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-section-title">${L.threats}</div>
+        ${threatsHtml}
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-section-title">${L.recommendation}</div>
+        <div class="cp-rec-text">${rec}</div>
+      </div>
+
+      <div class="cp-section">
+        <button class="cp-assess-btn" id="cpAssessBtn" data-country="${escapeAttr(country)}">${L.assessRisk}</button>
+      </div>
+
+      <div class="cp-section">
+        <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
+          <label class="cp-sub-label">${LANG==='ru' ? 'Спокойный недельный digest на email' : 'Calm weekly digest by email'}</label>
+          <div class="cp-sub-row">
+            <input type="email" class="cp-sub-input" name="email" required placeholder="${LANG==='ru' ? 'твой email' : 'your email'}" autocomplete="email">
+            <button type="submit" class="cp-sub-btn">${LANG==='ru' ? 'Следить' : 'Watch'}</button>
+          </div>
+          <div class="cp-sub-status" aria-live="polite"></div>
+        </form>
+      </div>
     </div>
 
-    <div class="cp-section">
-      <div class="cp-section-title">${L.recommendation}</div>
-      <div class="cp-rec-text">${rec}</div>
-    </div>
-
-    <div class="cp-section">
-      <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
-        <label class="cp-sub-label">${LANG==='ru' ? 'Спокойный недельный digest на email' : 'Calm weekly digest by email'}</label>
-        <div class="cp-sub-row">
-          <input type="email" class="cp-sub-input" name="email" required placeholder="${LANG==='ru' ? 'твой email' : 'your email'}" autocomplete="email">
-          <button type="submit" class="cp-sub-btn">${LANG==='ru' ? 'Следить' : 'Watch'}</button>
-        </div>
-        <div class="cp-sub-status" aria-live="polite"></div>
-      </form>
+    <div class="cp-tabbody" data-body="hist" style="display:none">
+      <div class="cp-section">${histBody}</div>
     </div>
   `;
+
+  // Tab switching
+  const tabsEl = document.getElementById('cpTabs');
+  if (tabsEl) {
+    tabsEl.addEventListener('click', e => {
+      const b = e.target.closest('.cp-tab');
+      if (!b) return;
+      tabsEl.querySelectorAll('.cp-tab').forEach(x => x.classList.toggle('is-active', x === b));
+      document.querySelectorAll('.panel-scroll .cp-tabbody').forEach(bd => {
+        bd.style.display = bd.dataset.body === b.dataset.tab ? '' : 'none';
+      });
+      if (b.dataset.tab === 'hist' && window.ym) ym(109240834, 'reachGoal', 'history_view');
+    });
+  }
+  // "Assess risks" → premium report (validation: route to Pro waitlist)
+  const assessBtn = document.getElementById('cpAssessBtn');
+  if (assessBtn) assessBtn.addEventListener('click', () => openProWaitlist('assess_risk'));
 
   // Wire back button
   document.getElementById('cpBack').addEventListener('click', ()=>{
@@ -2771,6 +2890,9 @@ async function boot(){
 
   // Load food safety recalls
   loadFoodRecalls();
+
+  // Load historical time-series
+  loadHistory();
 
   // Load live data after globe is visible
   loadLiveData();

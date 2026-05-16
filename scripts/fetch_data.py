@@ -2044,8 +2044,74 @@ def main():
 
     print(f"\n✓ {len(events)} events · {len(alerts)} alerts · sources: {meta['sources']}")
 
+    # ── Historical accumulation (forward time-series) ─────────────────────
+    build_history(events)
+
     # ── Food safety (separate JSON) ───────────────────────────────────────
     build_food_json()
+
+
+# ---------------------------------------------------------------------------
+# History: append a compact daily aggregate to public/history.json
+# Severity buckets: c=critical a=alert w=warning m=monitoring t=total
+# Keyed by UTC date; same-day re-runs overwrite (keep latest). Pruned to 365d.
+# ---------------------------------------------------------------------------
+
+HISTORY_MAX_DAYS = 365
+
+def _sev_bucket(sev: str) -> str:
+    return {"critical": "c", "alert": "a", "warning": "w",
+            "monitoring": "m", "low": "m"}.get(sev, "m")
+
+def _agg_add(d: dict, sev: str):
+    b = _sev_bucket(sev)
+    d[b] = d.get(b, 0) + 1
+    d["t"] = d.get("t", 0) + 1
+
+def aggregate_events(events: list) -> dict:
+    g = {}
+    countries = {}
+    diseases = {}
+    for e in events:
+        sev = e.get("severity", "monitoring")
+        _agg_add(g, sev)
+        c = (e.get("country") or "").strip()
+        if c:
+            _agg_add(countries.setdefault(c, {}), sev)
+        dis = (e.get("disease") or "").strip()
+        if dis:
+            _agg_add(diseases.setdefault(dis, {}), sev)
+    return {"g": g, "countries": countries, "diseases": diseases}
+
+def build_history(events: list):
+    path = OUTPUT_DIR / "history.json"
+    try:
+        hist = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except Exception:
+        hist = {}
+    daily = hist.get("daily", {})
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    daily[today] = aggregate_events(events)
+
+    # prune to last HISTORY_MAX_DAYS
+    keys = sorted(daily.keys())
+    if len(keys) > HISTORY_MAX_DAYS:
+        for k in keys[:-HISTORY_MAX_DAYS]:
+            daily.pop(k, None)
+
+    out = {
+        "meta": {
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "days": len(daily),
+            "from": min(daily) if daily else None,
+            "to": max(daily) if daily else None,
+        },
+        "daily": daily,
+    }
+    path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")),
+                    encoding="utf-8")
+    print(f"✓ history.json — {len(daily)} day(s) [{out['meta']['from']} → {out['meta']['to']}]")
 
 
 if __name__ == "__main__":
