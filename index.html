@@ -1444,24 +1444,8 @@
       position: relative;
     }
 
-    /* Sidebar → mobile bottom sheet */
-    .sidebar {
-      display: flex !important;
-      flex-direction: column;
-      position: fixed;
-      left: 0; right: 0;
-      bottom: 60px;
-      height: 68px; /* collapsed: handle + peek bar */
-      border-radius: 16px 16px 0 0;
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      border-bottom: none;
-      box-shadow: 0 -4px 24px rgba(22,21,19,.10);
-      z-index: 150;
-      transition: height .32s cubic-bezier(.4,0,.2,1), border-radius .32s;
-      overflow: hidden;
-      will-change: height;
-    }
+    /* Sidebar fully hidden on mobile — replaced by tabs/sheets/toggle */
+    .sidebar { display: none !important; }
     .sidebar.mob-mid {
       height: 58vh;
     }
@@ -1703,12 +1687,13 @@
     .mob-fab-filters.show { display: flex; }
     /* 3D / Map segmented toggle on top of globe */
     .mob-viewtoggle {
-      position: fixed; top: calc(env(safe-area-inset-top) + 10px);
+      position: fixed; top: 60px;
       left: 50%; transform: translateX(-50%);
       z-index: 240; display: none;
-      background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
       border: 1px solid var(--line); border-radius: 999px;
       padding: 3px; gap: 2px;
+      box-shadow: 0 4px 14px -6px rgba(22,21,19,.18);
     }
     .mob-viewtoggle.show { display: flex; }
     .mob-viewtoggle button {
@@ -1740,6 +1725,15 @@
       font: inherit; font-size: 15px; font-weight: 800; cursor: pointer;
       box-shadow: 0 10px 24px -10px rgba(201,42,42,.55);
     }
+    /* Profile overlay — covers content, stays ABOVE globe but BELOW
+       the bottom nav (z 300) so the menu remains visible & tappable */
+    .mob-profile {
+      position: fixed; left: 0; right: 0;
+      top: 0; bottom: calc(60px + env(safe-area-inset-bottom));
+      z-index: 280; background: #fff; display: none;
+    }
+    .mob-profile.mob-active { display: block; }
+
     /* Feed sheet reuses mob-sheet styles via #mobFeedList */
 
     /* Panel adjustments for mobile */
@@ -2479,29 +2473,36 @@
   let currentTab = 'home';
 
   function setMobTab(action){
-    // Profile → go to the account page (not an in-app tab)
-    if(action === 'profile'){
-      location.href = (LANG_MOB === 'ru') ? '/ru/account.html' : '/account.html';
-      return;
-    }
     currentTab = action;
     const nav = document.getElementById('mobNav');
     if(nav){
+      const navKey = (action==='detail'||action==='events') ? 'home' : action;
       nav.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('is-active'));
-      nav.querySelector(`[data-action="${action==='detail'?'home':action}"]`)?.classList.add('is-active');
+      nav.querySelector(`[data-action="${navKey}"]`)?.classList.add('is-active');
     }
     // hide all overlays/sheets
-    document.querySelector('.sidebar')?.classList.remove('mob-visible');
     document.getElementById('mobSheet')?.classList.remove('mob-active');
     document.getElementById('mobFeedSheet')?.classList.remove('mob-active');
     document.querySelector('.mob-subs-overlay')?.classList.remove('mob-active');
     document.getElementById('mobSearchOverlay')?.classList.remove('mob-active');
     document.getElementById('mobFilters')?.classList.remove('show');
+    document.getElementById('mobProfile')?.classList.remove('mob-active');
 
-    // Filters FAB + 3D/Map toggle only on Home (just the globe)
-    const onHome = action === 'home';
-    document.getElementById('mobFabFilters')?.classList.toggle('show', onHome);
-    document.getElementById('mobViewToggle')?.classList.toggle('show', onHome);
+    // 3D/Map/List toggle stays under header on Home & List;
+    // Filters FAB only on the clean globe (Home)
+    const showToggle = (action === 'home' || action === 'events');
+    document.getElementById('mobFabFilters')?.classList.toggle('show', action === 'home');
+    document.getElementById('mobViewToggle')?.classList.toggle('show', showToggle);
+
+    if(action === 'profile'){
+      const pf = document.getElementById('mobProfile');
+      if(pf){
+        const f = pf.querySelector('iframe');
+        const url = (LANG_MOB === 'ru') ? '/ru/account.html' : '/account.html';
+        if(f && f.getAttribute('src') !== url) f.setAttribute('src', url);
+        pf.classList.add('mob-active');
+      }
+    }
 
     const panel = document.getElementById('panel');
     if(action !== 'detail' && panel){
@@ -2511,7 +2512,7 @@
     }
 
     if(action === 'home'){
-      // just the globe + stats — nothing overlaid
+      if(window._vtActive){ const a=document.querySelector('#mobViewToggle .on'); if(!a) window._vtActive('globe'); }
     } else if(action === 'feed'){
       if(typeof window.renderMyFeed === 'function') window.renderMyFeed();
       const fl = document.getElementById('mobFeedList');
@@ -2534,6 +2535,7 @@
         if(si) si.dispatchEvent(new Event('input', {bubbles:true}));
       }, 80);
     } else if(action === 'events'){
+      if(window._vtActive) window._vtActive('list');
       document.getElementById('mobSheet')?.classList.add('mob-active');
     } else if(action === 'detail'){
       if(panel){ panel.classList.add('mob-open'); panel.classList.remove('mob-full'); }
@@ -2572,10 +2574,6 @@
       <button class="mob-nav-btn" data-action="search">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         ${T('Search','Поиск')}
-      </button>
-      <button class="mob-nav-btn" data-action="events">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        ${T('List','Список')}
       </button>
       <button class="mob-nav-btn" data-action="profile">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -2633,45 +2631,61 @@
     `;
     document.body.appendChild(filters);
 
-    fab.addEventListener('click', ()=>{
-      // Pull the live category + severity controls into the sheet
+    function buildFilters(){
       const body = document.getElementById('mobFiltersBody');
-      const cats = document.getElementById('catSections');
-      const chips = document.getElementById('chips');
-      body.innerHTML = '';
-      if(chips){
-        const w = document.createElement('div');
-        w.style.cssText = 'margin-bottom:16px';
-        w.innerHTML = `<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">${T('Severity','Уровень угрозы')}</div>`;
-        w.appendChild(chips.cloneNode(true));
-        body.appendChild(w);
+      const st = window.state, CM = window.CATEGORY_META;
+      if(!body || !st || !CM){ if(body) body.innerHTML = `<div style="padding:24px;color:var(--muted);font-size:13px">${T('Loading…','Загрузка…')}</div>`; return; }
+      const ru = LANG_MOB === 'ru';
+      let html = `<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 10px">${T('Categories','Категории')}</div>`;
+      Object.keys(CM).forEach(k=>{
+        const on = st.cats[k] !== false;
+        html += `<div class="mf-row" data-cat="${k}" style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff;border:1px solid var(--line);border-radius:13px;margin-bottom:8px;cursor:pointer">
+          <span style="display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--ink)"><span style="color:${CM[k].color};display:flex">${CM[k].icon}</span>${ru?CM[k].ru:CM[k].en}</span>
+          <span style="width:44px;height:26px;border-radius:999px;background:${on?'var(--accent)':'#D9D6CE'};position:relative;transition:background .15s;flex-shrink:0"><span style="position:absolute;top:3px;${on?'left:21px':'left:3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span>
+        </div>`;
+      });
+      const realChips = [...document.querySelectorAll('#chips .chip')];
+      if(realChips.length){
+        html += `<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 10px">${ru?'Уровень угрозы':'Severity'}</div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
+        realChips.forEach(c=>{
+          const act = c.classList.contains('is-active');
+          html += `<button class="mf-chip" data-f="${c.dataset.f}" style="font:inherit;font-size:13px;font-weight:600;padding:9px 15px;border-radius:999px;border:1px solid ${act?'var(--accent)':'var(--line)'};background:${act?'rgba(232,89,12,.1)':'#fff'};color:${act?'var(--accent)':'var(--ink)'};cursor:pointer">${c.textContent.trim()}</button>`;
+        });
+        html += `</div>`;
       }
-      if(cats) body.appendChild(cats.cloneNode(true));
-      // Mirror clicks in the clone back to the real controls
-      body.addEventListener('click', e=>{
-        const t = e.target.closest('[data-cat],[data-f],.sw-toggle,.cat-section-h,.chip');
-        if(!t) return;
-        let sel = null;
-        if(t.dataset.cat) sel = `[data-cat="${t.dataset.cat}"]`;
-        else if(t.dataset.f) sel = `.chip[data-f="${t.dataset.f}"]`;
-        if(sel){ const real = document.querySelector(`.sidebar ${sel}`) || document.querySelector(sel); if(real) real.click(); }
-        setTimeout(()=>fab.click(), 30); // refresh clone state
-      }, {once:true});
-      filters.classList.add('show');
+      body.innerHTML = html;
+    }
+    fab.addEventListener('click', ()=>{ buildFilters(); filters.classList.add('show'); });
+    document.getElementById('mobFiltersBody').addEventListener('click', e=>{
+      const row = e.target.closest('.mf-row[data-cat]');
+      const chip = e.target.closest('.mf-chip[data-f]');
+      if(row && typeof window.toggleCat === 'function'){ window.toggleCat(row.dataset.cat); buildFilters(); }
+      else if(chip){ const real = document.querySelector(`#chips .chip[data-f="${chip.dataset.f}"]`); if(real) real.click(); buildFilters(); }
     });
     document.getElementById('mobFiltersX').addEventListener('click', ()=> filters.classList.remove('show'));
     document.getElementById('mobFiltersApply').addEventListener('click', ()=> filters.classList.remove('show'));
 
-    // ── 3D / Map toggle on top of the globe ──
+    // ── Profile overlay (account page in-app; bottom nav stays) ──
+    const prof = document.createElement('div');
+    prof.id = 'mobProfile';
+    prof.className = 'mob-profile';
+    prof.innerHTML = `<iframe title="${T('Profile','Профиль')}" style="width:100%;height:100%;border:0"></iframe>`;
+    document.body.appendChild(prof);
+
+    // ── 3D / Map / List toggle under the header ──
     const vt = document.createElement('div');
     vt.id = 'mobViewToggle';
     vt.className = 'mob-viewtoggle show';
-    vt.innerHTML = `<button data-v="globe" class="on">3D</button><button data-v="heatmap">${T('Map','Карта')}</button>`;
+    vt.innerHTML = `<button data-v="globe" class="on">3D</button><button data-v="heatmap">${T('Map','Карта')}</button><button data-v="list">${T('List','Список')}</button>`;
     document.body.appendChild(vt);
+    function vtActive(v){ vt.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x.dataset.v===v)); }
+    window._vtActive = vtActive;
     vt.addEventListener('click', e=>{
       const b = e.target.closest('button[data-v]'); if(!b) return;
-      vt.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+      vtActive(b.dataset.v);
+      if(b.dataset.v === 'list'){ setMobTab('events'); return; }
       if(typeof window.switchView === 'function') window.switchView(b.dataset.v);
+      setMobTab('home');
     });
 
     // ── Subscribe overlay ──

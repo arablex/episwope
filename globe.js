@@ -2439,12 +2439,16 @@ function addGLMarkers(){
     }
   });
 
-  map.on('click', 'outbreaks-dot', (e) => {
-    _markerClicked = true;
-    selectOutbreak(e.features[0].properties.id);
+  // Bind to the big visible halos too — on mobile the 7px dot is an
+  // impossible tap target; the soft circle around it must be tappable.
+  ['outbreaks-dot','outbreaks-halo','outbreaks-halo-mid'].forEach(layer => {
+    map.on('click', layer, (e) => {
+      _markerClicked = true;
+      selectOutbreak(e.features[0].properties.id);
+    });
+    map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
   });
-  map.on('mouseenter', 'outbreaks-dot', () => { map.getCanvas().style.cursor = 'pointer'; });
-  map.on('mouseleave', 'outbreaks-dot', () => { map.getCanvas().style.cursor = ''; });
 
   applyGLFilters();
 }
@@ -3389,6 +3393,15 @@ async function boot(){
     });
   }
 }
+// Expose for the mobile UI controller (const bindings aren't on window
+// in a classic script; function declarations are, but be explicit).
+window.state         = state;
+window.CATEGORY_META = CATEGORY_META;
+window.toggleCat     = toggleCat;
+window.switchView    = switchView;
+window.renderMyFeed  = renderMyFeed;
+window.selectOutbreak = selectOutbreak;
+
 boot();
 
 /* =========================================================
