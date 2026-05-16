@@ -871,6 +871,54 @@ const RISK_PURPOSES = [
     icon:_ICO('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.6a4 4 0 0 1 0 7"/>') },
 ];
 
+/* Emergency numbers by ISO2 (police/ambulance/fire). 112 = international
+   fallback that works on most GSM networks worldwide. Curated set covers
+   the high-travel countries; others fall back to 112. */
+const EMERGENCY = {
+  US:{p:'911',a:'911',f:'911'}, CA:{p:'911',a:'911',f:'911'},
+  GB:{p:'999',a:'999',f:'999'}, IE:{p:'112',a:'112',f:'112'},
+  AU:{p:'000',a:'000',f:'000'}, NZ:{p:'111',a:'111',f:'111'},
+  RU:{p:'102',a:'103',f:'101'}, UA:{p:'102',a:'103',f:'101'},
+  KZ:{p:'102',a:'103',f:'101'}, BY:{p:'102',a:'103',f:'101'},
+  DE:{p:'110',a:'112',f:'112'}, FR:{p:'17',a:'15',f:'18'},
+  ES:{p:'112',a:'112',f:'112'}, IT:{p:'112',a:'118',f:'115'},
+  NL:{p:'112',a:'112',f:'112'}, BE:{p:'112',a:'112',f:'112'},
+  CH:{p:'117',a:'144',f:'118'}, AT:{p:'133',a:'144',f:'122'},
+  SE:{p:'112',a:'112',f:'112'}, NO:{p:'112',a:'113',f:'110'},
+  DK:{p:'112',a:'112',f:'112'}, FI:{p:'112',a:'112',f:'112'},
+  PL:{p:'112',a:'112',f:'112'}, PT:{p:'112',a:'112',f:'112'},
+  GR:{p:'100',a:'166',f:'199'}, CZ:{p:'112',a:'112',f:'112'},
+  TR:{p:'112',a:'112',f:'112'}, IL:{p:'100',a:'101',f:'102'},
+  AE:{p:'999',a:'998',f:'997'}, SA:{p:'999',a:'997',f:'998'},
+  EG:{p:'122',a:'123',f:'180'}, ZA:{p:'10111',a:'10177',f:'10177'},
+  NG:{p:'112',a:'112',f:'112'}, KE:{p:'999',a:'999',f:'999'},
+  IN:{p:'112',a:'112',f:'112'}, CN:{p:'110',a:'120',f:'119'},
+  JP:{p:'110',a:'119',f:'119'}, KR:{p:'112',a:'119',f:'119'},
+  TH:{p:'191',a:'1669',f:'199'}, VN:{p:'113',a:'115',f:'114'},
+  ID:{p:'110',a:'118',f:'113'}, PH:{p:'911',a:'911',f:'911'},
+  MY:{p:'999',a:'999',f:'994'}, SG:{p:'999',a:'995',f:'995'},
+  BD:{p:'999',a:'999',f:'999'}, PK:{p:'15',a:'1122',f:'16'},
+  BR:{p:'190',a:'192',f:'193'}, MX:{p:'911',a:'911',f:'911'},
+  AR:{p:'911',a:'107',f:'100'}, CL:{p:'133',a:'131',f:'132'},
+  CO:{p:'123',a:'123',f:'123'}, PE:{p:'105',a:'106',f:'116'},
+  MA:{p:'19',a:'15',f:'15'},   DZ:{p:'17',a:'14',f:'14'},
+};
+const EMERGENCY_DEFAULT = { g:'112' };
+
+function emergencyFor(iso2){
+  const e = iso2 && EMERGENCY[iso2];
+  return e || EMERGENCY_DEFAULT;
+}
+
+/* Section header: small accent icon + uppercase label + thin rule */
+function _sec(label, svgPath){
+  return `<div style="display:flex;align-items:center;gap:7px;margin:20px 0 9px">
+    <span style="color:#E8590C;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></span>
+    <span style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#807E76">${label}</span>
+    <span style="flex:1;height:1px;background:#ECEAE2"></span>
+  </div>`;
+}
+
 function _riskVerdict(country, outbreaks){
   const worst = outbreaks.reduce((m,o)=> (SEV[o.sev]?.idx ?? 0) > (SEV[m?.sev]?.idx ?? -1) ? o : m, null);
   const risk = countryTravelRisk(country);
@@ -1009,35 +1057,82 @@ async function buildRiskReport(country, purpose){
     : air<=200?(ru?`вредное (${air})`:`unhealthy (${air})`)
     :(ru?`опасное (${air})`:`hazardous (${air})`);
 
+  // ── Emergency services ──────────────────────────────────────
+  const _cc   = findCountry ? findCountry(country) : null;
+  const iso2  = _cc?.iso2;
+  const em    = emergencyFor(iso2);
+  const callBtn = (label, num, svg) => `<a href="tel:${num}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:#FAFAF8;border:1px solid #ECEAE2;border-radius:12px;text-decoration:none">
+      <span style="color:#C92A2A;display:flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span>
+      <span style="font-size:18px;font-weight:800;color:#0F0E0C;letter-spacing:-.02em">${num}</span>
+      <span style="font-size:10px;color:#807E76">${label}</span></a>`;
+  const emHtml = em.g
+    ? `<a href="tel:${em.g}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:#C92A2A;border-radius:14px;text-decoration:none">
+         <span style="color:#fff;display:flex"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.74a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/></svg></span>
+         <span style="font-size:24px;font-weight:900;color:#fff;letter-spacing:-.02em">${em.g}</span>
+         <span style="font-size:11px;color:rgba(255,255,255,.85)">${ru?'единый номер':'universal'}</span></a>`
+    : `<div style="display:flex;gap:8px">
+         ${callBtn(ru?'Полиция':'Police', em.p, '<path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5z"/>')}
+         ${callBtn(ru?'Скорая':'Ambulance', em.a, '<path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/>')}
+         ${callBtn(ru?'Пожарные':'Fire', em.f, '<path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-2-1-3-1-5 3 2 4 5 4 8a6 6 0 0 1-12 0c0-5 4-7 6-12z"/>')}
+       </div>`;
+
+  // ── Useful links ────────────────────────────────────────────
+  const cn = countryName(country);
+  const links = [
+    { t: ru?'Больницы рядом (карта)':'Hospitals nearby (map)',
+      u: `https://www.google.com/maps/search/${encodeURIComponent((ru?'больница ':'hospital ')+country)}` },
+    { t: ru?'WHO — профиль страны':'WHO — country profile',
+      u: `https://www.who.int/countries/` },
+    { t: ru?'Найти своё посольство':'Find your embassy',
+      u: `https://www.google.com/search?q=${encodeURIComponent('embassy in '+country)}` },
+  ];
+  const linksHtml = links.map(l=>`<a href="${l.u}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;background:#FAFAF8;border:1px solid #ECEAE2;border-radius:11px;text-decoration:none;margin-bottom:6px">
+      <span style="font-size:12.5px;font-weight:600;color:#0F0E0C">${l.t}</span>
+      <span style="color:#807E76;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>`).join('');
+
+  const chip = (label, val, color) => `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}14;color:${color};font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px">${label}: ${val}</span>`;
+
+  const trendClr = /рас|ris/i.test(trendTxt) ? '#C92A2A' : /сниж|fall/i.test(trendTxt) ? '#3D8B5C' : '#807E76';
+  const aqiClr = air==null?'#807E76':air<=50?'#19A463':air<=100?'#E4B514':air<=150?'#E8590C':'#C92A2A';
+
   return `
-  <div id="_riskReport" style="margin-top:8px">
-    <div style="display:flex;align-items:center;gap:10px;background:${v.color}14;border:1px solid ${v.color}55;border-radius:14px;padding:14px;margin-bottom:16px">
-      <span style="width:10px;height:10px;border-radius:50%;background:${v.color};flex-shrink:0"></span>
-      <div>
-        <div style="font-size:15px;font-weight:800;color:${v.color}">${v.label}</div>
-        <div style="font-size:12px;color:#3B3A36">${ru?pObj.ru:pObj.en} · ${countryName(country)} · ${new Date().toLocaleDateString(LANG)}</div>
+  <div id="_riskReport" style="margin-top:4px">
+    <div style="background:linear-gradient(160deg,${v.color}1f,${v.color}0a);border:1px solid ${v.color}40;border-radius:18px;padding:18px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:11px">
+        <span style="width:42px;height:42px;border-radius:12px;background:${v.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v5c0 5 3.8 8.9 9 10 5.2-1.1 9-5 9-10V7z"/></svg>
+        </span>
+        <div>
+          <div style="font-size:18px;font-weight:900;color:${v.color};letter-spacing:-.02em">${v.label}</div>
+          <div style="font-size:12px;color:#3B3A36;margin-top:1px">${ru?pObj.ru:pObj.en} · ${cn} · ${new Date().toLocaleDateString(LANG)}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:14px">
+        ${chip(ru?'Поездки':'Travel', `<b>${adv?.label||'—'}</b>`, v.color)}
+        ${trendTxt?chip(ru?'Тренд':'Trend', trendTxt, trendClr):''}
+        ${chip(ru?'Воздух':'Air', airTxt, aqiClr)}
+        ${recalls.length?chip(ru?'Отзывы':'Recalls', recalls.length, '#E8590C'):''}
       </div>
     </div>
 
-    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:14px 0 6px">${ru?'Сводка':'Summary'}</div>
-    <div style="font-size:12.5px;color:#3B3A36;line-height:1.6">
-      ${ru?'Рекомендация по поездкам':'Travel advisory'}: <b>${adv?.label||'—'}</b>.
-      ${trendTxt?(ru?` Динамика угроз: <b>${trendTxt}</b>.`:` Threat trend: <b>${trendTxt}</b>.`):''}
-      ${` ${ru?'Качество воздуха':'Air quality'}: <b>${airTxt}</b>.`}
-      ${recalls.length?` ${ru?`Активных отзывов продуктов: <b>${recalls.length}</b>.`:`Active food recalls: <b>${recalls.length}</b>.`}`:''}
-    </div>
+    ${_sec(ru?'Экстренные службы':'Emergency services','<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.74a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/>')}
+    ${emHtml}
+    <div style="font-size:10.5px;color:#B6B3AA;margin-top:7px">${ru?'Не дозвонились — наберите 112 (международный, работает в большинстве стран).':'No answer — dial 112 (international, works in most countries).'}</div>
 
-    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:18px 0 6px">${ru?'Активные угрозы':'Active threats'}</div>
+    ${_sec(ru?'Активные угрозы':'Active threats','<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>')}
     ${threats}
 
-    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#807E76;margin:18px 0 6px">${ru?`Рекомендации · ${pObj.ru}`:`Recommendations · ${pObj.en}`}</div>
+    ${_sec(ru?`Рекомендации · ${pObj.ru}`:`Recommendations · ${pObj.en}`,'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')}
     <ul style="margin:0;padding-left:18px">${guidance}</ul>
 
+    ${_sec(ru?'Полезные ссылки':'Useful links','<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>')}
+    ${linksHtml}
+
     <div style="font-size:10px;color:#B6B3AA;margin-top:18px;line-height:1.5">
-      ${ru?'Отчёт сформирован по данным WHO/CDC/ECDC/GDACS/Open-Meteo. Не является медицинской консультацией. Источники могут быть неполными по ряду стран.':'Generated from WHO/CDC/ECDC/GDACS/Open-Meteo data. Not medical advice. Source coverage is limited for some countries.'}
+      ${ru?'Отчёт сформирован по данным WHO/CDC/ECDC/GDACS/Open-Meteo. Не является медицинской консультацией. Источники могут быть неполными по ряду стран. Номера служб уточняйте на месте.':'Generated from WHO/CDC/ECDC/GDACS/Open-Meteo data. Not medical advice. Source coverage is limited for some countries; verify emergency numbers locally.'}
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button id="_riskPrint" style="flex:1;height:42px;border:0;border-radius:11px;background:#0F0E0C;color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer">${ru?'Скачать / Печать (PDF)':'Download / Print (PDF)'}</button>
+      <button id="_riskPrint" style="flex:1;height:46px;border:0;border-radius:13px;background:#0F0E0C;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer">${ru?'Скачать / Печать (PDF)':'Download / Print (PDF)'}</button>
     </div>
   </div>`;
 }
