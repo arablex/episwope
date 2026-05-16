@@ -1,14 +1,16 @@
-const CACHE = 'episwope-v2';   // bump version → старый кеш удаляется
+const CACHE = 'episwope-v3';   // bump → landing/app split, old cache cleared
 const SHELL = [
   '/',
   '/ru/',
+  '/app.html',
+  '/ru/app.html',
   '/globe.js',
   '/manifest.json',
   '/icon.svg',
 ];
 
-// Всегда запрашивать из сети (critical JS + HTML), не из кеша
-const NET_FIRST = new Set(['/', '/ru/', '/globe.js']);
+// Always fetch fresh (landing, app, critical JS) — never serve stale
+const NET_FIRST = new Set(['/', '/ru/', '/app.html', '/ru/app.html', '/globe.js']);
 
 // ── Install: pre-cache shell ──────────────────────────────────────────────────
 self.addEventListener('install', e => {

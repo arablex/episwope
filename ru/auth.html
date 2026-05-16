@@ -78,10 +78,10 @@
         document.getElementById('card').innerHTML += `
           <p style="color:#807E76;font-size:13px">${data.email}</p>
           <span class="plan ${isPro ? '' : 'free'}">${isPro ? '⭐ Pro' : 'Бесплатный план'}</span>
-          <br><a class="back" href="/ru/">Открыть EpiScope →</a>
+          <br><a class="back" href="/ru/app.html">Открыть EpiScope →</a>
         `;
 
-        setTimeout(() => { location.href = '/ru/'; }, 2000);
+        setTimeout(() => { location.href = '/ru/app.html'; }, 2000);
 
       } catch (e) {
         spinner.style.display = 'none';
