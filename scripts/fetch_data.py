@@ -1340,6 +1340,82 @@ def fetch_wfp_hunger() -> list:
     return out
 
 # ---------------------------------------------------------------------------
+# Source 11: GDELT 2.0 — global news signals (free, no key, every country)
+# Lower-trust "signal" tier; deduped against official sources (which win).
+# ---------------------------------------------------------------------------
+
+# No sourcelang filter — multilingual on purpose: GDELT then surfaces
+# local Russian/Chinese-language reporting (the WHO-DON blind spot).
+# AI extraction handles non-English (same as Rospotrebnadzor path).
+GDELT_QUERY = (
+    '(outbreak OR epidemic OR cholera OR ebola OR mpox OR measles OR dengue '
+    'OR marburg OR diphtheria OR meningitis OR nipah OR lassa OR anthrax '
+    'OR plague OR poliovirus OR "avian influenza" OR "yellow fever")'
+)
+
+def fetch_gdelt() -> list:
+    print("Fetching GDELT news signals …", flush=True)
+    params = urllib.parse.urlencode({
+        "query": GDELT_QUERY,
+        "mode": "artlist",
+        "maxrecords": "75",
+        "format": "json",
+        "timespan": "3d",
+        "sort": "datedesc",
+    })
+    url = f"https://api.gdeltproject.org/api/v2/doc/doc?{params}"
+    data = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                raw = resp.read()
+            data = json.loads(raw)
+            break
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < 2:
+                time.sleep(15 * (attempt + 1))  # GDELT rate-limit backoff
+                continue
+            print(f"  ✗ GDELT: {e}", flush=True)
+            return []
+        except Exception as e:
+            print(f"  ✗ GDELT: {e}", flush=True)
+            return []
+    if data is None:
+        return []
+
+    arts = data.get("articles", []) if isinstance(data, dict) else []
+    seen_titles = set()
+    out = []
+    for a in arts:
+        title = (a.get("title") or "").strip()
+        if not title or len(title) < 20:
+            continue
+        low = title.lower()
+        # No English KEYWORDS gate here — GDELT_QUERY already constrains to
+        # disease topics, and titles may be Chinese/Russian (the point).
+        # AI extraction is the real filter (requires disease + country).
+        # crude near-dupe guard on title prefix
+        tkey = low[:60]
+        if tkey in seen_titles:
+            continue
+        seen_titles.add(tkey)
+        sd = a.get("seendate", "")
+        # 20260516T103000Z -> 2026-05-16
+        date = f"{sd[0:4]}-{sd[4:6]}-{sd[6:8]}" if len(sd) >= 8 else ""
+        out.append({
+            "source": "GDELT",
+            "title": title,
+            "description": (title + " — " + (a.get("domain") or ""))[:600],
+            "link": a.get("url", ""),
+            "pub_date": date,
+        })
+        if len(out) >= MAX_PER_FEED:
+            break
+    print(f"  → {len(out)} GDELT candidate signals", flush=True)
+    return out
+
+# ---------------------------------------------------------------------------
 # Normalise + deduplicate
 # ---------------------------------------------------------------------------
 
@@ -2051,6 +2127,41 @@ def main():
             "link":          h.get("link", ""),
             "date":          h.get("date", ""),
         })
+
+    # ── 11. GDELT news signals (lower-trust tier) ─────────────────────────
+    # Processed LAST so official sources win dedup; news-only never escalates
+    # above 'alert'. Tagged so the UI can show it as an unconfirmed signal.
+    for raw in fetch_gdelt():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = call_ai(text) if has_ai else None
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
+        if not extracted or not extracted.get("disease") or not extracted.get("country"):
+            continue  # require both — news titles are noisy
+        sev = normalise_sev(extracted.get("severity", "monitoring"))
+        if sev == "critical":
+            sev = "alert"  # never auto-escalate from a single news item
+        add_event({
+            "id":         f"gdelt-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    extracted.get("disease"),
+            "country":    extracted.get("country"),
+            "iso":        extracted.get("iso"),
+            "region":     extracted.get("region"),
+            "lat":        extracted.get("lat"),
+            "lng":        extracted.get("lng"),
+            "cases":      extracted.get("cases"),
+            "deaths":     extracted.get("deaths"),
+            "severity":   sev,
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
+            "source":     "GDELT (news signal)",
+            "confidence": "signal",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+        if len(events) >= MAX_EVENTS:
+            break
 
     # ── Output ────────────────────────────────────────────────────────────
     if not events:
