@@ -1370,22 +1370,31 @@ def fetch_gdelt() -> list:
     })
     url = f"https://api.gdeltproject.org/api/v2/doc/doc?{params}"
     data = None
-    for attempt in range(3):
+    ATTEMPTS = 4
+    for attempt in range(ATTEMPTS):
+        last = attempt == ATTEMPTS - 1
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
-            with urllib.request.urlopen(req, timeout=25) as resp:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; EpiScope/2.0; +https://episcope.ru)",
+                "Accept": "application/json",
+            })
+            with urllib.request.urlopen(req, timeout=35) as resp:
                 raw = resp.read()
             data = json.loads(raw)
             break
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < 2:
-                time.sleep(15 * (attempt + 1))  # GDELT rate-limit backoff
-                continue
-            print(f"  ✗ GDELT: {e}", flush=True)
-            return []
+            # 429/5xx are transient → back off and retry
+            if e.code in (429, 500, 502, 503, 504) and not last:
+                time.sleep(12 * (attempt + 1)); continue
+            print(f"  ✗ GDELT HTTP {e.code}", flush=True); return []
+        except (urllib.error.URLError, TimeoutError, ConnectionError,
+                json.JSONDecodeError, OSError) as e:
+            # SSL handshake / socket timeout / transient net / bad body
+            if not last:
+                time.sleep(12 * (attempt + 1)); continue
+            print(f"  ✗ GDELT net: {e}", flush=True); return []
         except Exception as e:
-            print(f"  ✗ GDELT: {e}", flush=True)
-            return []
+            print(f"  ✗ GDELT: {e}", flush=True); return []
     if data is None:
         return []
 
@@ -1418,6 +1427,83 @@ def fetch_gdelt() -> list:
         if len(out) >= MAX_PER_FEED:
             break
     print(f"  → {len(out)} GDELT candidate signals", flush=True)
+    return out
+
+# ---------------------------------------------------------------------------
+# Source 12: Google News RSS — our own free multilingual aggregator
+# No key, no auth. Localized queries per language → catches local
+# Russian/Chinese/etc. reporting that English feeds miss. Lower-trust
+# "signal" tier, AI-extracted, deduped against official sources.
+# ---------------------------------------------------------------------------
+
+GNEWS_FEEDS = [
+    # (lang query, hl, gl, ceid)
+    ('"disease outbreak" OR epidemic OR "confirmed cases" OR "new cases"', 'en-US', 'US', 'US:en'),
+    ('вспышка заболевания OR эпидемия OR "случаи заражения" OR заболеваемость', 'ru', 'RU', 'RU:ru'),
+    ('疫情 OR 暴发 OR 传染病 OR 病例', 'zh-CN', 'CN', 'CN:zh-Hans'),
+    ('brote OR epidemia OR "casos confirmados"', 'es', 'ES', 'ES:es'),
+    ('surto OR epidemia OR "casos confirmados"', 'pt-BR', 'BR', 'BR:pt-419'),
+    ('épidémie OR flambée OR "cas confirmés"', 'fr', 'FR', 'FR:fr'),
+    ('تفشي OR وباء OR "حالات إصابة"', 'ar', 'EG', 'EG:ar'),
+]
+GNEWS_PER_FEED = 8
+GNEWS_TOTAL    = 40
+
+def fetch_google_news() -> list:
+    print("Fetching Google News (own aggregator) …", flush=True)
+    from email.utils import parsedate_to_datetime
+    cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)
+    seen = set()
+    out = []
+    for q, hl, gl, ceid in GNEWS_FEEDS:
+        if len(out) >= GNEWS_TOTAL:
+            break
+        url = ("https://news.google.com/rss/search?q=" +
+               urllib.parse.quote(q + " when:5d") +
+               f"&hl={hl}&gl={gl}&ceid={ceid}")
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/rss+xml,application/xml,text/xml,*/*",
+            })
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                content = resp.read()
+            root = ET.fromstring(content)
+        except Exception as e:
+            print(f"  ✗ GNews[{gl}]: {e}", flush=True)
+            continue
+        n = 0
+        for item in root.findall(".//item"):
+            t = item.find("title")
+            title = (t.text or "").strip() if t is not None else ""
+            if not title or len(title) < 18:
+                continue
+            # Google News appends " - Source" to titles; strip it
+            title = re.sub(r"\s+-\s+[^-]+$", "", title).strip()
+            key = title.lower()[:60]
+            if key in seen:
+                continue
+            l = item.find("link"); link = (l.text or "").strip() if l is not None else ""
+            p = item.find("pubDate"); pub = (p.text or "").strip() if p is not None else ""
+            try:
+                pdt = parsedate_to_datetime(pub).astimezone(timezone.utc) if pub else None
+                if pdt and pdt < cutoff:
+                    continue
+            except Exception:
+                pass
+            seen.add(key)
+            out.append({
+                "source": "GoogleNews",
+                "title": title,
+                "description": title,
+                "link": link,
+                "pub_date": pub,
+            })
+            n += 1
+            if n >= GNEWS_PER_FEED or len(out) >= GNEWS_TOTAL:
+                break
+        time.sleep(0.5)
+    print(f"  → {len(out)} Google News candidate signals", flush=True)
     return out
 
 # ---------------------------------------------------------------------------
@@ -2161,6 +2247,39 @@ def main():
             "summary":    extracted.get("summary", raw["title"])[:300],
             "summary_ru": extracted.get("summary_ru", "")[:300],
             "source":     "GDELT (news signal)",
+            "confidence": "signal",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+        if len(events) >= MAX_EVENTS:
+            break
+
+    # ── 12. Google News (own free aggregator, signal tier) ────────────────
+    for raw in fetch_google_news():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = call_ai(text) if has_ai else None
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
+        if not extracted or not extracted.get("disease") or not extracted.get("country"):
+            continue
+        sev = normalise_sev(extracted.get("severity", "monitoring"))
+        if sev == "critical":
+            sev = "alert"  # news-only never auto-escalates to critical
+        add_event({
+            "id":         f"gnews-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    extracted.get("disease"),
+            "country":    extracted.get("country"),
+            "iso":        extracted.get("iso"),
+            "region":     extracted.get("region"),
+            "lat":        extracted.get("lat"),
+            "lng":        extracted.get("lng"),
+            "cases":      extracted.get("cases"),
+            "deaths":     extracted.get("deaths"),
+            "severity":   sev,
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
+            "source":     "News signal · Google",
             "confidence": "signal",
             "link":       raw.get("link", ""),
             "date":       raw.get("pub_date", ""),
