@@ -1125,6 +1125,187 @@ def fetch_gdacs() -> list:
     return results
 
 # ---------------------------------------------------------------------------
+# Source 7: USGS — significant earthquakes (past 30 days)
+# ---------------------------------------------------------------------------
+
+# Country names sorted longest-first for greedy substring matching in place strings
+_CDB_NAMES = sorted(
+    [k for k in COUNTRY_DB.keys() if len(k) > 3],
+    key=len, reverse=True,
+)
+
+def _country_from_text(text: str):
+    """Best-effort: find a COUNTRY_DB country mentioned in free text.
+    Returns (name_title, iso2, lat, lng, region) or (None,...)."""
+    t = (text or "").lower()
+    for name in _CDB_NAMES:
+        if name in t:
+            iso2, lat, lng, region = COUNTRY_DB[name]
+            return name.title(), iso2, lat, lng, region
+    return None, None, None, None, None
+
+
+def fetch_usgs_quakes() -> list:
+    print("Fetching USGS earthquakes …", flush=True)
+    url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  ✗ USGS: {e}", flush=True)
+        return []
+
+    cutoff_ms = (datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)).timestamp() * 1000
+    out = []
+    for f in data.get("features", []):
+        p = f.get("properties", {}) or {}
+        g = f.get("geometry", {}) or {}
+        mag = p.get("mag")
+        if mag is None or mag < 6.0:
+            continue
+        t_ms = p.get("time") or 0
+        if t_ms and t_ms < cutoff_ms:
+            continue
+        coords = g.get("coordinates") or [None, None]
+        lng, lat = (coords[0], coords[1]) if len(coords) >= 2 else (None, None)
+        place = p.get("place", "") or p.get("title", "")
+        cname, iso2, _clat, _clng, region = _country_from_text(place)
+        sev = "critical" if mag >= 7.0 else "alert" if mag >= 6.5 else "warning"
+        when = ""
+        try:
+            when = datetime.fromtimestamp(t_ms / 1000, timezone.utc).strftime("%Y-%m-%d")
+        except Exception:
+            pass
+        out.append({
+            "title":   p.get("title", f"M {mag} earthquake"),
+            "mag":     mag,
+            "country": cname or "",
+            "iso":     iso2,
+            "region":  region or "UNKNOWN",
+            "lat":     lat,
+            "lng":     lng,
+            "severity": sev,
+            "summary": f"Magnitude {mag} earthquake — {place}. Significant seismic event; risk of casualties, infrastructure damage and disrupted health services.",
+            "link":    p.get("url", "https://earthquake.usgs.gov/earthquakes/"),
+            "date":    when,
+        })
+    print(f"  → {len(out)} significant earthquakes (M≥6)", flush=True)
+    return out
+
+# ---------------------------------------------------------------------------
+# Source 8: NASA EONET — open natural events (wildfires, volcanoes, storms)
+# ---------------------------------------------------------------------------
+
+EONET_NAMES = {
+    "wildfires":     ("Wildfire", "WF", "alert"),
+    "volcanoes":     ("Volcanic Activity", "VO", "alert"),
+    "severeStorms":  ("Severe Storm", "TC", "alert"),
+    "floods":        ("Flood", "FL", "alert"),
+    "drought":       ("Drought", "DR", "warning"),
+    "dustHaze":      ("Dust & Haze", "DH", "warning"),
+    "earthquakes":   ("Earthquake", "EQ", "alert"),
+    "landslides":    ("Landslide", "LS", "warning"),
+    "tempExtremes":  ("Temperature Extreme", "TE", "warning"),
+}
+
+def fetch_eonet() -> list:
+    print("Fetching NASA EONET …", flush=True)
+    url = "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&days=30"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  ✗ EONET: {e}", flush=True)
+        return []
+
+    out = []
+    for e in data.get("events", []):
+        cats = e.get("categories") or []
+        cat_id = cats[0].get("id") if cats else ""
+        name, dtype, sev = EONET_NAMES.get(cat_id, (None, None, None))
+        if not name:
+            continue
+        geoms = e.get("geometry") or []
+        if not geoms:
+            continue
+        g = geoms[-1]  # most recent point
+        coords = g.get("coordinates") or []
+        if g.get("type") != "Point" or len(coords) < 2:
+            continue
+        lng, lat = coords[0], coords[1]
+        title = e.get("title", name)
+        cname, iso2, _a, _b, region = _country_from_text(title)
+        out.append({
+            "title":   title,
+            "name":    name,
+            "dtype":   dtype,
+            "country": cname or "",
+            "iso":     iso2,
+            "region":  region or "UNKNOWN",
+            "lat":     lat,
+            "lng":     lng,
+            "severity": sev,
+            "summary": f"{name}: {title}. Active natural event tracked by NASA EONET — potential displacement and health-system impact.",
+            "link":    (e.get("sources") or [{}])[0].get("url") or e.get("link", "https://eonet.gsfc.nasa.gov/"),
+            "date":    (g.get("date") or "")[:10],
+        })
+    print(f"  → {len(out)} EONET open events", flush=True)
+    return out
+
+# ---------------------------------------------------------------------------
+# Source 9: WFP HungerMapLIVE — acute food insecurity per country
+# ---------------------------------------------------------------------------
+
+def fetch_wfp_hunger() -> list:
+    print("Fetching WFP HungerMapLIVE …", flush=True)
+    url = "https://api.hungermapdata.org/v1/foodsecurity/country"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "EpiScope/2.0 (episcope.ru)"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  ✗ WFP: {e}", flush=True)
+        return []
+
+    body = data.get("body", data)
+    countries = body.get("countries", []) if isinstance(body, dict) else []
+    out = []
+    for c in countries:
+        meta = c.get("country", {}) or {}
+        fcs  = (c.get("metrics", {}) or {}).get("fcs", {}) or {}
+        prev = fcs.get("prevalence")
+        people = fcs.get("people")
+        if prev is None or prev < 0.40:   # only severe acute crises (IPC 3+)
+            continue
+        sev = "critical" if prev >= 0.55 else "alert"
+        name = meta.get("name", "")
+        iso2 = meta.get("iso2")
+        cdb  = COUNTRY_DB.get(name.lower())
+        lat = lng = None
+        region = "UNKNOWN"
+        if cdb:
+            iso2 = iso2 or cdb[0]
+            lat, lng, region = cdb[1], cdb[2], cdb[3]
+        pct = round(prev * 100)
+        ppl = f"{people/1e6:.1f}M" if people else "—"
+        out.append({
+            "country":  name,
+            "iso":      iso2,
+            "region":   region,
+            "lat":      lat,
+            "lng":      lng,
+            "severity": sev,
+            "summary":  f"Acute food insecurity: {pct}% of the population ({ppl} people) with insufficient food consumption (WFP HungerMapLIVE).",
+            "summary_ru": f"Острая нехватка продовольствия: {pct}% населения ({ppl} чел.) с недостаточным потреблением пищи (WFP HungerMapLIVE).",
+            "link":     "https://hungermap.wfp.org/",
+            "date":     c.get("date", ""),
+        })
+    print(f"  → {len(out)} countries in severe food-insecurity crisis (≥40%)", flush=True)
+    return out
+
+# ---------------------------------------------------------------------------
 # Normalise + deduplicate
 # ---------------------------------------------------------------------------
 
@@ -1482,7 +1663,14 @@ def main():
     event_id_counter = [0]
 
     def add_event(ev: dict):
-        key = build_dedup_key(ev.get("disease", ""), ev.get("country", ""))
+        # Disaster/geo events can repeat per country (many quakes in Japan),
+        # so allow an explicit dedup key (disease + rounded coords).
+        if ev.pop("_unique_geo", False):
+            la = round(ev.get("lat") or 0, 1)
+            ln = round(ev.get("lng") or 0, 1)
+            key = build_dedup_key(ev.get("disease", ""), f"{ev.get('country','')}|{la}|{ln}")
+        else:
+            key = build_dedup_key(ev.get("disease", ""), ev.get("country", ""))
         if key and key in seen_dedup:
             return  # skip duplicate
         if key:
@@ -1761,6 +1949,73 @@ def main():
             "source":        "GDACS",
             "link":          gev.get("link", ""),
             "date":          gev.get("pub_date", ""),
+        })
+
+    # ── 8. USGS earthquakes ───────────────────────────────────────────────
+    for q in fetch_usgs_quakes():
+        add_event({
+            "_unique_geo":   True,
+            "id":            f"usgs-{event_id_counter[0]}",
+            "type":          "disaster",
+            "disaster_type": "EQ",
+            "disease":       "Earthquake",
+            "country":       q.get("country", ""),
+            "iso":           q.get("iso"),
+            "region":        q.get("region", "UNKNOWN"),
+            "lat":           q.get("lat"),
+            "lng":           q.get("lng"),
+            "cases":         None,
+            "deaths":        None,
+            "severity":      q.get("severity", "warning"),
+            "summary":       q.get("summary", "")[:300],
+            "summary_ru":    "",
+            "source":        "USGS",
+            "link":          q.get("link", ""),
+            "date":          q.get("date", ""),
+        })
+
+    # ── 9. NASA EONET ─────────────────────────────────────────────────────
+    for ev in fetch_eonet():
+        add_event({
+            "_unique_geo":   True,
+            "id":            f"eonet-{event_id_counter[0]}",
+            "type":          "disaster",
+            "disaster_type": ev.get("dtype", ""),
+            "disease":       ev.get("name", "Natural event"),
+            "country":       ev.get("country", ""),
+            "iso":           ev.get("iso"),
+            "region":        ev.get("region", "UNKNOWN"),
+            "lat":           ev.get("lat"),
+            "lng":           ev.get("lng"),
+            "cases":         None,
+            "deaths":        None,
+            "severity":      ev.get("severity", "warning"),
+            "summary":       ev.get("summary", "")[:300],
+            "summary_ru":    "",
+            "source":        "NASA EONET",
+            "link":          ev.get("link", ""),
+            "date":          ev.get("date", ""),
+        })
+
+    # ── 10. WFP HungerMapLIVE ─────────────────────────────────────────────
+    for h in fetch_wfp_hunger():
+        add_event({
+            "id":            f"wfp-{event_id_counter[0]}",
+            "type":          "food",
+            "disease":       "Food Insecurity",
+            "country":       h.get("country", ""),
+            "iso":           h.get("iso"),
+            "region":        h.get("region", "UNKNOWN"),
+            "lat":           h.get("lat"),
+            "lng":           h.get("lng"),
+            "cases":         None,
+            "deaths":        None,
+            "severity":      h.get("severity", "warning"),
+            "summary":       h.get("summary", "")[:300],
+            "summary_ru":    h.get("summary_ru", "")[:300],
+            "source":        "WFP HungerMapLIVE",
+            "link":          h.get("link", ""),
+            "date":          h.get("date", ""),
         })
 
     # ── Output ────────────────────────────────────────────────────────────
