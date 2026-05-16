@@ -755,16 +755,27 @@ def fetch_rospotrebnadzor() -> list:
     Russian-regex fallback extractor."""
     print("Fetching Rospotrebnadzor RSS …", flush=True)
     url = "https://www.rospotrebnadzor.ru/region/rss/rss.php?rss=y"
-    try:
-        opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "Mozilla/5.0 EpiScope/2.0 (episcope.ru)",
-            "Accept": "application/rss+xml,application/xml,text/xml,*/*",
-        })
-        with opener.open(req, timeout=15) as resp:
-            content = resp.read()
-    except Exception as e:
-        print(f"  ✗ Rospotrebnadzor: {e}", flush=True)
+    content = None
+    last_err = None
+    for host in ("https://www.rospotrebnadzor.ru", "https://rospotrebnadzor.ru"):
+        u = host + "/region/rss/rss.php?rss=y"
+        for attempt in range(2):
+            try:
+                opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+                req = urllib.request.Request(u, headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Accept": "application/rss+xml,application/xml,text/xml,*/*",
+                })
+                with opener.open(req, timeout=30) as resp:
+                    content = resp.read()
+                break
+            except Exception as e:
+                last_err = e
+                time.sleep(2)
+        if content:
+            break
+    if not content:
+        print(f"  ✗ Rospotrebnadzor (timed out from CI — geo-throttled): {last_err}", flush=True)
         return []
 
     try:
