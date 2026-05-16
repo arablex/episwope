@@ -1114,6 +1114,21 @@ function renderCountryPanel(country){
       <div class="cp-hist-note">${HISTORY?.meta?.from || ''} → ${HISTORY?.meta?.to || ''}</div>`;
   }
 
+  // Honest data-provenance note (esp. for limited-surveillance regions)
+  const LOW_COVERAGE = new Set(['Russia','China','Belarus','Turkmenistan',
+    'North Korea','Tajikistan','Uzbekistan','Kyrgyzstan']);
+  const provNote = (() => {
+    const base = LANG === 'ru'
+      ? 'Данные отражают то, что публикуют WHO/ECDC/GDACS и др. Отсутствие событий ≠ «всё спокойно».'
+      : 'Data reflects what WHO/ECDC/GDACS et al. publish. Absence of events is not an all-clear.';
+    const extra = LOW_COVERAGE.has(country)
+      ? (LANG === 'ru'
+          ? ' Независимый эпиднадзор по этой стране ограничен — опираемся на международные отчёты WHO.'
+          : ' Independent surveillance from this country is limited — coverage relies on WHO international reports.')
+      : '';
+    return base + extra;
+  })();
+
   const threatsHtml = outbreaks.length
     ? outbreaks.map(o => {
         const s = SEV[o.sev];
@@ -1155,6 +1170,7 @@ function renderCountryPanel(country){
       <div class="cp-section">
         <div class="cp-section-title">${L.threats}</div>
         ${threatsHtml}
+        <div class="cp-prov">${provNote}</div>
       </div>
 
       <div class="cp-section">
