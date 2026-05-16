@@ -322,6 +322,16 @@
     display:flex; align-items:center; transition:all .15s;
   }
   .lang-btn:hover{ background:#fff; color:var(--ink); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
+  .pro-pill{
+    height:32px; padding:0 13px; border-radius:var(--r-pill);
+    font-size:12px; font-weight:800; letter-spacing:0.01em;
+    color:#fff; background:linear-gradient(180deg,#E8590C,#C92A2A);
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+    box-shadow:0 4px 12px -5px rgba(201,42,42,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+    transition:transform .15s;
+  }
+  .pro-pill:hover{ transform:translateY(-1px); }
+  .pro-pill .spark{ font-size:12px; line-height:1; }
 
   /* ============ SIDEBAR (floating glass) ============ */
   .sidebar{
@@ -1805,6 +1815,7 @@
     </div>
 
     <div class="top-actions">
+      <button class="pro-pill" onclick="openProWaitlist('header')" title="EpiScope Pro"><span class="spark">✦</span> Pro</button>
       <a href="/" class="lang-btn" title="English version">EN</a>
       <button class="icon-btn" id="userBtn" title="Войти" onclick="toggleAuthPopover()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>

@@ -630,23 +630,95 @@ function isPaid() {
 }
 
 function showProGate() {
-  const msg = LANG === 'ru'
-    ? 'Бесплатно — до 3 стран. <a href="/pricing">Перейти на Pro →</a>'
-    : 'Free plan: up to 3 countries. <a href="/pricing">Upgrade to Pro →</a>';
-  let t = document.getElementById('_proGateToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = '_proGateToast';
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0F0E0C;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .25s;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.18)';
-    document.body.appendChild(t);
-  }
-  t.innerHTML = msg;
-  const a = t.querySelector('a');
-  if (a) a.style.cssText = 'color:#F5A623;text-decoration:none;font-weight:600';
-  t.style.opacity = '1';
-  t.style.pointerEvents = 'auto';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.pointerEvents = 'none'; }, 3500);
+  // Hot intent moment (free user hit country limit) → waitlist fake-door
+  openProWaitlist('country_limit');
+}
+
+const _PRO_T = {
+  en: {
+    eyebrow: 'EpiScope Pro',
+    title: 'Unlimited watchlist, real-time alerts &amp; PDF reports',
+    price: '$4.99/mo',
+    sub: 'Launching soon. Leave your email — get <b>50% off</b> at launch.',
+    ph: 'your@email.com',
+    cta: 'Join the waitlist',
+    okT: 'You’re on the list ✓',
+    okS: 'We’ll email you before launch with your 50% code.',
+    feats: ['Unlimited watched countries', 'Real-time alerts (no 24h delay)', 'Personal risk radar by location', 'Monthly PDF risk reports', 'API access'],
+  },
+  ru: {
+    eyebrow: 'EpiScope Pro',
+    title: 'Безлимит стран, алерты в реальном времени и PDF-отчёты',
+    price: '$4.99/мес',
+    sub: 'Запускаем скоро. Оставь email — <b>−50%</b> на старте.',
+    ph: 'ваш@email.com',
+    cta: 'В список ожидания',
+    okT: 'Ты в списке ✓',
+    okS: 'Напишем перед запуском и пришлём код на −50%.',
+    feats: ['Безлимит отслеживаемых стран', 'Алерты в реальном времени (без задержки 24ч)', 'Персональный радар рисков по локации', 'Ежемесячный PDF-отчёт по рискам', 'Доступ к API'],
+  },
+};
+
+function openProWaitlist(source) {
+  const L = _PRO_T[LANG === 'ru' ? 'ru' : 'en'];
+  if (window.ym) ym(109240834, 'reachGoal', 'pro_open', { source: source || 'unknown' });
+
+  let ov = document.getElementById('_proWaitOv');
+  if (ov) ov.remove();
+  ov = document.createElement('div');
+  ov.id = '_proWaitOv';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(8,7,6,.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s';
+  ov.innerHTML = `
+    <div id="_proWaitCard" style="background:#fff;max-width:420px;width:100%;border-radius:20px;padding:30px 28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);transform:translateY(8px);transition:transform .22s">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${L.eyebrow}</span>
+        <button id="_proWaitX" aria-label="close" style="border:0;background:none;cursor:pointer;color:#807E76;font-size:20px;line-height:1;padding:2px 6px">×</button>
+      </div>
+      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25;color:#0F0E0C;margin-bottom:6px">${L.title}</div>
+      <div style="font-size:13.5px;color:#3B3A36;line-height:1.5;margin-bottom:16px"><b style="color:#0F0E0C">${L.price}</b> · ${L.sub}</div>
+      <ul style="list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:7px">
+        ${L.feats.map(f => `<li style="font-size:12.5px;color:#3B3A36;display:flex;gap:8px;align-items:flex-start"><span style="color:#19A463;font-weight:800;flex-shrink:0">✓</span>${f}</li>`).join('')}
+      </ul>
+      <form id="_proWaitForm" style="display:flex;flex-direction:column;gap:9px">
+        <input id="_proWaitEmail" type="email" required placeholder="${L.ph}" autocomplete="email"
+          style="height:46px;padding:0 15px;border:1.5px solid #ECEAE2;border-radius:12px;font:inherit;font-size:14.5px;color:#0F0E0C;background:#FAFAF8;outline:none">
+        <button type="submit" id="_proWaitBtn"
+          style="height:46px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border:0;border-radius:12px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer">${L.cta}</button>
+      </form>
+      <div id="_proWaitOk" style="display:none;text-align:center;padding:10px 0 2px">
+        <div style="font-size:15px;font-weight:800;color:#19A463;margin-bottom:4px">${L.okT}</div>
+        <div style="font-size:12.5px;color:#807E76;line-height:1.5">${L.okS}</div>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => {
+    ov.style.opacity = '1';
+    ov.querySelector('#_proWaitCard').style.transform = 'translateY(0)';
+  });
+
+  const close = () => { ov.style.opacity = '0'; setTimeout(() => ov.remove(), 200); };
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.querySelector('#_proWaitX').onclick = close;
+  document.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown', esc); } });
+
+  ov.querySelector('#_proWaitForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = ov.querySelector('#_proWaitEmail').value.trim();
+    if (!email || !email.includes('@')) return;
+    const btn = ov.querySelector('#_proWaitBtn');
+    btn.disabled = true; btn.style.opacity = '.6';
+    btn.textContent = LANG === 'ru' ? 'Отправляю…' : 'Sending…';
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: source || 'unknown', lang: LANG }),
+      });
+    } catch (_) {}
+    if (window.ym) ym(109240834, 'reachGoal', 'pro_waitlist', { source: source || 'unknown' });
+    ov.querySelector('#_proWaitForm').style.display = 'none';
+    ov.querySelector('#_proWaitOk').style.display = 'block';
+    setTimeout(close, 3200);
+  });
 }
 
 function updateUserBtn() {
