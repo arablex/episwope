@@ -483,24 +483,31 @@ function recallToEvent(r){
             (r.iso && typeof COUNTRY_BY_ISO2 !== 'undefined' ? COUNTRY_BY_ISO2[r.iso] : null);
   const lat = c?.lat ?? 50.0;          // EU / unknown → central Europe
   const lng = c?.lng ?? 10.0;
-  const src = r.source || 'Recall';
+  const src  = r.source || 'Recall';
   const prod = (r.product || '').trim();
-  const sum = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
+  const sum  = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
+  const sev  = ['critical','alert','warning','monitoring'].includes(r.severity) ? r.severity : 'warning';
+  const country = r.country || (r.iso === 'EU' ? 'European Union' : '');
   return {
     id: r.id, type: 'food', _recall: true, _live: true,
+    code: `RECALL-${src}-${(r.date||'').slice(0,10)}`,
     name: r.hazard || 'Food recall',
     name_ru: r.hazard || 'Отзыв продукта',
-    country: r.country || (r.iso === 'EU' ? 'European Union' : ''),
+    pathogen: r.hazard || 'Food safety',
+    country,
     iso: c?.num || 0,
-    region: '',
+    region: 'UNKNOWN',
+    place: country,
     lat, lng, lon: lng,
-    sev: r.severity || 'warning',
-    cases: null, deaths: null,
+    sev,
     who: `${src}${r.class ? ' · ' + r.class : ''}`,
+    cases: 0, deaths: 0, cfr: 0, rt: 0, new24: 0,
+    sevIdx: { critical:80, alert:60, warning:40, monitoring:20 }[sev] || 40,
+    trend: [0,0,0,0,0,0,0,0],
     blurb: sum, summary: sum, blurb_ru: sum, summary_ru: sum,
+    events: [],
     link: r.link || '', _link: r.link || '',
     date: r.date || '',
-    events: [],
   };
 }
 
