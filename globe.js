@@ -345,8 +345,12 @@ const ALL_COUNTRIES = [
 
 function flagEmoji(iso2){
   if(!iso2 || iso2.length !== 2) return '';
-  const cp = c => 127397 + c.charCodeAt(0);
-  return String.fromCodePoint(cp(iso2[0].toUpperCase()), cp(iso2[1].toUpperCase()));
+  const cc = iso2.toLowerCase();
+  // Real flag icons (flagcdn, free SVG CDN) instead of emoji glyphs.
+  return `<img src="https://flagcdn.com/${cc}.svg" alt="${iso2.toUpperCase()}" loading="lazy" ` +
+         `style="width:22px;height:16px;border-radius:3px;object-fit:cover;vertical-align:middle;` +
+         `box-shadow:0 0 0 1px rgba(0,0,0,.06)" ` +
+         `onerror="this.style.display='none'">`;
 }
 
 const COUNTRY_BY_EN = Object.fromEntries(ALL_COUNTRIES.map(c => [c.en.toLowerCase(), c]));
@@ -3468,6 +3472,12 @@ window.toggleCat     = toggleCat;
 window.switchView    = switchView;
 window.renderMyFeed  = renderMyFeed;
 window.selectOutbreak = selectOutbreak;
+window.OUTBREAKS     = OUTBREAKS;
+window.SEV           = SEV;
+window.diseaseName   = diseaseName;
+window.countryName   = countryName;
+window.flagEmoji     = flagEmoji;
+window.findCountry   = findCountry;
 
 boot();
 

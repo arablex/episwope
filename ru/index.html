@@ -1556,10 +1556,15 @@
       border-bottom: 1px solid var(--line-2);
       border-radius: 0;
     }
-    .mob-sheet .out-row .nm { font-size: 15px; font-weight: 700; }
-    .mob-sheet .out-row .lo { font-size: 12px; margin-top: 2px; }
-    .mob-sheet .out-row .ct { font-size: 12px; }
-    .mob-sheet .out-row .ct small { font-size: 10px; }
+    .mob-sheet .out-row .nm { font-size: 16.5px; font-weight: 700; }
+    .mob-sheet .out-row .lo { font-size: 13px; margin-top: 3px; }
+    .mob-sheet .out-row .ct { font-size: 13px; }
+    .mob-sheet .out-row .ct small { font-size: 11px; }
+    .mob-sheet .feed-title, #mobFeedList .feed-title { font-size: 15.5px !important; }
+    .mob-sheet .feed-meta,  #mobFeedList .feed-meta  { font-size: 12.5px !important; }
+    .mc-row .nm, .g-row .nm, .cs-name { font-size: 15px !important; font-weight: 700; }
+    .flag img, .mc-row .flag img, .cs-flag img, .g-row .flag img,
+    .flag > img { width: 24px !important; height: 17px !important; }
 
     /* Subscribe overlay */
     .mob-subs-overlay {
@@ -2571,25 +2576,50 @@
     `;
     document.body.appendChild(filters);
 
+    const _fExp = { epidemic:true, disaster:true, air:false, food:false, humanitarian:false };
     function buildFilters(){
       const body = document.getElementById('mobFiltersBody');
-      const st = window.state, CM = window.CATEGORY_META;
-      if(!body || !st || !CM){ if(body) body.innerHTML = `<div style="padding:24px;color:var(--muted);font-size:13px">${T('Loading…','Загрузка…')}</div>`; return; }
+      const st = window.state, CM = window.CATEGORY_META, OB = window.OUTBREAKS, SV = window.SEV;
+      if(!body || !st || !CM){ if(body) body.innerHTML = `<div style="padding:24px;color:var(--muted);font-size:14px">${T('Loading…','Загрузка…')}</div>`; return; }
       const ru = LANG_MOB === 'ru';
-      let html = `<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 10px">${T('Categories','Категории')}</div>`;
+      const dn = window.diseaseName, cnFn = window.countryName, fe = window.flagEmoji, fc = window.findCountry;
+      let html = `<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 12px">${T('Categories','Категории')}</div>`;
       Object.keys(CM).forEach(k=>{
-        const on = st.cats[k] !== false;
-        html += `<div class="mf-row" data-cat="${k}" style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff;border:1px solid var(--line);border-radius:13px;margin-bottom:8px;cursor:pointer">
-          <span style="display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--ink)"><span style="color:${CM[k].color};display:flex">${CM[k].icon}</span>${ru?CM[k].ru:CM[k].en}</span>
-          <span style="width:44px;height:26px;border-radius:999px;background:${on?'var(--accent)':'#D9D6CE'};position:relative;transition:background .15s;flex-shrink:0"><span style="position:absolute;top:3px;${on?'left:21px':'left:3px'};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></span>
+        const on  = st.cats[k] !== false;
+        const exp = !!_fExp[k];
+        const evs = (OB||[]).filter(o => (o.type||'epidemic') === k)
+                            .sort((a,b)=>(SV?.[b.sev]?.idx??0)-(SV?.[a.sev]?.idx??0));
+        html += `<div class="mf-cat" style="background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden">
+          <div class="mf-head" data-cat="${k}" style="display:flex;align-items:center;gap:11px;padding:16px 14px;cursor:pointer">
+            <span style="color:${CM[k].color};display:flex;flex-shrink:0">${CM[k].icon}</span>
+            <span style="flex:1;font-size:16px;font-weight:700;color:var(--ink)">${ru?CM[k].ru:CM[k].en}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--muted);min-width:22px;text-align:right">${evs.length}</span>
+            <span style="font-size:12px;color:var(--muted-2);transition:transform .2s;transform:rotate(${exp?180:0}deg)">▾</span>
+            <button class="mf-tg" data-tg="${k}" style="width:46px;height:27px;border:0;border-radius:999px;background:${on?'var(--accent)':'#D9D6CE'};position:relative;flex-shrink:0;cursor:pointer;padding:0"><span style="position:absolute;top:3px;${on?'left:22px':'left:3px'};width:21px;height:21px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></button>
+          </div>
+          ${exp ? `<div style="border-top:1px solid var(--line-2);max-height:46vh;overflow-y:auto">${
+            evs.length ? evs.map(o=>{
+              const meta = fc ? fc(o.country) : null;
+              const flag = meta ? fe(meta.iso2) : '';
+              const s = SV?.[o.sev];
+              return `<div class="mf-ev" data-id="${o.id}" style="display:flex;align-items:center;gap:11px;padding:13px 16px;border-top:1px solid var(--line-2);cursor:pointer">
+                <span style="flex-shrink:0">${flag}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cnFn?cnFn(o.country):o.country||''}</div>
+                  <div style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${dn?dn(o):(o.name||'')}</div>
+                </div>
+                <span style="width:9px;height:9px;border-radius:50%;background:${s?.color||'#A09F95'};flex-shrink:0"></span>
+              </div>`;
+            }).join('') : `<div style="padding:16px;font-size:13px;color:var(--muted)">${ru?'Нет событий':'No events'}</div>`
+          }</div>` : ''}
         </div>`;
       });
       const realChips = [...document.querySelectorAll('#chips .chip')];
       if(realChips.length){
-        html += `<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 10px">${ru?'Уровень угрозы':'Severity'}</div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
+        html += `<div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:22px 0 12px">${ru?'Уровень угрозы':'Severity'}</div><div style="display:flex;flex-wrap:wrap;gap:9px">`;
         realChips.forEach(c=>{
           const act = c.classList.contains('is-active');
-          html += `<button class="mf-chip" data-f="${c.dataset.f}" style="font:inherit;font-size:13px;font-weight:600;padding:9px 15px;border-radius:999px;border:1px solid ${act?'var(--accent)':'var(--line)'};background:${act?'rgba(232,89,12,.1)':'#fff'};color:${act?'var(--accent)':'var(--ink)'};cursor:pointer">${c.textContent.trim()}</button>`;
+          html += `<button class="mf-chip" data-f="${c.dataset.f}" style="font:inherit;font-size:14px;font-weight:600;padding:10px 17px;border-radius:999px;border:1px solid ${act?'var(--accent)':'var(--line)'};background:${act?'rgba(232,89,12,.1)':'#fff'};color:${act?'var(--accent)':'var(--ink)'};cursor:pointer">${(c.textContent||'').trim()}</button>`;
         });
         html += `</div>`;
       }
@@ -2597,9 +2627,13 @@
     }
     fab.addEventListener('click', ()=>{ buildFilters(); filters.classList.add('show'); });
     document.getElementById('mobFiltersBody').addEventListener('click', e=>{
-      const row = e.target.closest('.mf-row[data-cat]');
+      const tg   = e.target.closest('.mf-tg[data-tg]');
+      const head = e.target.closest('.mf-head[data-cat]');
+      const ev   = e.target.closest('.mf-ev[data-id]');
       const chip = e.target.closest('.mf-chip[data-f]');
-      if(row && typeof window.toggleCat === 'function'){ window.toggleCat(row.dataset.cat); buildFilters(); }
+      if(tg){ e.stopPropagation(); if(typeof window.toggleCat==='function') window.toggleCat(tg.dataset.tg); buildFilters(); }
+      else if(ev){ if(typeof window.selectOutbreak==='function') window.selectOutbreak(ev.dataset.id); filters.classList.remove('show'); }
+      else if(head){ _fExp[head.dataset.cat] = !_fExp[head.dataset.cat]; buildFilters(); }
       else if(chip){ const real = document.querySelector(`#chips .chip[data-f="${chip.dataset.f}"]`); if(real) real.click(); buildFilters(); }
     });
     document.getElementById('mobFiltersX').addEventListener('click', ()=> filters.classList.remove('show'));
