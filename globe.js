@@ -828,11 +828,16 @@ function openProWaitlist(source) {
 /* ════════════════════════════════════════════════════════════
    RISK REPORT — purpose-tailored country assessment (Pro feature)
    ════════════════════════════════════════════════════════════ */
+const _ICO = (p) => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const RISK_PURPOSES = [
-  { id:'tourist',    icon:'🧳', en:'Tourist trip',  ru:'Турпоездка' },
-  { id:'business',   icon:'💼', en:'Business trip',  ru:'Командировка' },
-  { id:'relocation', icon:'🏠', en:'Relocation',     ru:'Переезд' },
-  { id:'family',     icon:'👨‍👩‍👧', en:'Family / kids', ru:'Семья / дети' },
+  { id:'tourist',    en:'Tourist trip',  ru:'Турпоездка',
+    icon:_ICO('<path d="M6 20a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M9 20v2M15 20v2"/>') },
+  { id:'business',   en:'Business trip',  ru:'Командировка',
+    icon:_ICO('<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>') },
+  { id:'relocation', en:'Relocation',     ru:'Переезд',
+    icon:_ICO('<path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>') },
+  { id:'family',     en:'Family / kids', ru:'Семья / дети',
+    icon:_ICO('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.6a4 4 0 0 1 0 7"/>') },
 ];
 
 function _riskVerdict(country, outbreaks){
@@ -913,8 +918,8 @@ function openRiskReport(country){
     </div>
     <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">${countryName(country)}</div>
     <div style="font-size:13px;color:#807E76;margin-bottom:18px">${ru?'Выберите цель — соберём детальный отчёт':'Pick a purpose — we’ll build a detailed report'}</div>
-    <div id="_riskPick" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid #ECEAE2;border-radius:14px;background:#FAFAF8;cursor:pointer;font:inherit;font-size:14px;font-weight:600;color:#0F0E0C;text-align:left">${p.icon} ${ru?p.ru:p.en}</button>`).join('')}
+    <div id="_riskPick" style="display:flex;flex-direction:column;gap:9px">
+      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;border:1.5px solid #ECEAE2;border-radius:14px;background:#FAFAF8;cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;color:#0F0E0C;text-align:left;width:100%"><span style="color:#E8590C;display:flex;flex-shrink:0">${p.icon}</span>${ru?p.ru:p.en}</button>`).join('')}
     </div>
     <div id="_riskBody"></div>
   </div>`;
@@ -979,7 +984,7 @@ async function buildRiskReport(country, purpose){
       <span style="width:10px;height:10px;border-radius:50%;background:${v.color};flex-shrink:0"></span>
       <div>
         <div style="font-size:15px;font-weight:800;color:${v.color}">${v.label}</div>
-        <div style="font-size:12px;color:#3B3A36">${pObj.icon} ${ru?pObj.ru:pObj.en} · ${countryName(country)} · ${new Date().toLocaleDateString(LANG)}</div>
+        <div style="font-size:12px;color:#3B3A36">${ru?pObj.ru:pObj.en} · ${countryName(country)} · ${new Date().toLocaleDateString(LANG)}</div>
       </div>
     </div>
 
