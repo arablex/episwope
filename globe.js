@@ -2694,18 +2694,6 @@ function renderList(){
   items = items.filter(o => matchesQuery(o, q));
   document.getElementById('listCount').textContent = items.length;
 
-  // "All" chip badge — live total for current categories/search (was a
-  // hardcoded "12" left over from the mockup)
-  const allBadge = document.querySelector('.chip[data-f="all"] .badge');
-  if(allBadge){
-    const allCount = OUTBREAKS.filter(o =>
-      state.cats[o.type||'epidemic'] !== false &&
-      (!state.selectedCountry || o.country === state.selectedCountry) &&
-      matchesQuery(o, q)
-    ).length;
-    allBadge.textContent = allCount;
-  }
-
   if(items.length === 0){
     const noMsg = q
       ? (LANG==='ru' ? `По запросу «${q}» ничего не найдено` : `No results for "${q}"`)
