@@ -37,14 +37,12 @@ MAX_PER_FEED       = 20
 OUTPUT_DIR = Path(__file__).parent.parent / "public"
 
 RSS_FEEDS = [
-    # WHO: main disease outbreak news RSS
-    {"name": "WHO News",         "url": "https://www.who.int/feeds/entity/csr/don/en/rss.xml",              "tag": "WHO"},
+    # WHO general news (broad — includes outbreak coverage). Old DON RSS is 404.
+    {"name": "WHO News",         "url": "https://www.who.int/rss-feeds/news-english.xml",                   "tag": "WHO"},
+    # CDC Travel Health Notices — disease outbreaks by destination country (high-signal)
+    {"name": "CDC Travel",       "url": "https://wwwnc.cdc.gov/travel/rss/notices.xml",                     "tag": "CDC-TRAVEL"},
     # Outbreak News Today — curated daily outbreak reports (confirmed working)
     {"name": "OutbreakNewsToday","url": "https://outbreaknewstoday.com/feed/",                              "tag": "ONT"},
-    # Eurosurveillance — European disease surveillance journal (covers Russia-adjacent outbreaks)
-    {"name": "Eurosurveillance", "url": "https://www.eurosurveillance.org/rss/content/all/latest?fmt=rss",  "tag": "ESurv"},
-    # ECDC surveillance news
-    {"name": "ECDC",             "url": "https://www.ecdc.europa.eu/en/news-events/rss",                    "tag": "ECDC"},
     # ECDC Communicable Disease Threats Report — weekly, covers EU + Russia/CIS region
     {"name": "ECDC CDTR",        "url": "https://www.ecdc.europa.eu/en/taxonomy/term/2942/feed",            "tag": "ECDC-CDTR"},
     # CIDRAP — global infectious-disease news, regularly covers Russia/China/CIS outbreaks
@@ -55,6 +53,10 @@ RSS_FEEDS = [
     {"name": "PAHO",             "url": "https://www.paho.org/hq/index.php?format=feed&type=rss",           "tag": "PAHO"},
     # CDC Health Alert Network
     {"name": "CDC HAN",          "url": "https://emergency.cdc.gov/han/feed/atom.xml",                      "tag": "CDC-HAN"},
+    # NOTE: Eurosurveillance (403 bot-block) and old ECDC news RSS (404)
+    # removed — dead/blocked. ReliefWeb API now needs an APPROVED appname
+    # (register: https://apidoc.reliefweb.int/parameters#appname) — until
+    # then fetch_reliefweb() returns 0 (it fails gracefully).
 ]
 
 KEYWORDS = [
