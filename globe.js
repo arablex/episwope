@@ -476,6 +476,34 @@ const FLAG = iso2 => {
   return String.fromCodePoint(iso2.charCodeAt(0) + o) + String.fromCodePoint(iso2.charCodeAt(1) + o);
 };
 
+/* A food recall → standard OUTBREAKS event (type:'food'), so it shows in
+   the unified "Food" category list + detail panel like every other event. */
+function recallToEvent(r){
+  const c = findCountry(r.country) ||
+            (r.iso && typeof COUNTRY_BY_ISO2 !== 'undefined' ? COUNTRY_BY_ISO2[r.iso] : null);
+  const lat = c?.lat ?? 50.0;          // EU / unknown → central Europe
+  const lng = c?.lng ?? 10.0;
+  const src = r.source || 'Recall';
+  const prod = (r.product || '').trim();
+  const sum = `${r.hazard || 'Food safety'} — ${prod}${r.reason ? '. ' + r.reason : ''}`.trim();
+  return {
+    id: r.id, type: 'food', _recall: true, _live: true,
+    name: r.hazard || 'Food recall',
+    name_ru: r.hazard || 'Отзыв продукта',
+    country: r.country || (r.iso === 'EU' ? 'European Union' : ''),
+    iso: c?.num || 0,
+    region: '',
+    lat, lng, lon: lng,
+    sev: r.severity || 'warning',
+    cases: null, deaths: null,
+    who: `${src}${r.class ? ' · ' + r.class : ''}`,
+    blurb: sum, summary: sum, blurb_ru: sum, summary_ru: sum,
+    link: r.link || '', _link: r.link || '',
+    date: r.date || '',
+    events: [],
+  };
+}
+
 async function loadFoodRecalls() {
   try {
     const base = window.EPISWOPE_BASE || './';
@@ -483,7 +511,19 @@ async function loadFoodRecalls() {
     if (!res.ok) return;
     const data = await res.json();
     FOOD_RECALLS = data.recalls || [];
-    renderFoodAlerts();
+
+    // Merge recalls into OUTBREAKS as food events (idempotent on re-fetch)
+    for (let i = OUTBREAKS.length - 1; i >= 0; i--) {
+      if (OUTBREAKS[i]._recall) OUTBREAKS.splice(i, 1);
+    }
+    for (const r of FOOD_RECALLS) {
+      if (!r || !r.id) continue;
+      if (!OUTBREAKS.find(o => o.id === r.id)) OUTBREAKS.push(recallToEvent(r));
+    }
+
+    renderCatLists();
+    renderList();
+    if (typeof addGLMarkers === 'function') addGLMarkers();
     renderMyFeed();
   } catch (e) {
     console.warn('[EpiScope] food_recalls.json unavailable:', e.message);
@@ -1116,32 +1156,20 @@ function renderMyFeed(){
     return;
   }
 
-  // watched iso2 set for food recall matching
-  const watchedIso2 = new Set([...WATCHED].map(c => findCountry(c)?.iso2).filter(Boolean));
   const SEV_ORD = {catastrophic:6, critical:5, alert:4, warning:3, low:2, monitoring:1};
-  const FOOD_ORD = {critical:5, alert:4, warning:3};
 
-  const outbreakItems = OUTBREAKS
+  // Recalls now live in OUTBREAKS as type:'food' — single source, no dupes.
+  const all = OUTBREAKS
     .filter(o => WATCHED.has(o.country))
     .map(o => ({
-      type:'outbreak', ord:SEV_ORD[o.sev]||0,
+      type: o.type === 'food' ? 'food' : 'outbreak',
+      ord: SEV_ORD[o.sev]||0,
       title: diseaseName(o),
       meta: o.country,
       color: SEV[o.sev]?.color||'#A09F95',
       id: o.id,
-    }));
-
-  const foodItems = FOOD_RECALLS
-    .filter(r => watchedIso2.has(r.iso) || r.iso==='EU')
-    .map(r => ({
-      type:'food', ord:FOOD_ORD[r.severity]||2,
-      title: r.product,
-      meta: r.country || r.iso,
-      color: r.severity==='critical'?'#C92A2A': r.severity==='alert'?'#E8590C':'#A09F95',
-      link: r.link||null,
-    }));
-
-  const all = [...outbreakItems, ...foodItems].sort((a,b)=>b.ord-a.ord).slice(0,12);
+    }))
+    .sort((a,b)=>b.ord-a.ord).slice(0,12);
 
   if(countEl) countEl.textContent = all.length||'0';
 
@@ -1169,9 +1197,8 @@ function renderMyFeed(){
     el.addEventListener('click', () => {
       const item = all[+el.dataset.fi];
       if(!item) return;
-      if(item.type==='outbreak' && item.id!=null){
-        state.selectedId = item.id;
-        renderPanel(); renderPopup();
+      if(item.id!=null){
+        selectOutbreak(item.id);
       } else if(item.link){
         window.open(item.link, '_blank', 'noopener');
       }
