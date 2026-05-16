@@ -960,11 +960,16 @@ function _riskScore({ obs, country, air, recalls, hs }){
              : score>=25 ? {k:'moderate',c:'#E4B514', en:'Moderate', ru:'Умеренный'}
              :             {k:'low',     c:'#19A463', en:'Low',      ru:'Низкий'};
   const parts = [
-    { l: ru?'Вспышки':'Outbreaks',    v: Math.round(sevPts), max:45, c:'#C92A2A' },
-    { l: ru?'Тревел-уровень':'Advisory', v: Math.round(advPts), max:30, c:'#E8590C' },
-    { l: ru?'Воздух':'Air quality',   v: Math.round(aqiPts), max:15, c:'#6B7F3A' },
-    { l: ru?'Еда':'Food',             v: Math.round(foodPts), max:10, c:'#A0522D' },
-    { l: ru?'Тренд':'Trend',          v: trendPts, max:6,  c:'#1D6FA4', note: trendLbl },
+    { l: ru?'Вспышки':'Outbreaks',    v: Math.round(sevPts), max:45, c:'#C92A2A',
+      desc: ru?'Тяжесть и число активных вспышек болезней':'Severity and number of active disease outbreaks' },
+    { l: ru?'Тревел-уровень':'Advisory', v: Math.round(advPts), max:30, c:'#E8590C',
+      desc: ru?'Официальная рекомендация по поездкам в страну':'Official travel advisory level for the country' },
+    { l: ru?'Воздух':'Air quality',   v: Math.round(aqiPts), max:15, c:'#6B7F3A',
+      desc: ru?'Качество воздуха (индекс AQI)':'Air quality (AQI index)' },
+    { l: ru?'Еда':'Food',             v: Math.round(foodPts), max:10, c:'#A0522D',
+      desc: ru?'Отзывы продуктов и продовольственный кризис':'Food recalls and food-insecurity crisis' },
+    { l: ru?'Тренд':'Trend',          v: trendPts, max:6,  c:'#1D6FA4', note: trendLbl,
+      desc: ru?'Динамика угроз за период (растёт/снижается)':'Threat dynamics over time (rising/falling)' },
   ];
   return { score, band, parts };
 }
@@ -993,7 +998,7 @@ function _purposeGuidance(purpose, country, outbreaks){
   const hasGI   = outbreaks.some(o=>/cholera|salmonell|e\.?\s*coli|hepatitis a|typhoid|холер|сальмонелл|тиф|гепатит a/i.test(o.name||o.disease||''));
   const L=[];
   if(purpose==='tourist'){
-    L.push(ru?'Проверьте рекомендованные прививки за 4–6 недель до поездки.':'Check recommended vaccinations 4–6 weeks before travel.');
+    L.push(ru?'Сделайте прививки из списка ниже за 4–6 недель до поездки.':'Get the vaccines listed below 4–6 weeks before travel.');
     if(hasVec) L.push(ru?'Активны трансмиссивные инфекции — репелленты, одежда с длинным рукавом, антимоскитные сетки.':'Vector-borne disease active — repellent, long sleeves, bed nets.');
     if(hasGI)  L.push(ru?'Риск кишечных инфекций — только бутилированная вода, термически обработанная еда.':'Foodborne risk — bottled water only, well-cooked food.');
     L.push(ru?'Оформите страховку с медицинской эвакуацией.':'Get travel insurance with medical evacuation cover.');
@@ -1014,6 +1019,58 @@ function _purposeGuidance(purpose, country, outbreaks){
     L.push(ru?'Соберите аптечку: жаропонижающее, регидратация, средства от насекомых.':'Pack a kit: antipyretics, rehydration salts, insect protection.');
   }
   return L;
+}
+
+/* Keyword → RU localiser for live disease names (WHO DON etc. are EN). */
+const _RU_DIS = [
+  [/meningitis|meningococ/i,'Менингит'], [/covid|sars-cov-2/i,'COVID-19'],
+  [/mers|middle east respiratory/i,'MERS (ближневост. синдром)'],
+  [/ebola/i,'Эбола'], [/marburg/i,'Марбург'], [/nipah/i,'Вирус Нипах'],
+  [/lassa/i,'Лихорадка Ласса'], [/cholera/i,'Холера'], [/measles/i,'Корь'],
+  [/\bmpox|monkeypox/i,'Оспа обезьян'], [/dengue/i,'Денге'],
+  [/chikungunya/i,'Чикунгунья'], [/zika/i,'Зика'],
+  [/yellow fever/i,'Жёлтая лихорадка'], [/polio/i,'Полиомиелит'],
+  [/diphther/i,'Дифтерия'], [/avian influenza|bird flu|h5n1|h7n9/i,'Птичий грипп'],
+  [/influenza|\bflu\b/i,'Грипп'], [/hepatitis\s*a/i,'Гепатит A'],
+  [/hepatitis\s*e/i,'Гепатит E'], [/hepatitis/i,'Гепатит'],
+  [/rift valley/i,'Лихорадка долины Рифт'], [/anthrax/i,'Сибирская язва'],
+  [/plague/i,'Чума'], [/oropouche/i,'Оропуш'], [/typhoid/i,'Брюшной тиф'],
+  [/rabies/i,'Бешенство'], [/malaria/i,'Малярия'], [/tubercul/i,'Туберкулёз'],
+  [/yellow|жёлт/i,'Жёлтая лихорадка'], [/cronobacter/i,'Кронобактер'],
+  [/listeria/i,'Листерия'], [/salmonell/i,'Сальмонелла'],
+  [/food insecurity|food crisis/i,'Дефицит еды'],
+];
+function disRu(name){
+  if(LANG!=='ru' || !name) return name;
+  const m = DISEASE_RU[name]; if(m) return m;
+  for(const [re,ru] of _RU_DIS) if(re.test(name)) return ru;
+  return name;
+}
+
+/* Recommended vaccines from active diseases + travel baseline. */
+function _vaccineList(obs){
+  const txt = obs.map(o=>`${o.name||''} ${o.name_ru||''} ${o.disease||''}`).join(' ').toLowerCase();
+  const V = [
+    [/cholera|холер/,            {ru:'Холера',                 en:'Cholera'}],
+    [/yellow fever|жёлтая лихор/,{ru:'Жёлтая лихорадка (часто обязательна)', en:'Yellow fever (often mandatory)'}],
+    [/mening/,                   {ru:'Менингококковая (ACWY)', en:'Meningococcal (ACWY)'}],
+    [/measles|корь/,             {ru:'Корь-паротит-краснуха (MMR)', en:'Measles (MMR)'}],
+    [/polio|полиомиел/,          {ru:'Полиомиелит (ревакцинация)', en:'Polio (booster)'}],
+    [/rabies|бешенств/,          {ru:'Бешенство',              en:'Rabies'}],
+    [/japanese enceph/,          {ru:'Японский энцефалит',     en:'Japanese encephalitis'}],
+    [/covid/,                    {ru:'COVID-19 (ревакцинация)',en:'COVID-19 (booster)'}],
+    [/influenza|грипп|avian/,    {ru:'Грипп',                  en:'Influenza'}],
+    [/mpox|monkeypox|оспа обезь/,{ru:'Оспа (Mpox) — для групп риска', en:'Mpox — for at-risk groups'}],
+  ];
+  const out = [];
+  for(const [re,v] of V) if(re.test(txt)) out.push(v);
+  // Baseline travel vaccines (always sensible)
+  out.push({ru:'Гепатит A',en:'Hepatitis A'});
+  out.push({ru:'Брюшной тиф',en:'Typhoid'});
+  out.push({ru:'Дифтерия-столбняк (Td, ревакцинация)',en:'Tetanus-diphtheria (Td booster)'});
+  // de-dup by ru
+  const seen=new Set();
+  return out.filter(v=> !seen.has(v.ru) && seen.add(v.ru));
 }
 
 async function _reportAir(country){
@@ -1098,12 +1155,17 @@ async function buildRiskReport(country, purpose){
     ? obs.sort((a,b)=>(SEV[b.sev]?.idx??0)-(SEV[a.sev]?.idx??0)).map(o=>{
         const s=SEV[o.sev]; const sum=(LANG==='ru'&&o.blurb_ru)?o.blurb_ru:(o.blurb||o.summary||'');
         return `<div style="padding:10px 0;border-bottom:1px solid #F2F0E8">
-          <div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${diseaseName(o.name||o.disease)}</b><span style="font-size:11px;font-weight:700;color:${s.color}">${s.label}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${disRu(diseaseName(o))}</b><span style="font-size:11px;font-weight:700;color:${s.color}">${s.label}</span></div>
           ${sum?`<div style="font-size:12px;color:#3B3A36;line-height:1.5;margin-top:3px">${sum}</div>`:''}
         </div>`;}).join('')
     : `<div style="font-size:12.5px;color:#807E76;padding:8px 0">${ru?'Активных вспышек по официальным источникам нет.':'No active outbreaks per official sources.'}</div>`;
   const guidance = _purposeGuidance(purpose, country, obs)
     .map(g=>`<li style="font-size:12.5px;color:#3B3A36;line-height:1.55;margin:5px 0">${g}</li>`).join('');
+  const vaxHtml = _vaccineList(obs).map(v=>
+    `<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #F2F0E8">
+       <span style="color:#19A463;display:flex;flex-shrink:0"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+       <span style="font-size:13px;color:#0F0E0C;font-weight:600">${ru?v.ru:v.en}</span>
+     </div>`).join('');
   const airTxt = air==null ? (ru?'нет данных':'no data')
     : air<=50?(ru?`хорошее (${air})`:`good (${air})`)
     : air<=100?(ru?`умеренное (${air})`:`moderate (${air})`)
@@ -1172,17 +1234,32 @@ async function buildRiskReport(country, purpose){
     ${_sec(ru?'Индекс риска':'Risk index','<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>')}
     <div style="background:#fff;border:1px solid #ECEAE2;border-radius:16px;padding:16px 16px 18px">
       ${_riskGauge(rs.score, rs.band.c, ru?rs.band.ru:rs.band.en)}
-      <div style="text-align:center;font-size:11px;color:#807E76;margin:2px 0 14px">${ru?'Композитный индекс · 0–100 · агрегирует все сигналы':'Composite index · 0–100 · aggregates all signals'}</div>
+      <div style="text-align:center;font-size:11.5px;color:#807E76;margin:2px 0 12px">${ru?'Композитный индекс 0–100 — сводная оценка по всем сигналам':'Composite index 0–100 — overall score from all signals'}</div>
+
+      <!-- Gradation scale -->
+      <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;margin-bottom:6px">
+        <span style="flex:25;background:#19A463"></span><span style="flex:25;background:#E4B514"></span><span style="flex:25;background:#E8590C"></span><span style="flex:25;background:#C92A2A"></span>
+      </div>
+      <div style="display:flex;font-size:10px;color:#807E76;margin-bottom:16px">
+        <span style="flex:25">${ru?'0–24 Низкий':'0–24 Low'}</span>
+        <span style="flex:25">${ru?'25–49 Умер.':'25–49 Mod.'}</span>
+        <span style="flex:25">${ru?'50–74 Высокий':'50–74 High'}</span>
+        <span style="flex:25;text-align:right">${ru?'75–100 Серьёзный':'75–100 Severe'}</span>
+      </div>
+
       ${rs.parts.map(p=>{
         const pct = Math.max(0, Math.min(100, (p.v/p.max)*100));
-        return `<div style="display:flex;align-items:center;gap:10px;margin:7px 0">
-          <span style="width:108px;font-size:11.5px;color:#3B3A36;flex-shrink:0">${p.l}${p.note?` <span style="color:#807E76">(${p.note})</span>`:''}</span>
-          <span style="flex:1;height:7px;background:#F2F0E8;border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
-          <span style="width:46px;text-align:right;font-size:11.5px;font-weight:700;color:#0F0E0C;font-variant-numeric:tabular-nums">${p.v}/${p.max}</span>
+        return `<div style="margin:9px 0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:118px;font-size:12px;font-weight:600;color:#0F0E0C;flex-shrink:0">${p.l}${p.note?` <span style="color:#807E76;font-weight:400">· ${p.note}</span>`:''}</span>
+            <span style="flex:1;height:7px;background:#F2F0E8;border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
+            <span style="width:44px;text-align:right;font-size:12px;font-weight:700;color:#0F0E0C;font-variant-numeric:tabular-nums">${p.v}/${p.max}</span>
+          </div>
+          <div style="font-size:10.5px;color:#807E76;margin:3px 0 0 0;line-height:1.4">${p.desc||''}</div>
         </div>`;
       }).join('')}
-      <div style="font-size:10px;color:#B6B3AA;margin-top:12px;line-height:1.5;border-top:1px dashed #ECEAE2;padding-top:10px">
-        ${ru?'Методика: тяжесть вспышек (45) + тревел-уровень (30) + воздух (15) + еда (10) + тренд (±6). Покрытие источников по ряду стран ограничено.':'Method: outbreak severity (45) + travel advisory (30) + air (15) + food (10) + trend (±6). Source coverage is limited for some countries.'}
+      <div style="font-size:10px;color:#B6B3AA;margin-top:14px;line-height:1.5;border-top:1px dashed #ECEAE2;padding-top:10px">
+        ${ru?'Чем выше индекс — тем больше совокупный риск. Покрытие источников по ряду стран ограничено.':'Higher index = higher overall risk. Source coverage is limited for some countries.'}
       </div>
     </div>
 
@@ -1195,6 +1272,12 @@ async function buildRiskReport(country, purpose){
 
     ${_sec(ru?`Рекомендации · ${pObj.ru}`:`Recommendations · ${pObj.en}`,'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')}
     <ul style="margin:0;padding-left:18px">${guidance}</ul>
+
+    ${_sec(ru?'Рекомендуемые прививки':'Recommended vaccines','<path d="m18 2 4 4-8 8-4-4z"/><path d="m9 7-5 5a3 3 0 0 0 4 4l5-5"/><path d="M3 21l3-3"/>')}
+    <div style="background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:6px 14px 12px">
+      ${vaxHtml}
+      <div style="font-size:10.5px;color:#B6B3AA;margin-top:10px;line-height:1.5">${ru?'Список ориентировочный (по активным болезням + базовый набор для поездок). Точную схему уточните у врача-инфекциониста.':'Indicative list (active diseases + travel baseline). Confirm the exact schedule with a travel-medicine doctor.'}</div>
+    </div>
 
     ${_sec(ru?'Полезные ссылки':'Useful links','<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>')}
     ${linksHtml}
