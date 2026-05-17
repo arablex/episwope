@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigilo Risk Intelligence API — Documentation</title>
+<meta name="description" content="Vigilo Risk Intelligence API: one Composite Risk Score (0–5) per geography across health, conflict, civil unrest, transport, border, infrastructure and climate. For insurers, banks and travel platforms.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://vigilo.cc/api/v1/docs">
+<style>
+  :root{
+    --bg:#F4F2EE; --card:#FFFFFF; --ink:#0F0E0C; --muted:#807E76;
+    --line:#ECEAE2; --line2:#F3F1EA; --accent:#E8590C; --code:#1A1916;
+    --ok:#19A463;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",SFMono-Regular,ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+  header.top{border-bottom:1px solid var(--line);background:var(--bg);
+    position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.4) blur(6px)}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;
+    letter-spacing:-.02em}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:14px}
+  .top nav a{color:var(--muted);font-size:13px;font-weight:600;margin-left:18px}
+  .top nav a:hover{color:var(--ink);text-decoration:none}
+  .hero{padding:64px 0 40px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-size:38px;line-height:1.12;letter-spacing:-.035em;font-weight:850;
+    margin-bottom:16px}
+  .lede{font-size:17px;color:var(--muted);max-width:620px}
+  .grid7{display:flex;flex-wrap:wrap;gap:7px;margin-top:24px}
+  .chip{font-size:12px;font-weight:700;background:var(--card);
+    border:1px solid var(--line);border-radius:7px;padding:5px 11px;color:var(--ink)}
+  section{padding:34px 0;border-top:1px solid var(--line)}
+  h2{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:18px}
+  h3{font-size:18px;font-weight:750;letter-spacing:-.02em;margin:22px 0 8px}
+  p{margin-bottom:12px}
+  p.sub{color:var(--muted);font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin:14px 0}
+  code{font-family:var(--mono);font-size:13px;background:var(--line2);
+    padding:1.5px 6px;border-radius:5px;color:var(--code)}
+  pre{background:var(--code);color:#EDEAE2;font-family:var(--mono);font-size:12.5px;
+    line-height:1.65;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:14px 0}
+  pre .k{color:#E8916C}.pre-c{color:#7C9A6B}.pre-s{color:#C8B27E}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+    font-weight:700}
+  td code{font-size:12px}
+  .badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;padding:2px 7px;border-radius:5px}
+  .b-get{background:rgba(25,164,99,.12);color:#127a49}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);
+    font-size:13px;background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:8px 12px;margin:8px 0}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .tier{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px}
+  .tier h4{font-size:13px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--muted);margin-bottom:6px}
+  .tier .big{font-size:22px;font-weight:850;letter-spacing:-.02em}
+  .tier ul{list-style:none;margin-top:10px;font-size:13px;color:var(--muted)}
+  .tier li{padding:3px 0}
+  .cta{background:var(--code);color:#fff;border-radius:16px;padding:34px;
+    margin:30px 0;text-align:center}
+  .cta h3{color:#fff;font-size:22px;margin-bottom:8px}
+  .cta p{color:#B7B2A6;margin-bottom:18px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;
+    font-size:14px;padding:11px 22px;border-radius:9px}
+  .btn:hover{text-decoration:none;opacity:.92}
+  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);
+    font-size:12.5px;text-align:center}
+  @media(max-width:640px){ h1{font-size:30px} .tiers{grid-template-columns:1fr}
+    .top nav a:not(:last-child){display:none} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/"><span class="mark">V</span> Vigilo</a>
+    <nav>
+      <a href="#endpoint">Endpoint</a>
+      <a href="#params">Parameters</a>
+      <a href="#scoring">Scoring</a>
+      <a href="#tiers">Access</a>
+      <a href="mailto:hello@vigilo.cc">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Risk Intelligence API · v1</div>
+    <h1>One risk score.<br>Every geography. Seven domains.</h1>
+    <p class="lede">A single <strong>Composite Risk Score (0–5)</strong> per country or
+    coordinate — fusing health, conflict, civil unrest, transport, border,
+    infrastructure and climate signals into one number your underwriting,
+    travel-policy or duty-of-care engine can consume directly.</p>
+    <div class="grid7">
+      <span class="chip">Health</span><span class="chip">Conflict</span>
+      <span class="chip">Civil unrest</span><span class="chip">Transport</span>
+      <span class="chip">Border</span><span class="chip">Infrastructure</span>
+      <span class="chip">Climate</span>
+    </div>
+  </div>
+
+  <section id="why">
+    <h2>Why Vigilo</h2>
+    <h3>Provenance, not noise</h3>
+    <p class="sub">Every event carries a verification class —
+    <code>official_agency</code> (WHO / ECDC / national bulletins / ReliefWeb)
+    vs <code>media_ai_signal</code> — plus an independent source count and an
+    AI confidence score. Hard-filter to verified-only when liability matters.</p>
+    <h3>Temporal lead</h3>
+    <p class="sub">Pre-clinical wastewater and GenBank submission velocity on
+    the health side; 15-minute media cadence on conflict, transport and border.
+    You see movement before it reaches official channels.</p>
+  </section>
+
+  <section id="endpoint">
+    <h2>Endpoint</h2>
+    <div class="pill"><span class="badge b-get">GET</span>
+      https://vigilo.cc/api/v1/risk</div>
+    <p class="sub">Read-only, CDN-cached (5 min), no authentication required
+    during the open beta. Two mutually-exclusive geo modes:</p>
+    <pre><span class="pre-c"># Country mode (ISO-3166 alpha-2)</span>
+curl <span class="pre-s">"https://vigilo.cc/api/v1/risk?country=UA"</span>
+
+<span class="pre-c"># Radius mode (point + km)</span>
+curl <span class="pre-s">"https://vigilo.cc/api/v1/risk?lat=50.45&lng=30.52&radius_km=500"</span></pre>
+  </section>
+
+  <section id="params">
+    <h2>Query parameters</h2>
+    <table>
+      <tr><th>Param</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>country</code></td><td>ISO alpha-2</td><td>—</td><td>Country aggregate (mode A)</td></tr>
+      <tr><td><code>lat,lng,radius_km</code></td><td>float, float, int</td><td>—</td><td>Radius mode (B). radius ≤ 2000 km</td></tr>
+      <tr><td><code>categories</code></td><td>csv</td><td>all 7</td><td>Subset of the seven domains</td></tr>
+      <tr><td><code>min_confidence</code></td><td>0–1</td><td><code>0.4</code></td><td>Drop events below this AI confidence</td></tr>
+      <tr><td><code>history_days</code></td><td>1–90</td><td><code>14</code></td><td>Event lookback window</td></tr>
+      <tr><td><code>severity_min</code></td><td>0–5</td><td><code>0</code></td><td>Minimum event severity</td></tr>
+      <tr><td><code>include_events</code></td><td>bool</td><td><code>true</code></td><td><code>false</code> → score-only (~1 KB)</td></tr>
+      <tr><td><code>lang</code></td><td>en | ru</td><td><code>en</code></td><td>Label localisation</td></tr>
+    </table>
+  </section>
+
+  <section id="response">
+    <h2>Example response</h2>
+    <pre>{
+  <span class="k">"api_version"</span>: <span class="pre-s">"1.0"</span>,
+  <span class="k">"generated_at"</span>: <span class="pre-s">"2026-05-17T11:58:55Z"</span>,
+  <span class="k">"composite_risk"</span>: {
+    <span class="k">"score"</span>: <span class="pre-s">3.82</span>,
+    <span class="k">"band"</span>: <span class="pre-s">"severe"</span>,
+    <span class="k">"dominant_category"</span>: <span class="pre-s">"conflict"</span>
+  },
+  <span class="k">"category_breakdown"</span>: {
+    <span class="k">"conflict"</span>: { <span class="k">"score"</span>: <span class="pre-s">3.82</span>, <span class="k">"band"</span>: <span class="pre-s">"severe"</span>,
+                  <span class="k">"active_events"</span>: <span class="pre-s">8</span>, <span class="k">"top_threat"</span>: <span class="pre-s">"kinetic_strike"</span> },
+    <span class="k">"health"</span>:   { <span class="k">"score"</span>: <span class="pre-s">0</span>, <span class="k">"band"</span>: <span class="pre-s">"minimal"</span>, <span class="k">"active_events"</span>: <span class="pre-s">0</span> }
+  },
+  <span class="k">"events"</span>: [
+    {
+      <span class="k">"category"</span>: <span class="pre-s">"conflict"</span>, <span class="k">"type"</span>: <span class="pre-s">"kinetic_strike"</span>,
+      <span class="k">"severity"</span>: <span class="pre-s">5</span>, <span class="k">"confidence"</span>: <span class="pre-s">0.86</span>,
+      <span class="k">"source_verification"</span>: <span class="pre-s">"official_agency"</span>,
+      <span class="k">"geo"</span>: { <span class="k">"lat"</span>: <span class="pre-s">50.4</span>, <span class="k">"lng"</span>: <span class="pre-s">30.5</span>, <span class="k">"country"</span>: <span class="pre-s">"UA"</span> },
+      <span class="k">"source_count"</span>: <span class="pre-s">11</span>, <span class="k">"lead_time_hours"</span>: <span class="pre-s">0</span>
+    }
+  ],
+  <span class="k">"meta"</span>: { <span class="k">"events_total"</span>: <span class="pre-s">8</span>, <span class="k">"data_freshness_seconds"</span>: <span class="pre-s">540</span> }
+}</pre>
+  </section>
+
+  <section id="scoring">
+    <h2>Scoring methodology</h2>
+    <p>The Composite Risk Score is <strong>not</strong> a category average — a
+    single catastrophic event must dominate, not be diluted. The model uses a
+    max-dominant + weighted-tail blend with recency decay and a
+    multi-domain crisis amplifier.</p>
+    <table>
+      <tr><th>Band</th><th>Score</th><th>Operational meaning</th></tr>
+      <tr><td><code>minimal</code></td><td>0–0.5</td><td>Baseline; no action</td></tr>
+      <tr><td><code>low</code></td><td>0.5–1.5</td><td>Monitor</td></tr>
+      <tr><td><code>moderate</code></td><td>1.5–2.5</td><td>Heightened awareness</td></tr>
+      <tr><td><code>elevated</code></td><td>2.5–3.5</td><td>Operational caution advised</td></tr>
+      <tr><td><code>severe</code></td><td>3.5–4.5</td><td>Material disruption likely</td></tr>
+      <tr><td><code>critical</code></td><td>4.5–5</td><td>Active crisis</td></tr>
+    </table>
+    <p class="sub">Intrinsic category weighting reflects business impact:
+    kinetic conflict and border closures structurally outweigh an
+    equally-prominent seasonal health signal. Full methodology available
+    under NDA for enterprise partners.</p>
+  </section>
+
+  <section id="tiers">
+    <h2>Access &amp; rate limits</h2>
+    <div class="tiers">
+      <div class="tier">
+        <h4>Open beta</h4><div class="big">Free</div>
+        <ul><li>60 req / hour</li><li>No key required</li><li>All 7 domains</li><li>5-min freshness</li></ul>
+      </div>
+      <div class="tier">
+        <h4>Partner</h4><div class="big">API key</div>
+        <ul><li>1 000 req / hour</li><li>Webhook alerts</li><li>Verified-only filter</li><li>SLA</li></ul>
+      </div>
+      <div class="tier">
+        <h4>Enterprise</h4><div class="big">Custom</div>
+        <ul><li>20 000+ req / hour</li><li>Historical backfill</li><li>Methodology under NDA</li><li>Dedicated support</li></ul>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:14px">Rate-limit state is returned via
+    standard <code>RateLimit-Limit</code> / <code>RateLimit-Remaining</code>
+    headers (RFC 9239). Responses carry <code>ETag</code> and
+    <code>Cache-Control: s-maxage=300, stale-while-revalidate=900</code>.</p>
+  </section>
+
+  <div class="cta">
+    <h3>Building risk into your product?</h3>
+    <p>Pilot the Partner tier — webhook alerts, verified-only filtering,
+       and an SLA — with your underwriting or travel-risk team.</p>
+    <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20Risk%20API%20—%20Partner%20pilot">Request a pilot</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">Vigilo Risk Intelligence · <a href="/">vigilo.cc</a> ·
+  Data aggregated from WHO, ECDC, ReliefWeb, GDELT and 100+ open sources.
+  Not financial or medical advice.</div>
+</footer>
+
+</body>
+</html>

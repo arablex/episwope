@@ -53,6 +53,11 @@
 #   TELEGRAM_BOT_TOKEN, INTERNAL_SECRET, GROQ_API_KEY, GEMINI_API_KEY
 
 [[redirects]]
+  from = "/api/v1/docs"
+  to = "/api-docs.html"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
