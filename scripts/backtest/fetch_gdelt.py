@@ -7,18 +7,21 @@ changing it to chase a better backtest number is an integrity breach.
 import json
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
 from backtest.paths import GDELT_DIR, ensure_dirs
 
-# GDELT DOC 2.0 (free, no key). 2.0 coverage starts 2015-02.
+# GDELT DOC 2.0 (free, no key). 2.0 coverage starts 2015-02-19.
 DOC_API = "https://api.gdeltproject.org/api/v2/doc/doc"
 # PRE-REGISTERED, FROZEN disease/health query. Do NOT tune.
 QUERY_TEMPLATE = ('(dengue OR cholera OR "disease outbreak" OR epidemic '
                   'OR "infectious disease") sourcecountry:{iso}')
-START = "20150101000000"
-END = "20241231235959"
+# The DOC 2.0 API caps the timeline span, so we PAGE per calendar year
+# (frozen query unchanged) and merge. 2015 clamped to coverage start.
+COVERAGE_START = "20150219000000"
+YEARS = range(2015, 2025)
 
 
 def parse_gdelt_timeline(text):
@@ -45,26 +48,67 @@ def parse_gdelt_timeline(text):
             for k, v in out.items()}
 
 
-def _url(iso):
+def _url(iso, start, end):
     q = urllib.parse.quote(QUERY_TEMPLATE.format(iso=iso))
     return (f"{DOC_API}?query={q}&mode=TimelineVolRaw&format=json"
-            f"&startdatetime={START}&enddatetime={END}")
+            f"&startdatetime={start}&enddatetime={end}")
+
+
+def _get(url, retries=6):
+    """GET with exponential backoff on the DOC API's aggressive 429s."""
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "vigilo-backtest/1.0"})
+            with urllib.request.urlopen(req, timeout=90) as r:
+                return r.read().decode("utf-8", "ignore")
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries - 1:
+                wait = 35 * (attempt + 1)
+                print(f"    429 — backoff {wait}s "
+                      f"(attempt {attempt + 1}/{retries})")
+                time.sleep(wait)
+                continue
+            raise
+    return ""
 
 
 def fetch(iso, force=False):
+    """Page the frozen query per calendar year and merge into ONE
+    DOC-shaped timeline JSON (so parse_gdelt_timeline is unchanged).
+    Years that error after backoff are skipped (partial coverage is
+    honest and surfaces in the report's thin-panel limitation)."""
     ensure_dirs()
     cache = GDELT_DIR / f"{iso}.json"
     if cache.exists() and not force:
         return cache.read_text(encoding="utf-8")
-    req = urllib.request.Request(
-        _url(iso), headers={"User-Agent": "vigilo-backtest/1.0"})
-    with urllib.request.urlopen(req, timeout=90) as r:
-        text = r.read().decode("utf-8", "ignore")
-    if '"timeline"' not in text:
-        raise SystemExit(f"FATAL: GDELT schema/endpoint changed for {iso} "
-                         "— no 'timeline'. Update fetch_gdelt.py.")
+    merged, ok_years = [], 0
+    for y in YEARS:
+        start = COVERAGE_START if y == 2015 else f"{y}0101000000"
+        end = f"{y}1231235959"
+        body = _get(_url(iso, start, end))
+        if '"timeline"' in body:
+            try:
+                d = json.loads(body)
+                tl = d.get("timeline") or []
+                if tl:
+                    merged.extend(tl[0].get("data") or [])
+                    ok_years += 1
+            except (ValueError, TypeError):
+                print(f"    {iso} {y}: unparseable timeline — skipped")
+        else:
+            print(f"    {iso} {y}: no timeline ({body[:60].strip()!r}) "
+                  "— skipped")
+        time.sleep(3)
+    if ok_years == 0:
+        raise SystemExit(f"FATAL: GDELT returned no usable timeline for "
+                         f"{iso} across all years — endpoint/schema "
+                         "changed. Update fetch_gdelt.py.")
+    text = json.dumps({"timeline": [{"series": "Article Count",
+                                     "data": merged}]})
     cache.write_text(text, encoding="utf-8")
-    time.sleep(2)
+    print(f"  {iso}: {ok_years}/{len(list(YEARS))} years, "
+          f"{len(merged)} daily points cached")
     return text
 
 
