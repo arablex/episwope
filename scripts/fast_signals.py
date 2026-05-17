@@ -2193,6 +2193,347 @@ def fetch_who_ihr() -> list[Article]:
 
 
 # ---------------------------------------------------------------------------
+# Source 39: CDC NWSS — Wastewater surveillance (COVID/Flu/RSV)
+#            Measures pathogen RNA in sewage BEFORE people visit clinics.
+#            Lead time: 7-14 days ahead of official clinical surveillance.
+#            Free Socrata API — ~1,000 US wastewater treatment plants.
+# ---------------------------------------------------------------------------
+
+def _parse_nwss_records(records: list, pathogen_label: str, cutoff, seen: set) -> list[Article]:
+    """Parse CDC NWSS wastewater records, filter elevated sites."""
+    out = []
+    for rec in records:
+        try:
+            percentile = float(rec.get("percentile") or 0)
+        except Exception:
+            percentile = 0.0
+        if percentile < 65:
+            continue
+        date_end = rec.get("date_end", "")
+        try:
+            rec_dt = datetime.strptime(date_end[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            if rec_dt < cutoff:
+                continue
+        except Exception:
+            pass
+        jurisdiction = rec.get("wwtp_jurisdiction") or rec.get("reporting_jurisdiction") or ""
+        county = rec.get("county_names") or jurisdiction
+        dedup_key = f"{jurisdiction}_{pathogen_label}"
+        if dedup_key in seen:
+            continue
+        seen.add(dedup_key)
+        try:
+            ptc_val = float(rec.get("ptc_15d") or 0)
+        except Exception:
+            ptc_val = 0.0
+        detect_prop = rec.get("detect_prop_15d") or "?"
+        trend = f"+{ptc_val:.0f}%" if ptc_val >= 0 else f"{ptc_val:.0f}%"
+        title = (
+            f"[Wastewater] {pathogen_label} in {county}, {jurisdiction}"
+            f" — {trend} (15d), {percentile:.0f}th pct"
+        )
+        body = (
+            f"CDC wastewater: {pathogen_label} detected at {detect_prop}% of samples in "
+            f"{county} ({jurisdiction}). 15-day change: {trend}. "
+            f"Historical percentile: {percentile:.0f}/100."
+        )
+        out.append(Article(
+            "cdc_wastewater", title, body,
+            "https://www.cdc.gov/nwss/rv/COVID19-statetrend.html", date_end,
+        ))
+    return out
+
+
+def fetch_cdc_wastewater() -> list[Article]:
+    log("Fetching CDC NWSS wastewater surveillance...")
+    results = []
+    cutoff = datetime.now(timezone.utc) - timedelta(days=21)
+    seen: set[str] = set()
+
+    # ── Primary: NWSS Combined Viral Activity Level (COVID/Flu A/RSV) ────────
+    # atcp-73re: active weekly dataset, field site_wval_category = Low/Moderate/High/Very High
+    # week_end is current (2026-05-09 as of May 2026)
+    cutoff_wval = datetime.now(timezone.utc) - timedelta(days=21)
+    try:
+        url = "https://data.cdc.gov/resource/atcp-73re.json?%24limit=500"
+        raw = fetch_url(url, retries=1, extra_headers={"Accept": "application/json"})
+        if raw:
+            records = json.loads(raw)
+            high_by_state_pathogen: dict[str, dict] = {}
+            for rec in records:
+                cat = (rec.get("site_wval_category") or "").strip()
+                if cat not in ("High", "Very High"):
+                    continue
+                week_end = (rec.get("week_end") or "")[:10]
+                try:
+                    rec_dt = datetime.strptime(week_end, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    if rec_dt < cutoff_wval:
+                        continue
+                except Exception:
+                    pass
+                pathogen = rec.get("pathogen_target") or "Unknown"
+                state = rec.get("state_territory") or ""
+                county = rec.get("counties_served") or state
+                wval = rec.get("site_wval") or ""
+                key = f"{state}_{pathogen}"
+                if key not in high_by_state_pathogen:
+                    high_by_state_pathogen[key] = {
+                        "state": state, "county": county, "pathogen": pathogen,
+                        "cat": cat, "wval": wval, "week_end": week_end,
+                    }
+                elif cat == "Very High":
+                    high_by_state_pathogen[key]["cat"] = "Very High"
+
+            for key, info in list(high_by_state_pathogen.items())[:20]:
+                dedup_key = f"{info['state']}_{info['pathogen']}"
+                if dedup_key in seen:
+                    continue
+                seen.add(dedup_key)
+                level_label = "VERY HIGH" if info["cat"] == "Very High" else "HIGH"
+                loc = f"{info['county']}, {info['state']}" if info['county'] != info['state'] else info['state']
+                title = (
+                    f"[Wastewater] {info['pathogen']} {level_label} activity"
+                    f" in {loc} (week ending {info['week_end']})"
+                )
+                body = (
+                    f"CDC NWSS wastewater: {info['pathogen']} viral activity is {info['cat']} "
+                    f"in {loc}. Wastewater surveillance leads clinical detection by 7-14 days."
+                )
+                results.append(Article(
+                    "cdc_wastewater", title, body,
+                    "https://www.cdc.gov/nwss/index.html", info["week_end"],
+                ))
+            if high_by_state_pathogen:
+                log(f"  NWSS combined: {len(high_by_state_pathogen)} High/Very High states")
+    except Exception as e:
+        log(f"  NWSS combined error: {e}")
+
+    # ── Type B: rare pathogen detection datasets (H5/Mpox/Measles) ──────────
+    # Signal = pcr_target_detect == "yes" — any detection is significant
+    cutoff_detect = datetime.now(timezone.utc) - timedelta(days=60)  # wider window — rare events
+    type_b = [
+        ("mtpu-urpp", "Avian Influenza H5"),   # H5N1 in human sewage = major alarm
+        ("xpxn-rzgz", "Mpox"),
+        ("akvg-8vrb", "Measles"),
+    ]
+    try:
+        for ds_id, pathogen_label in type_b:
+            url = f"https://data.cdc.gov/resource/{ds_id}.json?%24limit=100"
+            raw = fetch_url(url, retries=1, extra_headers={"Accept": "application/json"})
+            if not raw:
+                continue
+            try:
+                records = json.loads(raw)
+                detected: dict[str, dict] = {}
+                for rec in records:
+                    if str(rec.get("pcr_target_detect") or "").lower() != "yes":
+                        continue
+                    date_str = (rec.get("sample_collect_date") or "")[:10]
+                    try:
+                        rec_dt = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                        if rec_dt < cutoff_detect:
+                            continue
+                    except Exception:
+                        pass
+                    state = (rec.get("state_territory") or "").upper()
+                    county = rec.get("counties_served") or state
+                    key = f"{state}_{pathogen_label}"
+                    if key not in detected:
+                        detected[key] = {"county": county, "state": state, "date": date_str}
+
+                for key, info in list(detected.items())[:5]:
+                    dedup_key = f"{info['state']}_{pathogen_label}"
+                    if dedup_key in seen:
+                        continue
+                    seen.add(dedup_key)
+                    loc = f"{info['county']}, {info['state']}"
+                    title = f"[Wastewater] {pathogen_label} DETECTED in {loc} sewage"
+                    body = (
+                        f"CDC NWSS: {pathogen_label} RNA detected in sewage from {loc}. "
+                        f"Sample: {info['date']}. Wastewater detection precedes clinical cases by 7-14 days."
+                    )
+                    results.append(Article("cdc_wastewater", title, body,
+                        "https://www.cdc.gov/nwss/index.html", info["date"]))
+                if detected:
+                    log(f"  NWSS {pathogen_label}: {len(detected)} detection sites")
+            except Exception as e:
+                log(f"  NWSS {pathogen_label} error: {e}")
+
+    except Exception as e:
+        log(f"  CDC Wastewater error: {e}")
+        return []
+    log(f"  -> {len(results)} CDC wastewater sites (elevated/detected)")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Source 40: WHO AFRO + WHO EMRO — dedicated regional outbreak RSS feeds
+#            Africa Regional Office (AFRO) and Eastern Mediterranean (EMRO)
+#            often publish outbreak confirmations days before WHO DON main feed.
+# ---------------------------------------------------------------------------
+
+def fetch_who_regional() -> list[Article]:
+    log("Fetching WHO regional offices (AFRO / EMRO / WPRO)...")
+    results = []
+    regional_feeds = [
+        # AFRO — Africa (SSL OK, most critical for Ebola/Marburg/Mpox)
+        ("https://www.afro.who.int/rss.xml",  "who_afro"),
+        # EMRO — Eastern Mediterranean / Middle East (MERS, Polio)
+        ("https://www.emro.who.int/rss.xml",  "who_emro"),
+        # WPRO/EURO/SEARO have SSL cert issues — use Google News fallbacks
+    ]
+    # Google News fallbacks for WHO regions with SSL problems
+    gn_fallbacks = [
+        ("WHO Western Pacific outbreak disease alert site:wpro.who.int", "who_wpro"),
+        ("WHO Europe outbreak disease alert site:euro.who.int",           "who_euro"),
+        ("WHO South-East Asia outbreak disease site:searo.who.int",       "who_searo"),
+    ]
+    outbreak_re = re.compile(
+        r"outbreak|disease|epidemic|virus|infection|alert|emergency|surveillance|"
+        r"cholera|dengue|ebola|mpox|influenza|avian|covid|plague|lassa|rabies|"
+        r"anthrax|yellow fever|monkeypox|polio|measles|hantavirus|nipah|marburg",
+        re.I,
+    )
+    for url, src_id in regional_feeds:
+        try:
+            raw = fetch_url(url, retries=1, extra_headers={"Accept": "application/rss+xml, text/xml"})
+            if not raw:
+                continue
+            items = _parse_feed_items(raw, src_id)
+            filtered = [a for a in items if outbreak_re.search(a.title + " " + a.body)]
+            if filtered:
+                results.extend(filtered)
+                log(f"  {src_id}: {len(filtered)} outbreak-relevant items")
+        except Exception as e:
+            log(f"  {url[:60]} error: {e}")
+
+    # Google News fallbacks for WHO regions with SSL cert issues
+    for query, src_id in gn_fallbacks:
+        try:
+            from urllib.parse import quote_plus
+            gn_url = f"https://news.google.com/rss/search?q={quote_plus(query)}&hl=en&gl=US&ceid=US:en"
+            raw = fetch_url(gn_url, retries=1)
+            if raw:
+                items = _parse_feed_items(raw, src_id)
+                filtered = [a for a in items if outbreak_re.search(a.title + " " + a.body)]
+                if filtered:
+                    results.extend(filtered)
+                    log(f"  {src_id} (GN fallback): {len(filtered)} items")
+        except Exception as e:
+            log(f"  {src_id} GN fallback error: {e}")
+
+    log(f"  -> {len(results)} WHO regional items total")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Source 41: OpenSky Network — flight volume monitoring for outbreak regions
+#            BlueDot's aviation data costs $$$; OpenSky ADS-B is free.
+#            Signal: sudden 30-50% drop in departures from outbreak airports
+#            = population avoiding/quarantining. Computes vs 7-day baseline.
+# ---------------------------------------------------------------------------
+
+# Airports in regions historically prone to outbreak-driven flight disruption
+WATCH_AIRPORTS = {
+    "FZNA": ("Kinshasa, DRC",   "CD"),   # Ebola/Mpox epicentre
+    "HKJK": ("Nairobi, Kenya",  "KE"),   # East Africa hub
+    "DNMM": ("Lagos, Nigeria",  "NG"),   # West Africa, Lassa/Ebola risk
+    "VABB": ("Mumbai, India",   "IN"),   # Nipah/avian flu risk
+    "ZBAA": ("Beijing, China",  "CN"),   # Historical H5N1/SARS/COVID
+    "WIII": ("Jakarta, Indonesia","ID"), # Avian flu H5N1 endemic
+    "RPLL": ("Manila, Philippines","PH"),# Dengue/avian flu
+}
+
+def fetch_opensky_aviation() -> list[Article]:
+    log("Fetching OpenSky aviation signals...")
+    results = []
+    try:
+        # Get all current state vectors — count flights by origin country
+        # We track volume proxy: count aircraft registered in watch countries aloft
+        url = "https://opensky-network.org/api/states/all"
+        raw = fetch_url(url, timeout=15, retries=1, extra_headers={"Accept": "application/json"})
+        if not raw:
+            log("  -> 0 OpenSky items (fetch failed)")
+            return []
+
+        data = json.loads(raw)
+        states = data.get("states") or []
+
+        # Map ICAO24 origin_country → count of aircraft currently airborne
+        from collections import Counter
+        country_counts: Counter = Counter()
+        for s in states:
+            # s[2] = origin_country, s[8] = on_ground (True/False)
+            if s and len(s) > 8 and not s[8]:   # airborne only
+                country = s[2] or "Unknown"
+                country_counts[country] += 1
+
+        # Load saved baseline (rolling 7-day average)
+        baseline_path = os.path.join(os.path.dirname(__file__), "..", "public", "opensky_baseline.json")
+        try:
+            with open(baseline_path) as f:
+                baseline: dict = json.load(f)
+        except Exception:
+            baseline = {}
+
+        ts_now = datetime.now(timezone.utc).isoformat()
+        new_baseline = dict(baseline)
+
+        # Map country name → ISO2 for our watch list
+        country_to_iso = {
+            "Democratic Republic of the Congo": "CD",
+            "Congo, the Democratic Republic of the": "CD",
+            "Nigeria": "NG", "Kenya": "KE", "India": "IN",
+            "China": "CN", "Indonesia": "ID", "Philippines": "PH",
+        }
+
+        for country_name, iso in country_to_iso.items():
+            count = country_counts.get(country_name, 0)
+            if not count:
+                continue
+            prev = baseline.get(iso, {}).get("avg", count)
+            # Update rolling average (exponential moving average, α=0.3)
+            new_avg = 0.3 * count + 0.7 * prev
+            new_baseline[iso] = {"avg": new_avg, "last": count, "updated": ts_now}
+
+            if prev > 5:  # need at least some baseline
+                ratio = count / prev
+                if ratio < 0.6:  # ≥40% drop
+                    pct_drop = (1 - ratio) * 100
+                    title = (
+                        f"[Aviation] Flight activity DROP {pct_drop:.0f}% in {country_name} "
+                        f"({count} vs avg {prev:.0f} aircraft)"
+                    )
+                    body = (
+                        f"OpenSky ADS-B: {count} aircraft registered in {country_name} currently airborne, "
+                        f"vs 7-day rolling average of {prev:.0f}. "
+                        f"A ≥40% drop in flight activity can signal population movement restriction or outbreak."
+                    )
+                    results.append(Article(
+                        "opensky",
+                        title,
+                        body,
+                        "https://opensky-network.org",
+                        ts_now,
+                    ))
+                    log(f"  ⚠️  Aviation drop: {country_name} {count} vs avg {prev:.0f}")
+
+        # Save updated baseline
+        try:
+            os.makedirs(os.path.dirname(baseline_path), exist_ok=True)
+            with open(baseline_path, "w") as f:
+                json.dump(new_baseline, f)
+        except Exception as e:
+            log(f"  OpenSky baseline save error: {e}")
+
+    except Exception as e:
+        log(f"  OpenSky error: {e}")
+        return []
+    log(f"  -> {len(results)} OpenSky aviation anomaly items")
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Aggregate all articles
 # ---------------------------------------------------------------------------
 
@@ -2253,6 +2594,11 @@ def collect_all_articles() -> list[Article]:
         fetch_telegram_ru,          # Russian MoH / Rospotrebnadzor Telegram
         fetch_github_epi,           # Epidemiologists pushing outbreak code on GitHub
         fetch_who_ihr,              # WHO IHR notifications — 24-72h before DON
+
+        # ── Infrastructure / behavioral signals (unique vs. competitors) ─────
+        fetch_cdc_wastewater,       # Pathogen RNA in sewage — 7-14 days before clinics
+        fetch_who_regional,         # WHO AFRO/EMRO/WPRO/EURO/SEARO dedicated feeds
+        fetch_opensky_aviation,     # ADS-B flight volume drops → population restriction
     ]
     for fetcher in fetchers:
         try:
