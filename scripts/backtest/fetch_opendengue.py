@@ -62,7 +62,8 @@ def fetch(force=False):
         OPENDENGUE_URL, headers={"User-Agent": "vigilo-backtest/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         text = r.read().decode("utf-8", "ignore")
-    if "ISO_A0" not in text.splitlines()[0]:
+    lines = text.splitlines()
+    if not lines or "ISO_A0" not in lines[0]:
         raise SystemExit("FATAL: OpenDengue schema changed — header missing "
                          "'ISO_A0'. Update fetch_opendengue.py.")
     DENGUE_CSV.write_text(text, encoding="utf-8")
