@@ -84,6 +84,35 @@
     font-size:12.5px;text-align:center}
   @media(max-width:640px){ h1{font-size:30px} .tiers{grid-template-columns:1fr}
     .top nav a:not(:last-child){display:none} }
+  /* Try-it */
+  .tryit{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px;margin:14px 0}
+  .tryit-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .tryit input{font:inherit;font-size:14px;padding:10px 13px;border:1px solid var(--line);
+    border-radius:9px;background:var(--bg);color:var(--ink);width:120px;
+    text-transform:uppercase;letter-spacing:.05em;font-family:var(--mono)}
+  .tryit select{font:inherit;font-size:13px;padding:10px 12px;border:1px solid var(--line);
+    border-radius:9px;background:var(--bg);color:var(--ink)}
+  .tryit button{font:inherit;font-size:14px;font-weight:700;padding:10px 20px;
+    border:0;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer}
+  .tryit button:hover{opacity:.92}.tryit button:disabled{opacity:.5;cursor:wait}
+  .tryit-url{font-family:var(--mono);font-size:11.5px;color:var(--muted);
+    margin:12px 0 0;word-break:break-all}
+  .tryit-out{margin-top:16px;display:none}
+  .ti-score{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .ti-num{font-size:38px;font-weight:850;letter-spacing:-.03em;line-height:1}
+  .ti-num small{font-size:13px;font-weight:600;color:var(--muted);margin-left:4px}
+  .ti-band{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:4px 9px;border-radius:6px;color:#fff}
+  .ti-cats{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;margin-bottom:14px}
+  .ti-cat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .ti-bar{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+  .ti-bar i{display:block;height:100%;border-radius:3px}
+  .ti-cat b{color:var(--ink);min-width:118px;font-weight:600}
+  .ti-cat span{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
+  .tryit pre{margin-top:8px;max-height:280px}
+  .ti-toggle{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;
+    user-select:none}
 </style>
 </head>
 <body>
@@ -92,10 +121,12 @@
   <div class="wrap">
     <a class="logo" href="/"><span class="mark">V</span> Vigilo</a>
     <nav>
+      <a href="#tryit">Try it</a>
       <a href="#endpoint">Endpoint</a>
       <a href="#params">Parameters</a>
       <a href="#scoring">Scoring</a>
       <a href="#webhooks">Webhooks</a>
+      <a href="/widgets">Widgets</a>
       <a href="#tiers">Access</a>
       <a href="mailto:hello@vigilo.cc">Contact</a>
     </nav>
@@ -118,6 +149,37 @@
       <span class="chip">Climate</span>
     </div>
   </div>
+
+  <section id="tryit">
+    <h2>Try it — live, no key</h2>
+    <p class="sub" style="color:var(--muted);font-size:14px;margin-bottom:14px">
+    Open beta is unauthenticated. Hit the live endpoint right now — this calls
+    production <code>/api/v1/risk</code> from your browser.</p>
+    <div class="tryit">
+      <div class="tryit-row">
+        <input id="tiCountry" value="UA" maxlength="2" spellcheck="false" aria-label="ISO country code">
+        <select id="tiHist" aria-label="History window">
+          <option value="14">14 days</option>
+          <option value="7">7 days</option>
+          <option value="30">30 days</option>
+          <option value="90">90 days</option>
+        </select>
+        <button id="tiGo">Run request</button>
+        <span style="font-size:12px;color:var(--muted)">e.g. UA, TR, IR, RU, CN, IN</span>
+      </div>
+      <div class="tryit-url" id="tiUrl"></div>
+      <div class="tryit-out" id="tiOut">
+        <div class="ti-score">
+          <div class="ti-num" id="tiNum">—</div>
+          <span class="ti-band" id="tiBand">—</span>
+          <span style="font-size:12px;color:var(--muted)" id="tiDom"></span>
+        </div>
+        <div class="ti-cats" id="tiCats"></div>
+        <div class="ti-toggle" id="tiToggle">▸ Raw JSON</div>
+        <pre id="tiJson" style="display:none"></pre>
+      </div>
+    </div>
+  </section>
 
   <section id="why">
     <h2>Why Vigilo</h2>
@@ -272,6 +334,57 @@ curl -X POST <span class="pre-s">"https://vigilo.cc/api/v1/risk/webhooks"</span>
   Data aggregated from WHO, ECDC, ReliefWeb, GDELT and 100+ open sources.
   Not financial or medical advice.</div>
 </footer>
+
+<script>
+(function(){
+  var BANDC = { minimal:'#9a948a', low:'#caa53d', moderate:'#e2820f',
+    elevated:'#d8531e', severe:'#c0392b', critical:'#7d1a12',
+    catastrophic:'#5a120d' };
+  var $ = function(id){ return document.getElementById(id); };
+  var go = $('tiGo'), out = $('tiOut');
+
+  function barColor(s){
+    return s>=4.5?'#7d1a12':s>=3.5?'#c0392b':s>=2.5?'#d8531e':
+           s>=1.5?'#e2820f':s>=0.5?'#caa53d':'#9a948a';
+  }
+  function run(){
+    var c = ($('tiCountry').value||'').trim().toUpperCase().slice(0,2);
+    var h = $('tiHist').value;
+    if(!/^[A-Z]{2}$/.test(c)){ $('tiUrl').textContent='Enter a 2-letter ISO code (UA, TR, …)'; return; }
+    var url = 'https://vigilo.cc/api/v1/risk?country='+c+'&history_days='+h+'&include_events=true';
+    $('tiUrl').textContent = 'GET '+url;
+    go.disabled = true; go.textContent = 'Running…';
+    fetch(url).then(function(r){ return r.json(); }).then(function(d){
+      go.disabled=false; go.textContent='Run request';
+      var cr = d.composite_risk||{};
+      $('tiNum').innerHTML = (cr.score!=null?cr.score:'—')+'<small>/5</small>';
+      var b=$('tiBand'); b.textContent=cr.band||'—';
+      b.style.background=BANDC[cr.band]||'#9a948a';
+      $('tiDom').textContent = cr.dominant_category? ('dominant: '+cr.dominant_category):'';
+      var cb=d.category_breakdown||{}, html='';
+      Object.keys(cb).forEach(function(k){
+        var s=cb[k].score||0;
+        html+='<div class="ti-cat"><b>'+k.replace(/_/g,' ')+'</b>'+
+          '<span class="ti-bar"><i style="width:'+(s/5*100)+'%;background:'+barColor(s)+'"></i></span>'+
+          '<span>'+s.toFixed(1)+'</span></div>';
+      });
+      $('tiCats').innerHTML=html;
+      $('tiJson').textContent=JSON.stringify(d,null,2);
+      out.style.display='block';
+    }).catch(function(e){
+      go.disabled=false; go.textContent='Run request';
+      $('tiUrl').textContent='Error: '+e+' (the open beta endpoint may be rate-limited — retry shortly)';
+    });
+  }
+  go.addEventListener('click', run);
+  $('tiCountry').addEventListener('keydown', function(e){ if(e.key==='Enter') run(); });
+  $('tiToggle').addEventListener('click', function(){
+    var p=$('tiJson'); var open=p.style.display!=='none';
+    p.style.display=open?'none':'block';
+    this.textContent=(open?'▸':'▾')+' Raw JSON';
+  });
+})();
+</script>
 
 </body>
 </html>
