@@ -451,6 +451,152 @@
   }
   .out-row .ct small{ display:block; font-size:8.5px; font-weight:600; color:var(--muted); letter-spacing:0; margin-top:2px;}
 
+  /* ── Early Signals ────────────────────────────── */
+  .sig-section{ animation:sig-fadein .4s ease }
+  @keyframes sig-fadein{ from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+  .sig-item{
+    display:flex;align-items:flex-start;gap:8px;
+    padding:8px 0;border-bottom:1px solid var(--line-2);cursor:pointer;
+    transition:background .15s;border-radius:4px;
+  }
+  .sig-item:last-child{border-bottom:0}
+  .sig-item:hover{background:rgba(232,89,12,.04)}
+  .sig-pulse{
+    width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;
+    position:relative;
+  }
+  .sig-pulse::after{
+    content:'';position:absolute;inset:-3px;border-radius:50%;
+    opacity:.4;animation:sig-ring 2.2s ease-out infinite;
+  }
+  .sig-pulse.urgent{ background:#c0392b }
+  .sig-pulse.urgent::after{ border:1.5px solid #c0392b }
+  .sig-pulse.alert{ background:var(--s3) }
+  .sig-pulse.alert::after{ border:1.5px solid var(--s3) }
+  .sig-pulse.watch{ background:var(--muted) }
+  .sig-pulse.watch::after{ display:none }
+  @keyframes sig-ring{
+    0%{transform:scale(1);opacity:.4}
+    80%{transform:scale(2.2);opacity:0}
+    100%{transform:scale(1);opacity:0}
+  }
+  .sig-body{flex:1;min-width:0}
+  .sig-title{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sig-meta{font-size:10.5px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:5px}
+  .sig-ai{font-size:9.5px;font-weight:700;color:#b87a00;background:rgba(232,89,12,.1);
+    padding:1px 5px;border-radius:4px}
+  .sig-ti{font-size:9px;font-weight:800;color:#fff;padding:1px 5px;border-radius:4px;
+    letter-spacing:.02em}
+  .sig-badge{
+    font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 6px;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-top:2px;
+  }
+  .sig-badge.urgent{background:rgba(192,57,43,.12);color:#c0392b}
+  .sig-badge.alert{background:rgba(232,89,12,.12);color:#b85a00}
+  .sig-badge.watch{background:rgba(0,0,0,.06);color:var(--muted)}
+  .sig-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .sig-header .side-h{margin-bottom:0}
+  .sig-live{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--ok);
+    display:flex;align-items:center;gap:4px;text-transform:uppercase}
+  .sig-live b{width:5px;height:5px;border-radius:50%;background:var(--ok);animation:bp 2.4s infinite}
+  .sig-updated{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+  /* ── Signal Detail Drawer ───────────────────────── */
+  .sig-detail{ animation:sig-fadein .25s ease }
+  .sig-detail-head{ display:flex;align-items:center;gap:8px;margin-bottom:10px }
+  .sig-detail-back{
+    background:none;border:1px solid var(--line);border-radius:6px;
+    padding:3px 8px;font-size:13px;cursor:pointer;color:var(--muted);
+    transition:color .15s,border-color .15s;line-height:1.4
+  }
+  .sig-detail-back:hover{color:var(--ink);border-color:var(--accent)}
+  .sig-detail-disease{font-size:14px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:6px}
+  .sig-detail-meta{font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .sig-detail-meta span{display:flex;align-items:center;gap:3px}
+  .sig-detail-ai{
+    font-size:11px;font-weight:700;color:#b87a00;
+    background:rgba(232,89,12,.09);border-radius:6px;
+    padding:6px 10px;margin-bottom:8px;
+  }
+  .sig-detail-headline{
+    font-size:11.5px;font-style:italic;color:var(--ink);opacity:.7;
+    border-left:2px solid var(--line);padding-left:8px;margin-bottom:10px;
+    line-height:1.5
+  }
+  .sig-detail-sources{font-size:10.5px;color:var(--muted);margin-bottom:10px}
+  .sig-detail-sources b{color:var(--ink)}
+  /* ── Threat analytics block ── */
+  .sig-threat{
+    background:rgba(20,18,14,.035);border:1px solid var(--line-2);
+    border-radius:9px;padding:10px 11px;margin-bottom:10px;
+  }
+  .sig-threat-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px}
+  .sig-threat-score{font-size:21px;font-weight:800;color:var(--ink);line-height:1}
+  .sig-threat-score small{font-size:10px;font-weight:600;color:var(--muted);margin-left:3px}
+  .sig-threat-tier{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 7px;border-radius:5px;color:#fff}
+  .tt-monitoring{background:#9a948a}.tt-low{background:#caa53d}.tt-watch{background:#e2820f}
+  .tt-alert{background:#d8531e}.tt-critical{background:#c0392b}.tt-catastrophic{background:#7d1a12}
+  .sig-threat-bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
+  .sig-threat-bar i{display:block;height:100%;border-radius:3px;
+    background:linear-gradient(90deg,#caa53d,#e2820f,#c0392b)}
+  .sig-threat-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;font-size:10.5px;color:var(--muted)}
+  .sig-threat-grid div{display:flex;justify-content:space-between;gap:6px}
+  .sig-threat-grid b{color:var(--ink);font-weight:700}
+  .sig-threat-trend{font-size:10.5px;margin-top:7px;padding-top:7px;border-top:1px solid var(--line-2);
+    color:var(--muted)}
+  .sig-threat-trend b{color:var(--ink)}
+  .sig-threat-note{font-size:9px;color:var(--muted);opacity:.7;margin-top:6px;line-height:1.4}
+  .sig-detail-link{
+    display:block;font-size:11.5px;font-weight:600;color:var(--accent);
+    text-decoration:none;padding:6px 0;
+    border-top:1px solid var(--line-2);
+  }
+  .sig-detail-link:hover{text-decoration:underline}
+
+  /* ── Live News Ticker ───────────────────────────── */
+  #newsTicker{
+    position:absolute;bottom:0;left:0;right:0;height:32px;
+    background:rgba(20,18,14,.82);backdrop-filter:blur(8px);
+    border-top:1px solid rgba(255,255,255,.07);
+    overflow:hidden;z-index:10;display:flex;align-items:center;
+  }
+  #newsTicker .ticker-label{
+    flex-shrink:0;font-size:9px;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);padding:0 10px 0 14px;
+    border-right:1px solid rgba(255,255,255,.1);margin-right:0;white-space:nowrap;
+  }
+  #newsTicker .ticker-track{
+    flex:1;overflow:hidden;position:relative;height:100%;
+  }
+  #newsTicker .ticker-inner{
+    display:flex;align-items:center;height:100%;gap:0;
+    white-space:nowrap;
+    animation:ticker-scroll 60s linear infinite;
+  }
+  #newsTicker .ticker-inner:hover{ animation-play-state:paused }
+  @keyframes ticker-scroll{
+    0%   { transform:translateX(0) }
+    100% { transform:translateX(-50%) }
+  }
+  #newsTicker .ticker-item{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:0 24px 0 0;font-size:11px;color:rgba(242,239,233,.65);
+  }
+  #newsTicker .ticker-item .ti-dot{
+    width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  }
+  #newsTicker .ticker-item .ti-dot.urgent{background:#c0392b}
+  #newsTicker .ticker-item .ti-dot.alert{background:var(--s3)}
+  #newsTicker .ticker-item .ti-dot.watch{background:var(--muted)}
+  #newsTicker .ticker-item .ti-tag{
+    font-size:9.5px;font-weight:700;color:var(--ink2);white-space:nowrap;
+  }
+  #newsTicker .ticker-item .ti-sep{color:rgba(255,255,255,.15);margin:0 4px}
+  #newsTicker .ticker-item .ti-src{
+    font-size:9px;font-weight:600;color:rgba(242,239,233,.3);letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+
   /* ── My Feed ──────────────────────────────────── */
   .feed-empty{ font-size:12px; color:var(--muted); padding:6px 0 2px; line-height:1.5; }
   .feed-empty a{ color:var(--accent); text-decoration:none; cursor:pointer; }
@@ -1978,6 +2124,33 @@
         </div>
       </div>
 
+      <!-- ── Early Warning Signals ── -->
+      <div class="side-section sig-section" id="signalsSection" style="display:none">
+        <div class="sig-header">
+          <div class="side-h">Early signals</div>
+          <span class="sig-live"><b></b> Live</span>
+        </div>
+        <div id="signalsList">
+          <div class="feed-empty">Scanning sources…</div>
+        </div>
+        <div class="sig-updated" id="signalsUpdated"></div>
+      </div>
+
+      <!-- ── Signal Detail Drawer ── -->
+      <div class="side-section sig-detail" id="sigDetail" style="display:none">
+        <div class="sig-detail-head">
+          <button class="sig-detail-back" onclick="_closeSignal()" title="Back">&#8592;</button>
+          <span id="sigDetailBadge" class="sig-badge"></span>
+        </div>
+        <div class="sig-detail-disease" id="sigDetailDisease"></div>
+        <div class="sig-detail-meta" id="sigDetailMeta"></div>
+        <div class="sig-threat" id="sigDetailThreat" style="display:none"></div>
+        <div class="sig-detail-ai" id="sigDetailAI" style="display:none"></div>
+        <div class="sig-detail-headline" id="sigDetailHeadline" style="display:none"></div>
+        <div class="sig-detail-sources" id="sigDetailSources"></div>
+        <a class="sig-detail-link" id="sigDetailLink" target="_blank" rel="noopener" style="display:none">Read source →</a>
+      </div>
+
       <div class="side-section my-countries-section" id="myCountriesSection">
         <div class="side-h">My countries <span class="count" id="myCountriesCount">0</span></div>
         <div id="myCountries" class="my-countries"></div>
@@ -2202,6 +2375,16 @@
         </div>
       </div>
     </div>
+    <!-- ── Live News Ticker ── -->
+    <div id="newsTicker" style="display:none">
+      <span class="ticker-label">⚡ Live</span>
+      <div class="ticker-track">
+        <div class="ticker-inner" id="tickerInner">
+          <!-- populated by JS from signals.json -->
+        </div>
+      </div>
+    </div>
+
     </div><!-- /view-globe -->
 
     <!-- VIEW: Heatmap -->
@@ -2454,17 +2637,113 @@
   <input name="bot-field">
 </form>
 
-<!-- Language-based redirect: RU browser → /ru/ (skipped if user explicitly chose EN) -->
+<!-- ── RU dictionary + DOM translation pass ── -->
 <script>
-  document.querySelector('.lang-btn')?.addEventListener('click', function(e){
-    e.preventDefault();
-    localStorage.setItem('vigilo_lang', 'ru');
-    location.href = this.href;
+window.I18N_RU = {
+  "Threats · Air · Food · v4.2":"Угрозы · Воздух · Еда · v4.2",
+  "New alert":"Новый алерт","At a glance":"Обзор","Outbreaks":"Вспышки",
+  "Deaths / 30d":"Смертей / 30 дн.","Crit. alerts":"Крит. алерты","Countries":"Страны",
+  "Early signals":"Ранние сигналы","Scanning sources…":"Сканируем источники…",
+  "Read source →":"Открыть источник →","My countries":"Мои страны","My feed":"Мой фид",
+  "Severity filter":"Фильтр по уровню","All":"Все","Critical":"Критич.","Alert":"Алерт",
+  "Warning":"Внимание","Monitor":"Монит.","Epidemics":"Эпидемии","Disasters":"Катастрофы",
+  "Air":"Воздух","Food":"Еда","Humanitarian":"Гуманитар.","Live":"В эфире",
+  "last sync":"обновлено","Type":"Тип","Virus":"Вирус","Bacteria":"Бактерия",
+  "Parasite":"Паразит","Show":"Показать","Active only":"Только активные",
+  "Situation":"Ситуация","Risk":"Риск","Bulletin":"Бюллетень","Briefing":"Брифинг",
+  "Region":"Регион","Global":"Глобально","Severity index":"Индекс угрозы",
+  "Composite — case load × CFR × R":"Комп. — нагрузка × CFR × R","Low":"Низкий",
+  "Catastrophic":"Катастрофа","Confirmed":"Подтверждено","Deaths":"Смертей",
+  "Health Conditions":"Состояние здоровья","Today":"Сегодня","loading…":"загрузка…",
+  "Live metrics":"Метрики","last 24h":"последние 24 ч",
+  "Cumulative confirmed":"Всего подтверждено","Synthesis · Haiku 4.5":"Синтез · Haiku 4.5",
+  "Reviewed by 2 epidemiologists":"Проверено 2 эпидемиологами",
+  "Watch region":"Следить за регионом","Recent events":"Последние события",
+  "Alert notifications":"Оповещения о вспышках","Subscribe":"Подписаться",
+  "Privacy Policy":"Политика конфиденциальности","Active events":"Активные события",
+  "Live · WHO · ProMED · ECDC":"В эфире · ВОЗ · ProMED · ECDC",
+  "Data: loading…":"Данные: загрузка…","Time":"Время","Set Alert":"Установить алерт",
+  "Global digest":"Глобальный дайджест",
+  "Weekly report across all regions":"Еженедельный отчёт по всем регионам",
+  "By country":"По стране",
+  "When new outbreaks appear in this country":"При новых вспышках в этой стране",
+  "Specific alert":"Точный алерт",
+  "When this outbreak changes status":"При изменении статуса этой вспышки",
+  "Pathogen Catalog":"Каталог патогенов","WHO Intelligence":"Аналитика ВОЗ",
+  "WHO classification":"Классификация ВОЗ","WHO Grade 3":"ВОЗ Grade 3",
+  "PHEIC Pending":"PHEIC ожидается",
+  "Severity Heatmap · Active Outbreaks":"Тепловая карта · Активные вспышки",
+  "Click a highlighted country to view detail":"Нажмите на выделенную страну для деталей",
+  "View country profile →":"Профиль страны →",
+  "Cluster expanding · 3 districts affected":"Кластер расширяется · 3 округа",
+  "Survey · 24h delta":"Мониторинг · дельта 24ч","Get Alerts":"Оповещения",
+  "Profile":"Профиль","Search":"Поиск","Map":"Карта","List":"Список","Home":"Главная",
+  "Apply":"Применить","Filters":"Фильтры","Categories":"Категории","Loading…":"Загрузка…",
+  "Case fatality":"Летальность","Incubation":"Инкубация","Doubling (signal)":"Удвоение (сигнал)",
+  "Signal momentum:":"Динамика сигнала:","Sources:":"Источники:",
+  "Search country, disease, region…":"Поиск страны, болезни, региона…",
+  "Global monitoring":"Глобальный мониторинг"
+};
+window.applyStaticI18n = function(root){
+  if (window.LANG !== 'ru') return;
+  var dict = window.I18N_RU, scope = root || document.body;
+  // 1. leaf elements: exact trimmed textContent match
+  var els = scope.querySelectorAll('button,span,a,div,h1,h2,h3,h4,h5,label,th,td,p,small,option,li');
+  els.forEach(function(el){
+    if (el.children.length === 0){
+      var k = el.textContent.trim();
+      if (k && dict[k] != null && el.textContent.indexOf(dict[k]) === -1){
+        el.textContent = el.textContent.replace(k, dict[k]);
+      }
+    }
   });
-  if(localStorage.getItem('vigilo_lang') !== 'en' &&
-     (navigator.language || '').toLowerCase().startsWith('ru')){
-    location.replace('/ru/' + location.search + location.hash);
-  }
+  // 2. placeholder / title / aria-label attributes
+  scope.querySelectorAll('[placeholder],[title],[aria-label]').forEach(function(el){
+    ['placeholder','title','aria-label'].forEach(function(a){
+      var v = el.getAttribute(a);
+      if (v && dict[v.trim()] != null) el.setAttribute(a, dict[v.trim()]);
+    });
+  });
+};
+document.addEventListener('DOMContentLoaded', function(){
+  window.applyStaticI18n();
+  // re-apply after late dynamic chrome renders
+  setTimeout(function(){ window.applyStaticI18n(); }, 1200);
+});
+</script>
+<!-- ── Unified i18n: single app.html serves EN + RU (no /ru/ fork) ── -->
+<script>
+(function(){
+  // Resolve language: ?lang= → localStorage → browser, default EN
+  var qs = new URLSearchParams(location.search);
+  var qLang = (qs.get('lang')||'').toLowerCase();
+  if (qLang === 'ru' || qLang === 'en') localStorage.setItem('vigilo_lang', qLang);
+  var stored = localStorage.getItem('vigilo_lang');
+  var LANG = stored === 'ru' ? 'ru'
+           : stored === 'en' ? 'en'
+           : (navigator.language||'').toLowerCase().startsWith('ru') ? 'ru' : 'en';
+  window.LANG = LANG;
+  window.EPISWOPE_LANG = LANG;          // consumed by globe.js
+  document.documentElement.lang = LANG;
+  // Global translator: TR('English','Русский')
+  // (named TR, not T — globe.js owns a global T(key,vars) by-key translator)
+  window.TR = function(en, ru){ return LANG === 'ru' ? ru : en; };
+  // Language toggle button → flip lang, persist, reload (same URL, single app)
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.querySelector('.lang-btn');
+    if(!btn) return;
+    btn.textContent = LANG === 'ru' ? 'EN' : 'RU';
+    btn.removeAttribute('href');
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var next = LANG === 'ru' ? 'en' : 'ru';
+      localStorage.setItem('vigilo_lang', next);
+      var u = new URL(location.href); u.searchParams.set('lang', next);
+      location.href = u.toString();
+    });
+  });
+})();
 </script>
 <script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
@@ -2851,6 +3130,279 @@ const VAPID_PUBLIC = 'BI-O61Uw8jEnn0_Qx-cBxDUiTt7wvzTM7Km1Spqa5Oq4HX8297kfE18eDf
 
 let _swReg = null;
 let _pushSub = null;
+
+// ── Early Warning Signals ─────────────────────────────────────────────────
+
+const SIGNALS_URL  = '/public/signals.json';
+const SIGNALS_POLL = 5 * 60 * 1000;  // 5 minutes
+let _lastSignalIds = new Set();
+let _signalTimer   = null;
+let _signalsLoaded = false;
+
+const _SIG_LEVEL = { urgent:'🚨 Urgent', alert:'⚠ Alert', watch:'👁 Watch' };
+const _SIG_COLOR = { urgent:'#c0392b', alert:'var(--s3)', watch:'var(--muted)' };
+
+async function loadSignals() {
+  try {
+    const r = await fetch(SIGNALS_URL + '?_=' + Date.now());
+    if (!r.ok) return;
+    const data = await r.json();
+    const sigs  = data.signals || [];
+
+    // Identify new high-priority signals since last fetch
+    const newHigh = sigs.filter(s =>
+      (s.level === 'urgent' || (s.level === 'alert' && s.confidence >= 0.65)) &&
+      !_lastSignalIds.has(s.id)
+    );
+    if (_signalsLoaded && newHigh.length > 0) {
+      _notifyNewSignals(newHigh);
+    }
+
+    _lastSignalIds = new Set(sigs.map(s => s.id));
+    _signalsLoaded = true;
+    _renderSignals(sigs, data.meta);
+    _renderTicker(sigs);
+  } catch(e) {
+    console.debug('Signals fetch error', e);
+  }
+}
+
+function _renderSignals(sigs, meta) {
+  const section = document.getElementById('signalsSection');
+  const list    = document.getElementById('signalsList');
+  const upd     = document.getElementById('signalsUpdated');
+  if (!section || !list) return;
+
+  // Show only urgent + alert signals (max 6), ranked by Threat Index
+  const _ti = s => (typeof s.threat_index === 'number' ? s.threat_index : s.confidence*60);
+  const show = sigs
+    .filter(s => s.level !== 'watch')
+    .sort((a,b) => _ti(b) - _ti(a) || b.confidence - a.confidence)
+    .slice(0, 6);
+
+  if (show.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = '';
+
+  list.innerHTML = show.map(s => {
+    const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
+    const srcs     = (s.sources || []).length;
+    const country  = s.country && s.country !== 'XX' ? s.country : TR('Global','Глобально');
+    const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
+    const aiBadge  = hasAI ? `<span class="sig-ai">⚡ ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
+    const tiBadge  = (typeof s.threat_index === 'number')
+      ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
+    const srcLbl   = TR(`${srcs} source${srcs!==1?'s':''}`, `${srcs} источ.`);
+    return `
+      <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+        <div class="sig-pulse ${s.level}"></div>
+        <div class="sig-body">
+          <div class="sig-title">${_esc(s.disease)} · ${_esc(country)}</div>
+          <div class="sig-meta">${tiBadge} ${srcLbl} · ${TR('spike','спайк')} ${spike} ${aiBadge}</div>
+        </div>
+        <span class="sig-badge ${s.level}">${s.level}</span>
+      </div>`;
+  }).join('');
+
+  // Updated time
+  if (meta && meta.generated_at) {
+    const dt   = new Date(meta.generated_at);
+    const mins = Math.round((Date.now() - dt) / 60000);
+    upd.textContent = mins < 2 ? TR('Updated just now','Обновлено только что')
+      : mins < 60 ? TR(`Updated ${mins}m ago`,`Обновлено ${mins} мин назад`)
+      : TR('Updated ','Обновлено ') + dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }
+}
+
+function _esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function _openSignal(sig) {
+  const detail  = document.getElementById('sigDetail');
+  const section = document.getElementById('signalsSection');
+  if (!detail) return;
+
+  // Populate
+  const badge = document.getElementById('sigDetailBadge');
+  badge.className = `sig-badge ${sig.level}`;
+  badge.textContent = sig.level;
+
+  document.getElementById('sigDetailDisease').textContent =
+    `${sig.disease}${sig.country && sig.country !== 'XX' ? ' · ' + sig.country : ''}`;
+
+  const conf = Math.round((sig.confidence || 0) * 100);
+  const srcs = (sig.sources || []).length;
+  document.getElementById('sigDetailMeta').innerHTML =
+    `<span>📊 ${conf}% ${TR('confidence','уверенность')}</span>`+
+    `<span>📈 ${TR('spike','спайк')} ${sig.spike_ratio || '?'}×</span>`+
+    `<span>📡 ${srcs} ${TR(`source${srcs!==1?'s':''}`,'источ.')}</span>`;
+
+  // ── Threat analytics block ──
+  const thEl = document.getElementById('sigDetailThreat');
+  if (thEl && typeof sig.threat_index === 'number') {
+    const p   = sig.pathogen || {};
+    const ti  = sig.threat_index;
+    const tier= sig.threat_tier || 'monitoring';
+    const cfrPct = (p.cfr != null)
+      ? (p.cfr >= 0.01 ? (p.cfr*100).toFixed(0)+'%' : (p.cfr*100).toFixed(2)+'%')
+      : '—';
+    const r0  = (p.r0 != null) ? p.r0 : '—';
+    const r0lbl = (p.r0 != null) ? TR('R₀ (lit.)','R₀ (лит.)') : 'R₀';
+    const dbl = sig.doubling_time_days
+      ? `${sig.doubling_time_days}${TR('d','д')}` : '—';
+    const momTxt = (sig.momentum != null)
+      ? `${sig.momentum}× ${sig.momentum_confidence==='none'?TR('(seeding)','(набор)'):''}`
+      : '—';
+    const trendMap = {
+      'accelerating':TR('🔺 accelerating','🔺 ускоряется'),'rising':TR('↗ rising','↗ растёт'),
+      'plateau':TR('→ plateau','→ плато'),'declining':TR('↘ declining','↘ спад'),
+      'fading':TR('▽ fading','▽ затухает'),
+      'establishing baseline':TR('· building baseline','· набор базы')
+    };
+    const trendTxt = trendMap[sig.trend] || sig.trend || '—';
+    thEl.innerHTML =
+      `<div class="sig-threat-top">`+
+        `<div class="sig-threat-score">${ti}<small>${TR('/100 threat','/100 угроза')}</small></div>`+
+        `<span class="sig-threat-tier tt-${tier}">${_esc(sig.threat_tier_ru&&LANG==='ru'?sig.threat_tier_ru:tier)}</span>`+
+      `</div>`+
+      `<div class="sig-threat-bar"><i style="width:${Math.min(ti,100)}%"></i></div>`+
+      `<div class="sig-threat-grid">`+
+        `<div><span>${TR('Case fatality','Летальность')}</span><b>${cfrPct}</b></div>`+
+        `<div><span>${r0lbl}</span><b>${r0}</b></div>`+
+        `<div><span>${TR('Incubation','Инкубация')}</span><b>${p.incubation_days!=null?p.incubation_days+TR('d','д'):'—'}</b></div>`+
+        `<div><span>${TR('Doubling (signal)','Удвоение (сигнал)')}</span><b>${dbl}</b></div>`+
+      `</div>`+
+      `<div class="sig-threat-trend">${TR('Signal momentum:','Динамика сигнала:')} <b>${momTxt}</b> · <b>${trendTxt}</b></div>`+
+      (p.route ? `<div class="sig-threat-note">${TR('Route','Передача')}: ${_esc(p.route)}${p.literature_backed?` · ${TR('params','параметры')}: ${_esc(p.source||'literature')}`:TR(' · generic params',' · общие параметры')}</div>` : '');
+    thEl.style.display = '';
+  } else if (thEl) {
+    thEl.style.display = 'none';
+  }
+
+  const aiEl = document.getElementById('sigDetailAI');
+  if (sig.ai_processed || sig.hours_ahead_estimate > 0) {
+    aiEl.textContent = TR(
+      `⚡ AI early warning: ~${sig.hours_ahead_estimate || '?'}h ahead of official reports`,
+      `⚡ AI-предупреждение: на ~${sig.hours_ahead_estimate || '?'}ч раньше официальных сводок`);
+    aiEl.style.display = '';
+  } else {
+    aiEl.style.display = 'none';
+  }
+
+  const hlEl = document.getElementById('sigDetailHeadline');
+  if (sig.headline) {
+    hlEl.textContent = `"${sig.headline}"`;
+    hlEl.style.display = '';
+  } else {
+    hlEl.style.display = 'none';
+  }
+
+  const sourcesEl = document.getElementById('sigDetailSources');
+  if ((sig.sources||[]).length) {
+    sourcesEl.innerHTML = `<b>${TR('Sources:','Источники:')}</b> ${sig.sources.join(', ')}`;
+  } else {
+    sourcesEl.textContent = '';
+  }
+
+  const linkEl = document.getElementById('sigDetailLink');
+  if (sig.links && sig.links[0]) {
+    linkEl.href = sig.links[0];
+    linkEl.style.display = '';
+  } else {
+    linkEl.style.display = 'none';
+  }
+
+  // Swap panels
+  if (section) section.style.display = 'none';
+  detail.style.display = '';
+}
+
+function _closeSignal() {
+  const detail  = document.getElementById('sigDetail');
+  const section = document.getElementById('signalsSection');
+  if (detail)  detail.style.display  = 'none';
+  if (section) section.style.display = '';
+}
+
+// ── Live News Ticker ──────────────────────────────────────────────────────────
+function _renderTicker(sigs) {
+  const ticker = document.getElementById('newsTicker');
+  const inner  = document.getElementById('tickerInner');
+  if (!ticker || !inner) return;
+
+  // Use all signals (not just alert/urgent) — watch signals also go to ticker
+  const items = sigs
+    .filter(s => s.headline || s.disease)
+    .sort((a,b) => b.confidence - a.confidence)
+    .slice(0, 12);
+
+  if (!items.length) { ticker.style.display = 'none'; return; }
+
+  // Build items twice (seamless loop without JS: second copy for continuous scroll)
+  const buildItem = s => {
+    const country  = s.country && s.country !== 'XX' ? ` · ${_esc(s.country)}` : '';
+    const src      = (s.sources && s.sources[0]) ? s.sources[0].toUpperCase().replace('_',' ') : 'SIGNAL';
+    const headline = s.headline ? ` — ${_esc(s.headline.slice(0, 80))}` : '';
+    return `<span class="ticker-item">
+      <span class="ti-dot ${s.level}"></span>
+      <span class="ti-tag">${_esc(s.disease)}${country}${headline}</span>
+      <span class="ti-sep">·</span>
+      <span class="ti-src">${src}</span>
+    </span>`;
+  };
+
+  const html = items.map(buildItem).join('');
+  // Duplicate for seamless infinite scroll
+  inner.innerHTML = html + html;
+
+  // Adjust speed based on content length (longer = more time)
+  const totalChars = items.reduce((n, s) =>
+    n + (s.disease || '').length + (s.headline || '').length, 0);
+  const duration = Math.max(30, Math.min(90, totalChars * 0.4));
+  inner.style.animationDuration = duration + 's';
+
+  ticker.style.display = 'flex';
+}
+
+async function _notifyNewSignals(sigs) {
+  const top = sigs[0];
+  const title = top.level === 'urgent' ? '🚨 URGENT Signal' : '⚠️ New Alert';
+  const body  = `${top.disease} · ${top.country} · spike ${top.spike_ratio}×`;
+
+  // Local notification (page open)
+  if (_swReg && Notification.permission === 'granted') {
+    _swReg.showNotification(title, {
+      body,
+      icon:    '/icon.svg',
+      badge:   '/icon.svg',
+      tag:     'vigilo-signal-' + top.id,
+      vibrate: [200, 100, 200],
+      data:    { url: '/app.html', signalId: top.id },
+      actions: [{ action:'open', title:'Open app' }],
+    }).catch(() => {});
+  }
+
+  // Server-side push (page closed) — if subscribed
+  if (_pushSub) {
+    fetch('/api/signal-notify', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ signal: top, subscription: _pushSub.toJSON() }),
+    }).catch(() => {});
+  }
+}
+
+function _startSignalPolling() {
+  loadSignals();
+  _signalTimer = setInterval(loadSignals, SIGNALS_POLL);
+}
+
+// Start on page load
+_startSignalPolling();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(reg => {

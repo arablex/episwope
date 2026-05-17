@@ -38,6 +38,10 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib import request, error, parse
 
+# Local analytics modules (literature params + signal-derived dynamics)
+sys.path.insert(0, str(Path(__file__).parent))
+from epi_analytics import enrich_signal  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
@@ -3123,6 +3127,15 @@ def build_signals(
             "ai_processed":        ai_processed,
             "is_new":              is_new,
         }
+
+        # ── Epi analytics: literature params + signal-derived dynamics ──
+        try:
+            signal.update(
+                enrich_signal(history, iso, disease, confidence, current_count)
+            )
+        except Exception as e:
+            log(f"  WARN enrich_signal failed for {disease}/{iso}: {e}")
+
         signals.append(signal)
 
         record_mention(history, iso, disease, current_count)
