@@ -166,10 +166,7 @@
 
       <!-- Lead capture -->
       <div class="form-card">
-        <form id="leadForm" name="vigilo-enterprise" method="POST"
-          data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="vigilo-enterprise">
-          <p hidden><label>Skip<input name="bot-field"></label></p>
+        <form id="leadForm" method="POST" action="/api/enterprise-lead">
           <h3>Сгенерировать тестовый паспорт</h3>
           <p class="sub">Бесплатный демо-отчёт по вашему направлению — на рабочую почту.</p>
           <div class="fld"><label for="lc">Страна назначения</label>
@@ -184,16 +181,18 @@
           <div class="fld"><label for="lco">Компания</label>
             <input id="lco" name="company" type="text" required
               placeholder="Островок / Сравни / …"></div>
-          <button class="submit" type="submit">Сгенерировать тестовый PDF-паспорт →</button>
-          <p class="micro">Отчёт включает ИИ-прогноз угроз на 14 дней и
-          требования Duty of Care. Без спама — один тестовый отчёт.</p>
+          <button class="submit" type="submit">Получить тестовый паспорт на почту →</button>
+          <p class="micro">Живая сводка риска по направлению придёт на почту
+          сразу. Полный PDF с 14-дневным ИИ-прогнозом и Duty of Care — по
+          запросу. Без спама.</p>
         </form>
         <div class="ok" id="leadOk">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 6 9 17l-5-5"/></svg>
-          <b>Заявка принята</b>
-          <span>Тестовый паспорт пришлём на указанную почту в течение рабочего дня.</span>
+          <b>Готово — письмо отправлено</b>
+          <span id="okMsg">Сводка-паспорт по направлению уже на вашей почте.
+          Проверьте входящие (и «Промоакции»/спам).</span>
         </div>
       </div>
     </div>
@@ -303,16 +302,32 @@
   setT(localStorage.getItem('vgl_rep_theme')||'light');
   tg.onclick=function(){ setT(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); };
 
-  // lead form → Netlify Forms (no backend); graceful AJAX + thank-you
+  // lead form → /api/enterprise-lead : captures lead + INSTANTLY emails
+  // a live risk-summary passport for the destination.
   var f=document.getElementById('leadForm');
   f.addEventListener('submit',function(e){
     e.preventDefault();
-    var data=new URLSearchParams(new FormData(f)).toString();
-    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:data})
-      .then(function(){ f.style.display='none';
-        document.getElementById('leadOk').classList.add('show'); })
-      .catch(function(){ f.style.display='none';
-        document.getElementById('leadOk').classList.add('show'); });
+    var btn=f.querySelector('.submit'); btn.disabled=true; btn.textContent='Отправляем…';
+    var fd=new FormData(f);
+    fetch('https://vigilo.cc/api/enterprise-lead',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({destination:fd.get('destination'),
+        email:fd.get('email'),company:fd.get('company')})})
+      .then(function(r){return r.json().catch(function(){return {};});})
+      .then(function(d){
+        var ok=document.getElementById('leadOk');
+        if(d && d.emailed===false){
+          document.getElementById('okMsg').textContent=
+            'Заявку получили — отправим паспорт вручную в ближайшее время.';
+        }
+        f.style.display='none'; ok.classList.add('show');
+      })
+      .catch(function(){
+        document.getElementById('okMsg').textContent=
+          'Заявку получили — отправим паспорт в ближайшее время.';
+        f.style.display='none';
+        document.getElementById('leadOk').classList.add('show');
+      });
   });
 })();
 </script>
