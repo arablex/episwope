@@ -3523,6 +3523,56 @@ async function loadLiveData(){
       injected++;
     }
 
+    // ── B2B risk events → globe (conflict / transport / border /
+    //    infrastructure / climate, incl. CIS & China). Additive &
+    //    fail-safe: never breaks the globe if the feed is missing. ──
+    try {
+      const rr = await fetch(base + 'public/risk_events.json?_=' + Date.now());
+      if (rr.ok) {
+        const rj = await rr.json();
+        const SEVN = ['monitoring','low','warning','alert','critical','catastrophic'];
+        const RTYPE = { health:'epidemic', climate:'disaster',
+          conflict:'humanitarian', civil_unrest:'humanitarian',
+          transport:'humanitarian', border:'humanitarian',
+          infrastructure:'humanitarian' };
+        for (const ev of (rj.events || [])) {
+          if (ev.category === 'health') continue;   // health already via events.json
+          const g = ev.geo || {};
+          if (typeof g.lat !== 'number' || typeof g.lng !== 'number') continue;
+          const rid = 'risk-' + ev.id;
+          if (OUTBREAKS.find(o => o.id === rid)) continue;
+          const sev = SEVN[Math.max(0, Math.min(5, Math.round(ev.severity || 0)))]
+                      || 'monitoring';
+          const verif = ev.source_verification === 'official_agency'
+            ? (LANG === 'ru' ? 'офиц. ведомство' : 'official')
+            : (LANG === 'ru' ? 'медиа-сигнал' : 'media signal');
+          OUTBREAKS.unshift({
+            id: rid,
+            type: RTYPE[ev.category] || 'humanitarian',
+            code: `RISK-${String(ev.category || '').toUpperCase()}`,
+            name: ev.headline || ev.type || ev.category,
+            name_ru: ev.headline || ev.type || ev.category,
+            pathogen: ev.type || ev.category,
+            country: g.country || ev.country,
+            iso: null,
+            region: 'RISK',
+            place: g.place || g.country || ev.country,
+            lat: g.lat, lon: g.lng,
+            sev,
+            who: `${ev.source_name || ev.category} · ${verif}`,
+            cases: 0, deaths: 0, cfr: 0, rt: 0, new24: 0,
+            sevIdx: Math.round((ev.confidence || 0.5) * 100),
+            trend: [],
+            blurb: ev.headline || '',
+            blurb_ru: ev.headline || '',
+            events: [],
+            _live: true, _risk: true, _link: ev.url,
+          });
+          injected++;
+        }
+      }
+    } catch (e) { /* risk feed optional — never break the globe */ }
+
     if(injected > 0){
       console.log(`[Vigilo] Injected ${injected} live events`);
       renderList();
