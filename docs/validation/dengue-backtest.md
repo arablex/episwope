@@ -31,6 +31,8 @@ Declared before computing any number. No post-hoc threshold tuning.
 | Median lead-time (weeks) | 13.0 |
 | TSS — indicator (mean) | 0.1213 |
 | TSS — seasonal baseline (mean) | 0.6624 |
+| TSS — random baseline (mean) | 0.0902 |
+| TSS — persistence baseline (mean) | 0.098 |
 | **Skill vs seasonal (mean)** | **-0.541** |
 | Skill 95% CI (block bootstrap) | [-0.711716, -0.349235] |
 
@@ -51,13 +53,26 @@ Declared before computing any number. No post-hoc threshold tuning.
 - OpenDengue completeness varies by country/year.
 - Validates the current indicator as-is; a fitted model (Approach C) is
   a separate future question.
-- Scope addendum: only 6 countries cleared the ≥3-prior-years endemic-
-  channel gate (9 excluded; the remainder lacked monthly OpenDengue
-  coverage). However the negative is **robust, not a small-sample
-  artefact**: 35 onsets analysed and the skill-vs-seasonal 95% CI
-  ([-0.71, -0.35]) lies entirely and far below 0 — the shipped
-  indicator is decisively beaten by a trivial "it's the usual epidemic
-  month" seasonal predictor (TSS 0.12 vs 0.66). Honest conclusion: as
-  shipped, the climate→dengue indicator does **not** add skill over
-  seasonality. This is exactly the question the harness existed to
-  answer; it must drive the next iteration, not be hidden.
+
+## Honest conclusion (scope addendum)
+
+Only 6 countries cleared the ≥3-prior-years WHO endemic-channel gate
+(9 excluded; the rest lacked monthly OpenDengue coverage). The negative
+is **robust, not a small-sample artefact**: 35 onsets, and the
+skill-vs-seasonal 95% CI ([-0.71, -0.35]) lies entirely and far below 0.
+
+Against all three mandated baselines the picture is unambiguous: the
+shipped climate→dengue indicator (TSS **0.12**) is statistically
+indistinguishable from a **random** alarm at matched rate (0.09) and
+from **persistence** (0.10), and is decisively beaten by a trivial
+**seasonal** "it's the usual epidemic month" predictor (0.66). As
+shipped, the indicator adds **no skill over chance and none over
+seasonality**.
+
+This is exactly the question the harness existed to answer. It must
+drive the next iteration (and must NOT be presented to customers as
+predictive evidence), not be hidden. Concretely it argues for: (a)
+treating the climate signal as a seasonality-conditioned anomaly rather
+than a standalone hazard, and (b) the Approach-C fitted model with
+strict time-series CV as the next experiment — re-validated through
+this same harness before any external claim.
