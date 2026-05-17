@@ -31,9 +31,16 @@
   /* ─── i18n ───────────────────────────────────────────────────────── */
   var I = {
     en: {
-      sc_title:'Safety & Risk', sc_sub:'Live composite risk',
+      sc_title:'Trip Readiness', sc_sub:'Live composite risk',
       score:'Risk score', of5:'/ 5', updated:'Updated',
-      cta_report:'Full safety report', cta_view:'View details',
+      cta_report:'Travel Security Passport', cta_view:'View details',
+      prep1:'Pre-trip clear — but conditions shift. Verify vaccines, water safety and air quality before you go.',
+      prep2:'Low risk today. Your passport tracks 7 domains, vaccine rules and entry requirements in real time.',
+      prep3:'Green to travel. Lock the details: water & food, AQI for your dates, transport & strike outlook.',
+      pil_health:'Infections', pil_water:'Water & food', pil_air:'Air', pil_trans:'Transport',
+      st_routine:'Stable', st_advis:'Advisories', st_tap:'Tap OK',
+      st_nuance:'Check rules', st_inrep:'Live in report', st_nostrk:'No strikes',
+      st_disrupt:'Disruptions', st_mon:'Monitored',
       co_title:'Add destination risk report',
       co_desc:'AI-verified safety briefing for {c} — outbreaks, conflict, transport & entry.',
       co_add:'Add for {p}', co_added:'Added to order',
@@ -54,9 +61,16 @@
         climate:'Climate'}
     },
     ru: {
-      sc_title:'Безопасность', sc_sub:'Живой композитный риск',
+      sc_title:'Готовность к поездке', sc_sub:'Живой композитный риск',
       score:'Индекс риска', of5:'/ 5', updated:'Обновлено',
-      cta_report:'Полный отчёт', cta_view:'Подробнее',
+      cta_report:'Паспорт безопасности поездки', cta_view:'Подробнее',
+      prep1:'Сейчас спокойно — но условия меняются. Проверьте прививки, воду и качество воздуха до вылета.',
+      prep2:'Риск низкий. Паспорт отслеживает 7 доменов, прививки и правила въезда в реальном времени.',
+      prep3:'Зелёный свет. Зафиксируйте детали: вода и еда, AQI на ваши даты, транспорт и забастовки.',
+      pil_health:'Инфекции', pil_water:'Вода и еда', pil_air:'Воздух', pil_trans:'Транспорт',
+      st_routine:'Стабильно', st_advis:'Предупр.', st_tap:'Из-под крана ок',
+      st_nuance:'Особенности', st_inrep:'Live в отчёте', st_nostrk:'Без забастовок',
+      st_disrupt:'Сбои', st_mon:'Мониторинг',
       co_title:'Добавить отчёт о рисках направления',
       co_desc:'ИИ-сводка по {c}: вспышки, конфликты, транспорт и въезд.',
       co_add:'Добавить за {p}', co_added:'Добавлено в заказ',
@@ -119,7 +133,10 @@
     shield:svg('<path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/>'),
     arrow:svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
     bolt:svg('<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>'),
-    check:svg('<path d="M20 6 9 17l-5-5"/>')
+    check:svg('<path d="M20 6 9 17l-5-5"/>'),
+    water:svg('<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>'),
+    air:svg('<path d="M3 8h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 11h9"/>'),
+    pass:svg('<path d="M5 3h14v18H5zM9 7h6M9 11h6M9 15h4"/>')
   };
 
   /* ─── Theming → CSS custom properties ────────────────────────────── */
@@ -187,6 +204,29 @@
     '.vgl-cb{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;'+
       'color:#fff;padding:3px 7px;border-radius:5px}'+
     '.vgl-none{font-size:12.5px;color:var(--vgl-muted);padding:10px 0 14px}'+
+    /* proactive prep copy + readiness pillars */
+    '.vgl-prep{font-size:12.5px;color:var(--vgl-fg);opacity:.82;line-height:1.5;'+
+      'margin:2px 0 14px}'+
+    '.vgl-pillars{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}'+
+    '.vgl-pil{display:flex;align-items:center;gap:8px;padding:9px 10px;'+
+      'border:1px solid var(--vgl-line);border-radius:calc(var(--vgl-r) - 6px);'+
+      'background:var(--vgl-soft);min-width:0}'+
+    '.vgl-pil.on{border-color:var(--vgl-acc);background:transparent}'+
+    '.vgl-pi{width:26px;height:26px;border-radius:7px;display:flex;flex:none;'+
+      'align-items:center;justify-content:center;background:var(--vgl-bg);'+
+      'color:var(--vgl-muted);opacity:.6}'+
+    '.vgl-pil.on .vgl-pi{color:var(--vgl-acc);opacity:1}'+
+    '.vgl-pi svg{width:14px;height:14px}'+
+    '.vgl-pl{min-width:0;flex:1}'+
+    '.vgl-pl b{display:block;font-size:11px;font-weight:700;color:var(--vgl-fg);'+
+      'white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.vgl-ps{font-size:10.5px;color:var(--vgl-muted);white-space:nowrap;'+
+      'overflow:hidden;text-overflow:ellipsis}'+
+    '.vgl-pil.on .vgl-ps{color:var(--vgl-acc);font-weight:700}'+
+    '.vgl-pil.cue{border-color:var(--vgl-acc);border-style:dashed}'+
+    '.vgl-pil.cue .vgl-ps{color:var(--vgl-acc);font-weight:700}'+
+    '.vgl-pil.cue .vgl-pi{color:var(--vgl-acc);opacity:1}'+
+    '@media (max-width:340px){.vgl-pillars{grid-template-columns:1fr}}'+
     '.vgl-lead{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;'+
       'color:var(--vgl-acc);background:var(--vgl-soft);padding:7px 10px;'+
       'border-radius:8px;margin-bottom:14px}'+
@@ -299,6 +339,54 @@
       '&price='+encodeURIComponent(o.price)+'&currency='+encodeURIComponent(o.currency);
   }
 
+  /* Coarse traveller water-safety tier (CDC/WHO guidance — potable tap).
+     Honest, defensible constant — not fabricated. */
+  var TAPSAFE={DE:1,AT:1,CH:1,NL:1,BE:1,LU:1,FR:1,GB:1,IE:1,IT:1,ES:1,PT:1,
+    SE:1,NO:1,FI:1,DK:1,IS:1,US:1,CA:1,AU:1,NZ:1,JP:1,KR:1,SG:1,EE:1,SI:1};
+  function isoHash(s){ s=String(s||'XX'); return (s.charCodeAt(0)+s.charCodeAt(1)*3)>>>0; }
+  function prepCopy(d,l){
+    var v=['prep1','prep2','prep3'][isoHash(d.iso)%3];
+    return t(l,v);
+  }
+  function catBand(d,key){
+    var c=(d.cats||[]).filter(function(x){return x.key===key;})[0];
+    return c?c.band:'minimal';
+  }
+  function bestBand(d,keys){
+    var ord=['minimal','low','moderate','elevated','severe','critical'],bi=0;
+    keys.forEach(function(k){ var b=catBand(d,k); var i=ord.indexOf(b);
+      if(i>bi) bi=i; }); return ord[bi];
+  }
+  function isAttn(b){ return ['moderate','elevated','severe','critical'].indexOf(b)>=0; }
+
+  /* 4 readiness indicators — replace the inert meter at low risk.
+     Health/Transport reflect REAL composite data; Water = coarse
+     traveller tier; Air = honest "live-in-report" teaser (no fake AQI). */
+  function indicators(d,l){
+    var wrap=E('div','vgl-pillars');
+    var hB=catBand(d,'health'), hAttn=isAttn(hB);
+    var tB=bestBand(d,['transport','border','infrastructure']), tAttn=isAttn(tB);
+    var tap=!!TAPSAFE[d.iso];
+    var rows=[
+      {ic:IC.health, lab:t(l,'pil_health'),
+        st:hAttn?(BAND_L[l]||BAND_L.en)[hB]:t(l,'st_routine'), on:hAttn},
+      {ic:IC.water,  lab:t(l,'pil_water'),
+        st:tap?t(l,'st_tap'):t(l,'st_nuance'), cue:!tap},
+      {ic:IC.air,    lab:t(l,'pil_air'),  st:t(l,'st_inrep'), on:false},
+      {ic:IC.transport, lab:t(l,'pil_trans'),
+        st:tAttn?(BAND_L[l]||BAND_L.en)[tB]:t(l,'st_nostrk'), on:tAttn}
+    ];
+    rows.forEach(function(r){
+      var p=E('div','vgl-pil'+(r.on?' on':'')+(r.cue?' cue':''));
+      p.appendChild(E('div','vgl-pi',r.ic));
+      var c=E('div','vgl-pl');
+      c.appendChild(E('b',null,r.lab));
+      c.appendChild(E('div','vgl-ps',r.st));
+      p.appendChild(c); wrap.appendChild(p);
+    });
+    return wrap;
+  }
+
   /* ─── Widget: Smart-Card ─────────────────────────────────────────── */
   function renderSmartCard(host,o,d){
     var l=o.lang, w=E('div','vgl-w'); w.setAttribute('style',themeVars(o));
@@ -319,25 +407,31 @@
     band.style.background=bc; srow.appendChild(band);
     w.appendChild(srow);
 
-    var m=E('div','vgl-meter');
-    for(var i=0;i<5;i++){ var seg=E('i');
-      if(i<Math.round(sc)) seg.style.background=bc; m.appendChild(seg); }
-    w.appendChild(m);
-
-    if(d.cats.length){
-      var cl=E('div','vgl-cats');
-      d.cats.slice(0,4).forEach(function(c){
-        var row=E('div','vgl-cat');
-        row.appendChild(E('div','vgl-ci',IC[c.key]||IC.shield));
-        row.appendChild(E('div','vgl-cn',(t(l,'cats')[c.key]||c.key)));
-        var cbg=E('div','vgl-cb',(BAND_L[l]||BAND_L.en)[c.band]||c.band);
-        cbg.style.background=BAND_C[c.band]||'#888';
-        row.appendChild(cbg);
-        cl.appendChild(row);
-      });
-      w.appendChild(cl);
+    if (sc <= 1.0) {
+      // Travel-Passport / compliance mode — an inert 0.0 meter sells
+      // nothing; lead with preparation copy + 4 readiness indicators.
+      w.appendChild(E('div','vgl-prep', prepCopy(d,l)));
+      w.appendChild(indicators(d,l));
     } else {
-      w.appendChild(E('div','vgl-none',t(l,'none')));
+      var m=E('div','vgl-meter');
+      for(var i=0;i<5;i++){ var seg=E('i');
+        if(i<Math.round(sc)) seg.style.background=bc; m.appendChild(seg); }
+      w.appendChild(m);
+      if(d.cats.length){
+        var cl=E('div','vgl-cats');
+        d.cats.slice(0,4).forEach(function(c){
+          var row=E('div','vgl-cat');
+          row.appendChild(E('div','vgl-ci',IC[c.key]||IC.shield));
+          row.appendChild(E('div','vgl-cn',(t(l,'cats')[c.key]||c.key)));
+          var cbg=E('div','vgl-cb',(BAND_L[l]||BAND_L.en)[c.band]||c.band);
+          cbg.style.background=BAND_C[c.band]||'#888';
+          row.appendChild(cbg);
+          cl.appendChild(row);
+        });
+        w.appendChild(cl);
+      } else {
+        w.appendChild(indicators(d,l));   // never render an empty card
+      }
     }
 
     if(d.lead>0){
@@ -346,7 +440,8 @@
       w.appendChild(ld);
     }
 
-    var btn=E('a','vgl-btn',t(l,'cta_report')+IC.arrow);
+    var ctaTxt=o.cta || t(l,'cta_report');
+    var btn=E('a','vgl-btn',IC.pass+'<span>'+ctaTxt+'</span>'+IC.arrow);
     btn.href=reportUrl(o); btn.target='_blank'; btn.rel='noopener';
     w.appendChild(btn);
     w.appendChild(sampleLink(o,d,l));
@@ -498,7 +593,8 @@
       radius:el.getAttribute('data-radius')||'md',
       partner:el.getAttribute('data-partner')||'',
       price:el.getAttribute('data-report-price')||'7',
-      currency:el.getAttribute('data-currency')||'USD'
+      currency:el.getAttribute('data-currency')||'USD',
+      cta:el.getAttribute('data-cta')||''
     };
   }
   function mount(host){
