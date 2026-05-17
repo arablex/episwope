@@ -30,3 +30,9 @@ class RunBacktestTest(unittest.TestCase):
     def test_skill_vs_seasonal_present(self):
         r = build_report(MONTHLY_S, ONSETS, s_threshold=0.5)
         self.assertIn("vs seasonal", r["markdown"])
+
+    def test_all_three_baselines_present(self):
+        md = build_report(MONTHLY_S, ONSETS, s_threshold=0.5)["markdown"]
+        self.assertIn("seasonal baseline", md)
+        self.assertIn("random baseline", md)
+        self.assertIn("persistence baseline", md)

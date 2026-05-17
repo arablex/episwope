@@ -28,6 +28,7 @@ def build_report(monthly_s, onsets_by_iso, s_threshold=S_THRESHOLD):
     alarms = _alarms(monthly_s, s_threshold)
 
     ind_tss_blocks, seas_tss_blocks, all_leads = [], [], []
+    rand_tss_blocks, pers_tss_blocks = [], []
     roc_points, agg = {}, {"pod": [], "far": []}
     n_onsets = n_excluded = 0
 
@@ -40,9 +41,14 @@ def build_report(monthly_s, onsets_by_iso, s_threshold=S_THRESHOLD):
         n_onsets += len(onsets)
         a_ind = alarms.get(iso, set())
         a_seas = ev.seasonal_alarms(ym, onsets)
+        rate = (len(a_ind & set(ym)) / len(ym)) if ym else 0.0
+        a_rand = ev.random_alarms(ym, rate, seed=20260518)
+        a_pers = ev.persistence_alarms(ym, onsets)
 
         ind_tss_blocks.append(ev.tss(ym, onsets, a_ind, HORIZON_MONTHS))
         seas_tss_blocks.append(ev.tss(ym, onsets, a_seas, HORIZON_MONTHS))
+        rand_tss_blocks.append(ev.tss(ym, onsets, a_rand, HORIZON_MONTHS))
+        pers_tss_blocks.append(ev.tss(ym, onsets, a_pers, HORIZON_MONTHS))
         all_leads += ev.lead_times(onsets, a_ind, HORIZON_MONTHS)
         agg["pod"].append(ev.pod(ym, onsets, a_ind, HORIZON_MONTHS))
         agg["far"].append(ev.far_rate(ym, onsets, a_ind, HORIZON_MONTHS))
@@ -112,6 +118,8 @@ Declared before computing any number. No post-hoc threshold tuning.
 | Median lead-time (weeks) | {round(median_lead, 1)} |
 | TSS — indicator (mean) | {_mean(ind_tss_blocks)} |
 | TSS — seasonal baseline (mean) | {_mean(seas_tss_blocks)} |
+| TSS — random baseline (mean) | {_mean(rand_tss_blocks)} |
+| TSS — persistence baseline (mean) | {_mean(pers_tss_blocks)} |
 | **Skill vs seasonal (mean)** | **{skill_mean}** |
 | Skill 95% CI (block bootstrap) | [{skill_lo}, {skill_hi}] |
 

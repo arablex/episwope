@@ -48,7 +48,7 @@ def tss(ym, onsets, alarms, horizon_months):
 
 
 def lead_times(onsets, alarms, horizon_months):
-    """Weeks between the EARLIEST covering alarm and each onset month."""
+    """Lead in weeks = the LONGEST covering gap (earliest in-window alarm) per onset."""
     out = []
     for o in onsets:
         cands = [_months_between(a, o) for a in alarms
