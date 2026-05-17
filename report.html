@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigilo — Country Risk Dossier</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
+    --line2:#F3F1EA;--accent:#E8590C;--code:#1A1916;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace}
+  [data-theme=dark]{--bg:#0d0c0a;--card:#16140F;--ink:#F4F2EE;--muted:#9a948a;
+    --line:#2a2722;--line2:#1e1c18}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .sheet{max-width:780px;margin:26px auto;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 30px 70px -32px rgba(15,14,12,.4)}
+  .pad{padding:30px 40px}
+  .rep-hd{display:flex;align-items:center;gap:12px;padding:26px 40px;
+    border-bottom:1px solid var(--line)}
+  .mk{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px}
+  .rep-hd b{font-size:16px;font-weight:850;letter-spacing:-.02em;display:block}
+  .rep-hd .sub{font-size:11px;color:var(--muted)}
+  .rep-hd .right{margin-left:auto;text-align:right}
+  .stamp{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent);border:1px solid var(--accent);padding:3px 8px;border-radius:5px}
+  .rep-hd .gen{font-size:10px;color:var(--muted);margin-top:5px}
+  .sec{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 14px}
+  .exec{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .exec .num{font-size:58px;font-weight:850;letter-spacing:-.05em;line-height:.85;
+    font-variant-numeric:tabular-nums}
+  .exec .of{font-size:15px;color:var(--muted);font-weight:700;padding-bottom:8px}
+  .exec .band{align-self:center;font-size:11px;font-weight:800;letter-spacing:.07em;
+    text-transform:uppercase;color:#fff;padding:6px 11px;border-radius:7px}
+  .kpis{display:flex;gap:26px;margin-top:18px;flex-wrap:wrap}
+  .kpi b{display:block;font-size:18px;font-weight:800}
+  .kpi span{font-size:11px;color:var(--muted)}
+  .exsum{font-size:13.5px;color:var(--ink);opacity:.86;margin-top:18px;line-height:1.6}
+  .divide{border-top:1px solid var(--line)}
+  .matrix{display:flex;flex-direction:column;gap:1px}
+  .mrow{display:flex;align-items:center;gap:13px;padding:12px 0;
+    border-top:1px solid var(--line)}
+  .mrow:first-child{border-top:0}
+  .mi{width:30px;height:30px;border-radius:8px;background:var(--line2);
+    display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .mi svg{width:16px;height:16px}
+  .mn{flex:1;min-width:0}
+  .mn b{font-size:13.5px;font-weight:700}
+  .mn .ev{font-size:11px;color:var(--muted)}
+  .mbarw{width:160px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .mbar{height:100%;border-radius:3px}
+  .mb{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+    color:#fff;padding:4px 8px;border-radius:5px;min-width:88px;text-align:center}
+  .feed{display:flex;flex-direction:column;gap:10px}
+  .ev{border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .ev-top{display:flex;align-items:center;gap:9px;margin-bottom:6px;flex-wrap:wrap}
+  .ev-cat{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted)}
+  .sev{font-size:10px;font-weight:800;color:#fff;padding:3px 7px;border-radius:5px}
+  .vt{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+    padding:3px 7px;border-radius:5px}
+  .vt.off{background:#5b9d6b;color:#fff}.vt.ai{background:#e2820f;color:#fff}
+  .ev h4{font-size:13.5px;font-weight:600;line-height:1.45;margin:2px 0 6px}
+  .ev-src{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .meth{font-size:11.5px;color:var(--muted);line-height:1.6;background:var(--line2);
+    border-radius:11px;padding:14px 16px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .btn{font:inherit;font-size:13px;font-weight:700;padding:11px 18px;border-radius:10px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;
+    text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+  .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn:hover{opacity:.92}
+  .foot{font-size:11px;color:var(--muted);text-align:center;padding:20px 40px;
+    border-top:1px solid var(--line)}
+  .loading{padding:60px;text-align:center;color:var(--muted)}
+  @media print{
+    body{background:#fff}.sheet{box-shadow:none;border:0;margin:0;max-width:100%}
+    .actions,.toolbar{display:none!important}
+    .ev,.mrow{break-inside:avoid}
+  }
+  @media(max-width:640px){.pad,.rep-hd,.foot{padding-left:20px;padding-right:20px}
+    .exec .num{font-size:46px}.mbarw{width:90px}}
+</style>
+</head>
+<body>
+<div class="sheet" id="sheet">
+  <div class="loading" id="loading">Загрузка досье…</div>
+</div>
+<script>
+(function(){
+  var Q=new URLSearchParams(location.search);
+  var ISO=(Q.get('country')||Q.get('dest')||'TR').toUpperCase().slice(0,2);
+  var L=(Q.get('lang')==='en')?'en':'ru';
+  if((Q.get('theme')||'')==='dark') document.documentElement.setAttribute('data-theme','dark');
+
+  var BC={minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',elevated:'#d8531e',
+    severe:'#c0392b',critical:'#7d1a12'};
+  var BL={ru:{minimal:'Минимальный',low:'Низкий',moderate:'Умеренный',elevated:'Повышенный',
+    severe:'Высокий',critical:'Критический'},en:{minimal:'Minimal',low:'Low',
+    moderate:'Moderate',elevated:'Elevated',severe:'Severe',critical:'Critical'}};
+  var CAT={ru:{health:'Здоровье / эпидемии',conflict:'Вооружённые конфликты',
+    civil_unrest:'Беспорядки / протесты',transport:'Транспорт',border:'Границы и въезд',
+    infrastructure:'Инфраструктура',climate:'Стихия / климат'},
+    en:{health:'Health / outbreaks',conflict:'Armed conflict',civil_unrest:'Civil unrest',
+    transport:'Transport',border:'Border & entry',infrastructure:'Infrastructure',
+    climate:'Climate / disaster'}};
+  var CN={ru:{TR:'Турция',TH:'Таиланд',UA:'Украина',FR:'Франция',NG:'Нигерия',RU:'Россия',
+    IR:'Иран',IL:'Израиль',IN:'Индия',CN:'Китай',US:'США',AE:'ОАЭ',DE:'Германия',
+    PK:'Пакистан',EG:'Египет',ES:'Испания',IT:'Италия'},en:{}};
+  function cn(i){return (CN[L]&&CN[L][i])||(CN.ru[i])||i;}
+  var T={ru:{title:'Паспорт безопасности страны',sub:'Vigilo Country Risk Dossier · v4.2',
+    live:'LIVE',exec:'Композитная оценка',dom:'Риск по доменам',
+    feed:'Подтверждённые сигналы',meth:'Методология',
+    methtxt:'Композит официальных лент ВОЗ/ECDC/CDC + ИИ-классифицированные сигналы GDELT и новостей. Шкала 0–5 по операционному воздействию с затуханием по свежести; max-доминанта + взвешенный хвост. Каждое событие помечено: официальное ведомство либо ИИ-сигнал из медиа.',
+    off:'Официальный',ai:'ИИ-сигнал',src:'источников',ev:'событий',
+    ahead:'опережение ВОЗ',fresh:'свежесть',print:'Скачать PDF',api:'API-документация',
+    none:'Активных событий в этом домене нет — фон спокойный.',
+    discl:'Образец живого досье. Не является фин./мед. советом.'},
+    en:{title:'Country Risk Dossier',sub:'Vigilo Country Risk Dossier · v4.2',
+    live:'LIVE',exec:'Composite assessment',dom:'Risk by domain',
+    feed:'Verified signals',meth:'Methodology',
+    methtxt:'Composite of WHO/ECDC/CDC official feeds + AI-classified GDELT/news signals. 0–5 operational-impact scale with recency decay; max-dominant + weighted tail. Every event tagged official-agency or media AI-signal.',
+    off:'Official',ai:'AI signal',src:'sources',ev:'events',
+    ahead:'ahead of WHO',fresh:'freshness',print:'Download PDF',api:'API docs',
+    none:'No active events in this domain — baseline calm.',
+    discl:'Live dossier sample. Not financial or medical advice.'}}[L];
+  function svg(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
+  var IC={health:svg('<path d="M3 12h3l2 5 4-12 2 7h7"/>'),
+    conflict:svg('<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
+    civil_unrest:svg('<path d="M3 21h18M6 21V9M10 21V6M14 21V9M18 21V4"/>'),
+    transport:svg('<path d="M3 17h18M6 17V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"/>'),
+    border:svg('<path d="M12 2v20M5 6l7-3 7 3M5 6v6a7 7 0 0 0 14 0V6"/>'),
+    infrastructure:svg('<path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/>'),
+    climate:svg('<path d="M12 2v3M5 12H2M22 12h-3M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>')};
+  var ORDER=['conflict','civil_unrest','health','transport','border','infrastructure','climate'];
+  function esc(s){return String(s||'').replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+
+  fetch('https://vigilo.cc/api/v1/risk?country='+ISO+'&include_events=true&history_days=30')
+   .then(function(r){return r.json();}).then(function(d){
+    var cr=d.composite_risk||{}, cb=d.category_breakdown||{}, ev=d.events||[], mt=d.meta||{};
+    var band=cr.band||'minimal', bc=BC[band]||'#888';
+    var lead=0; ev.forEach(function(e){ if((e.lead_time_hours||0)>lead) lead=e.lead_time_hours; });
+    var fresh=Math.round((mt.data_freshness_seconds||0)/60);
+    // exec summary line (deterministic, honest)
+    var dom=cr.dominant_category, domTxt=dom?(CAT[L][dom]||dom):'—';
+    var sum = (cr.score>=3? (L==='ru'?'Высокий композитный риск — доминирует «'+domTxt+'». Требуется усиленная подготовка и Duty of Care.'
+                : 'Elevated composite risk — driven by '+domTxt+'. Heightened preparation & duty of care required.')
+             : cr.score>=1.5? (L==='ru'?'Умеренный фон с локальными факторами. Контроль обязателен перед поездкой.'
+                : 'Moderate backdrop with local factors. Pre-trip checks advised.')
+             : (L==='ru'?'Композитный риск низкий. Базовая подготовка и проверка правил въезда.'
+                : 'Low composite risk. Routine preparation and entry-rule checks.'));
+
+    var rows=ORDER.map(function(k){
+      var c=cb[k]||{score:0,band:'minimal',active_events:0};
+      var b=c.band||'minimal', w=Math.round((c.score||0)/5*100);
+      return '<div class="mrow"><div class="mi">'+(IC[k]||'')+'</div>'+
+        '<div class="mn"><b>'+CAT[L][k]+'</b><div class="ev">'+(c.active_events||0)+' '+T.ev+
+        ' · '+(c.score||0).toFixed(1)+'/5</div></div>'+
+        '<div class="mbarw"><div class="mbar" style="width:'+w+'%;background:'+(BC[b]||'#888')+'"></div></div>'+
+        '<div class="mb" style="background:'+(BC[b]||'#888')+'">'+(BL[L][b]||b)+'</div></div>';
+    }).join('');
+
+    var feed = ev.length ? ev.slice(0,12).map(function(e){
+      var off=e.source_verification==='official_agency';
+      var sb=BC[['minimal','low','warning','warning','alert','critical'][Math.max(0,Math.min(5,Math.round(e.severity||0)))]]||'#888';
+      return '<div class="ev"><div class="ev-top">'+
+        '<span class="ev-cat">'+(CAT[L][e.category]||e.category)+'</span>'+
+        '<span class="sev" style="background:'+sb+'">SEV '+(e.severity||0)+'</span>'+
+        '<span class="vt '+(off?'off':'ai')+'">'+(off?T.off:T.ai)+'</span>'+
+        (e.source_count?'<span class="ev-cat">· '+e.source_count+' '+T.src+'</span>':'')+'</div>'+
+        '<h4>'+esc(e.headline||e.type||'')+'</h4>'+
+        '<div class="ev-src">'+esc((e.sources||[]).slice(0,6).join(', '))+'</div></div>';
+    }).join('') : '<div class="meth">'+T.none+'</div>';
+
+    document.getElementById('loading').remove();
+    document.getElementById('sheet').innerHTML =
+      '<div class="rep-hd"><span class="mk">V</span><div><b>'+T.title+' · '+cn(ISO)+'</b>'+
+        '<span class="sub">'+T.sub+'</span></div><div class="right">'+
+        '<span class="stamp">'+T.live+'</span><div class="gen">'+
+        new Date(mt.generated_at||Date.now()).toLocaleString(L==='ru'?'ru-RU':'en-GB')+'</div></div></div>'+
+      '<div class="pad"><div class="sec">'+T.exec+'</div>'+
+        '<div class="exec"><div class="num">'+(cr.score||0).toFixed(1)+'</div>'+
+        '<div class="of">/ 5</div><div class="band" style="background:'+bc+'">'+(BL[L][band]||band)+'</div></div>'+
+        '<div class="kpis">'+
+          '<div class="kpi"><b>'+(mt.sources_checked||'—')+'</b><span>'+T.src+'</span></div>'+
+          '<div class="kpi"><b>'+(mt.events_total||ev.length)+'</b><span>'+T.ev+'</span></div>'+
+          (lead>0?'<div class="kpi"><b>'+lead+'ч</b><span>'+T.ahead+'</span></div>':'')+
+          '<div class="kpi"><b>'+fresh+'м</b><span>'+T.fresh+'</span></div></div>'+
+        '<div class="exsum">'+sum+'</div></div>'+
+      '<div class="pad divide"><div class="sec">'+T.dom+'</div><div class="matrix">'+rows+'</div></div>'+
+      '<div class="pad divide"><div class="sec">'+T.feed+'</div><div class="feed">'+feed+'</div></div>'+
+      '<div class="pad divide"><div class="sec">'+T.meth+'</div><div class="meth">'+T.methtxt+'</div>'+
+        '<div class="actions"><button class="btn pri" onclick="window.print()">'+T.print+'</button>'+
+        '<a class="btn" href="https://vigilo.cc/api/v1/docs">'+T.api+'</a>'+
+        '<a class="btn" href="https://vigilo.cc/app?country='+ISO+'">'+(L==='ru'?'Живая карта':'Live map')+'</a></div></div>'+
+      '<div class="foot">Vigilo Risk Intelligence · vigilo.cc · '+T.discl+'</div>';
+  }).catch(function(){
+    document.getElementById('sheet').innerHTML='<div class="loading">'+
+      (L==='ru'?'Не удалось загрузить досье. Повторите позже.':'Failed to load. Try later.')+'</div>';
+  });
+})();
+</script>
+</body>
+</html>

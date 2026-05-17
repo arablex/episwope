@@ -99,18 +99,23 @@ export default async (req) => {
         ${ind('Конфликты','conflict','Спокойно')}
       </table>
       <p style="font-size:12px;color:#807E76;margin-top:14px;line-height:1.5">
-        Это живая сводка-образец. Полный PDF-паспорт включает ИИ-прогноз угроз
-        на 14 дней, требования Duty of Care и детальные правила въезда.</p>
-      <a href="https://vigilo.cc/app?country=${iso}"
+        Полное досье — все 7 доменов (вооружённые конфликты, беспорядки,
+        транспорт, границы, инфраструктура, климат, здоровье), лента
+        подтверждённых сигналов с верификацией источников и методология.</p>
+      <a href="https://vigilo.cc/report?country=${iso}&lang=ru"
         style="display:block;text-align:center;background:#E8590C;color:#fff;
         font-weight:700;text-decoration:none;padding:13px;border-radius:10px;
-        margin-top:8px">Открыть живую карту риска →</a>
+        margin-top:8px">Открыть полный паспорт безопасности →</a>
+      <a href="https://vigilo.cc/app?country=${iso}"
+        style="display:block;text-align:center;color:#807E76;font-size:12px;
+        text-decoration:none;margin-top:10px">Или живая карта риска →</a>
     </div>
     <p style="font-size:11px;color:#807E76;text-align:center;padding:16px 0">
       Vigilo Risk Intelligence · <a href="https://vigilo.cc/api/v1/docs"
       style="color:#E8590C">API</a> · Не является фин./мед. советом.</p></div>`;
   const text = `Vigilo — паспорт безопасности: ${destination}\n`+
     `Композитный риск: ${(cr.score||0).toFixed(1)}/5 (${bRu})\n`+
+    `Полное досье (7 доменов): https://vigilo.cc/report?country=${iso}&lang=ru\n`+
     `Живая карта: https://vigilo.cc/app?country=${iso}\n`+
     `API: https://vigilo.cc/api/v1/docs`;
 
