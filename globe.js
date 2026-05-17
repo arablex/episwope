@@ -3045,6 +3045,38 @@ function renderPanel(){
   ps.style.boxShadow = `0 8px 20px -10px ${hexA(sev.color, 0.55)}, inset 0 1px 0 rgba(255,255,255,0.14)`;
   ps.querySelector('.v').textContent = translateWho(o.who);
 
+  // ── Risk events render through the health panel: relabel everything
+  //    to risk-appropriate, localised copy (no medical metrics). ──
+  const RISK_DOMAIN = {
+    conflict:       { en:'Armed conflict',     ru:'Вооружённый конфликт' },
+    civil_unrest:   { en:'Civil unrest',       ru:'Гражданские беспорядки' },
+    transport:      { en:'Transport disruption', ru:'Сбой транспорта' },
+    border:         { en:'Border / entry',     ru:'Границы и въезд' },
+    infrastructure: { en:'Infrastructure',     ru:'Инфраструктура' },
+    climate:        { en:'Natural disaster',   ru:'Стихийное бедствие' },
+  };
+  if (o._risk) {
+    const dl  = RISK_DOMAIN[o._riskCat] || { en:'Risk event', ru:'Событие риска' };
+    const lbl = LANG === 'ru' ? dl.ru : dl.en;
+    document.getElementById('panEy').textContent =
+      `${LANG === 'ru' ? 'Событие' : 'Event'} · ${lbl}`;
+    document.getElementById('panLoc').textContent =
+      `${countryName(o.place) || o.place} · ${lbl}`;
+    const psl = ps.querySelector('.l');
+    if (psl) psl.textContent = LANG === 'ru' ? 'Источник' : 'Source';
+    const setMetric = (id, val, label) => {
+      const el = document.getElementById(id); if (!el) return;
+      el.textContent = val; el.style.color = '';
+      const k = el.parentElement && el.parentElement.querySelector('.k');
+      if (k && label) k.textContent = label;
+    };
+    setMetric('mConf', Math.round((o._riskConf || 0) * 100) + '%',
+              LANG === 'ru' ? 'Уверенность' : 'Confidence');
+    setMetric('mDeath', sev.label, LANG === 'ru' ? 'Уровень' : 'Severity');
+    document.getElementById('mDeath').style.color = sev.color;
+    setMetric('mCfr', '—', LANG === 'ru' ? 'Летальность' : 'CFR');
+    setMetric('mRt', '—', 'Rₜ');
+  } else {
   document.getElementById('mConf').textContent = fmtNum(o.cases);
   document.getElementById('mDeath').textContent = fmtNum(o.deaths);
   const cfr = parseFloat(o.cfr) || 0;
@@ -3053,6 +3085,7 @@ function renderPanel(){
   document.getElementById('mRt').textContent  = rt.toFixed(2);
   // color the deaths metric value with severity
   document.getElementById('mDeath').style.color = sev.color;
+  }
 
   // severity index
   document.getElementById('sevIdxVal').textContent = `${o.sevIdx} / 100`;
@@ -3567,6 +3600,9 @@ async function loadLiveData(){
             blurb_ru: ev.headline || '',
             events: [],
             _live: true, _risk: true, _link: ev.url,
+            _riskCat: ev.category,
+            _riskVerif: ev.source_verification,
+            _riskConf: ev.confidence,
           });
           injected++;
         }

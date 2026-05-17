@@ -5,8 +5,19 @@
 import { getSubscriber, putSubscriber } from './blobs.mjs';
 import { hashEmail } from './tokens.mjs';
 
+// Founder / internal accounts — always top tier (testing all reports,
+// premium features, B2B packs). Bypasses Stripe/Blobs entirely so it
+// can't be lost on a store reset.
+const FOUNDER_EMAILS = new Set([
+  'aleksey.stepikin@gmail.com',
+  'xqrmedia@gmail.com',
+]);
+const FOUNDER_PLAN = { plan: 'pro', paid_until: '2099-12-31T00:00:00.000Z' };
+
 /** Return {plan, paid_until} for an email. Defaults to free if no record. */
 export async function getSubscriberPlan(email) {
+  const norm = String(email || '').trim().toLowerCase();
+  if (FOUNDER_EMAILS.has(norm)) return { ...FOUNDER_PLAN };
   const rec = await getSubscriber(hashEmail(email));
   return {
     plan:       rec?.plan       ?? 'free',
