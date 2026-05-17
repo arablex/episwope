@@ -328,6 +328,63 @@ def import_health_events() -> list[dict]:
     return out
 
 
+CLIMATE_IN = OUTPUT_DIR / "climate_risk.json"
+
+def import_climate_leads() -> list[dict]:
+    """Predictive climate→bio leading indicators (model-derived, honest).
+
+    Reads public/climate_risk.json (written by climate_signals.py) and
+    emits forward-looking HEALTH events for countries where vector/
+    water-borne suitability is elevated — 7–14 days before clinical
+    reports. Clearly tagged source_verification='model'; severity
+    capped (leading hazard, not a confirmed outbreak).
+    """
+    if not CLIMATE_IN.exists():
+        return []
+    try:
+        data = json.loads(CLIMATE_IN.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    THRESH = {"dengue": 0.55, "cholera": 0.50}
+    DISEASE = {"dengue": "Dengue fever", "cholera": "Cholera"}
+    out = []
+    for iso, blk in (data.get("risk") or {}).items():
+        for path in ("dengue", "cholera"):
+            p = blk.get(path) or {}
+            S = float(p.get("S", 0))
+            if S < THRESH[path]:
+                continue
+            sev = 2 if S < 0.65 else 3 if S < 0.8 else 4
+            seeding = p.get("confidence") == "low"
+            conf = round(S * (0.6 if seeding else 0.85), 2)
+            lead_h = int(p.get("lead_days", 10)) * 24
+            out.append({
+                "id": f"evt_clim_{path}_{iso}",
+                "category": "health",
+                "type": f"{path}_climate_lead",
+                "headline": (f"Climate-elevated {DISEASE[path]} suitability "
+                             f"({p.get('band','')}) — model leading indicator, "
+                             f"~{p.get('lead_days',10)}d ahead of reports"),
+                "severity": sev,
+                "confidence": conf,
+                "source_verification": "model",
+                "source_class": "tier3_pro",
+                "source_name": "Vigilo climate model",
+                "geo": {"lat": None, "lng": None, "place": iso,
+                        "country": iso, "admin1": None},
+                "country": iso,
+                "first_seen": _now().isoformat(),
+                "last_updated": _now().isoformat(),
+                "lead_time_hours": lead_h,
+                "source_count": 1,
+                "sources": ["climate_model"],
+                "url": "",
+                "is_new": False,
+                "predictive": True,
+            })
+    return out
+
+
 def build_index(events: list[dict]) -> dict:
     by_country: dict[str, list[dict]] = {}
     for e in events:
@@ -351,7 +408,10 @@ def main() -> int:
     events = collect_events()
     log(f"[risk] non-health events: {len(events)}")
     events += import_health_events()
-    log(f"[risk] total events (incl. health): {len(events)}")
+    clim = import_climate_leads()
+    events += clim
+    log(f"[risk] climate leading-indicators: {len(clim)}")
+    log(f"[risk] total events (incl. health+climate): {len(events)}")
 
     index = build_index(events)
     log(f"[risk] countries scored: {len(index)}")

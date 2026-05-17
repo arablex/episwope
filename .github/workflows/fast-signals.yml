@@ -33,8 +33,13 @@ jobs:
           INTERNAL_SECRET:           ${{ secrets.INTERNAL_SECRET }}
         run: python3 scripts/fast_signals.py
 
+      - name: Run climate leading-indicator model
+        # Must run BEFORE risk_aggregate (it ingests climate_risk.json)
+        run: python3 scripts/climate_signals.py
+        continue-on-error: true   # never block on the climate feed
+
       - name: Run B2B risk aggregator
-        # Must run AFTER fast_signals (imports health events from signals.json)
+        # Must run AFTER fast_signals (signals.json) + climate_signals
         run: python3 scripts/risk_aggregate.py
         continue-on-error: true   # never block the health engine on risk feed
 
@@ -42,7 +47,7 @@ jobs:
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else

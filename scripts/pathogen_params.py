@@ -112,12 +112,14 @@ PATHOGEN_PARAMS: dict[str, dict] = {
         "r0": 2.0, "cfr": 0.02, "serial_days": 5.0, "incubation_days": 1.4,
         "route": "faecal-oral (water)", "tier": "alert",
         "cfr_note": "<1% with treatment; up to 50% untreated severe",
+        "climate_lag_weeks": 2,   # heavy-rain flush → cases ~1–3w
         "source": "WHO cholera fact sheet",
     },
     "Dengue fever": {
         "r0": 4.0, "cfr": 0.01, "serial_days": 15.0, "incubation_days": 6.0,
         "route": "mosquito (Aedes)", "tier": "alert",
         "cfr_note": "<1% treated; severe dengue up to 13% untreated",
+        "climate_lag_weeks": 5,   # temp/precip/RH → Aedes → cases ~4–6w
         "source": "WHO dengue fact sheet",
     },
     "Yellow fever": {
@@ -147,6 +149,7 @@ PATHOGEN_PARAMS: dict[str, dict] = {
         "r0": None, "cfr": 0.002, "serial_days": None, "incubation_days": 12.0,
         "route": "mosquito (Anopheles)", "tier": "alert",
         "cfr_note": "severe falciparum much higher; ~0.2% overall reported",
+        "climate_lag_weeks": 6,   # rainfall → Anopheles breeding → cases ~5–8w
         "source": "WHO World Malaria Report",
     },
     "Meningitis": {
