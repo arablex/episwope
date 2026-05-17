@@ -919,7 +919,10 @@
     min-height:0;
     box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
-  .panel-scroll{ overflow-y:auto; scrollbar-width:thin; scrollbar-color:#cfccc1 transparent; flex:1; min-height:0;}
+  .panel-scroll{ overflow-y:auto; scrollbar-width:thin; scrollbar-color:#cfccc1 transparent; flex:1; min-height:0;
+    /* reserve space so content is never hidden behind the docked signals widget */
+    padding-bottom:74px;}
+  @media (max-width:980px){ .panel-scroll{ padding-bottom:0; } }
   .panel-scroll::-webkit-scrollbar{ width:6px;}
   .panel-scroll::-webkit-scrollbar-thumb{ background:#cfccc1; border-radius:99px;}
 
@@ -2763,20 +2766,110 @@ window.I18N_RU = {
   "Case fatality":"Летальность","Incubation":"Инкубация","Doubling (signal)":"Удвоение (сигнал)",
   "Signal momentum:":"Динамика сигнала:","Sources:":"Источники:",
   "Search country, disease, region…":"Поиск страны, болезни, региона…",
-  "Global monitoring":"Глобальный мониторинг"
+  "Global monitoring":"Глобальный мониторинг",
+  "Critical outbreak alerts only · No spam":"Только критические алерты · Без спама",
+  "Outbreak alerts":"Оповещения о вспышках",
+  "Back":"Назад","Export":"Экспорт","14-day case curve":"Кривая случаев · 14 дней",
+  "By submitting your email you confirm you have read and agree to our":"Отправляя email, вы подтверждаете, что прочитали и согласны с",
+  "Subscribed. We'll notify you about critical outbreaks.":"Готово. Будем присылать уведомления о критических вспышках.",
+  "Subscribe to weekly digests and critical outbreak alerts for the countries you follow.":"Подпишитесь на еженедельные дайджесты и критические алерты по нужным странам.",
+  "Good":"Хорошее","Moderate":"Умеренное","Unhealthy":"Вредное","Poor":"Плохое",
+  "Very Poor":"Очень плохое","Hazardous":"Опасное","No data":"Нет данных","Elevated":"Повышенная"
 };
+
+// Disease names → RU (keyed on exact fast_signals.py names)
+window.DISEASE_RU = {
+  "Ebola virus disease":"Лихорадка Эбола","Marburg virus disease":"Лихорадка Марбург",
+  "Nipah virus":"Вирус Нипах","Plague":"Чума","Lassa fever":"Лихорадка Ласса",
+  "Mpox":"Оспа обезьян","Cholera":"Холера","Dengue fever":"Лихорадка денге",
+  "Avian influenza":"Птичий грипп","Yellow fever":"Жёлтая лихорадка","Meningitis":"Менингит",
+  "Rift Valley fever":"Лихорадка Рифт-Валли","Measles":"Корь","Polio":"Полиомиелит",
+  "Typhoid fever":"Брюшной тиф","Malaria":"Малярия","Rabies":"Бешенство",
+  "Crimean-Congo HF":"Крымско-Конго ГЛ","COVID-19":"COVID-19","Hendra virus":"Вирус Хендра",
+  "Anthrax":"Сибирская язва","Brucellosis":"Бруцеллёз","Tularemia":"Туляремия",
+  "Listeriosis":"Листериоз","Salmonellosis":"Сальмонеллёз","E. coli":"Кишечная палочка (E. coli)",
+  "Hepatitis":"Гепатит","Zika virus":"Вирус Зика","Chikungunya":"Чикунгунья",
+  "West Nile virus":"Лихорадка Западного Нила","Diphtheria":"Дифтерия","Pertussis":"Коклюш",
+  "Hantavirus":"Хантавирус","Tuberculosis":"Туберкулёз","Influenza":"Грипп"
+};
+// Country names → RU (common outbreak geographies; fallback = original)
+window.COUNTRY_RU = {
+  "Dr Congo":"ДР Конго","Democratic Republic of the Congo":"ДР Конго","Congo":"Конго",
+  "Uganda":"Уганда","Turkey":"Турция","Türkiye":"Турция","China":"Китай","India":"Индия",
+  "Nigeria":"Нигерия","Kenya":"Кения","Ethiopia":"Эфиопия","Bangladesh":"Бангладеш",
+  "Indonesia":"Индонезия","Philippines":"Филиппины","Brazil":"Бразилия","Singapore":"Сингапур",
+  "Japan":"Япония","Pakistan":"Пакистан","Afghanistan":"Афганистан","Mexico":"Мексика",
+  "South Africa":"ЮАР","Egypt":"Египет","Cambodia":"Камбоджа","Vietnam":"Вьетнам",
+  "Guinea":"Гвинея","Saudi Arabia":"Саудовская Аравия","United Kingdom":"Великобритания",
+  "United States":"США","USA":"США","Georgia":"Грузия","Taiwan":"Тайвань","Germany":"Германия",
+  "Tanzania":"Танзания","Sudan":"Судан","Angola":"Ангола","Mozambique":"Мозамбик",
+  "Italy":"Италия","France":"Франция","Spain":"Испания","Russia":"Россия","Ukraine":"Украина",
+  "Yemen":"Йемен","Iran":"Иран","Iraq":"Ирак","Thailand":"Таиланд","Malaysia":"Малайзия",
+  "Global":"Глобально"
+};
+// Transmission route → RU
+window.ROUTE_RU = {
+  "airborne":"воздушно-капельный","contact (body fluids)":"контактный (биожидкости)",
+  "contact / droplet":"контактный / капельный","faecal-oral":"фекально-оральный",
+  "faecal-oral (A/E) / blood (B/C)":"фекально-оральный (A/E) / кровь (B/C)",
+  "faecal-oral (water)":"фекально-оральный (вода)","foodborne":"пищевой",
+  "foodborne (STEC)":"пищевой (STEC)","mosquito (Aedes)":"комары (Aedes)",
+  "mosquito (Aedes/Haemagogus)":"комары (Aedes/Haemagogus)",
+  "mosquito (Anopheles)":"комары (Anopheles)","mosquito (Culex)":"комары (Culex)",
+  "mosquito + sexual + vertical":"комары + половой + вертикальный",
+  "respiratory / aerosol":"респираторный / аэрозоль",
+  "respiratory / droplet":"респираторный / капельный",
+  "respiratory / droplet (meningococcal)":"респираторный / капельный (менингококк)",
+  "rodent reservoir (aerosolised excreta)":"резервуар — грызуны (аэрозоль экскрементов)",
+  "rodent reservoir + limited h2h":"резервуар — грызуны + ограниченно ч-ч",
+  "tick-borne + nosocomial":"клещевой + внутрибольничный","unspecified":"не уточнён",
+  "vector (bubonic) / droplet (pneumonic)":"трансмиссивный (бубонная) / капельный (лёгочная)",
+  "zoonotic (bite)":"зоонозный (укус)","zoonotic (equine)":"зоонозный (лошади)",
+  "zoonotic (livestock/dairy)":"зоонозный (скот/молоко)",
+  "zoonotic (poultry) — sporadic h2h":"зоонозный (птица) — спорадически ч-ч",
+  "zoonotic + limited h2h":"зоонозный + ограниченно ч-ч",
+  "zoonotic / mosquito":"зоонозный / комары","zoonotic / spores":"зоонозный / споры",
+  "zoonotic / vector":"зоонозный / трансмиссивный"
+};
+window.locRoute = function(r){ return (window.LANG==='ru' && window.ROUTE_RU[r]) || r; };
+
+// Signal level → RU badge
+window.LEVEL_RU = { urgent:"СРОЧНО", alert:"АЛЕРТ", watch:"НАБЛЮДЕНИЕ" };
+
+window.locDisease = function(d){ return (window.LANG==='ru' && window.DISEASE_RU[d]) || d; };
+window.locCountry = function(c){ return (window.LANG==='ru' && window.COUNTRY_RU[c]) || c; };
+window.locLevel   = function(l){ return (window.LANG==='ru' && window.LEVEL_RU[l]) || String(l||'').toUpperCase(); };
+
 window.applyStaticI18n = function(root){
   if (window.LANG !== 'ru') return;
   var dict = window.I18N_RU, scope = root || document.body;
-  // 1. leaf elements: exact trimmed textContent match
-  var els = scope.querySelectorAll('button,span,a,div,h1,h2,h3,h4,h5,label,th,td,p,small,option,li');
-  els.forEach(function(el){
-    if (el.children.length === 0){
-      var k = el.textContent.trim();
-      if (k && dict[k] != null && el.textContent.indexOf(dict[k]) === -1){
-        el.textContent = el.textContent.replace(k, dict[k]);
-      }
+  // merged exact-match lookup: UI strings → disease → country names
+  var _ru = function(t){
+    return dict[t] != null ? dict[t]
+      : (window.DISEASE_RU && window.DISEASE_RU[t] != null) ? window.DISEASE_RU[t]
+      : (window.COUNTRY_RU && window.COUNTRY_RU[t] != null) ? window.COUNTRY_RU[t]
+      : null;
+  };
+  // 1. text-node walk — exact trimmed match (handles mixed text+element
+  //    labels like <div>Health Conditions <em>Today</em></div>).
+  //    Skip dynamic/script/canvas regions to avoid clobbering JS-rendered UI.
+  var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, CANVAS:1, svg:1, SVG:1 };
+  var walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(n){
+      var p = n.parentNode;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;
+      if (p.closest && p.closest('#sigWidget,#globe,.mapboxgl-map'))
+        return NodeFilter.FILTER_REJECT;
+      var t = n.nodeValue && n.nodeValue.trim();
+      return (t && _ru(t) != null) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
+  });
+  var nodes = [], cur;
+  while ((cur = walker.nextNode())) nodes.push(cur);
+  nodes.forEach(function(n){
+    var t = n.nodeValue.trim();
+    n.nodeValue = n.nodeValue.replace(t, _ru(t));
   });
   // 2. placeholder / title / aria-label attributes
   scope.querySelectorAll('[placeholder],[title],[aria-label]').forEach(function(el){
@@ -2787,9 +2880,21 @@ window.applyStaticI18n = function(root){
   });
 };
 document.addEventListener('DOMContentLoaded', function(){
+  if (window.LANG !== 'ru') return;
   window.applyStaticI18n();
-  // re-apply after late dynamic chrome renders
-  setTimeout(function(){ window.applyStaticI18n(); }, 1200);
+  [600, 1500, 3500].forEach(function(ms){
+    setTimeout(function(){ window.applyStaticI18n(); }, ms);
+  });
+  // globe.js re-renders the right panel on outbreak select — re-translate
+  // whenever its subtree changes (debounced to avoid thrash).
+  var panel = document.getElementById('panel');
+  if (panel && 'MutationObserver' in window){
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t);
+      t = setTimeout(function(){ window.applyStaticI18n(panel); }, 120);
+    }).observe(panel, { childList:true, subtree:true, characterData:true });
+  }
 });
 </script>
 <!-- ── Unified i18n: single app.html serves EN + RU (no /ru/ fork) ── -->
@@ -3292,7 +3397,7 @@ function _renderSignals(sigs, meta) {
     list.innerHTML = show.map(s => {
       const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
       const srcs     = (s.sources || []).length;
-      const country  = s.country && s.country !== 'XX' ? s.country : TR('Global','Глобально');
+      const country  = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
       const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
       const aiBadge  = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
       const tiBadge  = (typeof s.threat_index === 'number')
@@ -3302,10 +3407,10 @@ function _renderSignals(sigs, meta) {
         <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
           <div class="sig-pulse ${s.level}"></div>
           <div class="sig-body">
-            <div class="sig-title">${_esc(s.disease)} · ${_esc(country)}</div>
+            <div class="sig-title">${_esc(locDisease(s.disease))} · ${_esc(country)}</div>
             <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${spike} ${aiBadge}</div>
           </div>
-          <span class="sig-badge ${s.level}">${s.level}</span>
+          <span class="sig-badge ${s.level}">${locLevel(s.level)}</span>
         </div>`;
     }).join('');
   }
@@ -3332,10 +3437,10 @@ function _openSignal(sig) {
   // Populate
   const badge = document.getElementById('sigDetailBadge');
   badge.className = `sig-badge ${sig.level}`;
-  badge.textContent = sig.level;
+  badge.textContent = locLevel(sig.level);
 
   document.getElementById('sigDetailDisease').textContent =
-    `${sig.disease}${sig.country && sig.country !== 'XX' ? ' · ' + sig.country : ''}`;
+    `${locDisease(sig.disease)}${sig.country && sig.country !== 'XX' ? ' · ' + locCountry(sig.country) : ''}`;
 
   const conf = Math.round((sig.confidence || 0) * 100);
   const srcs = (sig.sources || []).length;
@@ -3385,7 +3490,7 @@ function _openSignal(sig) {
         `<div><span>${TR('Doubling (signal)','Удвоение (сигнал)')}</span><b>${dbl}</b></div>`+
       `</div>`+
       `<div class="sig-threat-trend">${TR('Signal momentum:','Динамика сигнала:')} <b>${momTxt}</b> · <b>${trendTxt}</b></div>`+
-      (p.route ? `<div class="sig-threat-note">${TR('Route','Передача')}: ${_esc(p.route)}${p.literature_backed?` · ${TR('params','параметры')}: ${_esc(p.source||'literature')}`:TR(' · generic params',' · общие параметры')}</div>` : '');
+      (p.route ? `<div class="sig-threat-note">${TR('Route','Передача')}: ${_esc(locRoute(p.route))}${p.literature_backed?` · ${TR('params','параметры')}: ${_esc(p.source||'literature')}`:TR(' · generic params',' · общие параметры')}</div>` : '');
     thEl.style.display = '';
   } else if (thEl) {
     thEl.style.display = 'none';

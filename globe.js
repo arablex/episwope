@@ -139,6 +139,18 @@ const COUNTRY_RU = {
   'Ukraine':'Украина','Turkey':'Турция','Guinea':'Гвинея','Liberia':'Либерия',
   'Burkina Faso':'Буркина-Фасо','Senegal':'Сенегал','Morocco':'Марокко',
   'Libya':'Ливия','Tunisia':'Тунис','Algeria':'Алжир',
+  'Malaysia':'Малайзия','Singapore':'Сингапур','Japan':'Япония','Taiwan':'Тайвань',
+  'South Korea':'Южная Корея','Saudi Arabia':'Саудовская Аравия','South Africa':'ЮАР',
+  'United Kingdom':'Великобритания','Georgia':'Грузия','Lebanon':'Ливан','Jordan':'Иордания',
+  'United Arab Emirates':'ОАЭ','Qatar':'Катар','Oman':'Оман','Kuwait':'Кувейт',
+  'Sri Lanka':'Шри-Ланка','Nepal':'Непал','Laos':'Лаос','Mongolia':'Монголия',
+  'Rwanda':'Руанда','Burundi':'Бурунди','Malawi':'Малави','Madagascar':'Мадагаскар',
+  'Côte d’Ivoire':'Кот-д’Ивуар','Ivory Coast':'Кот-д’Ивуар','Benin':'Бенин','Togo':'Того',
+  'Gabon':'Габон','Republic of the Congo':'Республика Конго','Eritrea':'Эритрея',
+  'Spain':'Испания','Portugal':'Португалия','Poland':'Польша','Romania':'Румыния',
+  'Greece':'Греция','Netherlands':'Нидерланды','Belgium':'Бельгия','Sweden':'Швеция',
+  'Australia':'Австралия','New Zealand':'Новая Зеландия','Canada':'Канада',
+  'Venezuela':'Венесуэла','Ecuador':'Эквадор','Chile':'Чили','Paraguay':'Парагвай',
 };
 
 /* ── Full country master list (198 countries + territories) ── */
@@ -3026,7 +3038,7 @@ function renderPanel(){
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
   document.getElementById('panName').innerHTML = breakName(diseaseName(o));
-  document.getElementById('panLoc').textContent = `${o.place} · ${regionName(o.region)}`;
+  document.getElementById('panLoc').textContent = `${countryName(o.place) || o.place} · ${regionName(o.region)}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
   ps.style.background = grad;
