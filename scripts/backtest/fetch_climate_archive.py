@@ -6,6 +6,7 @@ using the SAME centroids the live indicator uses.
 import json
 import sys
 import time
+import urllib.error
 import urllib.request
 
 from backtest.paths import CLIMATE_DIR, ensure_dirs
@@ -33,13 +34,26 @@ def parse_archive(text):
     return out
 
 
-def _fetch_one(lat, lng, start, end):
+def _fetch_one(lat, lng, start, end, retries=5):
+    """Open-Meteo archive (free tier) rate-limits aggressively (HTTP 429).
+    Retry with exponential backoff so a full multi-country run completes."""
     url = (f"{ARCHIVE}?latitude={lat}&longitude={lng}"
            f"&start_date={start}&end_date={end}"
            "&daily=temperature_2m_mean,precipitation_sum&timezone=UTC")
     req = urllib.request.Request(url, headers={"User-Agent": "vigilo-backtest/1.0"})
-    with urllib.request.urlopen(req, timeout=90) as r:
-        return r.read().decode("utf-8", "ignore")
+    for attempt in range(retries):
+        try:
+            with urllib.request.urlopen(req, timeout=90) as r:
+                return r.read().decode("utf-8", "ignore")
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries - 1:
+                wait = 30 * (attempt + 1)
+                print(f"    429 — backing off {wait}s "
+                      f"(attempt {attempt + 1}/{retries})")
+                time.sleep(wait)
+                continue
+            raise
+    return ""
 
 
 def fetch_all(start="2000-01-01", end="2024-12-31", force=False):
@@ -58,7 +72,7 @@ def fetch_all(start="2000-01-01", end="2024-12-31", force=False):
             continue
         cache.write_text(json.dumps(series), encoding="utf-8")
         print(f"  {iso}: {len(series)} days cached")
-        time.sleep(0.5)
+        time.sleep(8)   # courtesy gap for the free archive tier
 
 
 if __name__ == "__main__":

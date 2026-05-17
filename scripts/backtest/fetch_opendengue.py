@@ -8,15 +8,17 @@ import csv
 import io
 import sys
 import urllib.request
+import zipfile
 from datetime import date
 
 from backtest.paths import DENGUE_CSV, ensure_dirs
 
-# OpenDengue "National" release (Global, monthly). If the URL or schema
-# changes this is a HARD FAIL by design — never silently degrade.
+# OpenDengue "National" release (Global). Published as a ZIP holding a
+# single CSV. If the URL or schema changes this is a HARD FAIL by
+# design — never silently degrade.
 OPENDENGUE_URL = (
     "https://github.com/OpenDengue/master-repo/raw/main/data/releases/"
-    "V1.3/National_extract_V1_3.csv"
+    "V1.3/National_extract_V1_3.zip"
 )
 
 _ISO3_TO_2 = {
@@ -60,8 +62,18 @@ def fetch(force=False):
         return DENGUE_CSV.read_text(encoding="utf-8")
     req = urllib.request.Request(
         OPENDENGUE_URL, headers={"User-Agent": "vigilo-backtest/1.0"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        text = r.read().decode("utf-8", "ignore")
+    with urllib.request.urlopen(req, timeout=90) as r:
+        blob = r.read()
+    try:
+        zf = zipfile.ZipFile(io.BytesIO(blob))
+        members = [n for n in zf.namelist() if n.lower().endswith(".csv")]
+        if not members:
+            raise SystemExit("FATAL: OpenDengue zip has no CSV member. "
+                             "Update fetch_opendengue.py.")
+        text = zf.read(members[0]).decode("utf-8", "ignore")
+    except zipfile.BadZipFile:
+        raise SystemExit("FATAL: OpenDengue download is not a zip — URL or "
+                         "release layout changed. Update fetch_opendengue.py.")
     lines = text.splitlines()
     if not lines or "ISO_A0" not in lines[0]:
         raise SystemExit("FATAL: OpenDengue schema changed — header missing "
