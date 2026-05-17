@@ -56,7 +56,7 @@ def posterior(p0, z_row, beta):
 
 
 def pr_auc(y, scores):
-    """Average precision (PR-AUC). Deterministic; ties broken by order."""
+    """Average precision (PR-AUC). Deterministic; tied scores grouped (standard AP)."""
     pairs = sorted(zip(scores, range(len(y))), key=lambda t: (-t[0], t[1]))
     P = sum(y)
     if P == 0:
