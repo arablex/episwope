@@ -1,0 +1,104 @@
+name: Fast Signals — Early Warning Engine
+
+on:
+  schedule:
+    # Every 15 minutes — GitHub Actions minimum recommended interval
+    # Note: actual firing may lag 1-5 min under load
+    - cron: "*/15 * * * *"
+  workflow_dispatch:   # manual trigger from GitHub UI
+
+permissions:
+  contents: write    # needed to commit signals.json back to repo
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run fast signals engine
+        env:
+          GROQ_API_KEY:              ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:            ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_IDS:   ${{ secrets.TELEGRAM_ADMIN_CHAT_IDS }}
+          INTERNAL_SECRET:           ${{ secrets.INTERNAL_SECRET }}
+        run: python3 scripts/fast_signals.py
+
+      - name: Commit signals if changed
+        run: |
+          git config user.name  "Vigilo Signals Bot"
+          git config user.email "signals@vigilo.noreply"
+          git add public/signals.json public/signals_history.json || true
+          if git diff --cached --quiet; then
+            echo "No signal changes — skipping commit"
+          else
+            git commit -m "chore: update early warning signals [skip ci]"
+            git push
+          fi
+
+      # Push urgent/alert signals to all subscribed devices via Netlify function
+      - name: Push signal notifications
+        env:
+          VIGILO_SITE: ${{ secrets.VIGILO_SITE_URL || 'https://vigilo.cc' }}
+          EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
+        run: |
+          python3 - << 'PYEOF'
+          import json, os, urllib.request, urllib.error
+
+          site  = os.environ.get('VIGILO_SITE', 'https://vigilo.cc').rstrip('/')
+          token = os.environ.get('EPISCOPE_TOKEN_SECRET', '')
+
+          try:
+              with open('public/signals.json') as f:
+                  data = json.load(f)
+          except Exception as e:
+              print(f'Could not read signals.json: {e}')
+              exit(0)
+
+          urgent = [s for s in data.get('signals', [])
+                    if s['level'] in ('urgent', 'alert') and s.get('confidence', 0) >= 0.65]
+
+          if not urgent:
+              print('No urgent/alert signals to push')
+              exit(0)
+
+          top = urgent[0]
+          print(f'Pushing notification for: {top["disease"]} / {top["country"]} ({top["level"]})')
+
+          payload = json.dumps({'signal': top}).encode()
+          req = urllib.request.Request(
+              f'{site}/api/signal-notify',
+              data=payload,
+              headers={'Content-Type': 'application/json'},
+              method='POST',
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  result = json.loads(resp.read())
+                  print(f'Push result: sent={result.get("sent", 0)} failed={result.get("failed", 0)}')
+          except urllib.error.HTTPError as e:
+              print(f'Push HTTP {e.code}: {e.read()[:200]}')
+          except Exception as e:
+              print(f'Push error: {e}')
+          PYEOF
+
+      # Trigger Netlify rebuild so signals.json is served fresh
+      - name: Trigger Netlify deploy
+        if: success()
+        env:
+          NETLIFY_DEPLOY_HOOK: ${{ secrets.NETLIFY_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$NETLIFY_DEPLOY_HOOK" ]; then
+            curl -s -X POST "$NETLIFY_DEPLOY_HOOK" | python3 -c "import json,sys; d=json.load(sys.stdin); print('deploy triggered:', d.get('id','?'))"
+          else
+            echo "No deploy hook configured — skipping"
+          fi

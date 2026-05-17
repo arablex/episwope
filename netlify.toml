@@ -33,11 +33,24 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Env vars needed for monetization (set in Netlify UI → Environment variables):
+# Env vars (set in Netlify UI → Site Configuration → Environment variables):
+#
+# Auth & payments:
 #   JWT_SECRET             — ≥32 random chars, signs magic-link tokens
 #   STRIPE_SECRET_KEY      — sk_live_... or sk_test_...
 #   STRIPE_WEBHOOK_SECRET  — whsec_... from Netlify webhook endpoint
 #   STRIPE_PRICE_ID        — price_... for the $9/mo Pro plan
+#
+# Push notifications (VAPID):
+#   VAPID_PUBLIC_KEY       — npx web-push generate-vapid-keys
+#   VAPID_PRIVATE_KEY      — same command above
+#
+# Telegram Bot (@vigilocc_bot):
+#   TELEGRAM_BOT_TOKEN     — from @BotFather (set via: setWebhook after deploy)
+#   INTERNAL_SECRET        — ≥32 random chars, authenticates GitHub→Netlify calls
+#
+# Also add to GitHub repo Secrets (Settings → Secrets → Actions):
+#   TELEGRAM_BOT_TOKEN, INTERNAL_SECRET, GROQ_API_KEY, GEMINI_API_KEY
 
 [[redirects]]
   from = "/api/*"
