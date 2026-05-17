@@ -3,58 +3,62 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vigilo Risk Widgets — Embeddable risk for any vertical</title>
-<meta name="description" content="Drop-in Vigilo risk widgets for credit, insurance, flights, jobs, logistics and more. One engine, themed per vertical. Live Composite Risk Score by country.">
+<title>Vigilo Risk Widgets — embeddable, brand-themeable</title>
+<meta name="description" content="Three production widgets — Location Smart-Card, Checkout Risk Upsell, Pre-trip Email — fully themeable to your brandbook. Live Composite Risk by country.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://vigilo.cc/widgets">
 <style>
-  :root{
-    --bg:#F4F2EE; --card:#FFFFFF; --ink:#0F0E0C; --muted:#807E76;
-    --line:#ECEAE2; --line2:#F3F1EA; --accent:#E8590C; --code:#1A1916;
+  :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
+    --line2:#F3F1EA;--accent:#E8590C;--code:#1A1916;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --mono:"SF Mono",SFMono-Regular,ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
-  }
+    --mono:"SF Mono",SFMono-Regular,ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
-    line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
   a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header.top{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;
-    background:rgba(244,242,238,.86);backdrop-filter:saturate(1.4) blur(6px)}
+  header.top{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+    background:rgba(244,242,238,.88);backdrop-filter:saturate(1.4) blur(7px)}
   .top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
   .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.02em}
-  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);
-    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
   .top nav a{color:var(--muted);font-size:13px;font-weight:600;margin-left:18px}
   .top nav a:hover{color:var(--ink);text-decoration:none}
-  .langtog{margin-left:18px;font-size:12px;font-weight:700;border:1px solid var(--line);
-    background:var(--card);border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--ink)}
-  .hero{padding:60px 0 34px}
+  .hero{padding:56px 0 30px}
   .eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--accent);margin-bottom:14px}
-  h1{font-size:36px;line-height:1.14;letter-spacing:-.035em;font-weight:850;margin-bottom:14px}
+    color:var(--accent);margin-bottom:13px}
+  h1{font-size:34px;line-height:1.14;letter-spacing:-.035em;font-weight:850;margin-bottom:13px}
   .lede{font-size:17px;color:var(--muted);max-width:640px}
-  .embed-note{background:var(--card);border:1px solid var(--line);border-radius:12px;
-    padding:16px 18px;margin:22px 0 8px}
-  pre{background:var(--code);color:#EDEAE2;font-family:var(--mono);font-size:12px;
-    line-height:1.6;border-radius:10px;padding:14px 16px;overflow-x:auto;margin:8px 0 0}
-  pre .k{color:#E8916C}
-  section{padding:30px 0;border-top:1px solid var(--line)}
+  /* playground */
+  .pg{position:sticky;top:60px;z-index:10;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+    margin:18px 0 6px;display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center}
+  .pg label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.06em;display:flex;flex-direction:column;gap:5px}
+  .pg input[type=color]{width:38px;height:30px;border:1px solid var(--line);border-radius:7px;
+    background:none;cursor:pointer;padding:2px}
+  .pg select,.pg input[type=text]{font:inherit;font-size:13px;padding:7px 9px;
+    border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+  .pg input[type=text]{width:62px;text-transform:uppercase;font-family:var(--mono)}
+  .pg .reset{align-self:flex-end;font-size:12px;font-weight:700;color:var(--accent);
+    background:none;border:0;cursor:pointer;padding:7px 4px}
+  section{padding:32px 0;border-top:1px solid var(--line)}
   h2{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted);margin-bottom:20px}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
-  .cell{background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:18px;display:flex;flex-direction:column;gap:12px}
-  .cell-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .cell-h b{font-size:14px;font-weight:750}
-  .cell-h .v{font-family:var(--mono);font-size:11px;color:var(--muted);
-    background:var(--line2);padding:3px 7px;border-radius:6px}
-  .snippet{font-family:var(--mono);font-size:11px;color:var(--muted);
-    background:var(--line2);border-radius:8px;padding:10px 12px;overflow-x:auto;
-    white-space:pre;line-height:1.5}
-  .vigilo-widget{min-height:120px}
-  .cta{background:var(--code);color:#fff;border-radius:16px;padding:34px;
-    margin:34px 0;text-align:center}
+    color:var(--muted);margin-bottom:6px}
+  .s-desc{font-size:14px;color:var(--muted);margin-bottom:20px;max-width:620px}
+  .demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+  .stage{display:flex;justify-content:center;padding:24px;background:var(--line2);
+    border-radius:14px;min-height:160px}
+  .stage.dark{background:#0d0c0a}
+  .snippet{font-family:var(--mono);font-size:11.5px;color:#EDEAE2;background:var(--code);
+    border-radius:12px;padding:16px 18px;overflow-x:auto;white-space:pre;line-height:1.6}
+  .snippet .k{color:#E8916C}
+  .ev-note{font-size:12px;color:var(--muted);margin-top:10px}
+  .ev-note code{font-family:var(--mono);background:var(--line2);padding:1px 5px;border-radius:5px}
+  iframe.email{width:100%;max-width:600px;height:430px;border:1px solid var(--line);
+    border-radius:12px;background:#fff}
+  .cta{background:var(--code);color:#fff;border-radius:16px;padding:34px;margin:34px 0;text-align:center}
   .cta h3{color:#fff;font-size:22px;margin-bottom:8px}
   .cta p{color:#B7B2A6;margin-bottom:18px}
   .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;
@@ -62,115 +66,199 @@
   .btn:hover{text-decoration:none;opacity:.92}
   footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);
     font-size:12.5px;text-align:center}
-  @media(max-width:760px){ .grid{grid-template-columns:1fr} h1{font-size:28px}
-    .top nav a:not(.langtog){display:none} }
+  @media(max-width:780px){.demo{grid-template-columns:1fr}h1{font-size:27px}
+    .top nav a{display:none}}
 </style>
 </head>
 <body>
-
 <header class="top"><div class="wrap">
   <a class="logo" href="/"><span class="mark">V</span> Vigilo</a>
   <nav>
     <a href="/api/v1/docs">API Docs</a>
-    <a href="#gallery">Widgets</a>
+    <a href="#smartcard">Smart-Card</a>
+    <a href="#checkout">Checkout</a>
+    <a href="#email">Email</a>
     <a href="mailto:hello@vigilo.cc">Contact</a>
-    <button class="langtog" id="langTog">RU</button>
   </nav>
 </div></header>
 
 <div class="wrap">
   <div class="hero">
-    <div class="eyebrow" data-i18n="eyebrow">Embeddable Risk Widgets</div>
-    <h1 data-i18n="h1">One risk engine.<br>Themed for your vertical.</h1>
-    <p class="lede" data-i18n="lede">A drop-in widget that shows the live Vigilo
-    Composite Risk Score for any country — re-skinned and re-worded for credit,
-    insurance, flights, jobs, logistics and more. One script tag. No backend.</p>
-
-    <div class="embed-note">
-      <div data-i18n="embed_t" style="font-weight:700;margin-bottom:6px">Embed in one line</div>
-      <pre><span class="k">&lt;div</span> class=<span class="k">"vigilo-widget"</span> data-dest=<span class="k">"TR"</span> data-vertical=<span class="k">"ingosstrah-insurance"</span> data-lang=<span class="k">"ru"</span><span class="k">&gt;&lt;/div&gt;</span>
-<span class="k">&lt;script</span> src=<span class="k">"https://vigilo.cc/widget.js"</span> async<span class="k">&gt;&lt;/script&gt;</span></pre>
-    </div>
+    <div class="eyebrow">Embeddable Risk Widgets</div>
+    <h1>Three widgets.<br>Your brand. One script.</h1>
+    <p class="lede">Production-ready embeds showing the live Vigilo Composite
+    Risk Score for any country — fully themeable to a partner brandbook
+    (colours, radius, light/dark). Tune them below; the code updates live.</p>
   </div>
 
-  <section id="gallery">
-    <h2 data-i18n="gallery_t">10 vertical packs · live</h2>
-    <div class="grid" id="grid"></div>
+  <!-- Theming playground -->
+  <div class="pg" id="pg">
+    <label>Accent<input type="color" id="cAccent" value="#E8590C"></label>
+    <label>On-accent<input type="color" id="cAccent2" value="#FFFFFF"></label>
+    <label>Background<input type="color" id="cBg" value="#FFFFFF"></label>
+    <label>Text<input type="color" id="cFg" value="#0F0E0C"></label>
+    <label>Radius
+      <select id="sRadius">
+        <option value="none">none</option><option value="sm">sm</option>
+        <option value="md" selected>md</option><option value="lg">lg</option>
+        <option value="full">full</option>
+      </select>
+    </label>
+    <label>Theme
+      <select id="sTheme"><option value="light" selected>light</option>
+        <option value="dark">dark</option></select>
+    </label>
+    <label>Country<input type="text" id="iDest" value="TR" maxlength="2"></label>
+    <label>Lang
+      <select id="sLang"><option value="en" selected>EN</option>
+        <option value="ru">RU</option></select>
+    </label>
+    <button class="reset" id="reset">Reset</button>
+  </div>
+
+  <section id="smartcard">
+    <h2>1 · Location Smart-Card</h2>
+    <p class="s-desc">For hotel / city / destination pages. Composite score,
+    severity meter, top risk domains, AI lead-time, action button.</p>
+    <div class="demo">
+      <div class="stage" id="st1"><div id="w1" class="vigilo-widget" data-widget="smartcard"></div></div>
+      <div class="snippet" id="sn1"></div>
+    </div>
+  </section>
+
+  <section id="checkout">
+    <h2>2 · Checkout Risk Upsell</h2>
+    <p class="s-desc">For the payment cart. A checkbox add-on that sells the
+    PDF safety report. Emits a <code>vigilo:checkout</code> DOM event your
+    cart listens to.</p>
+    <div class="demo">
+      <div class="stage" id="st2"><div id="w2" class="vigilo-widget" data-widget="checkout" data-report-price="7" data-currency="USD"></div></div>
+      <div>
+        <div class="snippet" id="sn2"></div>
+        <p class="ev-note">Listen: <code>el.addEventListener('vigilo:checkout', e =&gt; e.detail.selected)</code></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="email">
+    <h2>3 · Pre-trip Email Alert</h2>
+    <p class="s-desc">Bulletproof table/inline-CSS HTML for newsletters
+    (Outlook/Gmail-safe, no JS). Fill the <code>{{TOKENS}}</code> server-side;
+    colours &amp; radius follow the same theme.</p>
+    <div class="demo">
+      <div class="stage" id="st3"><iframe class="email" id="emailFrame" title="Email preview"></iframe></div>
+      <div class="snippet" id="sn3" style="max-height:420px;overflow:auto"></div>
+    </div>
   </section>
 
   <div class="cta">
-    <h3 data-i18n="cta_h">Want a widget for your product?</h3>
-    <p data-i18n="cta_p">Custom vertical pack, your brand, RevShare on conversions.</p>
-    <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20widget%20—%20partnership" data-i18n="cta_b">Talk to us</a>
+    <h3>Want a widget on your product?</h3>
+    <p>Your brand, your copy, RevShare on conversions.</p>
+    <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20widgets%20—%20partnership">Talk to us</a>
   </div>
 </div>
+<footer><div class="wrap">Vigilo Risk Intelligence ·
+  <a href="/">vigilo.cc</a> · <a href="/api/v1/docs">API</a> ·
+  Not financial or medical advice.</div></footer>
 
-<footer><div class="wrap" data-i18n="foot">Vigilo Risk Intelligence ·
-  <a href="/">vigilo.cc</a> · Live Composite Risk · Not financial or medical advice.</div></footer>
-
+<script src="/widget.js"></script>
 <script>
 (function(){
-  var qs = new URLSearchParams(location.search);
-  var LANG = (qs.get('lang') || localStorage.getItem('vigilo_lang') ||
-    ((navigator.language||'').slice(0,2)==='ru'?'ru':'en'));
-  LANG = LANG === 'ru' ? 'ru' : 'en';
-  document.documentElement.lang = LANG;
+  var BAND_C={minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',
+    elevated:'#d8531e',severe:'#c0392b',critical:'#7d1a12'};
+  var BAND_L={en:{minimal:'Minimal',low:'Low',moderate:'Moderate',elevated:'Elevated',
+    severe:'Severe',critical:'Critical'},ru:{minimal:'Минимальный',low:'Низкий',
+    moderate:'Умеренный',elevated:'Повышенный',severe:'Высокий',critical:'Критический'}};
+  var RADPX={none:'0',sm:'8',md:'14',lg:'20',full:'18'};
+  var $=function(id){return document.getElementById(id);};
+  var EMAIL_TPL=null;
 
-  var I = {
-    en:{eyebrow:'Embeddable Risk Widgets',
-      h1:'One risk engine.<br>Themed for your vertical.',
-      lede:'A drop-in widget that shows the live Vigilo Composite Risk Score for any country — re-skinned and re-worded for credit, insurance, flights, jobs, logistics and more. One script tag. No backend.',
-      embed_t:'Embed in one line', gallery_t:'10 vertical packs · live',
-      cta_h:'Want a widget for your product?',
-      cta_p:'Custom vertical pack, your brand, RevShare on conversions.',
-      cta_b:'Talk to us',
-      foot:'Vigilo Risk Intelligence · vigilo.cc · Live Composite Risk · Not financial or medical advice.'},
-    ru:{eyebrow:'Встраиваемые риск-виджеты',
-      h1:'Один риск-движок.<br>Под вашу вертикаль.',
-      lede:'Виджет, который показывает живой композитный риск Vigilo по любой стране — со своим оформлением и текстами под кредиты, страхование, авиабилеты, работу, логистику и др. Один тег. Без бэкенда.',
-      embed_t:'Встраивается одной строкой', gallery_t:'10 вертикальных паков · вживую',
-      cta_h:'Нужен виджет для вашего продукта?',
-      cta_p:'Кастомный пак, ваш бренд, RevShare с конверсий.',
-      cta_b:'Связаться',
-      foot:'Vigilo Risk Intelligence · vigilo.cc · Живой композитный риск · Не является фин./мед. советом.'}
-  };
-  var dict = I[LANG];
-  document.querySelectorAll('[data-i18n]').forEach(function(e){
-    var k=e.getAttribute('data-i18n'); if(dict[k]!=null) e.innerHTML=dict[k];
-  });
-  var tog=document.getElementById('langTog');
-  tog.textContent = LANG==='ru'?'EN':'RU';
-  tog.onclick=function(){ var n=LANG==='ru'?'en':'ru';
-    localStorage.setItem('vigilo_lang',n);
-    var u=new URL(location.href); u.searchParams.set('lang',n); location.href=u.toString(); };
+  function cfg(){
+    return { accent:$('cAccent').value, accent2:$('cAccent2').value,
+      bg:$('cBg').value, fg:$('cFg').value, radius:$('sRadius').value,
+      theme:$('sTheme').value, dest:$('iDest').value.toUpperCase()||'TR',
+      lang:$('sLang').value };
+  }
+  function applyTo(el,c,widget,extra){
+    el.setAttribute('data-widget',widget);
+    el.setAttribute('data-dest',c.dest);
+    el.setAttribute('data-lang',c.lang);
+    el.setAttribute('data-theme',c.theme);
+    el.setAttribute('data-accent',c.accent);
+    el.setAttribute('data-accent-2',c.accent2);
+    el.setAttribute('data-bg', c.theme==='dark'?'':c.bg);
+    el.setAttribute('data-fg', c.theme==='dark'?'':c.fg);
+    el.setAttribute('data-radius',c.radius);
+    if(extra) Object.keys(extra).forEach(function(k){el.setAttribute(k,extra[k]);});
+  }
+  function snippet(c,widget,extra){
+    var a='\n  data-';
+    var s='<div class="vigilo-widget"'+a+'widget="'+widget+'"'+a+'dest="'+c.dest+'"'+
+      a+'accent="'+c.accent+'"'+a+'radius="'+c.radius+'"'+a+'theme="'+c.theme+'"'+
+      a+'lang="'+c.lang+'"';
+    if(extra) Object.keys(extra).forEach(function(k){
+      s+=a+k.replace('data-','')+'="'+extra[k]+'"';});
+    s+='></div>\n<script src="https://vigilo.cc/widget.js" async><\/script>';
+    return s.replace(/</g,'&lt;').replace(/&lt;script/g,'<span class="k">&lt;script</span>')
+      .replace(/&lt;div/,'<span class="k">&lt;div</span>');
+  }
+  function fillEmail(tpl,c,score,band){
+    var dark=c.theme==='dark';
+    var map={ACCENT:c.accent,ACCENT_TEXT:c.accent2,
+      BG:dark?'#0d0c0a':'#F4F2EE',CARD:dark?'#16140F':'#FFFFFF',
+      FG:dark?'#F4F2EE':c.fg,MUTED:dark?'#9a948a':'#807E76',
+      LINE:dark?'#2a2722':'#ECEAE2',RADIUS:RADPX[c.radius]||'14',
+      COUNTRY:c.dest,SCORE:score.toFixed(1),
+      BAND:(BAND_L[c.lang]||BAND_L.en)[band],BAND_COLOR:BAND_C[band]||'#888',
+      LEAD:c.lang==='ru'?'Сигнал зафиксирован раньше официальных сводок'
+        :'Signal detected ahead of official reports',
+      CTA_URL:'https://vigilo.cc/app?country='+c.dest,
+      CTA_LABEL:c.lang==='ru'?'Открыть сводку безопасности':'View safety briefing',
+      SOURCE:'Vigilo · WHO · ECDC · GDELT'};
+    return tpl.replace(/<!--[\s\S]*?-->/, '')
+      .replace(/{{(\w+)}}/g,function(_,k){return map[k]!=null?map[k]:'';});
+  }
 
-  // 10 vertical packs — varied destinations to showcase real signal
-  var PACKS = [
-    ['tbank-credit','TR','T-Bank · Credit / Travel'],
-    ['ingosstrah-insurance','TH','Ingosstrah · Travel insurance'],
-    ['aviasales-flights','UA','Aviasales · Flight destination'],
-    ['hh-jobs','DE','HH · Relocation / jobs'],
-    ['booking-travel','ES','Booking · Hotels'],
-    ['logistics-freight','CN','Logistics · Freight corridor'],
-    ['bank-compliance','RU','Bank · Counterparty country'],
-    ['corporate-travel','IL','Corporate · Duty of care'],
-    ['media-news','IR','Media · Live risk embed'],
-    ['gov-advisory','PK','Gov · Travel advisory'],
-  ];
-  var grid=document.getElementById('grid');
-  PACKS.forEach(function(p){
-    var cell=document.createElement('div'); cell.className='cell';
-    var snippet='<div class="vigilo-widget" data-dest="'+p[1]+
-      '" data-vertical="'+p[0]+'" data-lang="'+LANG+'"></div>';
-    cell.innerHTML =
-      '<div class="cell-h"><b>'+p[2]+'</b><span class="v">'+p[0]+'</span></div>'+
-      '<div class="vigilo-widget" data-dest="'+p[1]+'" data-vertical="'+p[0]+
-        '" data-lang="'+LANG+'" data-theme="light" data-mode="inline"></div>'+
-      '<div class="snippet">'+snippet.replace(/</g,'&lt;')+'</div>';
-    grid.appendChild(cell);
+  function rerender(){
+    var c=cfg();
+    $('st1').className='stage'+(c.theme==='dark'?' dark':'');
+    $('st2').className='stage'+(c.theme==='dark'?' dark':'');
+    applyTo($('w1'),c,'smartcard');
+    applyTo($('w2'),c,'checkout',{'data-report-price':'7','data-currency':c.lang==='ru'?'RUB':'USD'});
+    if(window.Vigilo){ Vigilo.init('#w1'); Vigilo.init('#w2'); }
+    $('sn1').innerHTML=snippet(c,'smartcard');
+    $('sn2').innerHTML=snippet(c,'checkout',{'data-report-price':'7','data-currency':c.lang==='ru'?'RUB':'USD'});
+    // email: fetch live score for token fill
+    fetch('https://vigilo.cc/api/v1/risk?country='+c.dest)
+      .then(function(r){return r.json();}).then(function(d){
+        var sc=(d.composite_risk&&d.composite_risk.score)||0;
+        var bd=(d.composite_risk&&d.composite_risk.band)||'minimal';
+        if(EMAIL_TPL){
+          var html=fillEmail(EMAIL_TPL,c,sc,bd);
+          $('emailFrame').srcdoc=html;
+          $('sn3').textContent=html.trim();
+        }
+      }).catch(function(){
+        if(EMAIL_TPL){ var html=fillEmail(EMAIL_TPL,c,0,'minimal');
+          $('emailFrame').srcdoc=html; $('sn3').textContent=html.trim(); }
+      });
+  }
+
+  ['cAccent','cAccent2','cBg','cFg','sRadius','sTheme','iDest','sLang'].forEach(function(id){
+    $(id).addEventListener('change',rerender);
+    $(id).addEventListener('input',rerender);
   });
+  $('reset').addEventListener('click',function(){
+    $('cAccent').value='#E8590C';$('cAccent2').value='#FFFFFF';
+    $('cBg').value='#FFFFFF';$('cFg').value='#0F0E0C';
+    $('sRadius').value='md';$('sTheme').value='light';
+    $('iDest').value='TR';$('sLang').value='en';rerender();
+  });
+
+  fetch('/email-widget.html').then(function(r){return r.text();})
+    .then(function(tpl){ EMAIL_TPL=tpl; rerender(); })
+    .catch(function(){ rerender(); });
 })();
 </script>
-<script src="/widget.js" async></script>
 </body>
 </html>

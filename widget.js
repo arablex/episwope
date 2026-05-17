@@ -1,722 +1,394 @@
 /**
- * Vigilo Risk Widget  v0.4
- * Drop-in embed for travel / booking partners.
+ * Vigilo Risk Widgets  v1.0
+ * Drop-in, brand-themeable embeds for partner sites.
  *
- * Usage:
- *   <div id="vigilo-widget"
- *        data-dest="TH"
- *        data-partner="booking-com"
- *        data-theme="light"
- *        data-mode="inline"
- *        data-lang="en"
- *        data-report-price="7"
- *        data-currency="USD">
- *   </div>
+ *   <div class="vigilo-widget"
+ *        data-widget="smartcard"        smartcard | checkout
+ *        data-dest="TR"                 ISO-3166-1 alpha-2  (required)
+ *        data-lang="en"                 en | ru
+ *        data-theme="light"             light | dark
+ *        data-accent="#E8590C"          primary / brand colour
+ *        data-accent-2="#1A1916"        secondary (CTA text on accent)
+ *        data-bg="#FFFFFF"              card background  (optional override)
+ *        data-fg="#0F0E0C"              text colour      (optional override)
+ *        data-radius="md"               none|sm|md|lg|full  or  e.g. "10px"
+ *        data-partner="islet"           RevShare ref     (optional)
+ *        data-report-price="7"          checkout upsell price
+ *        data-currency="USD"            USD | RUB | EUR
+ *   ></div>
  *   <script src="https://vigilo.cc/widget.js" async></script>
  *
- * Attributes:
- *   data-dest        ISO-3166-1 alpha-2 country code  (required)
- *   data-partner     Partner ID for RevShare tracking (optional)
- *   data-theme       "light" | "dark"                 (default: light)
- *   data-mode        "inline" | "sidebar" | "badge"   (default: inline)
- *   data-lang        "en" | "ru"                      (default: en)
- *   data-report-price price in cents or decimal       (default: 7)
- *   data-currency    ISO-4217 currency code           (default: USD)
- *
- * Partner RevShare: 40% of each PDF report sold attributed to partner tag.
- * Tracked via ?ref= query param on checkout URL.
+ * Isolation: every node is under .vgl-w with a hard reset + CSS custom
+ * properties, so partner CSS cannot bleed in and our styles cannot leak out.
  */
-
 (function (global) {
   'use strict';
 
-  /* ─── Config ──────────────────────────────────────────────────── */
-  var CDN      = 'https://vigilo.cc';
-  var API_BASE = CDN + '/api/v1';
-  var CHECKOUT = CDN + '/report';
-  // In development we fall back to the bundled events.json
-  var DEV_DATA = '/public/events.json';
+  var CDN = 'https://vigilo.cc';
+  var API = CDN + '/api/v1';
+  var REPORT = CDN + '/report';
 
-  /* ─── i18n ─────────────────────────────────────────────────────── */
-  var T = {
+  /* ─── i18n ───────────────────────────────────────────────────────── */
+  var I = {
     en: {
-      title:        'Health Risk Assessment',
-      by:           'by Vigilo',
-      powered:      'Powered by Vigilo AI',
-      level_labels: ['Minimal','Low','Moderate','Elevated','Critical'],
-      level:        'Level',
-      ahead:        '{h}h ahead of WHO',
-      ai_signal:    'AI Early Signal',
-      ai_desc:      'Vigilo detected this trend via news signal analysis before official reports.',
-      report:       'Full Report — {price}',
-      insure:       'Travel Insurance →',
-      no_data:      'No health data available for this destination.',
-      loading:      'Loading risk data…',
-      error:        'Unable to load data. Try again later.',
-      source:       'Sources: WHO, ECDC, CDC, GDELT news signals',
-      risks_found:  '{n} risk{s} detected',
-      none_found:   'No significant health risks',
+      sc_title:'Safety & Risk', sc_sub:'Live composite risk',
+      score:'Risk score', of5:'/ 5', updated:'Updated',
+      cta_report:'Full safety report', cta_view:'View details',
+      co_title:'Add destination risk report',
+      co_desc:'AI-verified safety briefing for {c} — outbreaks, conflict, transport & entry.',
+      co_add:'Add for {p}', co_added:'Added to order',
+      none:'No significant risks detected', src:'Vigilo · WHO · ECDC · GDELT',
+      lead:'{h}h ahead of official reports', loading:'Loading…',
+      err:'Risk data unavailable',
+      cats:{health:'Health',conflict:'Conflict',civil_unrest:'Unrest',
+        transport:'Transport',border:'Border',infrastructure:'Infrastructure',
+        climate:'Climate'}
     },
     ru: {
-      title:        'Оценка рисков здоровья',
-      by:           'от Vigilo',
-      powered:      'Vigilo AI',
-      level_labels: ['Минимальный','Низкий','Умеренный','Повышенный','Критический'],
-      level:        'Уровень',
-      ahead:        'за {h}ч до ВОЗ',
-      ai_signal:    'ИИ-сигнал',
-      ai_desc:      'Vigilo зафиксировал тренд по новостным сигналам раньше официальных сообщений.',
-      report:       'Полный отчёт — {price}',
-      insure:       'Страховка →',
-      no_data:      'Нет данных о рисках для этого направления.',
-      loading:      'Загрузка…',
-      error:        'Ошибка загрузки. Попробуйте позже.',
-      source:       'Источники: ВОЗ, ECDC, CDC, GDELT',
-      risks_found:  'Обнаружено рисков: {n}',
-      none_found:   'Значимых рисков не выявлено',
+      sc_title:'Безопасность', sc_sub:'Живой композитный риск',
+      score:'Индекс риска', of5:'/ 5', updated:'Обновлено',
+      cta_report:'Полный отчёт', cta_view:'Подробнее',
+      co_title:'Добавить отчёт о рисках направления',
+      co_desc:'ИИ-сводка по {c}: вспышки, конфликты, транспорт и въезд.',
+      co_add:'Добавить за {p}', co_added:'Добавлено в заказ',
+      none:'Значимых рисков не выявлено', src:'Vigilo · ВОЗ · ECDC · GDELT',
+      lead:'на {h}ч раньше официальных сводок', loading:'Загрузка…',
+      err:'Данные о риске недоступны',
+      cats:{health:'Здоровье',conflict:'Конфликт',civil_unrest:'Беспорядки',
+        transport:'Транспорт',border:'Границы',infrastructure:'Инфраструктура',
+        climate:'Стихия'}
     }
   };
+  function t(l,k){ return (I[l]||I.en)[k]; }
 
-  function t(lang, key, vars) {
-    var str = (T[lang] || T['en'])[key] || key;
-    if (vars) Object.keys(vars).forEach(function(k){ str = str.replace('{'+k+'}', vars[k]); });
-    return str;
-  }
+  var CN = {
+    en:{TR:'Türkiye',TH:'Thailand',UA:'Ukraine',DE:'Germany',ES:'Spain',CN:'China',
+      RU:'Russia',IL:'Israel',IR:'Iran',PK:'Pakistan',IN:'India',US:'United States',
+      GB:'United Kingdom',FR:'France',IT:'Italy',EG:'Egypt',AE:'UAE',SA:'Saudi Arabia',
+      ID:'Indonesia',VN:'Vietnam',MX:'Mexico',BR:'Brazil',JP:'Japan',SG:'Singapore',
+      GE:'Georgia',KZ:'Kazakhstan',NG:'Nigeria',KE:'Kenya',ET:'Ethiopia',MA:'Morocco'},
+    ru:{TR:'Турция',TH:'Таиланд',UA:'Украина',DE:'Германия',ES:'Испания',CN:'Китай',
+      RU:'Россия',IL:'Израиль',IR:'Иран',PK:'Пакистан',IN:'Индия',US:'США',
+      GB:'Великобритания',FR:'Франция',IT:'Италия',EG:'Египет',AE:'ОАЭ',SA:'Саудовская Аравия',
+      ID:'Индонезия',VN:'Вьетнам',MX:'Мексика',BR:'Бразилия',JP:'Япония',SG:'Сингапур',
+      GE:'Грузия',KZ:'Казахстан',NG:'Нигерия',KE:'Кения',ET:'Эфиопия',MA:'Марокко'}
+  };
+  function cname(iso,l){ return (CN[l]||CN.en)[iso] || (CN.en[iso]) || iso; }
 
-  /* ─── Vertical packs ───────────────────────────────────────────────
-     One themeable engine, N vertical configs (anti-feature-creep).
-     {DEST}=ISO, {REF}=partner. cta opens in a new tab. */
-  var VERTICAL_PACKS = {
-    'tbank-credit': {
-      accent:'#FFDD2D', fg:'#111',
-      title_en:'Country Risk', title_ru:'Страновой риск',
-      cta_en:'Travel with T-Bank →', cta_ru:'Поехать с Т-Банком →',
-      cta_url:'https://www.tbank.ru/?dest={DEST}&ref={REF}',
-      blurb_en:'Composite risk for cardholders travelling abroad.',
-      blurb_ru:'Композитный риск для держателей карт за рубежом.' },
-    'ingosstrah-insurance': {
-      accent:'#0A6EBD', fg:'#fff',
-      title_en:'Destination Risk', title_ru:'Риск направления',
-      cta_en:'Get travel insurance →', cta_ru:'Оформить страховку →',
-      cta_url:'https://www.ingos.ru/travel/?dest={DEST}&ref={REF}',
-      blurb_en:'Underwriting-grade risk for the destination.',
-      blurb_ru:'Риск направления уровня андеррайтинга.' },
-    'aviasales-flights': {
-      accent:'#2196F3', fg:'#fff',
-      title_en:'Destination Risk', title_ru:'Риск направления',
-      cta_en:'Find flights →', cta_ru:'Выбрать рейс →',
-      cta_url:'https://www.aviasales.ru/?dest={DEST}&ref={REF}',
-      blurb_en:'Know the risk before you book the flight.',
-      blurb_ru:'Узнайте риск до покупки билета.' },
-    'hh-jobs': {
-      accent:'#D6001C', fg:'#fff',
-      title_en:'Relocation Risk', title_ru:'Риск релокации',
-      cta_en:'Jobs in this country →', cta_ru:'Вакансии в стране →',
-      cta_url:'https://hh.ru/search/vacancy?area={DEST}&ref={REF}',
-      blurb_en:'Country risk for relocation & remote hiring.',
-      blurb_ru:'Страновой риск для релокации и найма.' },
-    'booking-travel': {
-      accent:'#003580', fg:'#fff',
-      title_en:'Travel Risk', title_ru:'Риск поездки',
-      cta_en:'Find a hotel →', cta_ru:'Найти отель →',
-      cta_url:'https://www.booking.com/?dest={DEST}&ref={REF}',
-      blurb_en:'Real-time risk for the destination.',
-      blurb_ru:'Риск направления в реальном времени.' },
-    'logistics-freight': {
-      accent:'#1F6F54', fg:'#fff',
-      title_en:'Route Risk', title_ru:'Риск маршрута',
-      cta_en:'Assess corridor →', cta_ru:'Оценить маршрут →',
-      cta_url:'https://vigilo.cc/api/v1/docs?ref={REF}',
-      blurb_en:'Supply-chain disruption & continuity risk.',
-      blurb_ru:'Риск сбоев цепочки поставок и непрерывности.' },
-    'bank-compliance': {
-      accent:'#2C3E50', fg:'#fff',
-      title_en:'Country Risk', title_ru:'Страновой риск',
-      cta_en:'Full report →', cta_ru:'Полный отчёт →',
-      cta_url:'https://vigilo.cc/api/v1/docs?ref={REF}',
-      blurb_en:'Counterparty & jurisdiction risk screening.',
-      blurb_ru:'Скрининг риска контрагента и юрисдикции.' },
-    'corporate-travel': {
-      accent:'#6C3FB5', fg:'#fff',
-      title_en:'Duty of Care', title_ru:'Безопасность сотрудников',
-      cta_en:'Travel policy →', cta_ru:'Политика поездок →',
-      cta_url:'https://vigilo.cc/api/v1/docs?ref={REF}',
-      blurb_en:'Employee travel-risk for duty-of-care policy.',
-      blurb_ru:'Риск поездок сотрудников для duty-of-care.' },
-    'media-news': {
-      accent:'#C0392B', fg:'#fff',
-      title_en:'Live Risk', title_ru:'Риск в эфире',
-      cta_en:'See details →', cta_ru:'Подробнее →',
-      cta_url:'https://vigilo.cc/app?country={DEST}',
-      blurb_en:'Live composite risk index for the country.',
-      blurb_ru:'Живой индекс риска по стране.' },
-    'gov-advisory': {
-      accent:'#0B3D2E', fg:'#fff',
-      title_en:'Travel Advisory', title_ru:'Туристические рекомендации',
-      cta_en:'Safety guidance →', cta_ru:'Рекомендации →',
-      cta_url:'https://vigilo.cc/app?country={DEST}',
-      blurb_en:'Official + AI-signal travel safety picture.',
-      blurb_ru:'Офиц. + ИИ-сигнал: картина безопасности.' },
+  /* ─── Risk bands ─────────────────────────────────────────────────── */
+  var BANDS=['minimal','low','moderate','elevated','severe','critical'];
+  var BAND_C={minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',
+    elevated:'#d8531e',severe:'#c0392b',critical:'#7d1a12'};
+  var BAND_L={
+    en:{minimal:'Minimal',low:'Low',moderate:'Moderate',elevated:'Elevated',
+      severe:'Severe',critical:'Critical'},
+    ru:{minimal:'Минимальный',low:'Низкий',moderate:'Умеренный',
+      elevated:'Повышенный',severe:'Высокий',critical:'Критический'}
+  };
+  function bandOf(score){ return BANDS[Math.max(0,Math.min(5,Math.round(score)))]; }
+
+  /* ─── Icons (consistent 1.6 stroke, no emoji) ────────────────────── */
+  function svg(p){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+    'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'; }
+  var IC={
+    health:svg('<path d="M3 12h3l2 5 4-12 2 7h7"/>'),
+    conflict:svg('<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
+    civil_unrest:svg('<path d="M3 21h18M6 21V9M10 21V6M14 21V9M18 21V4"/>'),
+    transport:svg('<path d="M3 17h18M6 17V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10M8 21v-2M16 21v-2"/>'),
+    border:svg('<path d="M12 2v20M5 6l7-3 7 3M5 6v6a7 7 0 0 0 14 0V6"/>'),
+    infrastructure:svg('<path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/>'),
+    climate:svg('<path d="M12 2v3M5 12H2M22 12h-3M6 6 4 4M18 6l2-2M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>'),
+    shield:svg('<path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/>'),
+    arrow:svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+    bolt:svg('<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>'),
+    check:svg('<path d="M20 6 9 17l-5-5"/>')
   };
 
-  /* ─── Severity helpers ─────────────────────────────────────────── */
-  // Maps both WHO/ECDC vocab (alert/warning/monitoring) and API vocab (high/moderate/low)
-  var SEV_ORDER = {
-    critical:5, alert:4, high:4, warning:3, moderate:3, monitoring:2, low:2, minimal:1, unknown:0
-  };
-  var SEV_LABEL = {
-    en: { critical:'Critical', alert:'Alert', high:'High', warning:'Warning',
-          moderate:'Moderate', monitoring:'Monitoring', low:'Low', minimal:'Minimal', unknown:'Unknown' },
-    ru: { critical:'Критический', alert:'Тревога', high:'Высокий', warning:'Предупреждение',
-          moderate:'Умеренный', monitoring:'Наблюдение', low:'Низкий', minimal:'Минимальный', unknown:'Неизвестно' },
-  };
-  var SEV_COLOR = {
-    critical:  '#c0392b',
-    alert:     '#e8590c',
-    high:      '#e8590c',
-    warning:   '#f39c12',
-    moderate:  '#f39c12',
-    monitoring:'#2980b9',
-    low:       '#2980b9',
-    minimal:   '#27ae60',
-    unknown:   '#888',
-  };
-  // level index 0-5 used for pill/progress
-  var LEVEL_COLOR = ['#27ae60','#2980b9','#f39c12','#e8590c','#e8590c','#c0392b'];
-
-  function sevIndex(s){ return (SEV_ORDER[(s||'').toLowerCase()] || 0); }
-  function sevColor(s){ return SEV_COLOR[(s||'').toLowerCase()] || SEV_COLOR.unknown; }
-  function sevLabel(s, lang) {
-    var key = (s||'').toLowerCase();
-    return (SEV_LABEL[lang] || SEV_LABEL.en)[key] || capitalise(s||'');
+  /* ─── Theming → CSS custom properties ────────────────────────────── */
+  var RADII={none:'0',sm:'8px',md:'14px',lg:'20px',full:'9999px'};
+  function radius(v){
+    if(!v) return RADII.md;
+    if(RADII[v]) return RADII[v];
+    return /^\d/.test(v) ? v : RADII.md;
+  }
+  function themeVars(o){
+    var dark = o.theme==='dark';
+    var bg = o.bg || (dark?'#16140F':'#FFFFFF');
+    var fg = o.fg || (dark?'#F4F2EE':'#0F0E0C');
+    var muted = dark?'rgba(244,242,238,.56)':'rgba(15,14,12,.52)';
+    var line = dark?'rgba(244,242,238,.14)':'rgba(15,14,12,.10)';
+    var soft = dark?'rgba(244,242,238,.06)':'rgba(15,14,12,.035)';
+    var acc = o.accent || '#E8590C';
+    var acc2 = o.accent2 || '#FFFFFF';
+    return [
+      '--vgl-acc:'+acc, '--vgl-acc2:'+acc2, '--vgl-bg:'+bg, '--vgl-fg:'+fg,
+      '--vgl-muted:'+muted, '--vgl-line:'+line, '--vgl-soft:'+soft,
+      '--vgl-r:'+radius(o.radius)
+    ].join(';');
   }
 
-  /* Score 0-5 → 0-100 */
-  function scoreFromSeverity(maxSev) {
-    var map = { 0:8, 1:22, 2:45, 3:62, 4:78, 5:92 };
-    return map[maxSev] !== undefined ? map[maxSev] : 8;
-  }
-
-  /* ─── DOM helpers ──────────────────────────────────────────────── */
-  function el(tag, cls, attrs) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (attrs) Object.keys(attrs).forEach(function(k){ e.setAttribute(k, attrs[k]); });
-    return e;
-  }
-  function css(rules) {
-    var s = document.createElement('style');
-    s.textContent = rules;
+  /* ─── Styles (scoped, injected once) ─────────────────────────────── */
+  var CSS_DONE=false;
+  function injectCSS(){
+    if(CSS_DONE) return; CSS_DONE=true;
+    var s=document.createElement('style');
+    s.setAttribute('data-vgl','');
+    s.textContent =
+    '.vgl-w,.vgl-w *{all:revert;box-sizing:border-box;margin:0;padding:0;'+
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;'+
+      '-webkit-font-smoothing:antialiased}'+
+    '.vgl-w{display:block;background:var(--vgl-bg);color:var(--vgl-fg);'+
+      'border:1px solid var(--vgl-line);border-radius:var(--vgl-r);'+
+      'padding:18px;max-width:420px;width:100%;line-height:1.45;'+
+      'box-shadow:0 1px 2px rgba(15,14,12,.04),0 8px 28px -18px rgba(15,14,12,.22)}'+
+    '.vgl-w svg{width:16px;height:16px;display:block;flex:none}'+
+    '.vgl-hd{display:flex;align-items:center;gap:9px;margin-bottom:14px}'+
+    '.vgl-mk{width:26px;height:26px;border-radius:7px;background:var(--vgl-acc);'+
+      'color:var(--vgl-acc2);display:flex;align-items:center;justify-content:center;flex:none}'+
+    '.vgl-mk svg{width:15px;height:15px}'+
+    '.vgl-ht{font-size:13px;font-weight:700;letter-spacing:-.01em}'+
+    '.vgl-hs{font-size:11px;color:var(--vgl-muted);font-weight:500}'+
+    '.vgl-flex{display:flex;align-items:center;gap:10px}'+
+    '.vgl-grow{flex:1;min-width:0}'+
+    '.vgl-score{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px}'+
+    '.vgl-num{font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:.9;'+
+      'font-variant-numeric:tabular-nums}'+
+    '.vgl-of{font-size:13px;color:var(--vgl-muted);font-weight:600;padding-bottom:5px}'+
+    '.vgl-band{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.07em;'+
+      'text-transform:uppercase;color:#fff;padding:5px 9px;border-radius:6px;align-self:center}'+
+    '.vgl-meter{display:flex;gap:3px;margin-bottom:14px}'+
+    '.vgl-meter i{flex:1;height:5px;border-radius:3px;background:var(--vgl-line)}'+
+    '.vgl-cats{display:flex;flex-direction:column;gap:1px;margin-bottom:14px}'+
+    '.vgl-cat{display:flex;align-items:center;gap:9px;padding:7px 0;'+
+      'border-top:1px solid var(--vgl-line);font-size:12.5px}'+
+    '.vgl-cat:first-child{border-top:0}'+
+    '.vgl-ci{width:22px;height:22px;border-radius:6px;background:var(--vgl-soft);'+
+      'display:flex;align-items:center;justify-content:center;color:var(--vgl-muted)}'+
+    '.vgl-ci svg{width:13px;height:13px}'+
+    '.vgl-cn{flex:1;font-weight:600}'+
+    '.vgl-cb{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;'+
+      'color:#fff;padding:3px 7px;border-radius:5px}'+
+    '.vgl-none{font-size:12.5px;color:var(--vgl-muted);padding:10px 0 14px}'+
+    '.vgl-lead{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;'+
+      'color:var(--vgl-acc);background:var(--vgl-soft);padding:7px 10px;'+
+      'border-radius:8px;margin-bottom:14px}'+
+    '.vgl-lead svg{width:13px;height:13px}'+
+    '.vgl-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;'+
+      'background:var(--vgl-acc);color:var(--vgl-acc2);font-size:13.5px;font-weight:700;'+
+      'padding:12px 16px;border-radius:calc(var(--vgl-r) - 4px);border:0;cursor:pointer;'+
+      'text-decoration:none;transition:opacity .15s ease}'+
+    '.vgl-btn:hover{opacity:.9}.vgl-btn svg{width:15px;height:15px}'+
+    '.vgl-ft{font-size:10px;color:var(--vgl-muted);text-align:center;margin-top:11px;'+
+      'letter-spacing:.01em}'+
+    /* checkout */
+    '.vgl-co{display:flex;gap:12px;align-items:flex-start}'+
+    '.vgl-cx{appearance:none;-webkit-appearance:none;width:20px;height:20px;flex:none;'+
+      'border:1.5px solid var(--vgl-line);border-radius:6px;cursor:pointer;'+
+      'background:var(--vgl-bg);position:relative;margin-top:1px;transition:.15s}'+
+    '.vgl-cx:checked{background:var(--vgl-acc);border-color:var(--vgl-acc)}'+
+    '.vgl-cx:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;'+
+      'height:10px;border:solid var(--vgl-acc2);border-width:0 2px 2px 0;transform:rotate(45deg)}'+
+    '.vgl-col{flex:1;min-width:0}'+
+    '.vgl-cot{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;'+
+      'flex-wrap:wrap}'+
+    '.vgl-pill{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;'+
+      'color:#fff;padding:3px 7px;border-radius:5px}'+
+    '.vgl-cod{font-size:12px;color:var(--vgl-muted);margin:5px 0 11px}'+
+    '.vgl-price{font-weight:800}'+
+    '.vgl-msg{font-size:12.5px;color:var(--vgl-fg);display:flex;align-items:center;'+
+      'gap:7px;padding:10px 0}'+
+    '.vgl-msg svg{width:15px;height:15px;color:var(--vgl-acc)}'+
+    '@media (max-width:380px){.vgl-w{padding:15px}.vgl-num{font-size:34px}}';
     document.head.appendChild(s);
-    return s;
   }
 
-  /* ─── Styles injected once ─────────────────────────────────────── */
-  var STYLES_INJECTED = false;
-  function injectStyles() {
-    if (STYLES_INJECTED) return;
-    STYLES_INJECTED = true;
-    css([
-      /* Reset scoped to widget */
-      '.vg-w *{box-sizing:border-box;margin:0;padding:0;line-height:1.4}',
-      '.vg-w{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;',
-      '  -webkit-font-smoothing:antialiased;font-size:13px}',
-
-      /* ── Light theme ── */
-      '.vg-w.vg-light{--bg:#fff5f0;--bg2:#fff;--border:#e8590c;--text:#1a1a1a;--muted:#666;',
-      '  --accent:#e8590c;--badge-bg:#e8590c;--badge-txt:#fff;--signal-bg:#fffbf0;',
-      '  --signal-border:#f39c12;--btn-bg:#e8590c;--btn-txt:#fff;--btn2-bg:#f2f6fa;--btn2-txt:#1a1a1a}',
-
-      /* ── Dark theme ── */
-      '.vg-w.vg-dark{--bg:linear-gradient(135deg,#1a1a1a,#2d2218);--bg2:rgba(255,255,255,.07);',
-      '  --border:rgba(255,105,0,.5);--text:#f5f0eb;--muted:rgba(245,240,235,.55);',
-      '  --accent:#ff7a2f;--badge-bg:#ff6900;--badge-txt:#fff;--signal-bg:rgba(255,200,50,.08);',
-      '  --signal-border:rgba(255,200,50,.4);--btn-bg:#ff6900;--btn-txt:#fff;',
-      '  --btn2-bg:rgba(255,255,255,.1);--btn2-txt:#f5f0eb}',
-
-      /* ── Inline mode ── */
-      '.vg-w.vg-inline{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;',
-      '  padding:14px 16px;overflow:hidden}',
-
-      /* ── Sidebar mode ── */
-      '.vg-w.vg-sidebar{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;',
-      '  padding:12px;overflow:hidden;max-width:240px}',
-
-      /* ── Badge mode ── */
-      '.vg-w.vg-badge{display:inline-flex;align-items:center;gap:6px;',
-      '  background:var(--badge-bg);border-radius:20px;padding:5px 12px;cursor:pointer}',
-
-      /* ── Header ── */
-      '.vg-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}',
-      '.vg-logo{width:22px;height:22px;background:#1a1a1a;border-radius:5px;',
-      '  display:grid;place-items:center;font-size:9px;font-weight:900;color:#fff;flex-shrink:0;',
-      '  letter-spacing:-.02em}',
-      '.vg-dark .vg-logo{background:#ff6900}',
-      '.vg-title{font-size:12px;font-weight:700;color:var(--text);letter-spacing:-.01em}',
-      '.vg-title b{color:var(--accent)}',
-      '.vg-powered{font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap}',
-
-      /* ── Score row ── */
-      '.vg-score-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}',
-      '.vg-pill{display:inline-flex;align-items:center;gap:6px;',
-      '  background:var(--badge-bg);color:var(--badge-txt);',
-      '  font-size:12px;font-weight:800;padding:5px 12px;border-radius:20px}',
-      '.vg-pill .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.7);',
-      '  animation:vg-pulse 2s infinite}',
-      '@keyframes vg-pulse{0%,100%{opacity:1}50%{opacity:.35}}',
-      '.vg-score-lbl{font-size:12px;color:var(--muted);font-weight:500}',
-
-      /* ── Threats list ── */
-      '.vg-threats{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}',
-      '.vg-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text)}',
-      '.vg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}',
-      '.vg-name{font-weight:600;flex:1}',
-      '.vg-sev{font-size:10px;color:var(--muted)}',
-
-      /* ── AI signal box ── */
-      '.vg-signal{background:var(--signal-bg);border:1px solid var(--signal-border);',
-      '  border-radius:6px;padding:8px 10px;margin-bottom:12px}',
-      '.vg-signal-head{display:flex;align-items:center;gap:5px;margin-bottom:3px}',
-      '.vg-signal-icon{font-size:12px}',
-      '.vg-signal-lbl{font-size:11px;font-weight:700;color:var(--accent)}',
-      '.vg-signal-badge{margin-left:auto;font-size:10px;font-weight:700;',
-      '  background:var(--badge-bg);color:var(--badge-txt);',
-      '  padding:2px 7px;border-radius:10px;white-space:nowrap}',
-      '.vg-signal-txt{font-size:11px;color:var(--muted);line-height:1.4}',
-
-      /* ── Buttons ── */
-      '.vg-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}',
-      '.vg-btns.single{grid-template-columns:1fr}',
-      '.vg-btn{display:block;text-align:center;font-size:12px;font-weight:700;',
-      '  padding:8px 12px;border-radius:6px;border:none;cursor:pointer;text-decoration:none;',
-      '  transition:opacity .15s}',
-      '.vg-btn:hover{opacity:.85}',
-      '.vg-btn-primary{background:var(--btn-bg);color:var(--btn-txt)}',
-      '.vg-btn-secondary{background:var(--btn2-bg);color:var(--btn2-txt)}',
-
-      /* ── Sidebar compact ── */
-      '.vg-sidebar .vg-score-row{margin-bottom:8px}',
-      '.vg-sidebar .vg-threats{gap:4px;margin-bottom:8px}',
-      '.vg-sidebar .vg-row{font-size:11px}',
-      '.vg-sidebar .vg-btns{grid-template-columns:1fr}',
-
-      /* ── Progress bar (sidebar) ── */
-      '.vg-bar-wrap{height:5px;background:rgba(255,255,255,.15);border-radius:3px;margin-bottom:8px}',
-      '.vg-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff6900,#ff4500);transition:width .6s}',
-
-      /* ── Badge ── */
-      '.vg-badge-icon{font-size:12px}',
-      '.vg-badge-txt{font-size:12px;font-weight:700;color:var(--badge-txt)}',
-
-      /* ── Empty / loading / error ── */
-      '.vg-msg{padding:12px;text-align:center;font-size:12px;color:var(--muted)}',
-      '.vg-msg.loading::before{content:"⟳ ";animation:vg-spin 1s linear infinite;display:inline-block}',
-      '@keyframes vg-spin{to{transform:rotate(360deg)}}',
-
-      /* ── Footer ── */
-      '.vg-footer{font-size:10px;color:var(--muted);margin-top:6px;text-align:right}',
-    ].join('\n'));
-  }
-
-  /* ─── Country name map ─────────────────────────────────────────── */
-  var COUNTRY_RU = {
-    IN:'Индия', TH:'Таиланд', ID:'Индонезия', JP:'Япония', CN:'Китай',
-    US:'США', GB:'Великобритания', FR:'Франция', DE:'Германия', IT:'Италия',
-    ES:'Испания', TR:'Турция', EG:'Египет', AE:'ОАЭ', SA:'Саудовская Аравия',
-    MX:'Мексика', BR:'Бразилия', AR:'Аргентина', ZA:'ЮАР', KE:'Кения',
-    NG:'Нигерия', CD:'ДР Конго', TZ:'Танзания', ET:'Эфиопия', UG:'Уганда',
-    BD:'Бангладеш', PK:'Пакистан', AF:'Афганистан', VN:'Вьетнам', PH:'Филиппины',
-    MY:'Малайзия', SG:'Сингапур', UA:'Украина', RU:'Россия', IL:'Израиль',
-    IR:'Иран', PL:'Польша', GE:'Грузия', KZ:'Казахстан', AM:'Армения',
-    AZ:'Азербайджан', BY:'Беларусь', SD:'Судан', YE:'Йемен', SY:'Сирия',
-  };
-  var COUNTRY_EN = {
-    IN:'India', TH:'Thailand', ID:'Indonesia', JP:'Japan', CN:'China',
-    US:'United States', GB:'United Kingdom', FR:'France', DE:'Germany', IT:'Italy',
-    ES:'Spain', TR:'Türkiye', EG:'Egypt', AE:'UAE', SA:'Saudi Arabia',
-    MX:'Mexico', BR:'Brazil', AR:'Argentina', ZA:'South Africa', KE:'Kenya',
-    NG:'Nigeria', CD:'DR Congo', TZ:'Tanzania', ET:'Ethiopia', UG:'Uganda',
-    BD:'Bangladesh', PK:'Pakistan', AF:'Afghanistan', VN:'Vietnam', PH:'Philippines',
-    MY:'Malaysia', SG:'Singapore', UA:'Ukraine', RU:'Russia', IL:'Israel',
-    IR:'Iran', PL:'Poland', GE:'Georgia', KZ:'Kazakhstan', AM:'Armenia',
-    AZ:'Azerbaijan', BY:'Belarus', SD:'Sudan', YE:'Yemen', SY:'Syria',
-  };
-
-  /* ─── Data fetching ────────────────────────────────────────────── */
-  function fetchRisk(iso, callback) {
-    // Real B2B Composite Risk API (health + conflict + transport + …)
-    var url = API_BASE + '/risk?country=' + iso.toUpperCase() + '&include_events=true';
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.timeout = 5000;
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { callback(null, mapApiToWidget(iso, JSON.parse(xhr.responseText))); }
-        catch(e) { fallback(iso, callback); }
-      } else {
-        fallback(iso, callback);
-      }
+  /* ─── Data ───────────────────────────────────────────────────────── */
+  function fetchRisk(iso, cb){
+    var url = API+'/risk?country='+iso.toUpperCase()+'&include_events=true';
+    var x = new XMLHttpRequest();
+    x.open('GET',url,true); x.timeout=6000;
+    x.onload=function(){
+      try{
+        if(x.status>=200&&x.status<300){ cb(null, mapApi(iso, JSON.parse(x.responseText))); }
+        else cb(new Error('http'),null);
+      }catch(e){ cb(e,null); }
     };
-    xhr.onerror = xhr.ontimeout = function () { fallback(iso, callback); };
-    xhr.send();
+    x.onerror=x.ontimeout=function(){ cb(new Error('net'),null); };
+    x.send();
+  }
+  function mapApi(iso,j){
+    var cr=j.composite_risk||{}, cb=j.category_breakdown||{};
+    var cats=Object.keys(cb).map(function(k){
+      return {key:k,score:cb[k].score||0,band:cb[k].band||'minimal'};
+    }).filter(function(c){return c.score>0;})
+      .sort(function(a,b){return b.score-a.score;});
+    var lead=0;(j.events||[]).forEach(function(e){
+      if((e.lead_time_hours||0)>lead) lead=e.lead_time_hours; });
+    return { iso:iso.toUpperCase(), score:cr.score||0,
+      band:cr.band||bandOf(cr.score||0), dominant:cr.dominant_category,
+      cats:cats, lead:lead, generated:j.generated_at };
   }
 
-  /* Composite Risk API → widget data shape */
-  var BAND_IDX = { minimal:0, low:1, moderate:2, elevated:3, severe:4, critical:5 };
-  var SEVN_TO_STR = ['minimal','low','warning','warning','alert','critical'];
-  function mapApiToWidget(iso, j) {
-    var cr = j.composite_risk || {};
-    var lvl = BAND_IDX[cr.band] != null ? BAND_IDX[cr.band]
-            : Math.round(cr.score || 0);
-    var evs = (j.events || []).slice().sort(function(a,b){
-      return (b.severity - a.severity) || (b.confidence - a.confidence);
+  /* ─── DOM helpers ────────────────────────────────────────────────── */
+  function E(tag,cls,html){ var e=document.createElement(tag);
+    if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+  function priceLabel(o){
+    var sym = o.currency==='RUB'?'₽':o.currency==='EUR'?'€':'$';
+    return o.currency==='RUB'? (o.price+' '+sym) : (sym+o.price);
+  }
+  function reportUrl(o){
+    return REPORT+'?dest='+encodeURIComponent(o.dest)+'&lang='+o.lang+
+      (o.partner?'&ref='+encodeURIComponent(o.partner):'')+
+      '&price='+encodeURIComponent(o.price)+'&currency='+encodeURIComponent(o.currency);
+  }
+
+  /* ─── Widget: Smart-Card ─────────────────────────────────────────── */
+  function renderSmartCard(host,o,d){
+    var l=o.lang, w=E('div','vgl-w'); w.setAttribute('style',themeVars(o));
+    var sc=(d.score||0), bd=d.band, bc=BAND_C[bd]||'#888';
+
+    var hd=E('div','vgl-hd');
+    hd.appendChild(E('div','vgl-mk',IC.shield));
+    var ht=E('div','vgl-grow');
+    ht.appendChild(E('div','vgl-ht',t(l,'sc_title')+' · '+cname(d.iso,l)));
+    ht.appendChild(E('div','vgl-hs',t(l,'sc_sub')));
+    hd.appendChild(ht);
+    w.appendChild(hd);
+
+    var srow=E('div','vgl-score');
+    srow.appendChild(E('div','vgl-num',sc.toFixed(1)));
+    srow.appendChild(E('div','vgl-of',t(l,'of5')));
+    var band=E('div','vgl-band',(BAND_L[l]||BAND_L.en)[bd]);
+    band.style.background=bc; srow.appendChild(band);
+    w.appendChild(srow);
+
+    var m=E('div','vgl-meter');
+    for(var i=0;i<5;i++){ var seg=E('i');
+      if(i<Math.round(sc)) seg.style.background=bc; m.appendChild(seg); }
+    w.appendChild(m);
+
+    if(d.cats.length){
+      var cl=E('div','vgl-cats');
+      d.cats.slice(0,4).forEach(function(c){
+        var row=E('div','vgl-cat');
+        row.appendChild(E('div','vgl-ci',IC[c.key]||IC.shield));
+        row.appendChild(E('div','vgl-cn',(t(l,'cats')[c.key]||c.key)));
+        var cbg=E('div','vgl-cb',(BAND_L[l]||BAND_L.en)[c.band]||c.band);
+        cbg.style.background=BAND_C[c.band]||'#888';
+        row.appendChild(cbg);
+        cl.appendChild(row);
+      });
+      w.appendChild(cl);
+    } else {
+      w.appendChild(E('div','vgl-none',t(l,'none')));
+    }
+
+    if(d.lead>0){
+      var ld=E('div','vgl-lead',IC.bolt+'<span>'+
+        t(l,'lead').replace('{h}',d.lead)+'</span>');
+      w.appendChild(ld);
+    }
+
+    var btn=E('a','vgl-btn',t(l,'cta_report')+IC.arrow);
+    btn.href=reportUrl(o); btn.target='_blank'; btn.rel='noopener';
+    w.appendChild(btn);
+
+    w.appendChild(E('div','vgl-ft',t(l,'src')));
+    host.innerHTML=''; host.appendChild(w);
+  }
+
+  /* ─── Widget: Checkout Upsell ────────────────────────────────────── */
+  function renderCheckout(host,o,d){
+    var l=o.lang, w=E('div','vgl-w'); w.setAttribute('style',themeVars(o));
+    w.style.maxWidth='480px';
+    var bd=d.band, bc=BAND_C[bd]||'#888', pl=priceLabel(o);
+
+    var co=E('div','vgl-co');
+    var cx=E('input','vgl-cx'); cx.type='checkbox'; cx.id='vgl-cx-'+Math.random().toString(36).slice(2,7);
+    co.appendChild(cx);
+
+    var col=E('div','vgl-col');
+    var tt=E('label','vgl-cot'); tt.setAttribute('for',cx.id);
+    tt.appendChild(E('span',null,t(l,'co_title')));
+    var pill=E('span','vgl-pill',(BAND_L[l]||BAND_L.en)[bd]+' · '+cname(d.iso,l));
+    pill.style.background=bc; tt.appendChild(pill);
+    col.appendChild(tt);
+    col.appendChild(E('div','vgl-cod',t(l,'co_desc').replace('{c}',cname(d.iso,l))));
+
+    var btn=E('a','vgl-btn',
+      '<span>'+t(l,'co_add').replace('{p}','<span class="vgl-price">'+pl+'</span>')+'</span>'+IC.arrow);
+    btn.href='#';
+    var added=false;
+    function sync(){
+      if(cx.checked){
+        btn.innerHTML=IC.check+'<span>'+t(l,'co_added')+'</span>';
+      } else {
+        btn.innerHTML='<span>'+t(l,'co_add')
+          .replace('{p}','<span class="vgl-price">'+pl+'</span>')+'</span>'+IC.arrow;
+      }
+    }
+    cx.addEventListener('change',function(){ sync();
+      // partner can listen: dispatch a CustomEvent with selection state
+      host.dispatchEvent(new CustomEvent('vigilo:checkout',{bubbles:true,
+        detail:{selected:cx.checked,dest:o.dest,price:o.price,currency:o.currency}}));
     });
-    var lead = 0;
-    evs.forEach(function(e){ if ((e.lead_time_hours||0) > lead) lead = e.lead_time_hours; });
+    btn.addEventListener('click',function(e){
+      if(cx.checked){ return; } // already added — let partner handle order
+      e.preventDefault(); cx.checked=true; sync();
+      host.dispatchEvent(new CustomEvent('vigilo:checkout',{bubbles:true,
+        detail:{selected:true,dest:o.dest,price:o.price,currency:o.currency}}));
+    });
+    col.appendChild(btn);
+    co.appendChild(col);
+    w.appendChild(co);
+    w.appendChild(E('div','vgl-ft',t(l,'src')));
+    host.innerHTML=''; host.appendChild(w);
+  }
+
+  /* ─── Mount ──────────────────────────────────────────────────────── */
+  function parse(el){
     return {
-      iso: iso.toUpperCase(),
-      country: (j.query && j.query.country) || iso.toUpperCase(),
-      score: Math.round((cr.score || 0) / 5 * 100),
-      level: Math.min(lvl, 5),
-      composite: cr,                       // {score,band,dominant_category}
-      categories: j.category_breakdown || {},
-      generated_at: j.generated_at,
-      threats: evs.slice(0, 5).map(function(e){
-        return {
-          name:     e.headline || e.type || e.category,
-          name_ru:  e.headline || e.type || e.category,
-          severity: SEVN_TO_STR[Math.max(0, Math.min(5, Math.round(e.severity||0)))],
-          category: e.category,
-          verified: e.source_verification === 'official_agency',
-        };
-      }),
-      ai_signal: lead > 0 ? { hours_ahead: lead,
-        description: 'Detected via Vigilo signal fusion before official reports.' } : null,
+      widget:(el.getAttribute('data-widget')||'smartcard').toLowerCase(),
+      dest:(el.getAttribute('data-dest')||'').toUpperCase(),
+      lang:el.getAttribute('data-lang')==='ru'?'ru':'en',
+      theme:el.getAttribute('data-theme')==='dark'?'dark':'light',
+      accent:el.getAttribute('data-accent')||'',
+      accent2:el.getAttribute('data-accent-2')||'',
+      bg:el.getAttribute('data-bg')||'',
+      fg:el.getAttribute('data-fg')||'',
+      radius:el.getAttribute('data-radius')||'md',
+      partner:el.getAttribute('data-partner')||'',
+      price:el.getAttribute('data-report-price')||'7',
+      currency:el.getAttribute('data-currency')||'USD'
     };
   }
-
-  /* Fallback: parse local events.json and filter by ISO */
-  function fallback(iso, callback) {
-    var xhr2 = new XMLHttpRequest();
-    xhr2.open('GET', DEV_DATA, true);
-    xhr2.timeout = 4000;
-    xhr2.onload = function () {
-      if (xhr2.status >= 200 && xhr2.status < 300) {
-        try {
-          var data = JSON.parse(xhr2.responseText);
-          callback(null, transformLocal(iso, data));
-        } catch(e) {
-          callback(new Error('parse'), null);
-        }
-      } else {
-        callback(new Error('network'), null);
+  function mount(host){
+    var o=parse(host);
+    if(!o.dest){ console.warn('[Vigilo] data-dest required'); return; }
+    injectCSS();
+    var w=E('div','vgl-w'); w.setAttribute('style',themeVars(o));
+    w.appendChild(E('div','vgl-msg',IC.shield+'<span>'+t(o.lang,'loading')+'</span>'));
+    host.innerHTML=''; host.appendChild(w);
+    fetchRisk(o.dest,function(err,d){
+      if(err||!d){
+        host.innerHTML='';
+        var e=E('div','vgl-w'); e.setAttribute('style',themeVars(o));
+        e.appendChild(E('div','vgl-msg',IC.shield+'<span>'+t(o.lang,'err')+'</span>'));
+        host.appendChild(e); return;
       }
-    };
-    xhr2.onerror = xhr2.ontimeout = function () { callback(new Error('timeout'), null); };
-    xhr2.send();
-  }
-
-  /* Transform local events.json → API-compatible shape */
-  function transformLocal(iso, raw) {
-    var isoUp = iso.toUpperCase();
-    var events = (raw.events || []).filter(function(e){ return e.iso === isoUp; });
-    var maxSev = 0;
-    events.forEach(function(e){ var s = sevIndex(e.severity); if(s > maxSev) maxSev = s; });
-
-    var hasGdelt    = events.some(function(e){ return e.source && e.source.indexOf('GDELT') >= 0; });
-    var hasHighRisk = maxSev >= 3; // alert or above → Vigilo AI monitors via news signals
-    var showSignal  = hasGdelt || hasHighRisk;
-    // Deterministic hours from ISO hash so it doesn't flicker on re-render
-    var isoHash = isoUp.charCodeAt(0) + isoUp.charCodeAt(1);
-    var hoursAhead = 36 + (isoHash % 24); // 36-59h
-
-    return {
-      iso: isoUp,
-      country: events[0] ? events[0].country : iso,
-      score: scoreFromSeverity(maxSev),
-      level: maxSev,
-      updated_at: raw.meta && raw.meta.updated_at,
-      threats: events.slice(0, 4).map(function(e){ return {
-        name:       e.disease,
-        severity:   e.severity,
-        source:     e.source,
-        summary:    e.summary,
-        summary_ru: e.summary_ru,
-        country:    e.country,
-      };}),
-      ai_signal: showSignal ? {
-        hours_ahead: hoursAhead,
-        description: 'Detected via GDELT news signal analysis.',
-      } : null,
-    };
-  }
-
-  /* ─── Widget renderer ──────────────────────────────────────────── */
-  function render(container, opts, data, err) {
-    var lang  = opts.lang  || 'en';
-    var theme = opts.theme || 'light';
-    var mode  = opts.mode  || 'inline';
-    var price = opts.price || '7';
-    var currency = opts.currency || 'USD';
-    var partner  = opts.partner  || '';
-
-    var pack = VERTICAL_PACKS[opts.vertical] || null;
-
-    container.innerHTML = '';
-    injectStyles();
-
-    var w = el('div', 'vg-w vg-' + theme + ' vg-' + mode + (pack ? ' vg-vertical' : ''));
-    if (pack) w.style.setProperty('--vg-accent', pack.accent);
-
-    /* Error or no data */
-    if (err || !data) {
-      var msg = el('div', 'vg-msg');
-      msg.textContent = err ? t(lang, 'error') : t(lang, 'no_data');
-      w.appendChild(msg);
-      container.appendChild(w);
-      return;
-    }
-
-    var threats   = data.threats || [];
-    var maxSevIdx = data.level   || 0;
-    var score     = data.score   || 8;
-    var levelLabels = t(lang, 'level_labels');
-    var levelLabel  = levelLabels[Math.min(maxSevIdx, 4)] || levelLabels[4];
-    var sevColor_   = LEVEL_COLOR[Math.min(maxSevIdx, 5)];
-
-    /* ── Badge mode ── */
-    if (mode === 'badge') {
-      w.title = data.country + ': ' + levelLabel;
-      var icon = el('span', 'vg-badge-icon');
-      icon.textContent = maxSevIdx >= 4 ? '⚠️' : maxSevIdx >= 2 ? '🔶' : '✅';
-      var txt = el('span', 'vg-badge-txt');
-      txt.textContent = levelLabel;
-      w.appendChild(icon);
-      w.appendChild(txt);
-      w.style.background = LEVEL_COLOR[Math.min(maxSevIdx, 5)];
-      w.onclick = function (){ openReport(data, opts); };
-      container.appendChild(w);
-      return;
-    }
-
-    /* ── Header ── */
-    var head = el('div', 'vg-head');
-    var logo = el('div', 'vg-logo');
-    logo.textContent = 'VGL';
-    var title = el('div', 'vg-title');
-    var countryName = lang === 'ru'
-      ? (COUNTRY_RU[opts.dest] || data.country || opts.dest)
-      : (COUNTRY_EN[opts.dest] || data.country || opts.dest);
-    var titleTxt = pack ? (pack['title_'+lang] || pack.title_en) : t(lang, 'title');
-    title.innerHTML = titleTxt + ' <b>' + countryName + '</b>';
-    var powered = el('div', 'vg-powered');
-    powered.textContent = t(lang, 'powered');
-    head.appendChild(logo);
-    head.appendChild(title);
-    head.appendChild(powered);
-    w.appendChild(head);
-
-    /* ── Score row ── */
-    var scoreRow = el('div', 'vg-score-row');
-    var pill = el('div', 'vg-pill');
-    pill.style.background = sevColor_;
-    var dot = el('span', 'dot'); // pulse dot
-    var displayLevel = Math.min(maxSevIdx + 1, 5);
-    var pillTxt = document.createTextNode(' ' + t(lang,'level') + ' ' + displayLevel + '/5');
-    pill.appendChild(dot);
-    pill.appendChild(pillTxt);
-    var scoreLbl = el('div', 'vg-score-lbl');
-    scoreLbl.textContent = levelLabel;
-    scoreRow.appendChild(pill);
-    scoreRow.appendChild(scoreLbl);
-    w.appendChild(scoreRow);
-
-    /* Progress bar in sidebar */
-    if (mode === 'sidebar') {
-      var barWrap = el('div', 'vg-bar-wrap');
-      var bar = el('div', 'vg-bar');
-      bar.style.width = score + '%';
-      bar.style.background = 'linear-gradient(90deg,' + sevColor_ + ',#ff4500)';
-      barWrap.appendChild(bar);
-      w.appendChild(barWrap);
-    }
-
-    /* ── Threats ── */
-    if (threats.length > 0) {
-      var list = el('div', 'vg-threats');
-      var shown = mode === 'sidebar' ? Math.min(threats.length, 2) : Math.min(threats.length, 4);
-      for (var i = 0; i < shown; i++) {
-        var thr = threats[i];
-        var row = el('div', 'vg-row');
-        var d   = el('span', 'vg-dot');
-        d.style.background = sevColor(thr.severity);
-        var nm  = el('span', 'vg-name');
-        nm.textContent = (lang === 'ru' && thr.name_ru) ? thr.name_ru : thr.name;
-        var sv  = el('span', 'vg-sev');
-        sv.textContent = sevLabel(thr.severity, lang);
-        row.appendChild(d);
-        row.appendChild(nm);
-        row.appendChild(sv);
-        list.appendChild(row);
-      }
-      w.appendChild(list);
-    } else {
-      var none = el('div', 'vg-msg');
-      none.textContent = t(lang, 'none_found');
-      w.appendChild(none);
-    }
-
-    /* ── AI signal box (inline only) ── */
-    if (data.ai_signal && mode === 'inline') {
-      var sig = el('div', 'vg-signal');
-      var sigHead = el('div', 'vg-signal-head');
-      var sigIcon = el('span', 'vg-signal-icon');
-      sigIcon.textContent = '⚡';
-      var sigLbl = el('span', 'vg-signal-lbl');
-      sigLbl.textContent = t(lang, 'ai_signal');
-      var sigBadge = el('span', 'vg-signal-badge');
-      sigBadge.textContent = t(lang, 'ahead', { h: data.ai_signal.hours_ahead });
-      sigHead.appendChild(sigIcon);
-      sigHead.appendChild(sigLbl);
-      sigHead.appendChild(sigBadge);
-      var sigTxt = el('p', 'vg-signal-txt');
-      sigTxt.textContent = t(lang, 'ai_desc');
-      sig.appendChild(sigHead);
-      sig.appendChild(sigTxt);
-      w.appendChild(sig);
-    }
-
-    /* ── Buttons ── */
-    var priceLabel = (currency === 'RUB' ? '₽' : '$') + price;
-    var btns = el('div', mode === 'sidebar' ? 'vg-btns single' : 'vg-btns');
-
-    if (pack) {
-      // Vertical: primary = vertical CTA (accent), secondary = full report
-      var btnCta = el('a', 'vg-btn vg-btn-primary');
-      btnCta.textContent = pack['cta_'+lang] || pack.cta_en;
-      btnCta.href = pack.cta_url
-        .replace('{DEST}', encodeURIComponent(opts.dest || ''))
-        .replace('{REF}', encodeURIComponent(partner || 'vigilo'));
-      btnCta.target = '_blank';
-      btnCta.rel = 'noopener';
-      btnCta.style.background = pack.accent;
-      btnCta.style.color = pack.fg || '#fff';
-      btns.appendChild(btnCta);
-
-      if (mode !== 'sidebar') {
-        var btnRep2 = el('a', 'vg-btn vg-btn-secondary');
-        btnRep2.textContent = t(lang, 'report', { price: priceLabel });
-        btnRep2.href = '#';
-        btnRep2.onclick = function(e){ e.preventDefault(); openReport(data, opts); };
-        btns.appendChild(btnRep2);
-      }
-    } else {
-      var btnReport = el('a', 'vg-btn vg-btn-primary');
-      btnReport.textContent = t(lang, 'report', { price: priceLabel });
-      btnReport.href = '#';
-      btnReport.onclick = function(e){ e.preventDefault(); openReport(data, opts); };
-
-      btns.appendChild(btnReport);
-
-      if (mode !== 'sidebar') {
-        var btnInsure = el('a', 'vg-btn vg-btn-secondary');
-        btnInsure.textContent = t(lang, 'insure');
-        btnInsure.href = 'https://vigilo.cc/insurance?dest=' + (opts.dest||'') + (partner ? '&ref='+partner : '');
-        btnInsure.target = '_blank';
-        btnInsure.rel = 'noopener';
-        btns.appendChild(btnInsure);
-      }
-    }
-
-    w.appendChild(btns);
-
-    /* ── Footer ── */
-    var footer = el('div', 'vg-footer');
-    footer.textContent = pack
-      ? (pack['blurb_'+lang] || pack.blurb_en) + ' · Vigilo'
-      : t(lang, 'source');
-    w.appendChild(footer);
-
-    container.appendChild(w);
-  }
-
-  /* ─── Open report / checkout ───────────────────────────────────── */
-  function openReport(data, opts) {
-    var url = CHECKOUT
-      + '?dest='     + encodeURIComponent((opts.dest || '').toUpperCase())
-      + '&country='  + encodeURIComponent(data.country || '')
-      + '&price='    + encodeURIComponent(opts.price || '7')
-      + '&currency=' + encodeURIComponent(opts.currency || 'USD')
-      + '&lang='     + encodeURIComponent(opts.lang || 'en');
-    if (opts.partner) url += '&ref=' + encodeURIComponent(opts.partner);
-
-    // Open in same tab for popups that block new windows
-    var win = window.open(url, '_blank', 'noopener');
-    if (!win) { window.location.href = url; }
-  }
-
-  /* ─── Parse host element options ──────────────────────────────── */
-  function parseOpts(el) {
-    return {
-      dest:     (el.getAttribute('data-dest')         || '').toUpperCase(),
-      partner:  el.getAttribute('data-partner')        || '',
-      theme:    el.getAttribute('data-theme')          || 'light',
-      mode:     el.getAttribute('data-mode')           || 'inline',
-      lang:     el.getAttribute('data-lang')           || 'en',
-      price:    el.getAttribute('data-report-price')   || '7',
-      currency: el.getAttribute('data-currency')       || 'USD',
-      vertical: el.getAttribute('data-vertical')       || '',
-    };
-  }
-
-  /* ─── Init / mount ─────────────────────────────────────────────── */
-  function mount(container) {
-    var opts = parseOpts(container);
-    if (!opts.dest) {
-      console.warn('[Vigilo] data-dest attribute is required.');
-      return;
-    }
-
-    /* Show loading state */
-    injectStyles();
-    container.innerHTML = '';
-    var w = el('div', 'vg-w vg-' + opts.theme + ' vg-' + opts.mode);
-    var loading = el('div', 'vg-msg loading');
-    loading.textContent = t(opts.lang, 'loading');
-    w.appendChild(loading);
-    container.appendChild(w);
-
-    fetchRisk(opts.dest, function (err, data) {
-      render(container, opts, data, err);
+      (o.widget==='checkout'?renderCheckout:renderSmartCard)(host,o,d);
     });
   }
-
-  /* ─── Auto-discover on DOMContentLoaded ───────────────────────── */
-  function init() {
-    var containers = document.querySelectorAll(
-      '[id="vigilo-widget"], [class~="vigilo-widget"], [data-vigilo]'
-    );
-    containers.forEach(function (c) { mount(c); });
+  function init(){
+    document.querySelectorAll(
+      '[data-vigilo],.vigilo-widget,[id="vigilo-widget"]'
+    ).forEach(mount);
   }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',init);
+  else init();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-  /* ─── Public API ───────────────────────────────────────────────── */
-  global.Vigilo = {
-    version: '0.4',
-    mount: mount,
-    /** Manually init a container element */
-    init: function (selector) {
-      var el = typeof selector === 'string' ? document.querySelector(selector) : selector;
-      if (el) mount(el);
-    },
-  };
-
-  /* ─── Helpers ──────────────────────────────────────────────────── */
-  function capitalise(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
-
+  global.Vigilo={ version:'1.0', mount:mount,
+    init:function(s){ var e=typeof s==='string'?document.querySelector(s):s;
+      if(e) mount(e); } };
 })(window);

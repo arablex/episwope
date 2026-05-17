@@ -1,0 +1,106 @@
+<!--
+  Vigilo Pre-trip Alert — bulletproof email widget
+  ================================================
+  Table layout, inline CSS only, no JS, Outlook-safe (MSO button).
+  Fill the {{TOKENS}} server-side (Handlebars/Jinja/etc.) before sending.
+
+  TOKENS
+    {{ACCENT}}        brand colour            e.g. #E8590C
+    {{ACCENT_TEXT}}   text on accent button   e.g. #FFFFFF
+    {{BG}}            outer background        e.g. #F4F2EE
+    {{CARD}}          card background         e.g. #FFFFFF
+    {{FG}}            primary text            e.g. #0F0E0C
+    {{MUTED}}         secondary text          e.g. #807E76
+    {{LINE}}          hairline border         e.g. #ECEAE2
+    {{RADIUS}}        px integer, no unit     e.g. 14
+    {{COUNTRY}}       destination name        e.g. Türkiye
+    {{SCORE}}         composite 0–5           e.g. 3.4
+    {{BAND}}          band label              e.g. Severe
+    {{BAND_COLOR}}    band colour             e.g. #c0392b
+    {{LEAD}}          optional one-liner      e.g. 38h ahead of official reports  (or empty)
+    {{CTA_URL}}       safety report link
+    {{CTA_LABEL}}     e.g. View safety briefing
+    {{SOURCE}}        e.g. Vigilo · WHO · ECDC · GDELT
+  Width fixed at 600 (email standard). All colours have literal fallbacks
+  if a token is left unrendered.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+  style="background:{{BG}};margin:0;padding:0">
+ <tr><td align="center" style="padding:20px 12px">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+    style="width:600px;max-width:600px;background:{{CARD}};border:1px solid {{LINE}};
+    border-radius:{{RADIUS}}px;overflow:hidden;
+    font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+
+   <!-- header -->
+   <tr><td style="padding:22px 24px 14px 24px">
+     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+       <td width="30" style="vertical-align:middle">
+         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+           <td width="28" height="28" align="center" valign="middle"
+             style="background:{{ACCENT}};border-radius:7px;color:{{ACCENT_TEXT}};
+             font-size:14px;font-weight:800;line-height:28px">V</td>
+         </tr></table>
+       </td>
+       <td style="padding-left:10px;vertical-align:middle">
+         <div style="font-size:14px;font-weight:700;color:{{FG}};letter-spacing:-.2px">
+           Pre-trip safety · {{COUNTRY}}</div>
+         <div style="font-size:11px;color:{{MUTED}};font-weight:500">
+           Vigilo composite risk</div>
+       </td>
+     </tr></table>
+   </td></tr>
+
+   <!-- score -->
+   <tr><td style="padding:4px 24px 16px 24px">
+     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+       <td style="vertical-align:bottom">
+         <span style="font-size:44px;font-weight:800;color:{{FG}};
+           letter-spacing:-1.5px;line-height:1">{{SCORE}}</span>
+         <span style="font-size:13px;color:{{MUTED}};font-weight:700"> / 5</span>
+       </td>
+       <td align="right" style="vertical-align:middle">
+         <span style="display:inline-block;background:{{BAND_COLOR}};color:#ffffff;
+           font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+           padding:6px 11px;border-radius:6px">{{BAND}}</span>
+       </td>
+     </tr></table>
+   </td></tr>
+
+   <!-- optional lead-time line -->
+   <tr><td style="padding:0 24px 16px 24px">
+     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+       <td style="background:rgba(232,89,12,.08);border-radius:8px;padding:9px 12px;
+         font-size:12px;font-weight:700;color:{{ACCENT}}">⚡ {{LEAD}}</td>
+     </tr></table>
+   </td></tr>
+
+   <!-- CTA (Outlook VML + standard fallback) -->
+   <tr><td style="padding:0 24px 22px 24px">
+     <!--[if mso]>
+     <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+       href="{{CTA_URL}}" style="height:46px;v-text-anchor:middle;width:552px"
+       arcsize="14%" fillcolor="{{ACCENT}}" stroke="f">
+       <w:anchorlock/>
+       <center style="color:{{ACCENT_TEXT}};font-family:sans-serif;
+         font-size:14px;font-weight:bold">{{CTA_LABEL}}</center>
+     </v:roundrect>
+     <![endif]-->
+     <!--[if !mso]><!-- -->
+     <a href="{{CTA_URL}}" target="_blank"
+       style="display:block;background:{{ACCENT}};color:{{ACCENT_TEXT}};
+       font-size:14px;font-weight:700;text-decoration:none;text-align:center;
+       padding:14px 18px;border-radius:{{RADIUS}}px">{{CTA_LABEL}} &nbsp;&rarr;</a>
+     <!--<![endif]-->
+   </td></tr>
+
+   <!-- footer -->
+   <tr><td style="padding:14px 24px;border-top:1px solid {{LINE}};
+     background:{{BG}}">
+     <div style="font-size:11px;color:{{MUTED}};text-align:center">
+       {{SOURCE}} · Not medical or financial advice</div>
+   </td></tr>
+
+  </table>
+ </td></tr>
+</table>
