@@ -40,6 +40,15 @@
       none:'No significant risks detected', src:'Vigilo · WHO · ECDC · GDELT',
       lead:'{h}h ahead of official reports', loading:'Loading…',
       err:'Risk data unavailable',
+      sample:'See a sample report', smp_tag:'Sample',
+      smp_title:'Risk Report', smp_overview:'Risk overview',
+      smp_domains:'Risk by domain', smp_signals:'Verified signals',
+      smp_method:'Methodology', smp_methtxt:'Composite of WHO/ECDC/CDC official feeds + AI-classified GDELT/news signals, severity-anchored 0–5 with recency decay.',
+      smp_sig1:'WHO IHR notification', smp_sig2:'ECDC communicable-disease bulletin',
+      smp_sig3:'GDELT news cluster (AI-verified)',
+      smp_official:'Official', smp_ai:'AI signal',
+      smp_get:'Get the full report — {p}', smp_dis:'Sample — illustrative report format. Live figures above are real for this destination.',
+      close:'Close',
       cats:{health:'Health',conflict:'Conflict',civil_unrest:'Unrest',
         transport:'Transport',border:'Border',infrastructure:'Infrastructure',
         climate:'Climate'}
@@ -54,6 +63,15 @@
       none:'Значимых рисков не выявлено', src:'Vigilo · ВОЗ · ECDC · GDELT',
       lead:'на {h}ч раньше официальных сводок', loading:'Загрузка…',
       err:'Данные о риске недоступны',
+      sample:'Посмотреть образец отчёта', smp_tag:'Образец',
+      smp_title:'Отчёт о рисках', smp_overview:'Сводка риска',
+      smp_domains:'Риск по доменам', smp_signals:'Подтверждённые сигналы',
+      smp_method:'Методология', smp_methtxt:'Композит официальных лент ВОЗ/ECDC/CDC + ИИ-классификация сигналов GDELT/новостей, шкала 0–5 по тяжести с затуханием по свежести.',
+      smp_sig1:'Уведомление ВОЗ IHR', smp_sig2:'Бюллетень ECDC по инфекциям',
+      smp_sig3:'Новостной кластер GDELT (ИИ-проверка)',
+      smp_official:'Официальный', smp_ai:'ИИ-сигнал',
+      smp_get:'Получить полный отчёт — {p}', smp_dis:'Образец — формат отчёта. Цифры выше реальны для этого направления.',
+      close:'Закрыть',
       cats:{health:'Здоровье',conflict:'Конфликт',civil_unrest:'Беспорядки',
         transport:'Транспорт',border:'Границы',infrastructure:'Инфраструктура',
         climate:'Стихия'}
@@ -198,6 +216,45 @@
     '.vgl-msg{font-size:12.5px;color:var(--vgl-fg);display:flex;align-items:center;'+
       'gap:7px;padding:10px 0}'+
     '.vgl-msg svg{width:15px;height:15px;color:var(--vgl-acc)}'+
+    /* sample link */
+    '.vgl-samp{display:block;width:100%;text-align:center;background:none;border:0;'+
+      'margin-top:10px;font-size:12px;font-weight:600;color:var(--vgl-muted);'+
+      'cursor:pointer;padding:4px;text-decoration:underline;'+
+      'text-underline-offset:2px;transition:color .15s}'+
+    '.vgl-samp:hover{color:var(--vgl-acc)}'+
+    /* modal */
+    '.vgl-ov{position:fixed;inset:0;z-index:2147483600;background:rgba(15,14,12,.55);'+
+      'backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;'+
+      'padding:20px;opacity:0;transition:opacity .18s}'+
+    '.vgl-ov.in{opacity:1}'+
+    '.vgl-md{background:var(--vgl-bg);color:var(--vgl-fg);width:100%;max-width:540px;'+
+      'max-height:88vh;overflow:auto;border-radius:var(--vgl-r);'+
+      'border:1px solid var(--vgl-line);box-shadow:0 24px 70px -20px rgba(15,14,12,.5);'+
+      'transform:translateY(8px);transition:transform .18s}'+
+    '.vgl-ov.in .vgl-md{transform:none}'+
+    '.vgl-mh{display:flex;align-items:center;gap:10px;padding:18px 20px;'+
+      'border-bottom:1px solid var(--vgl-line);position:sticky;top:0;background:var(--vgl-bg)}'+
+    '.vgl-mh .vgl-mk{width:28px;height:28px}'+
+    '.vgl-mt{font-size:14px;font-weight:800;flex:1}'+
+    '.vgl-tag{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;'+
+      'color:var(--vgl-acc);border:1px solid var(--vgl-acc);padding:3px 7px;border-radius:5px}'+
+    '.vgl-x{background:none;border:0;color:var(--vgl-muted);cursor:pointer;'+
+      'width:28px;height:28px;border-radius:7px;display:flex;align-items:center;'+
+      'justify-content:center;flex:none}.vgl-x:hover{background:var(--vgl-soft)}'+
+    '.vgl-x svg{width:16px;height:16px}'+
+    '.vgl-mb{padding:18px 20px}'+
+    '.vgl-sec{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;'+
+      'color:var(--vgl-muted);margin:18px 0 9px}.vgl-sec:first-child{margin-top:0}'+
+    '.vgl-sig{display:flex;align-items:center;gap:9px;padding:8px 0;'+
+      'border-top:1px solid var(--vgl-line);font-size:12.5px}'+
+    '.vgl-sig:first-of-type{border-top:0}.vgl-sig svg{width:14px;height:14px;color:var(--vgl-muted)}'+
+    '.vgl-sg{flex:1;font-weight:600}'+
+    '.vgl-vt{font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;'+
+      'color:#fff;padding:3px 7px;border-radius:5px}'+
+    '.vgl-meth{font-size:11.5px;color:var(--vgl-muted);line-height:1.55;'+
+      'background:var(--vgl-soft);padding:11px 13px;border-radius:10px}'+
+    '.vgl-dis{font-size:10.5px;color:var(--vgl-muted);text-align:center;margin-top:12px;'+
+      'line-height:1.5}'+
     '@media (max-width:380px){.vgl-w{padding:15px}.vgl-num{font-size:34px}}';
     document.head.appendChild(s);
   }
@@ -292,9 +349,90 @@
     var btn=E('a','vgl-btn',t(l,'cta_report')+IC.arrow);
     btn.href=reportUrl(o); btn.target='_blank'; btn.rel='noopener';
     w.appendChild(btn);
+    w.appendChild(sampleLink(o,d,l));
 
     w.appendChild(E('div','vgl-ft',t(l,'src')));
     host.innerHTML=''; host.appendChild(w);
+  }
+
+  /* ─── Sample-report link + modal ─────────────────────────────────── */
+  function sampleLink(o,d,l){
+    var b=E('button','vgl-samp',t(l,'sample'));
+    b.type='button';
+    b.addEventListener('click',function(){ openSample(o,d,l); });
+    return b;
+  }
+  function openSample(o,d,l){
+    var sc=(d.score||0), bd=d.band, bc=BAND_C[bd]||'#888';
+    var ov=E('div','vgl-ov'); ov.setAttribute('style',themeVars(o));
+    ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
+    var md=E('div','vgl-md');
+
+    var mh=E('div','vgl-mh');
+    mh.appendChild(E('div','vgl-mk',IC.shield));
+    mh.appendChild(E('div','vgl-mt','Vigilo · '+t(l,'smp_title')+' · '+cname(d.iso,l)));
+    mh.appendChild(E('span','vgl-tag',t(l,'smp_tag')));
+    var x=E('button','vgl-x',IC.close||'<svg viewBox="0 0 24 24" fill="none" '+
+      'stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>');
+    x.type='button'; x.setAttribute('aria-label',t(l,'close'));
+    mh.appendChild(x); md.appendChild(mh);
+
+    var mb=E('div','vgl-mb');
+    mb.appendChild(E('div','vgl-sec',t(l,'smp_overview')));
+    var sr=E('div','vgl-score');
+    sr.appendChild(E('div','vgl-num',sc.toFixed(1)));
+    sr.appendChild(E('div','vgl-of',t(l,'of5')));
+    var bn=E('div','vgl-band',(BAND_L[l]||BAND_L.en)[bd]); bn.style.background=bc;
+    sr.appendChild(bn); mb.appendChild(sr);
+    var mt=E('div','vgl-meter');
+    for(var i=0;i<5;i++){var s=E('i'); if(i<Math.round(sc)) s.style.background=bc; mt.appendChild(s);}
+    mb.appendChild(mt);
+
+    mb.appendChild(E('div','vgl-sec',t(l,'smp_domains')));
+    var cats=(d.cats&&d.cats.length)?d.cats.slice(0,5):
+      [{key:'health',score:1.2,band:'low'},{key:'transport',score:0.6,band:'minimal'},
+       {key:'climate',score:0.4,band:'minimal'}];
+    var cl=E('div','vgl-cats');
+    cats.forEach(function(c){
+      var row=E('div','vgl-cat');
+      row.appendChild(E('div','vgl-ci',IC[c.key]||IC.shield));
+      row.appendChild(E('div','vgl-cn',(t(l,'cats')[c.key]||c.key)));
+      var cb=E('div','vgl-cb',(BAND_L[l]||BAND_L.en)[c.band]||c.band);
+      cb.style.background=BAND_C[c.band]||'#888'; row.appendChild(cb);
+      cl.appendChild(row);
+    });
+    mb.appendChild(cl);
+
+    mb.appendChild(E('div','vgl-sec',t(l,'smp_signals')));
+    [['smp_sig1','smp_official','#5b9d6b'],['smp_sig2','smp_official','#5b9d6b'],
+     ['smp_sig3','smp_ai','#e2820f']].forEach(function(s){
+      var r=E('div','vgl-sig'); r.appendChild(E('div',null,IC.bolt));
+      r.appendChild(E('div','vgl-sg',t(l,s[0])));
+      var v=E('span','vgl-vt',t(l,s[1])); v.style.background=s[2];
+      r.appendChild(v); mb.appendChild(r);
+    });
+
+    mb.appendChild(E('div','vgl-sec',t(l,'smp_method')));
+    mb.appendChild(E('div','vgl-meth',t(l,'smp_methtxt')));
+
+    var get=E('a','vgl-btn',
+      t(l,'smp_get').replace('{p}',priceLabel(o))+IC.arrow);
+    get.href=reportUrl(o); get.target='_blank'; get.rel='noopener';
+    get.style.marginTop='18px'; mb.appendChild(get);
+    mb.appendChild(E('div','vgl-dis',t(l,'smp_dis')));
+    md.appendChild(mb); ov.appendChild(md);
+
+    function close(){ ov.classList.remove('in');
+      document.removeEventListener('keydown',esc);
+      document.documentElement.style.overflow='';
+      setTimeout(function(){ ov.remove(); },200); }
+    function esc(e){ if(e.key==='Escape') close(); }
+    x.addEventListener('click',close);
+    ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+    document.addEventListener('keydown',esc);
+    document.documentElement.style.overflow='hidden';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function(){ ov.classList.add('in'); x.focus(); });
   }
 
   /* ─── Widget: Checkout Upsell ────────────────────────────────────── */
@@ -339,6 +477,7 @@
         detail:{selected:true,dest:o.dest,price:o.price,currency:o.currency}}));
     });
     col.appendChild(btn);
+    col.appendChild(sampleLink(o,d,l));
     co.appendChild(col);
     w.appendChild(co);
     w.appendChild(E('div','vgl-ft',t(l,'src')));
