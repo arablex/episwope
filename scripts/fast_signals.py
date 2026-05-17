@@ -49,6 +49,7 @@ HISTORY_OUT = OUTPUT_DIR / "signals_history.json"
 
 HISTORY_WINDOW_DAYS  = 30   # rolling baseline window
 DEDUP_WINDOW_HOURS   = 6    # suppress re-emitting same (iso, disease) signal
+SIGNAL_PERSIST_HOURS = 48   # keep signal active in output for N hours after detection
 SPIKE_RATIO_THRESHOLD = 2.5
 SPIKE_MIN_COUNT       = 3   # must see at least this many raw mentions
 CONFIDENCE_EMIT_LOW   = 0.40
@@ -467,25 +468,26 @@ def record_mention(history: dict, iso: str, disease: str, count: int = 1) -> Non
 
 
 def compute_baseline(history: dict, iso: str, disease: str) -> float:
-    """Return mean mentions per 15-min window over the last 30 days."""
+    """Return mean mentions per run window over historical data.
+
+    Excludes data points from the last 12 hours to avoid the current spike
+    inflating the baseline when the engine runs frequently.
+    Falls back to all data if no old-enough points exist.
+    """
     key = f"{iso}_{_slug(disease)}"
     entries = history["baseline"].get(key, [])
     if not entries:
         return 0.0
-    # Total mentions / number of 15-min windows in the period
-    total = sum(e.get("count", 1) for e in entries)
-    # How many 15-min windows in the observation period?
+
     now = datetime.now(timezone.utc)
-    oldest_ts = entries[0].get("ts", now.isoformat())
-    try:
-        oldest = datetime.fromisoformat(oldest_ts)
-        if oldest.tzinfo is None:
-            oldest = oldest.replace(tzinfo=timezone.utc)
-        elapsed_minutes = max((now - oldest).total_seconds() / 60.0, 15.0)
-    except Exception:
-        elapsed_minutes = HISTORY_WINDOW_DAYS * 24 * 60
-    windows = elapsed_minutes / 15.0
-    return total / windows
+    min_age_cutoff = (now - timedelta(hours=12)).isoformat()
+
+    # Prefer data points older than 12h (true historical baseline)
+    old_entries = [e for e in entries if e.get("ts", "") < min_age_cutoff]
+    use_entries = old_entries if len(old_entries) >= 2 else entries
+
+    counts = [e.get("count", 1) for e in use_entries]
+    return sum(counts) / len(counts)
 
 
 def was_recently_emitted(history: dict, iso: str, disease: str) -> bool:
@@ -505,6 +507,32 @@ def was_recently_emitted(history: dict, iso: str, disease: str) -> bool:
 def mark_emitted(history: dict, iso: str, disease: str) -> None:
     key = f"{iso}_{_slug(disease)}"
     history["emitted"][key] = datetime.now(timezone.utc).isoformat()
+
+
+def persist_signal(history: dict, signal: dict) -> None:
+    """Store a full signal object in history for persistence across runs."""
+    if "active_signals" not in history:
+        history["active_signals"] = {}
+    key = f"{signal['iso']}_{_slug(signal['disease'])}"
+    history["active_signals"][key] = signal
+
+
+def get_persistent_signals(history: dict) -> list[dict]:
+    """Return signals still within SIGNAL_PERSIST_HOURS window."""
+    if "active_signals" not in history:
+        return []
+    cutoff = (
+        datetime.now(timezone.utc) - timedelta(hours=SIGNAL_PERSIST_HOURS)
+    ).isoformat()
+    result = []
+    for key, sig in list(history["active_signals"].items()):
+        if sig.get("detected_at", "") >= cutoff:
+            result.append(sig)
+        else:
+            # Expired — remove from history
+            del history["active_signals"][key]
+    return result
+
 
 # ---------------------------------------------------------------------------
 # Regex extraction helpers
@@ -1021,21 +1049,35 @@ def fetch_healthmap() -> list[Article]:
 
 def fetch_africa_cdc() -> list[Article]:
     log("Fetching Africa CDC RSS...")
-    raw = fetch_url("https://africacdc.org/feed/", retries=1)
-    if not raw:
-        return []
-    try:
-        root = ET.fromstring(raw)
-    except ET.ParseError:
-        return []
     results = []
-    for item in root.findall(".//item"):
-        title   = (item.findtext("title") or "").strip()
-        link    = (item.findtext("link") or "").strip()
-        desc    = (item.findtext("description") or "").strip()
-        pubdate = (item.findtext("pubDate") or "").strip()
-        if title:
-            results.append(Article("africa_cdc", title, desc or title, link, pubdate))
+    # Direct RSS often returns 0 items (sparse posting schedule) — always use both
+    for url in [
+        "https://africacdc.org/feed/",
+        "https://africacdc.org/disease-outbreak-news/feed/",
+        "https://africacdc.org/news-and-resources/press-releases/feed/",
+    ]:
+        raw = fetch_url(url, retries=1)
+        if not raw:
+            continue
+        try:
+            items = _parse_feed_items(raw, "africa_cdc")
+            results.extend(items)
+        except Exception:
+            pass
+        if results:
+            break
+
+    # Always supplement with Google News — Africa CDC posts sporadically
+    gn_url = (
+        "https://news.google.com/rss/search"
+        "?q=%22Africa+CDC%22+OR+%22Africa+Centres%22+outbreak+disease+alert"
+        "&hl=en&gl=ZA&ceid=ZA:en"
+    )
+    raw = fetch_url(gn_url, retries=1)
+    if raw:
+        gn_items = _parse_feed_items(raw, "africa_cdc")
+        results.extend(gn_items)
+
     log(f"  -> {len(results)} Africa CDC items")
     return results
 
@@ -1201,44 +1243,38 @@ def fetch_hk_chp() -> list[Article]:
 def fetch_woah() -> list[Article]:
     log("Fetching WOAH animal disease events...")
     results = []
-    # WAHIS v3 public events API (updated endpoint)
-    urls_to_try = [
-        "https://wahis.woah.org/api/v1/public/event?pageNumber=1&pageSize=25&sortBy=reportDate&sortDirection=DESC",
-        "https://wahis.woah.org/api/v1/public/event/search?pageSize=25&pageNumber=1",
-        "https://wahis.woah.org/api/v1/public/report/immediate-notification?pageNumber=1&pageSize=25",
+
+    # Primary: WOAH press release RSS (WAHIS API consistently returns 400)
+    woah_feeds = [
+        "https://www.woah.org/en/feed/?post_type=press-release",
+        "https://www.woah.org/en/feed/?post_type=disease-information",
+        "https://www.woah.org/feed/",
     ]
-    for url in urls_to_try:
-        raw = fetch_url(url, retries=1, extra_headers={
-            "Accept": "application/json",
-            "Origin": "https://wahis.woah.org",
-            "Referer": "https://wahis.woah.org/",
-        })
+    for url in woah_feeds:
+        raw = fetch_url(url, retries=1, extra_headers={"Accept": "application/rss+xml, text/xml"})
         if not raw:
             continue
         try:
-            data = json.loads(raw)
+            items = _parse_feed_items(raw, "woah")
+            if items:
+                results.extend(items)
+                log(f"  WOAH RSS: {len(items)} items")
+                break
         except Exception:
-            continue
-        # Handle various response shapes
-        items = (data.get("data") or data.get("content") or
-                 data.get("reportList") or data.get("eventList") or
-                 (data if isinstance(data, list) else []))
-        if not items:
-            continue
-        for item in items[:30]:
-            # Nested objects may hold disease/country
-            dis_obj = item.get("disease") or {}
-            cty_obj = item.get("country") or {}
-            disease = (item.get("diseaseName") or dis_obj.get("name") or
-                       item.get("diseaseEn") or "").strip()
-            country = (item.get("countryName") or cty_obj.get("name") or
-                       item.get("countryEn") or "").strip()
-            date    = item.get("reportDate") or item.get("startDate") or item.get("date") or ""
-            if disease:
-                title = f"[WOAH Animal Alert] {disease}" + (f" — {country}" if country else "")
-                results.append(Article("woah", title, title, "", str(date)))
-        if results:
-            break
+            pass
+
+    # Fallback: Google News for WOAH disease notifications
+    if not results:
+        gn_url = (
+            "https://news.google.com/rss/search"
+            "?q=WOAH+OIE+%22animal+disease%22+outbreak+notification+avian+influenza"
+            "&hl=en&gl=US&ceid=US:en"
+        )
+        raw = fetch_url(gn_url, retries=1)
+        if raw:
+            items = _parse_feed_items(raw, "woah")
+            results.extend(items)
+
     log(f"  -> {len(results)} WOAH animal disease events")
     return results
 
@@ -2193,6 +2229,205 @@ def fetch_who_ihr() -> list[Article]:
 
 
 # ---------------------------------------------------------------------------
+# Source 42: NCBI Entrez — Genomic surveillance (GenBank sequence submissions)
+#            When researchers sequence a new pathogen sample, they deposit it
+#            in GenBank within days. Spike in submissions = active outbreak.
+#            For rare pathogens (Ebola, Marburg, Nipah): ANY submission is signal.
+#            Lead time: 1-4 weeks ahead of WHO formal alert on novel strains.
+# ---------------------------------------------------------------------------
+
+NCBI_PATHOGENS = [
+    # (display_name, ncbi_search_term, rare=True means any detection is signal)
+    ("Avian Influenza H5N1", "H5N1+influenza[All+Fields]",       False),
+    ("Ebola virus disease",  "Ebolavirus[Organism]",              True),
+    ("Marburg virus disease","Marburgvirus[Organism]",            True),
+    ("Nipah virus",          "Nipah+virus[Organism]",             True),
+    ("Mpox",                 "Monkeypox+virus[Organism]",         False),
+    ("COVID-19",             "SARS-CoV-2[Organism]",              False),
+    ("Influenza",            "Influenza+A+virus[Organism]",       False),
+]
+NCBI_HEADERS = {
+    "User-Agent": "Vigilo/3.0 (vigilo.cc; outbreak-monitoring; contact@vigilo.cc)",
+    "Accept": "application/json",
+}
+NCBI_BASE_HISTORY = os.path.join(
+    os.path.dirname(__file__), "..", "public", "ncbi_baseline.json"
+)
+
+def fetch_ncbi_genomics() -> list[Article]:
+    log("Fetching NCBI GenBank genomic surveillance...")
+    results = []
+
+    # Load sequence count baseline (rolling 14-day)
+    try:
+        with open(NCBI_BASE_HISTORY) as f:
+            baseline: dict = json.load(f)
+    except Exception:
+        baseline = {}
+    new_baseline = dict(baseline)
+
+    # Date window for "recent" sequences (last 14 days)
+    now = datetime.now(timezone.utc)
+    date_to   = now.strftime("%Y/%m/%d")
+    date_from = (now - timedelta(days=14)).strftime("%Y/%m/%d")
+
+    try:
+        for display_name, term, is_rare in NCBI_PATHOGENS:
+            try:
+                # Count sequences deposited in last 14 days
+                encoded_term = parse.quote(f"{term}+{date_from}[PDAT]:{date_to}[PDAT]")
+                url = (
+                    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+                    f"?db=nuccore&term={encoded_term}&retmax=5&retmode=json"
+                )
+                raw = fetch_url(url, timeout=10, retries=1,
+                                extra_headers=NCBI_HEADERS)
+                if not raw:
+                    continue
+                data = json.loads(raw)
+                res = data.get("esearchresult", {})
+                count = int(res.get("count", 0))
+                ids   = res.get("idlist", [])[:3]
+
+                # Update baseline (simple rolling average)
+                prev_avg = baseline.get(display_name, {}).get("avg14d", 0)
+                new_avg  = 0.4 * count + 0.6 * prev_avg if prev_avg else count
+                new_baseline[display_name] = {
+                    "avg14d": new_avg,
+                    "last": count,
+                    "updated": now.isoformat(),
+                }
+
+                # Determine if this is a signal
+                is_signal = False
+                signal_reason = ""
+
+                if is_rare and count > 0:
+                    # Any submission for rare hemorrhagic fever pathogens = signal
+                    is_signal = True
+                    signal_reason = f"{count} new sequences deposited (rare pathogen)"
+                elif not is_rare and prev_avg > 5 and count > prev_avg * 2:
+                    # 2× spike vs baseline for common pathogens
+                    is_signal = True
+                    signal_reason = f"{count} sequences deposited vs avg {prev_avg:.0f}/14d (+{count/max(prev_avg,1):.1f}×)"
+
+                if not is_signal:
+                    continue
+
+                # Get titles of most recent sequences
+                headline = signal_reason
+                if ids:
+                    try:
+                        sum_url = (
+                            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
+                            f"?db=nuccore&id={','.join(ids)}&retmode=json"
+                        )
+                        sum_raw = fetch_url(sum_url, timeout=8, retries=0,
+                                           extra_headers=NCBI_HEADERS)
+                        if sum_raw:
+                            sdata = json.loads(sum_raw)
+                            first_id = ids[0]
+                            rec = sdata.get("result", {}).get(first_id, {})
+                            title_raw = rec.get("title", "")
+                            if title_raw:
+                                headline = f"{signal_reason} — latest: {title_raw[:80]}"
+                    except Exception:
+                        pass
+
+                title = f"[Genomics] {display_name}: {signal_reason}"
+                body  = (
+                    f"NCBI GenBank: {count} {display_name} genome sequences submitted "
+                    f"(last 14 days). {headline}. "
+                    f"Sequence submissions precede clinical reports by 1-3 weeks."
+                )
+                results.append(Article(
+                    "ncbi_genomics", title, body,
+                    f"https://www.ncbi.nlm.nih.gov/nuccore/?term={parse.quote(term)}",
+                    date_to,
+                ))
+                log(f"  NCBI {display_name}: {signal_reason}")
+
+            except Exception as e:
+                log(f"  NCBI {display_name} error: {e}")
+                continue
+
+        # Save updated baseline
+        try:
+            os.makedirs(os.path.dirname(NCBI_BASE_HISTORY), exist_ok=True)
+            with open(NCBI_BASE_HISTORY, "w") as f:
+                json.dump(new_baseline, f, indent=2)
+        except Exception as e:
+            log(f"  NCBI baseline save error: {e}")
+
+    except Exception as e:
+        log(f"  NCBI Genomics error: {e}")
+        return []
+
+    log(f"  -> {len(results)} NCBI genomic signals")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Source 43: Geographic coverage gaps — Indonesia, Philippines, Brazil, LatAm
+#            These regions are missing from all other sources.
+#            Each covers a major outbreak-prone area with its own language.
+# ---------------------------------------------------------------------------
+
+def fetch_geo_gaps() -> list[Article]:
+    log("Fetching geographic gap coverage (ID/PH/BR/ME)...")
+    results = []
+    geo_feeds = [
+        # Indonesia — H5N1 endemic, dengue, rabies, hand-foot-mouth
+        (
+            "https://news.google.com/rss/search"
+            "?q=Indonesia+wabah+penyakit+outbreak+Kemenkes+KLB"
+            "&hl=id&gl=ID&ceid=ID:id",
+            "indonesia_moh",
+        ),
+        # Philippines — dengue outbreaks, measles, leptospirosis
+        (
+            "https://news.google.com/rss/search"
+            "?q=Philippines+DOH+outbreak+disease+alert+case"
+            "&hl=en-PH&gl=PH&ceid=PH:en",
+            "philippines_doh",
+        ),
+        # Brazil / LatAm — yellow fever, dengue, chikungunya, Zika
+        (
+            "https://news.google.com/rss/search"
+            "?q=Brazil+surto+doença+outbreak+saude+ministerio+alerta"
+            "&hl=pt-BR&gl=BR&ceid=BR:pt-419",
+            "brazil_svs",
+        ),
+        # Middle East — MERS-CoV, cholera, poliovirus
+        (
+            "https://news.google.com/rss/search"
+            "?q=Middle+East+MERS+outbreak+disease+ministry+health+alert"
+            "&hl=en&gl=SA&ceid=SA:en",
+            "middleeast_who",
+        ),
+        # East Africa — Marburg, Rift Valley Fever, Yellow Fever
+        (
+            "https://news.google.com/rss/search"
+            "?q=East+Africa+Ethiopia+Kenya+outbreak+disease+virus+epidemic"
+            "&hl=en&gl=KE&ceid=KE:en",
+            "east_africa",
+        ),
+    ]
+    for url, src_id in geo_feeds:
+        try:
+            raw = fetch_url(url, retries=1)
+            if raw:
+                items = _parse_feed_items(raw, src_id)
+                if items:
+                    results.extend(items)
+                    log(f"  {src_id}: {len(items)} items")
+        except Exception as e:
+            log(f"  {src_id} error: {e}")
+    log(f"  -> {len(results)} geographic gap items")
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Source 39: CDC NWSS — Wastewater surveillance (COVID/Flu/RSV)
 #            Measures pathogen RNA in sewage BEFORE people visit clinics.
 #            Lead time: 7-14 days ahead of official clinical surveillance.
@@ -2599,6 +2834,8 @@ def collect_all_articles() -> list[Article]:
         fetch_cdc_wastewater,       # Pathogen RNA in sewage — 7-14 days before clinics
         fetch_who_regional,         # WHO AFRO/EMRO/WPRO/EURO/SEARO dedicated feeds
         fetch_opensky_aviation,     # ADS-B flight volume drops → population restriction
+        fetch_ncbi_genomics,        # GenBank sequence submission spikes = outbreak investigation
+        fetch_geo_gaps,             # Indonesia/Philippines/Brazil/ME/East Africa coverage
     ]
     for fetcher in fetchers:
         try:
@@ -2711,16 +2948,27 @@ def build_signals(
         iso, disease = key.split("|", 1)
         current_count = len(articles)
 
-        if current_count < SPIKE_MIN_COUNT:
+        # Check if this was a previously active signal (ongoing outbreak)
+        emitted_key = f"{iso}_{_slug(disease)}"
+        previously_emitted = emitted_key in history.get("emitted", {})
+
+        # Need at least SPIKE_MIN_COUNT for a new signal,
+        # but only 1 article to sustain a previously-seen outbreak
+        min_count = 1 if previously_emitted else SPIKE_MIN_COUNT
+        if current_count < min_count:
             continue  # Not enough raw signal
 
         baseline_mean = compute_baseline(history, iso, disease)
         spike_ratio = current_count / (baseline_mean + 1.0)
 
         if spike_ratio < SPIKE_RATIO_THRESHOLD:
-            # Not anomalous vs baseline — record and continue
-            record_mention(history, iso, disease, current_count)
-            continue
+            if previously_emitted:
+                # Ongoing outbreak — keep showing even if baseline has normalized
+                spike_ratio = max(spike_ratio, 1.0)
+            else:
+                # Not anomalous vs baseline — record and continue
+                record_mention(history, iso, disease, current_count)
+                continue
 
         # Determine geo from articles
         country_name, lat, lng = None, None, None
@@ -2788,18 +3036,20 @@ def build_signals(
             record_mention(history, iso, disease, current_count)
             continue
 
-        if was_recently_emitted(history, iso, disease):
-            log(f"  Skip (recently emitted): {disease} / {iso}")
-            continue
+        # Check if this is a new signal (not emitted recently) — affects Telegram only
+        is_new = not was_recently_emitted(history, iso, disease)
 
-        # Build signal object
+        # Build signal object — ALWAYS include in output regardless of dedup
         headline = articles[0].title
         links    = list(dict.fromkeys(a.url for a in articles if a.url))[:5]
         summary  = ai_summary or _strip_html(articles[0].body)[:200]
 
         signal = {
             "id":                  make_signal_id(disease, iso),
-            "detected_at":         datetime.now(timezone.utc).isoformat(),
+            "detected_at":         history["emitted"].get(
+                emitted_key,
+                datetime.now(timezone.utc).isoformat()
+            ),  # preserve original detection time for existing signals
             "disease":             disease,
             "country":             country_name or iso,
             "iso":                 iso,
@@ -2815,14 +3065,19 @@ def build_signals(
             "summary":             summary,
             "links":               links,
             "ai_processed":        ai_processed,
+            "is_new":              is_new,
         }
         signals.append(signal)
 
         record_mention(history, iso, disease, current_count)
-        mark_emitted(history, iso, disease)
+        if is_new:
+            mark_emitted(history, iso, disease)
+        # Always persist/update signal object in history for cross-run continuity
+        persist_signal(history, signal)
         log(
             f"  SIGNAL [{signal['level'].upper()}] {disease} / {iso} "
             f"confidence={confidence:.2f} spike={spike_ratio:.1f}x sources={source_names}"
+            + ("" if is_new else " [known]")
         )
 
     return signals
@@ -2961,18 +3216,21 @@ def notify_telegram(signals: list[dict], dry_run: bool = False) -> None:
     2. Subscriber mode    — calls Netlify function which fans out to all /start subscribers
 
     Skips silently if TELEGRAM_BOT_TOKEN is not set.
+    Only notifies for signals flagged is_new=True (dedup window not hit).
     """
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     if not token:
         return
 
-    message = _build_tg_message(signals)
+    # Only notify about genuinely new signals
+    new_signals = [s for s in signals if s.get("is_new", True)]
+    message = _build_tg_message(new_signals)
     if not message:
         return
 
     if dry_run:
-        alert_count = sum(1 for s in signals if s.get("level") in ("urgent", "alert"))
-        log(f"  [dry-run] Would send {alert_count} Telegram alerts")
+        alert_count = sum(1 for s in new_signals if s.get("level") in ("urgent", "alert"))
+        log(f"  [dry-run] Would send {alert_count} Telegram alerts ({len(new_signals)} new signals)")
         return
 
     # ── Mode 1: Direct admin notifications ───────────────────────────────────
@@ -2994,7 +3252,7 @@ def notify_telegram(signals: list[dict], dry_run: bool = False) -> None:
 
     internal_secret = os.environ.get("INTERNAL_SECRET", "")
     payload = json.dumps({
-        "signals": [s for s in signals if s.get("level") in ("urgent", "alert")],
+        "signals": [s for s in new_signals if s.get("level") in ("urgent", "alert")],
         "secret": internal_secret,
     }).encode("utf-8")
 
@@ -3032,7 +3290,17 @@ def run(dry_run: bool = False) -> int:
     # Anomaly detection + signal generation
     signals = build_signals(buckets, history)
 
-    log(f"Signals generated: {len(signals)}")
+    log(f"Signals generated: {len(signals)} (fresh this run)")
+
+    # Merge with persistent signals from previous runs (within SIGNAL_PERSIST_HOURS)
+    persistent = get_persistent_signals(history)
+    current_keys = {f"{s['iso']}_{_slug(s['disease'])}" for s in signals}
+    carry_over = [s for s in persistent if f"{s['iso']}_{_slug(s['disease'])}" not in current_keys]
+    if carry_over:
+        log(f"  + {len(carry_over)} persistent signals carried over from history")
+        signals = signals + carry_over
+
+    log(f"  Total signals for output: {len(signals)}")
 
     # Write output
     write_output(signals, SOURCE_NAMES, dry_run)
