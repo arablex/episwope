@@ -48,11 +48,18 @@ jobs:
         run: python3 scripts/forecast.py
         continue-on-error: true
 
+      - name: Run agentic OSINT investigator
+        # Must run AFTER risk_aggregate (seeds from risk_events.json)
+        run: python3 scripts/osint_agent.py
+        continue-on-error: true
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
       - name: Commit signals if changed
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json public/osint_dossiers.json || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else

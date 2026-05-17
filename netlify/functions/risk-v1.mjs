@@ -96,15 +96,16 @@ function haversine(a, b, c, d) {
 }
 
 // ── Static-blob cache (warm invocations) ──
-let _cache = { at: 0, idx: null, evt: null, fc: null };
+let _cache = { at: 0, idx: null, evt: null, fc: null, os: null };
 async function loadData(origin) {
   if (Date.now() - _cache.at < 60000 && _cache.idx) return _cache;
-  const [i, e, f] = await Promise.all([
+  const [i, e, f, o] = await Promise.all([
     fetch(`${origin}/public/risk_index.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
     fetch(`${origin}/public/risk_events.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
     fetch(`${origin}/public/forecast.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
+    fetch(`${origin}/public/osint_dossiers.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
   ]);
-  if (i && e) _cache = { at: Date.now(), idx: i, evt: e, fc: f };
+  if (i && e) _cache = { at: Date.now(), idx: i, evt: e, fc: f, os: o };
   return _cache;
 }
 
@@ -146,7 +147,7 @@ export default async (req) => {
   const lang = q.get('lang') === 'ru' ? 'ru' : 'en';
 
   const origin = u.origin;
-  const { idx, evt, fc } = await loadData(origin);
+  const { idx, evt, fc, os } = await loadData(origin);
   if (!idx || !evt) return J({ error: 'risk_data_unavailable' }, 503);
 
   const now = Date.now();
@@ -186,6 +187,41 @@ export default async (req) => {
         model: fc.meta?.model, ...fc.forecast[country] }
     : null;
 
+  // Agentic OSINT — UNVERIFIED investigative leads (country mode only).
+  // QUARANTINE GATE: only status==='lead' surfaces; never added to the
+  // composite or any score. Explicitly tagged so consumers cannot mistake
+  // a lead for a confirmed event.
+  let investigative_leads = null;
+  if (country && os && Array.isArray(os.dossiers)) {
+    const leads = os.dossiers
+      .filter((d) => d.country === country && d.status === 'lead')
+      .map((d) => ({
+        id: d.id,
+        category: d.category,
+        claim: d.claim,
+        confidence: d.confidence,
+        independent_sources: d.independent_sources,
+        official_corroboration: d.official_corroboration,
+        evidence_domains: d.evidence_domains,
+        lead_time_est_hours: d.lead_time_est_hours,
+        investigated_at: d.investigated_at,
+        status: 'unverified_lead',
+        in_composite: false,
+        disclaimer: d.disclaimer ||
+          'Agentic OSINT — UNVERIFIED investigative lead. Not a confirmed '
+          + 'event; not included in any risk score.',
+      }));
+    if (leads.length) {
+      investigative_leads = {
+        note: 'Pre-confirmation OSINT signals. Quarantine-by-default; '
+            + 'NOT scored, NOT in composite_risk. Directional only.',
+        model: os.meta?.model || 'agentic OSINT v0',
+        count: leads.length,
+        leads,
+      };
+    }
+  }
+
   const body = {
     api_version: '1.0',
     generated_at: evt.meta?.generated_at || new Date().toISOString(),
@@ -193,6 +229,7 @@ export default async (req) => {
     query: { ...queryEcho, history_days: histDays, min_confidence: minConf, lang },
     ...scoring,
     projection,
+    investigative_leads,
     events: includeEvents
       ? scoped.sort((a, b) => (b.severity - a.severity) || (b.confidence - a.confidence))
       : undefined,
