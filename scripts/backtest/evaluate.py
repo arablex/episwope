@@ -5,7 +5,6 @@ An alarm at (y,m) "covers" an onset if it falls within the window
 (True Skill Statistic / Peirce). Lead time in weeks.
 """
 import random
-import statistics
 
 
 def _months_between(a, b):
