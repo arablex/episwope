@@ -2420,15 +2420,7 @@
         </div>
       </div>
     </div>
-    <!-- ── Live News Ticker ── -->
-    <div id="newsTicker" style="display:none">
-      <span class="ticker-label"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg> Live</span>
-      <div class="ticker-track">
-        <div class="ticker-inner" id="tickerInner">
-          <!-- populated by JS from signals.json -->
-        </div>
-      </div>
-    </div>
+    <!-- Live ticker removed — superseded by the docked #sigWidget (same data) -->
 
     </div><!-- /view-globe -->
 
@@ -3250,7 +3242,6 @@ async function loadSignals() {
     _lastSignalIds = new Set(sigs.map(s => s.id));
     _signalsLoaded = true;
     _renderSignals(sigs, data.meta);
-    _renderTicker(sigs);
   } catch(e) {
     console.debug('Signals fetch error', e);
   }
@@ -3536,6 +3527,21 @@ function _startSignalPolling() {
     const collapsed = widget.classList.toggle('is-collapsed');
     head.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   });
+
+  // Dock the widget so its bottom edge aligns with the left sidebar
+  // (and right panel) bottom — robust across all breakpoints.
+  function _dockWidget(){
+    const sb = document.querySelector('.sidebar');
+    if (!sb) return;
+    const r = sb.getBoundingClientRect();
+    const fromBottom = Math.max(window.innerHeight - r.bottom, 12);
+    widget.style.bottom = fromBottom + 'px';
+  }
+  _dockWidget();
+  window.addEventListener('resize', _dockWidget);
+  // Re-dock once layout settles (fonts/grid)
+  setTimeout(_dockWidget, 400);
+  setTimeout(_dockWidget, 1500);
 })();
 
 // Start on page load
