@@ -37,7 +37,7 @@ jobs:
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else

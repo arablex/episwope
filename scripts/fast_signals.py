@@ -3019,18 +3019,74 @@ def build_signals(
         else:
             # No AI: use source credibility heuristic
             credibility_map = {
-                "promed": 0.85,
-                "reliefweb": 0.80,
-                "google_news": 0.60,
-                "gdelt": 0.55,
-                "gdelt_theme": 0.55,
-                "reddit": 0.40,
-                "wikipedia": 0.50,
+                # Tier 1 — official disease surveillance (0.85-0.95)
+                "promed":            0.90,
+                "who_don":           0.95,
+                "who_ihr":           0.92,
+                "who_afro":          0.90,
+                "who_emro":          0.90,
+                "who_wpro":          0.90,
+                "who_euro":          0.90,
+                "who_searo":         0.90,
+                "ecdc_cdtr":         0.90,
+                "paho":              0.88,
+                "africa_cdc":        0.85,
+                "woah":              0.85,
+                "fao_empres":        0.85,
+                "cdc_wastewater":    0.92,
+                "ncbi_genomics":     0.88,
+                # Tier 2 — national agencies (0.75-0.85)
+                "cdc_mmwr":          0.85,
+                "rki":               0.82,
+                "rospotrebnadzor":   0.75,
+                "hk_chp":            0.82,
+                "taiwan_cdc":        0.82,
+                "japan_niid":        0.82,
+                "singapore_moh":     0.82,
+                "india_idsp":        0.80,
+                "nigeria_ncdc":      0.78,
+                "sa_nicd":           0.80,
+                "flunet":            0.85,
+                "euromomo":          0.85,
+                # Tier 3 — professional aggregators (0.65-0.75)
+                "reliefweb":         0.75,
+                "cidrap":            0.78,
+                "outbreak_news_today": 0.72,
+                "medrxiv":           0.70,
+                "biorxiv":           0.68,
+                "clinicaltrials":    0.70,
+                "healthmap":         0.68,
+                "drug_shortages":    0.65,
+                "github_epi":        0.68,
+                "telegram_ru":       0.65,
+                # Tier 4 — geographic gap coverage (0.60-0.65)
+                "indonesia_moh":     0.65,
+                "philippines_doh":   0.65,
+                "brazil_svs":        0.63,
+                "middleeast_who":    0.62,
+                "east_africa":       0.62,
+                # Tier 5 — general media / social (0.40-0.60)
+                "google_news":       0.60,
+                "google_news_ru":    0.58,
+                "google_news_zh":    0.58,
+                "google_trends":     0.55,
+                "gdelt":             0.55,
+                "gdelt_theme":       0.55,
+                "wikipedia":         0.50,
+                "reddit":            0.40,
             }
-            scores = [credibility_map.get(s, 0.5) for s in source_names]
-            ai_score = sum(scores) / len(scores) if scores else 0.5
+            scores = [credibility_map.get(s, 0.55) for s in source_names]
+            ai_score = sum(scores) / len(scores) if scores else 0.55
 
-        confidence = compute_confidence(spike_ratio, source_domains, has_coords, ai_score)
+        new_confidence = compute_confidence(spike_ratio, source_domains, has_coords, ai_score)
+
+        # For ongoing known outbreaks (spike normalized), preserve the best confidence seen
+        # so URGENT/ALERT signals don't downgrade just because baseline caught up
+        if previously_emitted and "active_signals" in history and emitted_key in history["active_signals"]:
+            stored_conf = history["active_signals"][emitted_key].get("confidence", 0.0)
+            confidence = max(new_confidence, stored_conf)
+        else:
+            confidence = new_confidence
 
         if confidence < CONFIDENCE_EMIT_LOW:
             record_mention(history, iso, disease, current_count)
@@ -3142,8 +3198,29 @@ def write_output(signals: list[dict], sources_checked: list[str], dry_run: bool)
 # ---------------------------------------------------------------------------
 
 SOURCE_NAMES = [
-    "gdelt", "gdelt_theme", "google_news", "promed",
-    "reddit", "wikipedia", "reliefweb",
+    # News aggregators
+    "gdelt", "gdelt_theme", "google_news", "google_news_ru", "google_news_zh",
+    # Global health authorities
+    "who_don", "who_ihr", "who_afro", "who_emro", "who_wpro", "who_euro", "who_searo",
+    "ecdc_cdtr", "paho", "africa_cdc",
+    # National health agencies
+    "cdc_mmwr", "rki", "rospotrebnadzor", "hk_chp", "taiwan_cdc",
+    "japan_niid", "singapore_moh", "india_idsp", "nigeria_ncdc", "sa_nicd",
+    # Veterinary / animal disease
+    "woah", "fao_empres",
+    # Academic / preprints
+    "promed", "medrxiv", "biorxiv",
+    # Community / social
+    "reddit", "wikipedia", "github_epi", "telegram_ru",
+    # Aggregators
+    "reliefweb", "cidrap", "outbreak_news_today", "healthmap",
+    # Surveillance
+    "flunet", "euromomo", "clinicaltrials", "drug_shortages", "google_trends",
+    "cdc_wastewater",
+    # Infrastructure signals
+    "opensky_aviation", "ncbi_genomics",
+    # Geographic gaps
+    "indonesia_moh", "philippines_doh", "brazil_svs", "middleeast_who", "east_africa",
 ]
 
 
