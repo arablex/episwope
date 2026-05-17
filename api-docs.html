@@ -126,6 +126,7 @@
       <a href="#params">Parameters</a>
       <a href="#scoring">Scoring</a>
       <a href="#webhooks">Webhooks</a>
+      <a href="#simulate">What-If</a>
       <a href="/widgets">Widgets</a>
       <a href="#tiers">Access</a>
       <a href="mailto:hello@vigilo.cc">Contact</a>
@@ -317,6 +318,28 @@ curl -X POST <span class="pre-s">"https://vigilo.cc/api/v1/risk/webhooks"</span>
   <span class="k">"composite_risk"</span>: { <span class="k">"score"</span>: <span class="pre-s">4.6</span>, <span class="k">"band"</span>: <span class="pre-s">"critical"</span>,
                       <span class="k">"dominant_category"</span>: <span class="pre-s">"conflict"</span> },
   <span class="k">"triggered_at"</span>: <span class="pre-s">"2026-05-17T12:00:00Z"</span>
+}</pre>
+  </section>
+
+  <section id="simulate">
+    <h2>What-If simulator <span class="badge b-get" style="background:rgba(232,89,12,.12);color:#b85a00">Enterprise</span></h2>
+    <p>Drop a synthetic force-majeure trigger; we cascade it across a
+    curated exposure graph (land adjacency + logistics corridors:
+    Shanghai, Malacca, Suez, Hormuz, Bosphorus, Panama, Gulf air…) and
+    recompute every impacted geography's Composite Risk. Sandboxed —
+    read-only, the live index is never touched.</p>
+    <pre><span class="pre-c"># Shanghai port / China manufacturing shock</span>
+curl <span class="pre-s">"https://vigilo.cc/api/v1/simulate?country=CN&category=transport&severity=5"</span></pre>
+    <p class="sub"><code>category</code>: any of the 7 domains ·
+    <code>severity</code> 0–5 · <code>hops</code> 1–3. Returns ranked
+    impacted countries (baseline → projected composite, Δ, hop, link
+    type, ETA in days) + corridors at risk.</p>
+    <pre>{
+  <span class="k">"trigger"</span>: { <span class="k">"country"</span>:<span class="pre-s">"CN"</span>, <span class="k">"category"</span>:<span class="pre-s">"transport"</span>, <span class="k">"severity"</span>:<span class="pre-s">5</span> },
+  <span class="k">"corridors_at_risk"</span>: [ { <span class="k">"id"</span>:<span class="pre-s">"shanghai_mfg"</span>, … } ],
+  <span class="k">"impacted"</span>: [
+    { <span class="k">"country"</span>:<span class="pre-s">"VN"</span>, <span class="k">"hop"</span>:<span class="pre-s">1</span>, <span class="k">"baseline"</span>:<span class="pre-s">0.8</span>,
+      <span class="k">"projected"</span>:<span class="pre-s">2.4</span>, <span class="k">"delta"</span>:<span class="pre-s">1.6</span>, <span class="k">"eta_days"</span>:<span class="pre-s">2</span> } … ]
 }</pre>
   </section>
 

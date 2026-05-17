@@ -1,0 +1,2683 @@
+{
+  "meta": {
+    "generated_at": "2026-05-17T20:52:57.129095+00:00",
+    "model": "curated exposure graph v0 (land adjacency + logistics corridors)",
+    "nodes": 108,
+    "corridors": [
+      "shanghai_mfg",
+      "malacca",
+      "suez",
+      "hormuz",
+      "bosphorus",
+      "rotterdam",
+      "panama",
+      "gulf_air",
+      "sea_air"
+    ],
+    "note": "Auditable reference graph. Cascade is a scenario simulation, not a forecast."
+  },
+  "edges": {
+    "RU": [
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "GE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "FI",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "EE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LV",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LT",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "UA": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "RO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "HU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "BY": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LT",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LV",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "GE": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "AZ": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "KZ": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CN": [
+      {
+        "to": "US",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "DE",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "JP",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "KR",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "VN",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "IN",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "SG",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "NL",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "GB",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "FR",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "IT",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "BR",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "TR",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "AE",
+        "w": 0.55,
+        "type": "trade"
+      },
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AF",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "VN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NP",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KP",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "MN": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "FI": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "EE": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "LV": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BY",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "LT": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "PL": [
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LT",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      }
+    ],
+    "RO": [
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "MD": [
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "HU": [
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "SK": [
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "DE": [
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AT",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "DK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "CZ": [
+      {
+        "to": "PL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "FR": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IT",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ES",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LU",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "NL": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "DE",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "FR",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "BE",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "GB",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "PL",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "IT",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "ES",
+        "w": 0.45,
+        "type": "trade"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      }
+    ],
+    "BE": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      }
+    ],
+    "AT": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CH": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "DK": [
+      {
+        "to": "DE",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "IT": [
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      }
+    ],
+    "ES": [
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      }
+    ],
+    "LU": [
+      {
+        "to": "FR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "TR": [
+      {
+        "to": "GR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "GE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "EG",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "UA",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "RU",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "RO",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "BG",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      }
+    ],
+    "GR": [
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "BG": [
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TR",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "AM": [
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "IR": [
+      {
+        "to": "AE",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "SA",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "QA",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "KW",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "IN",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "JP",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "KR",
+        "w": 0.6,
+        "type": "maritime"
+      },
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AF",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PK",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "IQ": [
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "JO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KW",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "SY": [
+      {
+        "to": "TR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "JO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LB",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "TM": [
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AF",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "AF": [
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "PK": [
+      {
+        "to": "IR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AF",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "JO": [
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "SA": [
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "JO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "OM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "YE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "QA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "KW": [
+      {
+        "to": "IQ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      }
+    ],
+    "IL": [
+      {
+        "to": "SY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LB",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "JO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "EG",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "LB": [
+      {
+        "to": "SY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IL",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "EG": [
+      {
+        "to": "NL",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "DE",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "IT",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "FR",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "GB",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "ES",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "IN",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "SA",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "TR",
+        "w": 0.55,
+        "type": "maritime"
+      },
+      {
+        "to": "IL",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "AE": [
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "OM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "QA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IN",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "PK",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "GB",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "DE",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "FR",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "SA",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "EG",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "TH",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "SG",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "KE",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "NG",
+        "w": 0.4,
+        "type": "air"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "OM": [
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "YE",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "YE": [
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "OM",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "QA": [
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      }
+    ],
+    "LY": [
+      {
+        "to": "EG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "SD": [
+      {
+        "to": "EG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SS",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LY",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "ET": [
+      {
+        "to": "SD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SS",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ER",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "DJ",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "SS": [
+      {
+        "to": "SD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "TD": [
+      {
+        "to": "SD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NG",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "KE": [
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SS",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "UG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "SO": [
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KE",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "ER": [
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "DJ": [
+      {
+        "to": "ET",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "UG": [
+      {
+        "to": "KE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "TZ": [
+      {
+        "to": "KE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "UG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "RW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BI",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MW",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "RW": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "BI": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CD": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CF",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SS",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "UG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "RW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BI",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AO",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "ZM": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MZ",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "MZ": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "MW": [
+      {
+        "to": "TZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MZ",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CG": [
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CF": [
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "AO": [
+      {
+        "to": "CD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "NG": [
+      {
+        "to": "BJ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "BJ": [
+      {
+        "to": "NG",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "NE": [
+      {
+        "to": "NG",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CM": [
+      {
+        "to": "NG",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "ZW": [
+      {
+        "to": "MZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "ZA": [
+      {
+        "to": "MZ",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ZW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BW",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "BW": [
+      {
+        "to": "ZA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "NA": [
+      {
+        "to": "ZA",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "IN": [
+      {
+        "to": "PK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "NP",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BD",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LK",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "NP": [
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "BD": [
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MM",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "MM": [
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BD",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "LK": [
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "VN": [
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "LA": [
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "TH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "VN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "KP": [
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "TH": [
+      {
+        "to": "MM",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "KH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "MY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "KH": [
+      {
+        "to": "TH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "LA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "VN",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "MY": [
+      {
+        "to": "TH",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "ID",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "ID": [
+      {
+        "to": "MY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PG",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "SG": [
+      {
+        "to": "MY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "JP",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "KR",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "IN",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "TH",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "VN",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "ID",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "MY",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "AE",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "SA",
+        "w": 0.5,
+        "type": "maritime"
+      },
+      {
+        "to": "TH",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "ID",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "MY",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "VN",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "PH",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "IN",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "CN",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "AU",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "JP",
+        "w": 0.38,
+        "type": "air"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "PG": [
+      {
+        "to": "ID",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "BR": [
+      {
+        "to": "AR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "BO",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PY",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "VE",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      }
+    ],
+    "AR": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "CO": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      }
+    ],
+    "PE": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      }
+    ],
+    "BO": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "PY": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "VE": [
+      {
+        "to": "BR",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "MX": [
+      {
+        "to": "US",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      }
+    ],
+    "US": [
+      {
+        "to": "MX",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CA",
+        "w": 0.5,
+        "type": "land"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "PA",
+        "w": 0.27,
+        "type": "maritime"
+      }
+    ],
+    "CA": [
+      {
+        "to": "US",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "HT": [
+      {
+        "to": "DO",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "DO": [
+      {
+        "to": "HT",
+        "w": 0.5,
+        "type": "land"
+      }
+    ],
+    "JP": [
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      },
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "KR": [
+      {
+        "to": "IR",
+        "w": 0.36,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "SG",
+        "w": 0.3,
+        "type": "maritime"
+      }
+    ],
+    "GB": [
+      {
+        "to": "CN",
+        "w": 0.33,
+        "type": "trade"
+      },
+      {
+        "to": "EG",
+        "w": 0.33,
+        "type": "maritime"
+      },
+      {
+        "to": "NL",
+        "w": 0.27,
+        "type": "trade"
+      },
+      {
+        "to": "AE",
+        "w": 0.24,
+        "type": "air"
+      }
+    ],
+    "PA": [
+      {
+        "to": "US",
+        "w": 0.45,
+        "type": "maritime"
+      },
+      {
+        "to": "CN",
+        "w": 0.45,
+        "type": "maritime"
+      },
+      {
+        "to": "MX",
+        "w": 0.45,
+        "type": "maritime"
+      },
+      {
+        "to": "BR",
+        "w": 0.45,
+        "type": "maritime"
+      },
+      {
+        "to": "CO",
+        "w": 0.45,
+        "type": "maritime"
+      },
+      {
+        "to": "PE",
+        "w": 0.45,
+        "type": "maritime"
+      }
+    ],
+    "PH": [
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ],
+    "AU": [
+      {
+        "to": "SG",
+        "w": 0.228,
+        "type": "air"
+      }
+    ]
+  },
+  "corridors": {
+    "shanghai_mfg": {
+      "hub": "CN",
+      "type": "trade",
+      "name": "China manufacturing & Shanghai/Ningbo ports",
+      "w": 0.55,
+      "members": [
+        "US",
+        "DE",
+        "JP",
+        "KR",
+        "VN",
+        "IN",
+        "SG",
+        "NL",
+        "GB",
+        "FR",
+        "IT",
+        "BR",
+        "TR",
+        "AE"
+      ]
+    },
+    "malacca": {
+      "hub": "SG",
+      "type": "maritime",
+      "name": "Strait of Malacca / Singapore transhipment",
+      "w": 0.5,
+      "members": [
+        "CN",
+        "JP",
+        "KR",
+        "IN",
+        "TH",
+        "VN",
+        "ID",
+        "MY",
+        "AE",
+        "SA"
+      ]
+    },
+    "suez": {
+      "hub": "EG",
+      "type": "maritime",
+      "name": "Suez Canal Europe–Asia lane",
+      "w": 0.55,
+      "members": [
+        "NL",
+        "DE",
+        "IT",
+        "FR",
+        "GB",
+        "ES",
+        "IN",
+        "CN",
+        "SG",
+        "SA",
+        "TR"
+      ]
+    },
+    "hormuz": {
+      "hub": "IR",
+      "type": "maritime",
+      "name": "Strait of Hormuz energy lane",
+      "w": 0.6,
+      "members": [
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "IN",
+        "CN",
+        "JP",
+        "KR"
+      ]
+    },
+    "bosphorus": {
+      "hub": "TR",
+      "type": "maritime",
+      "name": "Bosphorus / Black Sea grain corridor",
+      "w": 0.5,
+      "members": [
+        "UA",
+        "RU",
+        "EG",
+        "TR",
+        "RO",
+        "BG"
+      ]
+    },
+    "rotterdam": {
+      "hub": "NL",
+      "type": "trade",
+      "name": "Rotterdam / NW-Europe gateway",
+      "w": 0.45,
+      "members": [
+        "DE",
+        "FR",
+        "BE",
+        "GB",
+        "PL",
+        "IT",
+        "ES"
+      ]
+    },
+    "panama": {
+      "hub": "PA",
+      "type": "maritime",
+      "name": "Panama Canal",
+      "w": 0.45,
+      "members": [
+        "US",
+        "CN",
+        "MX",
+        "BR",
+        "CO",
+        "PE"
+      ]
+    },
+    "gulf_air": {
+      "hub": "AE",
+      "type": "air",
+      "name": "Gulf aviation super-hub (DXB/DOH)",
+      "w": 0.4,
+      "members": [
+        "IN",
+        "PK",
+        "GB",
+        "DE",
+        "FR",
+        "SA",
+        "EG",
+        "TH",
+        "SG",
+        "KE",
+        "NG"
+      ]
+    },
+    "sea_air": {
+      "hub": "SG",
+      "type": "air",
+      "name": "Singapore/Bangkok aviation hub",
+      "w": 0.38,
+      "members": [
+        "TH",
+        "ID",
+        "MY",
+        "VN",
+        "PH",
+        "IN",
+        "CN",
+        "AU",
+        "JP"
+      ]
+    }
+  }
+}
