@@ -95,11 +95,20 @@ def _mean_sd(xs):
     return m, (sd if sd > 1e-6 else 1.0)
 
 
+# Aedes aegypti → DENV transmission thermal response.
+# Validated trait-based Briére fit (Mordecai et al. 2017, eLife
+# "Detecting the impact of temperature on transmission of Zika,
+# dengue and chikungunya"): T_min≈17.8°C, T_opt≈29.1°C, T_max≈34.6°C,
+# left-skewed. Relative suitability normalised to peak=1 (the constant
+# c folds out — we only need 0–1). Citable, zero-training.
+_AE_TMIN, _AE_TMAX = 17.8, 34.6
+def _briere(t, t0=_AE_TMIN, tm=_AE_TMAX):
+    return 0.0 if (t <= t0 or t >= tm) else t * (t - t0) * math.sqrt(tm - t)
+_AE_PEAK = max(_briere(x / 10.0) for x in range(int(_AE_TMIN * 10),
+                                                int(_AE_TMAX * 10)))
 def _thermal_aedes(t):
-    """Dengue/Aedes thermal performance: ~0 outside 16–34°C, peak ~29°C."""
-    if t < 16 or t > 34:
-        return 0.0
-    return math.exp(-((t - 29.0) / 6.0) ** 2)
+    """Normalised Mordecai-2017 Aedes/DENV thermal suitability (0–1)."""
+    return max(0.0, min(1.0, _briere(t) / _AE_PEAK))
 
 
 def _clip(v, lo=0.0, hi=1.0):
