@@ -500,6 +500,76 @@
     display:flex;align-items:center;gap:4px;text-transform:uppercase}
   .sig-live b{width:5px;height:5px;border-radius:50%;background:var(--ok);animation:bp 2.4s infinite}
   .sig-updated{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+
+  /* ── Docked Early-Signals Widget ───────────────────────── */
+  #sigWidget.sigw{
+    position:fixed; right:14px; bottom:184px; width:360px;
+    z-index:60; display:flex; flex-direction:column;
+    background:var(--bg-card); border:1px solid var(--line);
+    border-radius:16px; overflow:hidden;
+    box-shadow:0 18px 48px -22px rgba(20,18,14,.42), 0 1px 0 rgba(20,18,14,.02);
+  }
+  .sigw-head{
+    all:unset; box-sizing:border-box; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding:0 14px; height:46px; flex-shrink:0;
+    background:var(--bg-card); transition:background .15s;
+  }
+  .sigw-head:hover{ background:rgba(20,18,14,.025); }
+  .sigw-head-l{ display:flex; align-items:center; gap:8px; min-width:0; }
+  .sigw-head-r{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .sigw-ic{ width:15px; height:15px; color:var(--accent); flex-shrink:0; }
+  .sigw-title{ font-size:12px; font-weight:800; letter-spacing:-.01em;
+    color:var(--ink); text-transform:uppercase; }
+  .sigw-count{
+    font-size:10px; font-weight:800; color:#fff; background:#c0392b;
+    min-width:18px; height:18px; padding:0 5px; border-radius:9px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .sigw-count.zero{ background:var(--muted); }
+  .sigw-live{ display:flex; align-items:center; gap:5px;
+    font-size:9px; font-weight:800; letter-spacing:.12em; color:var(--ok); }
+  .sigw-live i{ width:5px; height:5px; border-radius:50%;
+    background:var(--ok); animation:bp 2.4s infinite; }
+  .sigw-chev{ width:16px; height:16px; color:var(--muted);
+    transition:transform .28s ease; }
+  .sigw.is-collapsed .sigw-chev{ transform:rotate(180deg); }
+
+  .sigw-stack{
+    display:grid; grid-template-rows:1fr;
+    max-height:360px; opacity:1;
+    transition:max-height .32s cubic-bezier(.4,0,.2,1), opacity .2s ease;
+    border-top:1px solid var(--line-2);
+  }
+  .sigw.is-collapsed .sigw-stack{
+    max-height:0; opacity:0; border-top-color:transparent;
+  }
+  .sigw.is-detail .sigw-stack{ max-height:74vh; }
+
+  .sigw-list-wrap{ display:flex; flex-direction:column; min-height:0;
+    padding:6px 14px 12px; overflow:hidden; }
+  .sigw.is-detail .sigw-list-wrap{ display:none; }
+  .sigw-list{ overflow-y:auto; min-height:0; flex:1;
+    scrollbar-width:thin; scrollbar-color:#cfccc1 transparent; }
+  .sigw-list::-webkit-scrollbar{ width:5px; }
+  .sigw-list::-webkit-scrollbar-thumb{ background:#cfccc1; border-radius:99px; }
+
+  .sigw-detail{ display:none; flex-direction:column; min-height:0; }
+  .sigw.is-detail .sigw-detail{ display:flex; }
+  .sigw-detail .sig-detail-head{ padding:10px 14px 8px; }
+  .sigw-detail-scroll{ overflow-y:auto; min-height:0; padding:0 14px 14px;
+    scrollbar-width:thin; scrollbar-color:#cfccc1 transparent; }
+  .sigw-detail-scroll::-webkit-scrollbar{ width:5px; }
+  .sigw-detail-scroll::-webkit-scrollbar-thumb{ background:#cfccc1; border-radius:99px; }
+  /* meta icons */
+  .sig-mi{ width:11px; height:11px; vertical-align:-1px; opacity:.75; }
+  .sig-ai .sig-mi{ width:10px; height:10px; }
+  .sig-trend-ic{ width:11px; height:11px; vertical-align:-1px; }
+  @media (max-width:1200px){
+    #sigWidget.sigw{ right:10px; bottom:176px; width:300px; }
+  }
+  @media (max-width:980px){ #sigWidget.sigw{ display:none; } }
+
   /* ── Signal Detail Drawer ───────────────────────── */
   .sig-detail{ animation:sig-fadein .25s ease }
   .sig-detail-head{ display:flex;align-items:center;gap:8px;margin-bottom:10px }
@@ -2124,32 +2194,7 @@
         </div>
       </div>
 
-      <!-- ── Early Warning Signals ── -->
-      <div class="side-section sig-section" id="signalsSection" style="display:none">
-        <div class="sig-header">
-          <div class="side-h">Early signals</div>
-          <span class="sig-live"><b></b> Live</span>
-        </div>
-        <div id="signalsList">
-          <div class="feed-empty">Scanning sources…</div>
-        </div>
-        <div class="sig-updated" id="signalsUpdated"></div>
-      </div>
-
-      <!-- ── Signal Detail Drawer ── -->
-      <div class="side-section sig-detail" id="sigDetail" style="display:none">
-        <div class="sig-detail-head">
-          <button class="sig-detail-back" onclick="_closeSignal()" title="Back">&#8592;</button>
-          <span id="sigDetailBadge" class="sig-badge"></span>
-        </div>
-        <div class="sig-detail-disease" id="sigDetailDisease"></div>
-        <div class="sig-detail-meta" id="sigDetailMeta"></div>
-        <div class="sig-threat" id="sigDetailThreat" style="display:none"></div>
-        <div class="sig-detail-ai" id="sigDetailAI" style="display:none"></div>
-        <div class="sig-detail-headline" id="sigDetailHeadline" style="display:none"></div>
-        <div class="sig-detail-sources" id="sigDetailSources"></div>
-        <a class="sig-detail-link" id="sigDetailLink" target="_blank" rel="noopener" style="display:none">Read source →</a>
-      </div>
+      <!-- Early-warning signals moved to the docked #sigWidget (bottom-right) -->
 
       <div class="side-section my-countries-section" id="myCountriesSection">
         <div class="side-h">My countries <span class="count" id="myCountriesCount">0</span></div>
@@ -2377,7 +2422,7 @@
     </div>
     <!-- ── Live News Ticker ── -->
     <div id="newsTicker" style="display:none">
-      <span class="ticker-label">⚡ Live</span>
+      <span class="ticker-label"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg> Live</span>
       <div class="ticker-track">
         <div class="ticker-inner" id="tickerInner">
           <!-- populated by JS from signals.json -->
@@ -2552,6 +2597,50 @@
       </div>
     </div>
   </aside>
+
+  <!-- ============ EARLY-SIGNALS WIDGET (docked under right panel) ============ -->
+  <div id="sigWidget" class="sigw" aria-live="polite">
+    <button type="button" class="sigw-head" id="sigwHead" aria-expanded="true">
+      <span class="sigw-head-l">
+        <svg class="sigw-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+        <span class="sigw-title" id="sigwTitle">Early signals</span>
+        <span class="sigw-count" id="sigwCount">0</span>
+      </span>
+      <span class="sigw-head-r">
+        <span class="sigw-live"><i></i><span id="sigwLiveTxt">LIVE</span></span>
+        <svg class="sigw-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </button>
+
+    <div class="sigw-stack">
+      <!-- list view -->
+      <div class="sigw-list-wrap" id="signalsSection">
+        <div id="signalsList" class="sigw-list">
+          <div class="feed-empty">Scanning sources…</div>
+        </div>
+        <div class="sig-updated" id="signalsUpdated"></div>
+      </div>
+
+      <!-- detail view (expands the widget upward) -->
+      <div class="sigw-detail" id="sigDetail">
+        <div class="sig-detail-head">
+          <button class="sig-detail-back" onclick="_closeSignal()" title="Back">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span id="sigDetailBadge" class="sig-badge"></span>
+        </div>
+        <div class="sigw-detail-scroll">
+          <div class="sig-detail-disease" id="sigDetailDisease"></div>
+          <div class="sig-detail-meta" id="sigDetailMeta"></div>
+          <div class="sig-threat" id="sigDetailThreat" style="display:none"></div>
+          <div class="sig-detail-ai" id="sigDetailAI" style="display:none"></div>
+          <div class="sig-detail-headline" id="sigDetailHeadline" style="display:none"></div>
+          <div class="sig-detail-sources" id="sigDetailSources"></div>
+          <a class="sig-detail-link" id="sigDetailLink" target="_blank" rel="noopener" style="display:none">Read source →</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ============ BOTTOM EVENT BAR ============ -->
   <section class="events-bar" id="eventsBar">
@@ -3167,48 +3256,71 @@ async function loadSignals() {
   }
 }
 
+// Inline icon set (no emoji — consistent stroke icons)
+const _SVG = (p, cls) => `<svg class="${cls||'sig-mi'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICONS = {
+  bolt:    '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
+  conf:    '<path d="M5 18a8 8 0 1 1 14 0"/><path d="M12 18l3.5-4.5"/>',
+  spike:   '<path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/>',
+  src:     '<circle cx="12" cy="12" r="2"/><path d="M6.5 6.5a8 8 0 0 0 0 11M17.5 6.5a8 8 0 0 1 0 11"/>',
+  accelerating:'<path d="M6 13l6-6 6 6"/><path d="M6 18l6-6 6 6"/>',
+  rising:  '<path d="M7 17 17 7"/><path d="M9 7h8v8"/>',
+  plateau: '<path d="M4 12h14"/><path d="M14 7l5 5-5 5"/>',
+  declining:'<path d="M7 7l10 10"/><path d="M17 9v8H9"/>',
+  fading:  '<path d="M12 5v13"/><path d="M6 12l6 6 6-6"/>',
+  baseline:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
+};
+
 function _renderSignals(sigs, meta) {
-  const section = document.getElementById('signalsSection');
+  const widget  = document.getElementById('sigWidget');
   const list    = document.getElementById('signalsList');
   const upd     = document.getElementById('signalsUpdated');
-  if (!section || !list) return;
+  const countEl = document.getElementById('sigwCount');
+  const titleEl = document.getElementById('sigwTitle');
+  const liveEl  = document.getElementById('sigwLiveTxt');
+  if (!widget || !list) return;
 
-  // Show only urgent + alert signals (max 6), ranked by Threat Index
+  if (titleEl) titleEl.textContent = TR('Early signals','Ранние сигналы');
+  if (liveEl)  liveEl.textContent  = TR('LIVE','В ЭФИРЕ');
+
+  // Urgent + alert signals (max 8), ranked by Threat Index
   const _ti = s => (typeof s.threat_index === 'number' ? s.threat_index : s.confidence*60);
   const show = sigs
     .filter(s => s.level !== 'watch')
     .sort((a,b) => _ti(b) - _ti(a) || b.confidence - a.confidence)
-    .slice(0, 6);
+    .slice(0, 8);
 
-  if (show.length === 0) {
-    section.style.display = 'none';
-    return;
+  if (countEl) {
+    countEl.textContent = show.length;
+    countEl.classList.toggle('zero', show.length === 0);
   }
 
-  section.style.display = '';
-
-  list.innerHTML = show.map(s => {
-    const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
-    const srcs     = (s.sources || []).length;
-    const country  = s.country && s.country !== 'XX' ? s.country : TR('Global','Глобально');
-    const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
-    const aiBadge  = hasAI ? `<span class="sig-ai">⚡ ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
-    const tiBadge  = (typeof s.threat_index === 'number')
-      ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
-    const srcLbl   = TR(`${srcs} source${srcs!==1?'s':''}`, `${srcs} источ.`);
-    return `
-      <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
-        <div class="sig-pulse ${s.level}"></div>
-        <div class="sig-body">
-          <div class="sig-title">${_esc(s.disease)} · ${_esc(country)}</div>
-          <div class="sig-meta">${tiBadge} ${srcLbl} · ${TR('spike','спайк')} ${spike} ${aiBadge}</div>
-        </div>
-        <span class="sig-badge ${s.level}">${s.level}</span>
-      </div>`;
-  }).join('');
+  if (show.length === 0) {
+    list.innerHTML = `<div class="feed-empty">${TR('No active urgent signals.','Нет активных срочных сигналов.')}</div>`;
+  } else {
+    list.innerHTML = show.map(s => {
+      const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
+      const srcs     = (s.sources || []).length;
+      const country  = s.country && s.country !== 'XX' ? s.country : TR('Global','Глобально');
+      const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
+      const aiBadge  = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
+      const tiBadge  = (typeof s.threat_index === 'number')
+        ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
+      const srcLbl   = TR(`${srcs} src`, `${srcs} ист.`);
+      return `
+        <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+          <div class="sig-pulse ${s.level}"></div>
+          <div class="sig-body">
+            <div class="sig-title">${_esc(s.disease)} · ${_esc(country)}</div>
+            <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${spike} ${aiBadge}</div>
+          </div>
+          <span class="sig-badge ${s.level}">${s.level}</span>
+        </div>`;
+    }).join('');
+  }
 
   // Updated time
-  if (meta && meta.generated_at) {
+  if (upd && meta && meta.generated_at) {
     const dt   = new Date(meta.generated_at);
     const mins = Math.round((Date.now() - dt) / 60000);
     upd.textContent = mins < 2 ? TR('Updated just now','Обновлено только что')
@@ -3223,7 +3335,7 @@ function _esc(s) {
 
 function _openSignal(sig) {
   const detail  = document.getElementById('sigDetail');
-  const section = document.getElementById('signalsSection');
+  const widget  = document.getElementById('sigWidget');
   if (!detail) return;
 
   // Populate
@@ -3237,9 +3349,9 @@ function _openSignal(sig) {
   const conf = Math.round((sig.confidence || 0) * 100);
   const srcs = (sig.sources || []).length;
   document.getElementById('sigDetailMeta').innerHTML =
-    `<span>📊 ${conf}% ${TR('confidence','уверенность')}</span>`+
-    `<span>📈 ${TR('spike','спайк')} ${sig.spike_ratio || '?'}×</span>`+
-    `<span>📡 ${srcs} ${TR(`source${srcs!==1?'s':''}`,'источ.')}</span>`;
+    `<span>${_SVG(ICONS.conf)} ${conf}% ${TR('confidence','уверенность')}</span>`+
+    `<span>${_SVG(ICONS.spike)} ${TR('spike','спайк')} ${sig.spike_ratio || '?'}×</span>`+
+    `<span>${_SVG(ICONS.src)} ${srcs} ${TR(`source${srcs!==1?'s':''}`,'источ.')}</span>`;
 
   // ── Threat analytics block ──
   const thEl = document.getElementById('sigDetailThreat');
@@ -3258,12 +3370,17 @@ function _openSignal(sig) {
       ? `${sig.momentum}× ${sig.momentum_confidence==='none'?TR('(seeding)','(набор)'):''}`
       : '—';
     const trendMap = {
-      'accelerating':TR('🔺 accelerating','🔺 ускоряется'),'rising':TR('↗ rising','↗ растёт'),
-      'plateau':TR('→ plateau','→ плато'),'declining':TR('↘ declining','↘ спад'),
-      'fading':TR('▽ fading','▽ затухает'),
-      'establishing baseline':TR('· building baseline','· набор базы')
+      'accelerating':[ICONS.accelerating, TR('accelerating','ускоряется')],
+      'rising':[ICONS.rising, TR('rising','растёт')],
+      'plateau':[ICONS.plateau, TR('plateau','плато')],
+      'declining':[ICONS.declining, TR('declining','спад')],
+      'fading':[ICONS.fading, TR('fading','затухает')],
+      'establishing baseline':[ICONS.baseline, TR('building baseline','набор базы')]
     };
-    const trendTxt = trendMap[sig.trend] || sig.trend || '—';
+    const tm = trendMap[sig.trend];
+    const trendTxt = tm
+      ? `${_SVG(tm[0],'sig-trend-ic')} ${tm[1]}`
+      : _esc(sig.trend || '—');
     thEl.innerHTML =
       `<div class="sig-threat-top">`+
         `<div class="sig-threat-score">${ti}<small>${TR('/100 threat','/100 угроза')}</small></div>`+
@@ -3285,9 +3402,9 @@ function _openSignal(sig) {
 
   const aiEl = document.getElementById('sigDetailAI');
   if (sig.ai_processed || sig.hours_ahead_estimate > 0) {
-    aiEl.textContent = TR(
-      `⚡ AI early warning: ~${sig.hours_ahead_estimate || '?'}h ahead of official reports`,
-      `⚡ AI-предупреждение: на ~${sig.hours_ahead_estimate || '?'}ч раньше официальных сводок`);
+    aiEl.innerHTML = _SVG(ICONS.bolt) + ' ' + _esc(TR(
+      `AI early warning: ~${sig.hours_ahead_estimate || '?'}h ahead of official reports`,
+      `AI-предупреждение: на ~${sig.hours_ahead_estimate || '?'}ч раньше официальных сводок`));
     aiEl.style.display = '';
   } else {
     aiEl.style.display = 'none';
@@ -3316,16 +3433,20 @@ function _openSignal(sig) {
     linkEl.style.display = 'none';
   }
 
-  // Swap panels
-  if (section) section.style.display = 'none';
-  detail.style.display = '';
+  // Expand the widget upward into detail mode
+  if (widget) {
+    widget.classList.remove('is-collapsed');
+    widget.classList.add('is-detail');
+    const head = document.getElementById('sigwHead');
+    if (head) head.setAttribute('aria-expanded','true');
+    const ds = widget.querySelector('.sigw-detail-scroll');
+    if (ds) ds.scrollTop = 0;
+  }
 }
 
 function _closeSignal() {
-  const detail  = document.getElementById('sigDetail');
-  const section = document.getElementById('signalsSection');
-  if (detail)  detail.style.display  = 'none';
-  if (section) section.style.display = '';
+  const widget = document.getElementById('sigWidget');
+  if (widget) widget.classList.remove('is-detail');
 }
 
 // ── Live News Ticker ──────────────────────────────────────────────────────────
@@ -3400,6 +3521,22 @@ function _startSignalPolling() {
   loadSignals();
   _signalTimer = setInterval(loadSignals, SIGNALS_POLL);
 }
+
+// Widget header → collapse / expand. If in detail mode, header returns to list.
+(function _initSigWidget(){
+  const head = document.getElementById('sigwHead');
+  const widget = document.getElementById('sigWidget');
+  if (!head || !widget) return;
+  head.addEventListener('click', function(){
+    if (widget.classList.contains('is-detail')) {
+      widget.classList.remove('is-detail');           // detail → list
+      head.setAttribute('aria-expanded','true');
+      return;
+    }
+    const collapsed = widget.classList.toggle('is-collapsed');
+    head.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  });
+})();
 
 // Start on page load
 _startSignalPolling();
