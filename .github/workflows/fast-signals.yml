@@ -43,11 +43,16 @@ jobs:
         run: python3 scripts/risk_aggregate.py
         continue-on-error: true   # never block the health engine on risk feed
 
+      - name: Run 7-day projection + history accrual
+        # Must run AFTER risk_aggregate (reads risk_index.json + climate_risk.json)
+        run: python3 scripts/forecast.py
+        continue-on-error: true
+
       - name: Commit signals if changed
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else

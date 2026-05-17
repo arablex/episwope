@@ -41,6 +41,18 @@
   .kpi b{display:block;font-size:18px;font-weight:800}
   .kpi span{font-size:11px;color:var(--muted)}
   .exsum{font-size:13.5px;color:var(--ink);opacity:.86;margin-top:18px;line-height:1.6}
+  .proj{margin-top:18px;border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;background:var(--line2)}
+  .proj-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .proj-h b{font-size:10px;font-weight:800;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted)}
+  .proj-v{font-size:20px;font-weight:850;font-variant-numeric:tabular-nums}
+  .proj-d{font-size:12px;font-weight:800;padding:3px 9px;border-radius:6px;color:#fff}
+  .proj-c{margin-left:auto;font-size:10px;color:var(--muted);font-weight:700;
+    text-transform:uppercase;letter-spacing:.05em}
+  .proj-dr{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.5}
+  .proj-dr b{color:var(--ink);font-weight:700}
+  .proj-m{font-size:10px;color:var(--muted);opacity:.75;margin-top:8px}
   .divide{border-top:1px solid var(--line)}
   .matrix{display:flex;flex-direction:column;gap:1px}
   .mrow{display:flex;align-items:center;gap:13px;padding:12px 0;
@@ -120,6 +132,9 @@
     off:'Официальный',ai:'ИИ-сигнал',src:'источников',ev:'событий',
     ahead:'опережение ВОЗ',fresh:'свежесть',print:'Скачать PDF',api:'API-документация',
     none:'Активных событий в этом домене нет — фон спокойный.',
+    proj:'Прогноз на 7 дней',pnow:'сейчас',pdrv:'Драйверы',
+    tr:{accelerating:'ускоряется',rising:'растёт',stable:'стабильно',
+        declining:'снижается',easing:'спадает'},
     discl:'Образец живого досье. Не является фин./мед. советом.'},
     en:{title:'Country Risk Dossier',sub:'Vigilo Country Risk Dossier · v4.2',
     live:'LIVE',exec:'Composite assessment',dom:'Risk by domain',
@@ -128,6 +143,9 @@
     off:'Official',ai:'AI signal',src:'sources',ev:'events',
     ahead:'ahead of WHO',fresh:'freshness',print:'Download PDF',api:'API docs',
     none:'No active events in this domain — baseline calm.',
+    proj:'7-day projection',pnow:'now',pdrv:'Drivers',
+    tr:{accelerating:'accelerating',rising:'rising',stable:'stable',
+        declining:'declining',easing:'easing'},
     discl:'Live dossier sample. Not financial or medical advice.'}}[L];
   function svg(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
   var IC={health:svg('<path d="M3 12h3l2 5 4-12 2 7h7"/>'),
@@ -191,7 +209,24 @@
           '<div class="kpi"><b>'+(mt.events_total||ev.length)+'</b><span>'+T.ev+'</span></div>'+
           (lead>0?'<div class="kpi"><b>'+lead+'ч</b><span>'+T.ahead+'</span></div>':'')+
           '<div class="kpi"><b>'+fresh+'м</b><span>'+T.fresh+'</span></div></div>'+
-        '<div class="exsum">'+sum+'</div></div>'+
+        '<div class="exsum">'+sum+'</div>'+
+        (function(){
+          var p=d.projection; if(!p) return '';
+          var pc=BC[p.band_7d]||'#888';
+          var dl=(p.drivers||[]).map(function(x){
+            return '<b>'+esc(x.factor)+'</b> '+esc(x.detail)+' ('+
+              (x.impact>=0?'+':'')+x.impact+')';}).join(' · ');
+          return '<div class="proj"><div class="proj-h">'+
+            '<b>'+T.proj+'</b>'+
+            '<span class="proj-v">'+p.composite_now.toFixed(1)+' → '+p.proj_7d.toFixed(1)+'</span>'+
+            '<span class="proj-d" style="background:'+pc+'">'+
+              (p.delta>=0?'+':'')+p.delta+' · '+(T.tr[p.trend]||p.trend)+'</span>'+
+            '<span class="proj-c">'+esc(p.confidence)+
+              (p.regime_shift?' · regime shift':'')+'</span></div>'+
+            (dl?'<div class="proj-dr">'+T.pdrv+': '+dl+'</div>':'')+
+            '<div class="proj-m">'+esc(p.model||'')+'</div></div>';
+        })()+
+        '</div>'+
       '<div class="pad divide"><div class="sec">'+T.dom+'</div><div class="matrix">'+rows+'</div></div>'+
       '<div class="pad divide"><div class="sec">'+T.feed+'</div><div class="feed">'+feed+'</div></div>'+
       '<div class="pad divide"><div class="sec">'+T.meth+'</div><div class="meth">'+T.methtxt+'</div>'+

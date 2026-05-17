@@ -96,14 +96,15 @@ function haversine(a, b, c, d) {
 }
 
 // ── Static-blob cache (warm invocations) ──
-let _cache = { at: 0, idx: null, evt: null };
+let _cache = { at: 0, idx: null, evt: null, fc: null };
 async function loadData(origin) {
   if (Date.now() - _cache.at < 60000 && _cache.idx) return _cache;
-  const [i, e] = await Promise.all([
+  const [i, e, f] = await Promise.all([
     fetch(`${origin}/public/risk_index.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
     fetch(`${origin}/public/risk_events.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
+    fetch(`${origin}/public/forecast.json`).then((r) => r.ok ? r.json() : null).catch(() => null),
   ]);
-  if (i && e) _cache = { at: Date.now(), idx: i, evt: e };
+  if (i && e) _cache = { at: Date.now(), idx: i, evt: e, fc: f };
   return _cache;
 }
 
@@ -145,7 +146,7 @@ export default async (req) => {
   const lang = q.get('lang') === 'ru' ? 'ru' : 'en';
 
   const origin = u.origin;
-  const { idx, evt } = await loadData(origin);
+  const { idx, evt, fc } = await loadData(origin);
   if (!idx || !evt) return J({ error: 'risk_data_unavailable' }, 503);
 
   const now = Date.now();
@@ -179,12 +180,19 @@ export default async (req) => {
     queryEcho = { mode, lat: la, lng: lo, radius_km: rad };
   }
 
+  // 7-day forward projection (country mode; transparent pre-ML model)
+  const projection = (country && fc && fc.forecast && fc.forecast[country])
+    ? { horizon_days: fc.meta?.horizon_days || 7,
+        model: fc.meta?.model, ...fc.forecast[country] }
+    : null;
+
   const body = {
     api_version: '1.0',
     generated_at: evt.meta?.generated_at || new Date().toISOString(),
     cache_ttl_seconds: 300,
     query: { ...queryEcho, history_days: histDays, min_confidence: minConf, lang },
     ...scoring,
+    projection,
     events: includeEvents
       ? scoped.sort((a, b) => (b.severity - a.severity) || (b.confidence - a.confidence))
       : undefined,
