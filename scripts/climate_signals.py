@@ -27,6 +27,10 @@ import urllib.request
 from pathlib import Path
 from datetime import datetime, timezone
 
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+from _shared.pathogen_suitability import thermal_aedes, dengue_suitability
+
 OUT_DIR  = Path(__file__).parent.parent / "public"
 RISK_OUT = OUT_DIR / "climate_risk.json"
 BASE_OUT = OUT_DIR / "climate_baseline.json"
@@ -101,14 +105,8 @@ def _mean_sd(xs):
 # dengue and chikungunya"): T_min≈17.8°C, T_opt≈29.1°C, T_max≈34.6°C,
 # left-skewed. Relative suitability normalised to peak=1 (the constant
 # c folds out — we only need 0–1). Citable, zero-training.
-_AE_TMIN, _AE_TMAX = 17.8, 34.6
-def _briere(t, t0=_AE_TMIN, tm=_AE_TMAX):
-    return 0.0 if (t <= t0 or t >= tm) else t * (t - t0) * math.sqrt(tm - t)
-_AE_PEAK = max(_briere(x / 10.0) for x in range(int(_AE_TMIN * 10),
-                                                int(_AE_TMAX * 10)))
-def _thermal_aedes(t):
-    """Normalised Mordecai-2017 Aedes/DENV thermal suitability (0–1)."""
-    return max(0.0, min(1.0, _briere(t) / _AE_PEAK))
+# Formula extracted to scripts/_shared/pathogen_suitability.py
+# (single source of truth, characterized by tests/backtest/).
 
 
 def _clip(v, lo=0.0, hi=1.0):
@@ -155,9 +153,8 @@ def main() -> int:
         zT = (t_recent - tm) / tsd
         zP = (p_recent - pm) / psd
 
-        g = _thermal_aedes(t_recent)
-        # S_dengue = thermal suitability + lagged precip/temp anomaly push
-        S_d = _clip(0.55 * g + 0.30 * _clip(zP / 2.0) + 0.15 * _clip(zT / 2.0))
+        g = thermal_aedes(t_recent)
+        S_d = dengue_suitability(t_recent, zT, zP)
         # S_cholera = warm + heavy-rain flush + endemic prior
         endemic = 1.0 if iso in CHOLERA_ENDEMIC else 0.0
         S_c = _clip(0.40 * _clip(zT / 2.0) + 0.40 * _clip(zP / 1.5)
