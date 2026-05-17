@@ -107,3 +107,29 @@ jobs:
           else
             echo "No deploy hook configured — skipping"
           fi
+
+      # Fire B2B risk webhooks for any subscription whose threshold was crossed
+      - name: Dispatch risk webhooks
+        if: success()
+        env:
+          VIGILO_SITE: ${{ secrets.VIGILO_SITE_URL || 'https://vigilo.cc' }}
+          EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, urllib.request, urllib.error
+          site  = os.environ.get('VIGILO_SITE', 'https://vigilo.cc').rstrip('/')
+          token = os.environ.get('EPISCOPE_TOKEN_SECRET', '')
+          if not token:
+              print('No EPISCOPE_TOKEN_SECRET — skipping webhook dispatch'); raise SystemExit(0)
+          req = urllib.request.Request(
+              f'{site}/api/internal/risk-dispatch', data=b'{}', method='POST',
+              headers={'Content-Type': 'application/json',
+                       'Authorization': f'Bearer {token}'})
+          try:
+              with urllib.request.urlopen(req, timeout=25) as r:
+                  print('risk-dispatch:', r.read().decode()[:300])
+          except urllib.error.HTTPError as e:
+              print(f'risk-dispatch HTTP {e.code}: {e.read()[:200]}')
+          except Exception as e:
+              print(f'risk-dispatch error: {e}')
+          PYEOF

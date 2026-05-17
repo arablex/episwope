@@ -95,6 +95,7 @@
       <a href="#endpoint">Endpoint</a>
       <a href="#params">Parameters</a>
       <a href="#scoring">Scoring</a>
+      <a href="#webhooks">Webhooks</a>
       <a href="#tiers">Access</a>
       <a href="mailto:hello@vigilo.cc">Contact</a>
     </nav>
@@ -228,6 +229,33 @@ curl <span class="pre-s">"https://vigilo.cc/api/v1/risk?lat=50.45&lng=30.52&radi
     standard <code>RateLimit-Limit</code> / <code>RateLimit-Remaining</code>
     headers (RFC 9239). Responses carry <code>ETag</code> and
     <code>Cache-Control: s-maxage=300, stale-while-revalidate=900</code>.</p>
+  </section>
+
+  <section id="webhooks">
+    <h2>Webhook alerts <span class="badge b-get" style="background:rgba(232,89,12,.12);color:#b85a00">Partner</span></h2>
+    <p>Don't poll — get pushed. Register a watched geography and a
+    threshold; we POST a signed alert when the Composite Risk Score
+    crosses it (edge-triggered, 6h-debounced, band-escalation override).</p>
+    <pre><span class="pre-c"># Subscribe</span>
+curl -X POST <span class="pre-s">"https://vigilo.cc/api/v1/risk/webhooks"</span> \
+  -H <span class="pre-s">"Content-Type: application/json"</span> \
+  -d <span class="pre-s">'{"country":"UA","threshold":"severe","callback_url":"https://your.app/hooks/vigilo"}'</span>
+<span class="pre-c"># → { "id":"whk_…", "secret":"whsec_…", "manage_token":"…" }</span></pre>
+    <p class="sub"><code>threshold</code>: 0–5 or a band name
+    (<code>moderate</code>/<code>elevated</code>/<code>severe</code>/<code>critical</code>).
+    Optional <code>categories</code> array scopes the trigger to specific
+    domains. Delete: <code>DELETE /api/v1/risk/webhooks?id=…&amp;manage_token=…</code>.</p>
+    <p>Each delivery carries
+    <code>X-Vigilo-Signature: sha256=&lt;hmac&gt;</code> over the raw body
+    using your <code>secret</code> — verify it before trusting the payload.</p>
+    <pre>{
+  <span class="k">"event"</span>: <span class="pre-s">"risk.threshold.crossed"</span>,
+  <span class="k">"country"</span>: <span class="pre-s">"UA"</span>, <span class="k">"threshold"</span>: <span class="pre-s">4</span>,
+  <span class="k">"reason"</span>: <span class="pre-s">"band_escalation"</span>,
+  <span class="k">"composite_risk"</span>: { <span class="k">"score"</span>: <span class="pre-s">4.6</span>, <span class="k">"band"</span>: <span class="pre-s">"critical"</span>,
+                      <span class="k">"dominant_category"</span>: <span class="pre-s">"conflict"</span> },
+  <span class="k">"triggered_at"</span>: <span class="pre-s">"2026-05-17T12:00:00Z"</span>
+}</pre>
   </section>
 
   <div class="cta">
