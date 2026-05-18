@@ -2,58 +2,49 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Split the landing into a slim consumer `/` and a new self-contained bilingual B2B funnel at `/business`, honest-aggressive, no fabricated traction / no predictive overclaim.
+**Goal:** Split the landing into a slim consumer `/` and a new self-contained bilingual B2B funnel at `/business` with a deliberately evolved Semrush-energy on-brand visual system — honest-aggressive, no fabricated traction, no predictive overclaim, no social-proof scaffolding.
 
-**Architecture:** New self-contained `business.html` + `ru/business.html` (same pattern as `report.html`: own `<head>`, embedded `<style>` with the shared token system, own header nav). Consumer `index.html`/`ru/index.html` lose the in-page `#biz` section + its CSS and the "For Business" link points to `/business`. A Netlify 200-rewrite mirrors the existing `/report` pattern. A stdlib `unittest` honesty/parity guard is the TDD anchor.
+**Architecture:** New self-contained `business.html` + `ru/business.html` (same pattern as `report.html`: own `<head>`, embedded `<style>` with the shared brand token system + section color-blocking + honest "juice" devices, own header nav, a tiny vanilla-JS reveal/count-up guarded by `prefers-reduced-motion`). Consumer `index.html`/`ru/index.html` lose the in-page `#biz` section + its CSS; "For Business" links to `/business`. A Netlify 200-rewrite mirrors `/report`. A stdlib `unittest` honesty/parity guard is the TDD anchor.
 
-**Tech Stack:** Static HTML/CSS/JS (no framework — project pattern), Netlify redirects, Python 3.9 stdlib `unittest` (canonical: `python3 -m unittest discover -t . -s tests`). No new dependencies.
+**Tech Stack:** Static HTML/CSS/vanilla-JS (no framework — project pattern), Netlify redirects, Python 3.9 stdlib `unittest` (canonical: `python3 -m unittest discover -t . -s tests`). No new dependencies.
 
-**Spec:** `docs/specs/2026-05-18-landing-ia-consumer-business-split-design.md`
+**Spec:** `docs/specs/2026-05-18-landing-ia-consumer-business-split-design.md` (read its **"Visual system — deliberate evolution"** + **"Honest-positioning rules"** sections — authoritative).
 
 ## Verified codebase facts (do not re-derive)
 
-- `index.html` header nav (lines ~460–471): brand `/`, `.nav-lnk` →
-  `#instrument` (The instrument), `#list` (Coverage), `#data` (Data),
-  `#biz` (For Business, accent-styled), `.lang` → `/ru/`, `.hbtn` →
-  `/app.html` ("Open the app"). **There is NO separate consumer login
-  page**; `/app.html` is the app entry (it handles its own auth).
-  `magic-link.mjs` / `auth-verify.mjs` are the email-digest verify
-  flow, NOT a landing login. → Per spec fallback: the quiet "Log in"
-  link points to `/app.html` (recorded here).
-- `index.html` `#biz` CSS: contiguous block starting at the comment
-  line `  /* ── For Business section ──...── */` (line ~387) through
-  the last consecutive `#biz` / `.biz-cards` / `.biz-card` / `.bc-*`
-  rule before the next unrelated CSS comment. `#biz` HTML: the block
-  bracketed by `<!-- ── For Business ──...── -->` (line ~705) and
-  `<!-- /For Business -->` (line ~819), containing
-  `<section id="biz"> … </section>`.
-- `ru/index.html`: nav anchors differ from EN (`#how`, `#features`,
-  `#data`, `#pricing`, `#biz` "Для бизнеса"); CTA `/ru/app.html`;
-  `#biz` CSS contiguous block ~lines 283–288; `#biz` HTML
-  `<section id="biz">` (line ~634) … `<!-- /Для бизнеса -->`
-  (line ~747). **Pre-existing EN/RU structural divergence on the
-  consumer pages is OUT OF SCOPE — do not reconcile it.**
-- Self-contained page pattern (`report.html`): `<!doctype html>` …
-  `<style>:root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;
-  --line:#ECEAE2;--accent:#E8590C; --sans:-apple-system,…}` +
-  `[data-theme=dark]{…}`. `business.html` follows this exact pattern.
-- `netlify.toml` redirect pattern: `[[redirects]]` blocks with
-  `from` / `to` / `status = 200`; existing `/report`, `/reports`,
-  `/widgets` then a `/.netlify/functions/:splat` block. Insert the
-  `/business` block alongside the page redirects (before the
-  functions splat).
-- Lang link convention: EN page links RU via `<a class="lang"
-  href="/ru/…">RU</a>`; RU page links EN via `href="/…">EN`.
+- `index.html` header nav (~460–471): brand `/`, `.nav-lnk` →
+  `#instrument`, `#list`, `#data`, `#biz` (For Business, accent),
+  `.lang` → `/ru/`, `.hbtn` → `/app.html`. **No separate consumer
+  login page** (`/app.html` = app entry, self-auth; `magic-link.mjs`
+  = email-digest verify, NOT a landing login) → quiet "Log in" →
+  `/app.html` (recorded).
+- `index.html` `#biz` CSS: contiguous block from comment
+  `  /* ── For Business section ──...── */` (~387) through the last
+  consecutive `#biz`/`.biz-cards`/`.biz-card`/`.bc-*` rule. `#biz`
+  HTML: bracketed by `<!-- ── For Business ──...── -->` (~705) and
+  `<!-- /For Business -->` (~819) (`<section id="biz"> … </section>`).
+- `ru/index.html`: nav anchors differ (`#how`,`#features`,`#data`,
+  `#pricing`,`#biz` "Для бизнеса"); CTA `/ru/app.html`; `#biz` CSS
+  ~283–288; `#biz` HTML `<section id="biz">` (~634) …
+  `<!-- /Для бизнеса -->` (~747). **Pre-existing EN/RU divergence on
+  consumer pages is OUT OF SCOPE — do not reconcile.**
+- Self-contained pattern (`report.html`): `<!doctype html>` …
+  `<style>:root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;
+  --muted:#807E76;--line:#ECEAE2;--accent:#E8590C;…}` + dark theme.
+- `netlify.toml`: `[[redirects]]` `from`/`to`/`status=200`; existing
+  `/report`,`/reports`,`/widgets`, then `/.netlify/functions/:splat`.
+- Lang link convention: EN→RU `<a class="lang" href="/ru/…">RU</a>`;
+  RU→EN `href="/…">EN`.
 
 ## File Structure
 
 ```
-business.html            # CREATE — EN B2B funnel (self-contained)
-ru/business.html         # CREATE — RU 1:1 mirror (same ids/DOM, RU copy)
+business.html            # CREATE — EN B2B funnel (self-contained, evolved visual)
+ru/business.html         # CREATE — RU 1:1 mirror (byte copy + string swaps)
 netlify.toml             # MODIFY — add /business 200 rewrite
 index.html               # MODIFY — remove #biz sec+css, For-Business→/business, +Log in
 ru/index.html            # MODIFY — same, RU
-tests/test_landing_ia.py # CREATE — honesty + structural-parity guard
+tests/test_landing_ia.py # CREATE — honesty + structural-parity + no-social-proof guard
 ```
 
 ---
@@ -85,6 +76,10 @@ SECTION_IDS = ["overview", "breadth", "capabilities", "audience",
 FORBIDDEN = ["trusted by", "predict", "lead-time", "lead time",
              "earlier than who", "case study", "join thousands",
              "our customers say"]
+# social-proof scaffolding markers (we have no customers)
+NO_SOCIAL_PROOF = ["testimonial", "logo-wall", "logowall",
+                   "client-logos", "clientlogos", "star-rating",
+                   "starrating", "case-study", "casestudy"]
 
 
 class BusinessLandingTest(unittest.TestCase):
@@ -109,22 +104,33 @@ class BusinessLandingTest(unittest.TestCase):
             for bad in FORBIDDEN:
                 self.assertNotIn(bad, low, f"{name} contains '{bad}'")
 
+    def test_no_social_proof_scaffolding(self):
+        for name, page in (("business.html", self.en),
+                           ("ru/business.html", self.ru)):
+            low = page.lower()
+            for bad in NO_SOCIAL_PROOF:
+                self.assertNotIn(bad, low,
+                                 f"{name} has social-proof '{bad}'")
+
     def test_methodology_link_present_quiet(self):
         for page in (self.en, self.ru):
             self.assertIn("/methodology", page)
 
     def test_who_its_for_three_cards(self):
-        # audience section must carry exactly 3 segment cards
         for page in (self.en, self.ru):
             seg = page.split('id="audience"', 1)[1].split("</section>", 1)[0]
             self.assertEqual(seg.count('class="seg-card"'), 3)
 
     def test_pricing_no_invented_numbers(self):
-        # honest pricing: free tier + talk-to-us, no "$"/"/mo" prices
         for page in (self.en, self.ru):
             pr = page.split('id="pricing"', 1)[1].split("</section>", 1)[0]
             self.assertNotIn("$", pr)
             self.assertNotIn("/mo", pr.lower())
+
+    def test_reduced_motion_respected(self):
+        # the juice JS must bail under prefers-reduced-motion
+        for page in (self.en, self.ru):
+            self.assertIn("prefers-reduced-motion", page)
 
 
 class ConsumerLandingTest(unittest.TestCase):
@@ -162,13 +168,14 @@ if __name__ == "__main__":
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `cd "$(git rev-parse --show-toplevel)" && python3 -m unittest tests.test_landing_ia -v`
-Expected: FAIL — `FileNotFoundError: business.html` (and other assertions red). The `ConsumerLandingTest.test_biz_section_removed` also fails (today `#biz` still present).
+Expected: FAIL — `FileNotFoundError: business.html` + consumer/`#biz`
+assertions red (today `#biz` still present).
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add tests/test_landing_ia.py
-git commit -m "test: landing IA split — honesty + parity guard (red)"
+git commit -m "test: landing IA split — honesty/parity/no-social-proof guard (red)"
 ```
 
 ---
@@ -198,12 +205,10 @@ add:
   status = 200
 ```
 
-(If the `/reports` block is followed by another `/reports.html`
-alias block, place the new block right after the first `/reports`
-one — anywhere among the page redirects, before the
+(Anywhere among the page redirects, before the
 `/.netlify/functions/:splat` block, is fine.)
 
-- [ ] **Step 2: Verify + run the route test**
+- [ ] **Step 2: Run the route test**
 
 Run: `python3 -m unittest tests.test_landing_ia.NetlifyRouteTest -v`
 Expected: PASS.
@@ -217,14 +222,14 @@ git commit -m "feat: route /business -> business.html (200 rewrite)"
 
 ---
 
-## Task 3: Create `business.html` (EN)
+## Task 3: Create `business.html` (EN, evolved visual system)
 
-Self-contained, same token system as `report.html`. 8 sections with
-the exact `id`s the test expects: `overview` (hero), `breadth`,
-`capabilities`, `audience`, `compare`, `validation`, `pricing`, plus a
-final CTA + footer (footer carries the quiet `/methodology` &
-`/report` links). Honest-aggressive copy; NO "predict"/"lead-time"/
-"trusted by"/"case study" anywhere; pricing has no `$` or `/mo`.
+Self-contained. Brand tokens + **section color-blocking** (cream →
+orange-wash → dark ink → cream), bold type scale, SVG icons (no
+emoji), an authentic inline-SVG product mock, and honest "juice"
+(count-up + scroll-reveal) gated by `prefers-reduced-motion`. Exact
+section `id`s the test expects. NO social-proof scaffolding. Pricing
+has no `$`/`/mo`.
 
 **Files:**
 - Create: `business.html`
@@ -243,65 +248,89 @@ Create `business.html` with EXACTLY this content:
 <meta name="description" content="44+ live risk sources across 7 domains, one open API. Transparent, self-serve, no enterprise sales gate.">
 <style>
   :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
-    --accent:#E8590C;--ink2:#1C1A16;
+    --accent:#E8590C;--accent-d:#cf4d09;--wash:rgba(232,89,12,.06);--ink2:#1C1A16;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header{position:sticky;top:0;background:rgba(244,242,238,.86);backdrop-filter:blur(10px);
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  header{position:sticky;top:0;background:rgba(244,242,238,.85);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line);z-index:50}
-  .nav{display:flex;align-items:center;gap:22px;height:60px}
-  .brand{font-weight:800;letter-spacing:-.04em;font-size:19px}
+  .nav{display:flex;align-items:center;gap:24px;height:62px}
+  .brand{font-weight:800;letter-spacing:-.04em;font-size:20px}
   .brand b{color:var(--accent)}
-  .logo{display:inline-grid;place-items:center;width:24px;height:24px;background:var(--accent);
+  .logo{display:inline-grid;place-items:center;width:25px;height:25px;background:var(--accent);
     color:#fff;border-radius:7px;font-size:13px;margin-right:8px;vertical-align:-5px}
   .sp{flex:1}
-  .nav a.nl{font-size:14px;font-weight:600;color:var(--muted);display:none}
+  .nav a.nl{font-size:14px;font-weight:600;color:var(--muted);display:none;transition:color .18s}
   .nav a.nl:hover{color:var(--ink)}
-  @media(min-width:860px){.nav a.nl{display:inline}}
-  .btn{display:inline-block;font-weight:700;font-size:14px;border-radius:10px;padding:10px 18px;
-    border:1px solid var(--ink);transition:.18s}
-  .btn:hover{background:var(--ink);color:var(--bg)}
+  @media(min-width:880px){.nav a.nl{display:inline}}
+  .btn{display:inline-block;font-weight:700;font-size:14.5px;border-radius:11px;padding:11px 20px;
+    border:1.5px solid var(--ink);cursor:pointer;transition:transform .18s,background .18s,color .18s,border-color .18s}
+  .btn:hover{background:var(--ink);color:var(--bg);transform:translateY(-1px)}
   .btn-acc{background:var(--accent);border-color:var(--accent);color:#fff}
-  .btn-acc:hover{background:#cf4d09;color:#fff}
+  .btn-acc:hover{background:var(--accent-d);border-color:var(--accent-d);color:#fff}
   .lang{font-size:13px;font-weight:700;color:var(--muted)}
-  section{padding:clamp(64px,9vw,116px) 0}
-  .kick{font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
-  h1{font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.045em;line-height:1.04;margin:18px 0}
-  h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.035em;margin:12px 0 10px}
-  .lead{font-size:clamp(17px,1.7vw,21px);color:var(--muted);max-width:640px}
-  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
-  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:40px}
-  @media(min-width:760px){.grid.c3{grid-template-columns:repeat(3,1fr)}.grid.c2{grid-template-columns:repeat(2,1fr)}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+  section{padding:clamp(80px,11vw,150px) 0}
+  .band-wash{background:var(--wash);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .band-dark{background:var(--ink2);color:#F2EFE9}
+  .band-dark h2,.band-dark h1{color:#fff}
+  .band-dark .lead{color:rgba(242,239,233,.62)}
+  .kick{font-size:11px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(40px,6vw,76px);font-weight:800;letter-spacing:-.05em;line-height:1.02;margin:20px 0}
+  h2{font-size:clamp(28px,3.6vw,46px);font-weight:800;letter-spacing:-.04em;margin:14px 0 12px}
+  .lead{font-size:clamp(17px,1.75vw,22px);color:var(--muted);max-width:660px;line-height:1.55}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .hero-grid{display:grid;gap:48px;align-items:center;grid-template-columns:1fr}
+  @media(min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr}}
+  .mock{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;
+    box-shadow:0 24px 60px -28px rgba(28,26,22,.32)}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:44px}
+  @media(min-width:760px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;
+    transition:transform .2s,border-color .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 18px 40px -26px rgba(28,26,22,.3)}
+  .card .ic{width:40px;height:40px;border-radius:11px;background:var(--wash);color:var(--accent);
+    display:grid;place-items:center;margin-bottom:18px}
   .card h3{font-size:19px;font-weight:700;letter-spacing:-.02em}
   .card p{color:var(--muted);font-size:14.5px;margin-top:8px}
-  .card a.deep{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--accent)}
-  .seg-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
-  .seg-card .pain{color:var(--muted);font-size:14px}
-  .seg-card .out{font-weight:700;margin-top:12px;font-size:15px}
-  table{width:100%;border-collapse:collapse;margin-top:32px;font-size:14px;background:var(--card);
+  .card a.deep{display:inline-block;margin-top:16px;font-size:13px;font-weight:700;color:var(--accent)}
+  .stats{display:flex;gap:clamp(24px,5vw,72px);flex-wrap:wrap;margin-top:40px}
+  .stat .n{font-size:clamp(34px,5vw,58px);font-weight:800;letter-spacing:-.04em;color:var(--accent)}
+  .stat .l{font-size:14px;color:var(--muted);margin-top:4px}
+  .seg-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;
+    transition:transform .2s,border-color .2s}
+  .seg-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .seg-card h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
+  .seg-card .pain{color:var(--muted);font-size:14px;margin-top:10px}
+  .seg-card .out{font-weight:700;margin-top:14px;font-size:15px;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin-top:36px;font-size:14.5px;background:var(--card);
     border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line)}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-  td.us{font-weight:700;color:var(--accent)}
+  th,td{padding:15px 18px;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700}
+  td.us{font-weight:800;color:var(--accent)}
   tr:last-child td{border-bottom:0}
-  .quiet{font-size:13px;color:var(--muted);margin-top:18px}
+  .quiet{font-size:13px;color:var(--muted);margin-top:20px}
   .quiet a{color:var(--accent);font-weight:700}
-  .price-grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:36px}
+  .price-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:40px}
   @media(min-width:680px){.price-grid{grid-template-columns:1fr 1fr}}
-  .price{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px}
-  .price.acc{border-color:var(--accent)}
+  .price{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px}
+  .price.acc{border:2px solid var(--accent)}
   .price h3{font-size:20px;font-weight:800}
-  .price .big{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:10px 0}
-  .price ul{list-style:none;margin:14px 0 22px;display:flex;flex-direction:column;gap:8px}
+  .price .big{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:12px 0}
+  .price ul{list-style:none;margin:16px 0 24px;display:flex;flex-direction:column;gap:9px}
   .price li{font-size:14px;color:var(--muted)}
-  .final{background:var(--ink2);color:#F2EFE9;text-align:center}
-  .final h2{color:#fff}.final .lead{color:rgba(242,239,233,.6);margin:0 auto}
-  footer{border-top:1px solid var(--line);padding:34px 0;font-size:13px;color:var(--muted)}
-  footer a{color:var(--muted)}footer a:hover{color:var(--ink)}
-  .frow{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line);padding:36px 0;font-size:13px;color:var(--muted)}
+  footer a{color:var(--muted);transition:color .15s}
+  footer a:hover{color:var(--ink)}
+  .frow{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn:hover,.card:hover,.seg-card:hover{transform:none}
+  }
 </style>
 </head>
 <body>
@@ -317,49 +346,73 @@ Create `business.html` with EXACTLY this content:
 </div></header>
 
 <section id="overview"><div class="wrap">
-  <span class="kick">Vigilo for Business</span>
-  <h1>Real-time risk intelligence,<br>one open API.</h1>
-  <p class="lead">Most risk-intel vendors hide behind enterprise sales calls. We don't. 44+ live sources across 7 domains, a transparent composite score, self-serve from minute one.</p>
-  <div class="cta">
-    <a class="btn btn-acc" href="/api/v1/docs">Get a free API key</a>
-    <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
+  <div class="hero-grid">
+    <div>
+      <span class="kick">Vigilo for Business</span>
+      <h1>Real-time risk intelligence, one open API.</h1>
+      <p class="lead">Most risk-intel vendors hide behind enterprise sales calls. We don't — 44+ live sources across 7 domains, a transparent composite score, self-serve from minute one.</p>
+      <div class="cta">
+        <a class="btn btn-acc" href="/api/v1/docs">Get a free API key</a>
+        <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
+      </div>
+    </div>
+    <div class="mock reveal" aria-hidden="true">
+      <svg viewBox="0 0 360 240" width="100%" role="img" aria-label="Composite risk score sample">
+        <rect width="360" height="240" rx="14" fill="#FBFAF7"/>
+        <text x="22" y="36" font-family="var(--sans)" font-size="12" fill="#807E76" font-weight="700">GET /api/v1/risk?country=ET</text>
+        <text x="22" y="74" font-family="var(--sans)" font-size="13" fill="#0F0E0C">composite_risk</text>
+        <text x="338" y="74" text-anchor="end" font-family="var(--sans)" font-size="22" font-weight="800" fill="#E8590C">3.8 / 5</text>
+        <g font-family="var(--sans)" font-size="11" fill="#807E76">
+          <text x="22" y="108">health</text><rect x="120" y="98" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="98" width="170" height="9" rx="4.5" fill="#E8590C"/>
+          <text x="22" y="134">conflict</text><rect x="120" y="124" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="124" width="120" height="9" rx="4.5" fill="#E8590C"/>
+          <text x="22" y="160">climate</text><rect x="120" y="150" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="150" width="84" height="9" rx="4.5" fill="#E8590C"/>
+          <text x="22" y="186">transport</text><rect x="120" y="176" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="176" width="52" height="9" rx="4.5" fill="#E8590C"/>
+        </g>
+        <text x="22" y="220" font-family="var(--sans)" font-size="10" fill="#A8A399">7 domains · 44+ sources · refreshed ~15 min</text>
+      </svg>
+    </div>
   </div>
 </div></section>
 
-<section id="breadth" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+<section id="breadth" class="band-dark"><div class="wrap">
   <span class="kick">Coverage</span>
-  <h2>44+ live sources. 7 domains. ~15-minute refresh.</h2>
-  <p class="lead">Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — continuously aggregated and scored into one composite signal.</p>
+  <h2>Live multi-domain coverage</h2>
+  <p class="lead">Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — continuously aggregated into one composite signal.</p>
+  <div class="stats">
+    <div class="stat"><div class="n" data-count="44" data-suffix="+">0</div><div class="l">live sources</div></div>
+    <div class="stat"><div class="n" data-count="7">0</div><div class="l">risk domains</div></div>
+    <div class="stat"><div class="n" data-count="15" data-prefix="~" data-suffix=" min">0</div><div class="l">refresh cadence</div></div>
+  </div>
 </div></section>
 
 <section id="capabilities"><div class="wrap">
   <span class="kick">What you can build on</span>
   <h2>Integrate in an afternoon</h2>
   <div class="grid c3">
-    <div class="card"><h3>Composite Risk Score</h3><p>0–5 score per country across 7 domains, with the per-domain breakdown.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
-    <div class="card"><h3>Webhooks</h3><p>Get pushed a callback when a country crosses a risk threshold you set.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
-    <div class="card"><h3>What-if simulator</h3><p>Drop a synthetic shock, cascade it across the exposure graph, read the impact.</p><a class="deep" href="/api/v1/docs">/api/v1/simulate →</a></div>
-    <div class="card"><h3>Embeddable widgets</h3><p>Brandable risk cards &amp; checkout components — one snippet, your colors.</p><a class="deep" href="/widgets">Widgets →</a></div>
-    <div class="card"><h3>Country dossier</h3><p>A full shareable risk report per country, all 7 domains, print-ready.</p><a class="deep" href="/report">Sample report →</a></div>
-    <div class="card"><h3>Transparent method</h3><p>Pre-registered, backtested signals — the validation is public.</p><a class="deep" href="/methodology">Methodology →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Composite Risk Score</h3><p>0–5 per country across 7 domains, with the per-domain breakdown.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5l-1 4z"/></svg></div><h3>Webhooks</h3><p>A callback when a country crosses a risk threshold you set.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>What-if simulator</h3><p>Drop a synthetic shock, cascade it across the exposure graph.</p><a class="deep" href="/api/v1/docs">/api/v1/simulate →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/></svg></div><h3>Embeddable widgets</h3><p>Brandable risk cards &amp; checkout components — one snippet.</p><a class="deep" href="/widgets">Widgets →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div><h3>Country dossier</h3><p>A full shareable risk report per country, print-ready.</p><a class="deep" href="/report">Sample report →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Transparent method</h3><p>Pre-registered, backtested signals — the validation is public.</p><a class="deep" href="/methodology">Methodology →</a></div>
   </div>
 </div></section>
 
-<section id="audience" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+<section id="audience" class="band-wash"><div class="wrap">
   <span class="kick">Who it's for</span>
   <h2>What changes for your business</h2>
   <div class="grid c3">
-    <div class="seg-card">
+    <div class="seg-card reveal">
       <h3>Travel · insurers · OTAs</h3>
       <p class="pain">Today: enterprise-priced incumbents, black-box, not embeddable.</p>
       <p class="out">→ Duty-of-care &amp; checkout trust — without an enterprise contract.</p>
     </div>
-    <div class="seg-card">
+    <div class="seg-card reveal">
       <h3>Insurance · reinsurance</h3>
       <p class="pain">Today: non-auditable signals, slow, expensive.</p>
       <p class="out">→ Auditable, regulator-defensible geo risk monitoring, cheaper.</p>
     </div>
-    <div class="seg-card">
+    <div class="seg-card reveal">
       <h3>Supply chain · ops</h3>
       <p class="pain">Today: a siloed vendor per domain, no API.</p>
       <p class="out">→ One integration replaces several; earlier cascade awareness.</p>
@@ -381,7 +434,7 @@ Create `business.html` with EXACTLY this content:
   <p class="quiet">Comparison reflects publicly observable posture (self-serve access, published pricing &amp; methodology), not a capability ranking.</p>
 </div></section>
 
-<section id="validation" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+<section id="validation" class="band-wash"><div class="wrap">
   <span class="kick">Validation discipline</span>
   <h2>Only validated logic ships</h2>
   <p class="lead">Every signal is pre-registered and backtested before it influences a score; the methodology and results are public.</p>
@@ -407,9 +460,9 @@ Create `business.html` with EXACTLY this content:
   </div>
 </div></section>
 
-<section class="final"><div class="wrap">
+<section class="band-dark" style="text-align:center"><div class="wrap">
   <h2>Ship risk intelligence this week</h2>
-  <p class="lead">Free API key, a working request on real data, no procurement.</p>
+  <p class="lead" style="margin:0 auto">Free API key, a working request on real data, no procurement.</p>
   <div class="cta" style="justify-content:center">
     <a class="btn btn-acc" href="/api/v1/docs">Get a free API key</a>
     <a class="btn" style="border-color:rgba(242,239,233,.4);color:#F2EFE9" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
@@ -425,38 +478,60 @@ Create `business.html` with EXACTLY this content:
   <a href="/methodology">Methodology</a>
   <a href="/">← Consumer site</a>
 </div></footer>
+
+<script>
+(function(){
+  var rm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var rev=[].slice.call(document.querySelectorAll(".reveal"));
+  var cnt=[].slice.call(document.querySelectorAll("[data-count]"));
+  if(rm||!("IntersectionObserver"in window)){
+    rev.forEach(function(e){e.classList.add("in");});
+    cnt.forEach(function(e){
+      e.textContent=(e.dataset.prefix||"")+e.dataset.count+(e.dataset.suffix||"");});
+    return;
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target);}});
+  },{threshold:.15});
+  rev.forEach(function(e){io.observe(e);});
+  var cio=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(!en.isIntersecting)return; var el=en.target; cio.unobserve(el);
+      var to=+el.dataset.count,pf=el.dataset.prefix||"",sf=el.dataset.suffix||"",s=0,t0=null;
+      function tick(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/900,1);
+        el.textContent=pf+Math.round(p*to)+sf; if(p<1)requestAnimationFrame(tick);}
+      requestAnimationFrame(tick);
+    });
+  },{threshold:.4});
+  cnt.forEach(function(e){cio.observe(e);});
+})();
+</script>
 </body>
 </html>
 ```
 
-- [ ] **Step 2: Run the EN-side tests**
+- [ ] **Step 2: Sanity-check the page**
 
-Run: `python3 -m unittest tests.test_landing_ia.BusinessLandingTest -v`
-Expected: still some FAIL (ru/business.html missing) but the EN
-content is parseable; confirm no traceback other than missing
-`ru/business.html`. Quick sanity:
-`python3 -c "h=open('business.html').read(); import re; print(re.findall(r'<section id=\"([^\"]+)\"',h))"`
-Expected: `['overview','breadth','capabilities','audience','compare','validation','pricing']`.
+Run: `python3 -c "h=open('business.html').read(); import re; print(re.findall(r'<section id=\"([^\"]+)\"',h)); print('predict' not in h.lower(), 'testimonial' not in h.lower(), h.count('class=\"seg-card\"'), '/methodology' in h, '$' not in h.split('id=\"pricing\"')[1].split('</section>')[0])"`
+Expected: `['overview','breadth','capabilities','audience','compare','validation','pricing'] True True 3 True True`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add business.html
-git commit -m "feat: /business B2B funnel page (EN, honest-aggressive)"
+git commit -m "feat: /business B2B funnel (EN, evolved Semrush-energy visual, honest)"
 ```
 
 ---
 
 ## Task 4: Create `ru/business.html` (RU 1:1 mirror)
 
-Identical file to `business.html` with EXACTLY these changes: `<html
-lang="ru">`, the `.lang` link `href="/business.html">EN`, every other
-internal link prefixed `/ru` where the consumer site uses `/ru` —
-**except** API/widgets/report/methodology deep links stay as the
-shared routes `/api/v1/docs`, `/widgets`, `/report`, `/methodology`
-(those pages are shared, not localized) and `/` → `/ru/`. Section
-`id`s and DOM order are UNCHANGED (structural parity). Visible English
-strings replaced per the table below — nothing else.
+Byte copy of `business.html` with ONLY: `<html lang="ru">`, localized
+`<title>`/meta, `.lang` → `href="/business.html">EN`, brand
+`href="/ru/"`, footer "Consumer site" → `/ru/`, and the visible-string
+swaps below. **Section `id`s, DOM order, ALL CSS and the `<script>`
+stay byte-identical** (structural + behavioural parity; the juice/JS
+is language-agnostic).
 
 **Files:**
 - Create: `ru/business.html`
@@ -464,40 +539,42 @@ strings replaced per the table below — nothing else.
 - [ ] **Step 1: Copy then localize**
 
 Create `ru/business.html` as a byte copy of `business.html`, then
-apply ONLY these replacements:
+apply ONLY:
 
 - `<html lang="en">` → `<html lang="ru">`
-- `<title>…</title>` → `<title>Vigilo для бизнеса — API риск-аналитики</title>`
-- meta description → `content="44+ живых источника риска по 7 доменам, один открытый API. Прозрачно, self-serve, без enterprise sales-gate."`
-- `.lang` link: `href="/ru/business.html">RU` → `href="/business.html">EN`
+- `<title>` → `Vigilo для бизнеса — API риск-аналитики`
+- meta description → `44+ живых источника риска по 7 доменам, один открытый API. Прозрачно, self-serve, без enterprise sales-gate.`
+- `.lang`: `href="/ru/business.html">RU` → `href="/business.html">EN`
 - `<a class="brand" href="/">` → `<a class="brand" href="/ru/">`
 - footer `<a href="/">← Consumer site</a>` → `<a href="/ru/">← Сайт для людей</a>`
-- Visible-string table (replace each EN string with the RU one; leave all tags/classes/ids/links untouched):
+- Visible-string table (replace EN→RU; leave tags/classes/ids/links/SVG/JS untouched). SVG mock label text `GET /api/v1/risk?country=ET`, `composite_risk`, `3.8 / 5`, domain labels (`health`/`conflict`/`climate`/`transport`) and `7 domains · 44+ sources · refreshed ~15 min` → keep technical strings as-is except the last → `7 доменов · 44+ источника · обновление ~15 мин`.
 
 | EN | RU |
 |---|---|
 | Vigilo for Business | Vigilo для бизнеса |
-| Real-time risk intelligence,<br>one open API. | Risk-аналитика в реальном времени,<br>один открытый API. |
-| Most risk-intel vendors hide behind enterprise sales calls. We don't. 44+ live sources across 7 domains, a transparent composite score, self-serve from minute one. | Большинство risk-вендоров прячутся за enterprise sales-звонками. Мы — нет. 44+ живых источника по 7 доменам, прозрачный composite-скор, self-serve с первой минуты. |
+| Real-time risk intelligence, one open API. | Risk-аналитика в реальном времени, один открытый API. |
+| Most risk-intel vendors hide behind enterprise sales calls. We don't — 44+ live sources across 7 domains, a transparent composite score, self-serve from minute one. | Большинство risk-вендоров прячутся за enterprise sales-звонками. Мы — нет: 44+ живых источника по 7 доменам, прозрачный composite-скор, self-serve с первой минуты. |
 | Get a free API key | Получить бесплатный API-ключ |
 | Talk to us | Связаться с нами |
 | Coverage | Охват |
-| 44+ live sources. 7 domains. ~15-minute refresh. | 44+ живых источника. 7 доменов. Обновление ~15 минут. |
-| Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — continuously aggregated and scored into one composite signal. | Здоровье и вспышки · вооружённые конфликты · беспорядки · транспорт · границы · инфраструктура · климат — непрерывная агрегация в один composite-сигнал. |
+| Live multi-domain coverage | Живой мульти-доменный охват |
+| Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — continuously aggregated into one composite signal. | Здоровье и вспышки · вооружённые конфликты · беспорядки · транспорт · границы · инфраструктура · климат — непрерывная агрегация в один composite-сигнал. |
+| live sources | живых источника |
+| risk domains | домена риска |
+| refresh cadence | каденс обновления |
 | What you can build on | На чём строить |
 | Integrate in an afternoon | Интеграция за полдня |
-| Composite Risk Score | Composite Risk Score |
-| 0–5 score per country across 7 domains, with the per-domain breakdown. | Скор 0–5 по стране и 7 доменам, с разбивкой по доменам. |
+| 0–5 per country across 7 domains, with the per-domain breakdown. | 0–5 по стране и 7 доменам, с разбивкой по доменам. |
 | API docs → | API-доки → |
 | Webhooks | Вебхуки |
-| Get pushed a callback when a country crosses a risk threshold you set. | Колбэк, когда страна пересекает заданный вами порог риска. |
+| A callback when a country crosses a risk threshold you set. | Колбэк, когда страна пересекает заданный вами порог риска. |
 | What-if simulator | What-if симулятор |
-| Drop a synthetic shock, cascade it across the exposure graph, read the impact. | Бросьте синтетический шок, прогоните каскад по графу экспозиции, читайте эффект. |
+| Drop a synthetic shock, cascade it across the exposure graph. | Бросьте синтетический шок, прогоните каскад по графу экспозиции. |
 | Embeddable widgets | Встраиваемые виджеты |
-| Brandable risk cards &amp; checkout components — one snippet, your colors. | Брендируемые риск-карточки и checkout-компоненты — один сниппет, ваши цвета. |
+| Brandable risk cards &amp; checkout components — one snippet. | Брендируемые риск-карточки и checkout-компоненты — один сниппет. |
 | Widgets → | Виджеты → |
 | Country dossier | Страновое досье |
-| A full shareable risk report per country, all 7 domains, print-ready. | Полный риск-отчёт по стране, все 7 доменов, готов к печати. |
+| A full shareable risk report per country, print-ready. | Полный риск-отчёт по стране, готов к печати. |
 | Sample report → | Образец отчёта → |
 | Transparent method | Прозрачный метод |
 | Pre-registered, backtested signals — the validation is public. | Pre-registered, бэктестенные сигналы — валидация публична. |
@@ -548,28 +625,28 @@ apply ONLY these replacements:
 | Priority support &amp; SLAs | Приоритетная поддержка и SLA |
 | Ship risk intelligence this week | Запустите risk-аналитику на этой неделе |
 | Free API key, a working request on real data, no procurement. | Бесплатный API-ключ, рабочий запрос на реальных данных, без procurement. |
-| API | API |
-| Widgets | Виджеты |
 | Sample report | Образец отчёта |
+| ← Consumer site | ← Сайт для людей |
+| 7 domains · 44+ sources · refreshed ~15 min | 7 доменов · 44+ источника · обновление ~15 мин |
 
-(Strings already identical EN/RU — "Composite Risk Score",
-"Enterprise", "API" — left as-is. The footer `Widgets`/`Methodology`
-links: localize the visible text per the table; the `href` stays the
-shared route.)
+(Strings identical EN/RU — "Composite Risk Score", "Enterprise",
+"API", "Widgets" link text where it equals "Widgets→Виджеты" handled
+above — leave technical/code/SVG-numeric strings unchanged. The
+`<script>` is NOT translated.)
 
-- [ ] **Step 2: Run the full landing test (business side now green)**
+- [ ] **Step 2: Run the business-side tests**
 
 Run: `python3 -m unittest tests.test_landing_ia.BusinessLandingTest -v`
-Expected: ALL `BusinessLandingTest` PASS — including
-`test_en_ru_structural_parity` (section id order identical),
-`test_no_forbidden_tokens`, `test_who_its_for_three_cards`,
-`test_pricing_no_invented_numbers`.
+Expected: ALL PASS — incl. `test_en_ru_structural_parity`,
+`test_no_forbidden_tokens`, `test_no_social_proof_scaffolding`,
+`test_who_its_for_three_cards`, `test_pricing_no_invented_numbers`,
+`test_reduced_motion_respected`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add ru/business.html
-git commit -m "feat: /business B2B funnel page (RU 1:1 mirror)"
+git commit -m "feat: /business B2B funnel (RU 1:1 mirror)"
 ```
 
 ---
@@ -581,24 +658,21 @@ git commit -m "feat: /business B2B funnel page (RU 1:1 mirror)"
 
 - [ ] **Step 1: Remove the `#biz` CSS block**
 
-In `index.html`, delete the contiguous CSS starting at the comment
-line `  /* ── For Business section ──...── */` (≈ line 387) through
-the last consecutive rule whose selector begins `#biz`, `.biz-cards`,
-`.biz-card`, or `.bc-` — i.e. up to (not including) the next CSS
-comment / unrelated selector. Read the block first to confirm its
-end; remove the whole block.
+Delete the contiguous CSS from the comment line
+`  /* ── For Business section ──...── */` (~387) through the last
+consecutive rule whose selector begins `#biz`/`.biz-cards`/
+`.biz-card`/`.bc-` (read first, confirm the end, remove the whole
+block).
 
 - [ ] **Step 2: Remove the `#biz` HTML section**
 
-Delete everything from the line `<!-- ── For Business ──...── -->`
-(≈ 705) through the line `<!-- /For Business -->` (≈ 819) inclusive
-(this is the entire `<section id="biz"> … </section>` with its
-comment brackets). Leave the following `<section class="final">`
-untouched.
+Delete everything from `<!-- ── For Business ──...── -->` (~705)
+through `<!-- /For Business -->` (~819) inclusive. Leave the following
+`<section class="final">` untouched.
 
 - [ ] **Step 3: Repoint "For Business" + add quiet "Log in"**
 
-In the header nav, replace:
+Replace:
 
 ```html
     <a class="nav-lnk" href="#biz" style="color:var(--accent);font-weight:600">For Business</a>
@@ -611,17 +685,16 @@ with:
     <a class="nav-lnk" href="/app.html">Log in</a>
 ```
 
-(There is no separate consumer login page in the codebase —
-`/app.html` is the app entry and handles its own auth; `magic-link`
-is the email-digest verify flow, not a landing login. Per spec
-fallback the "Log in" link points to `/app.html`. Recorded.)
+(No separate consumer login page exists — `/app.html` is the app
+entry; `magic-link` is the email-digest verify flow. Per spec
+fallback, "Log in" → `/app.html`. Recorded.)
 
 - [ ] **Step 4: Verify**
 
-Run: `python3 -c "h=open('index.html').read(); print('#biz' not in h.replace('href=\"/business\"',''), 'biz-card' not in h, 'href=\"/business\"' in h, '>Log in<' in h)"`
+Run: `python3 -c "h=open('index.html').read(); print('<section id=\"biz\"' not in h, '.biz-card' not in h, 'href=\"/business\"' in h, '>Log in<' in h)"`
 Expected: `True True True True`.
 Run: `python3 -m unittest tests.test_landing_ia.ConsumerLandingTest -v`
-Expected: `index.html`-related assertions PASS (ru still red until Task 6).
+Expected: `index.html` assertions PASS (ru still red until Task 6).
 
 - [ ] **Step 5: Commit**
 
@@ -639,16 +712,15 @@ git commit -m "feat: slim consumer landing — remove #biz, link /business, add 
 
 - [ ] **Step 1: Remove the RU `#biz` CSS block**
 
-In `ru/index.html`, delete the contiguous `#biz`-prefixed CSS block
-(≈ lines 283–288 plus any immediately-consecutive `.biz-card`/`.bc-`
-rules) — read first, remove the whole contiguous block up to the next
+Delete the contiguous `#biz`-prefixed CSS block (~283–288 plus any
+immediately-consecutive `.biz-card`/`.bc-` rules) up to the next
 unrelated selector/comment.
 
 - [ ] **Step 2: Remove the RU `#biz` HTML section**
 
-Delete from `<section id="biz">` (≈ line 634) through the
-`<!-- /Для бизнеса -->` comment (≈ line 747) inclusive. Leave the
-following section untouched.
+Delete from `<section id="biz">` (~634) through
+`<!-- /Для бизнеса -->` (~747) inclusive. Leave the following section
+untouched.
 
 - [ ] **Step 3: Repoint "Для бизнеса" + add quiet "Войти"**
 
@@ -668,7 +740,8 @@ with:
 - [ ] **Step 4: Verify — full suite**
 
 Run: `python3 -m unittest discover -t . -s tests`
-Expected: ALL OK — `tests.test_landing_ia` fully green (BusinessLandingTest, ConsumerLandingTest incl. `>Войти<`, NetlifyRouteTest) and no regressions elsewhere.
+Expected: ALL OK — `tests.test_landing_ia` fully green and no
+regressions elsewhere.
 
 - [ ] **Step 5: Commit**
 
@@ -693,29 +766,27 @@ Expected: all OK including `tests.test_landing_ia` (4 classes).
 Run:
 ```
 for f in business.html ru/business.html; do
-  echo "== $f =="; grep -niE "trusted by|predict|lead.?time|earlier than who|case study|join thousands|our customers say" "$f" && echo "FORBIDDEN(bad)" || echo "clean";
-  grep -c "/methodology" "$f";
+  echo "== $f =="
+  grep -niE "trusted by|predict|lead.?time|earlier than who|case study|join thousands|our customers say|testimonial|logo-wall|client-logos|star-rating|case-study" "$f" && echo "FORBIDDEN(bad)" || echo "clean"
+  grep -c "/methodology" "$f"
 done
 ```
-Expected: `clean` for both; `/methodology` count ≥ 1 each.
+Expected: `clean` for both; `/methodology` ≥ 1 each.
 
 - [ ] **Step 3: Scope proof**
 
 Run: `git diff --name-only main..HEAD | sort`
-Expected EXACTLY (plus the already-committed spec/plan docs):
+Expected EXACTLY (plus already-committed spec/plan docs):
 `business.html`, `index.html`, `netlify.toml`, `ru/business.html`,
-`ru/index.html`, `tests/test_landing_ia.py`. No other files (no
-api-docs.html / widgets.html / globe.js / methodology.html — those
-are linked, not modified).
+`ru/index.html`, `tests/test_landing_ia.py`. No api-docs.html /
+widgets.html / globe.js / methodology.html.
 
 - [ ] **Step 4: EN↔RU parity checklist**
 
-Confirm by eye that `ru/business.html` differs from `business.html`
-ONLY in: `<html lang>`, title/meta, the `.lang` & brand & "Consumer
-site" hrefs, and the visible-string table swaps — section `id`s and
-DOM order byte-identical (the `test_en_ru_structural_parity` test
-enforces id order; this step confirms no structural drift was
-introduced).
+Confirm `ru/business.html` differs from `business.html` ONLY in:
+`<html lang>`, title/meta, `.lang`/brand/"Consumer site" hrefs, and
+the visible-string table swaps — section `id`s, DOM order, ALL CSS,
+and the `<script>` byte-identical.
 
 ---
 
@@ -726,33 +797,34 @@ introduced).
 | Spec requirement | Task |
 |---|---|
 | New self-contained bilingual `/business` funnel, own nav, 8 sections | Tasks 3, 4 |
-| Honest-aggressive, no "predict"/traction; positive spine | Task 3 copy + Task 1 guard |
-| Audience "Who it's for" 3 segment cards, no logos | Task 3 (`#audience`, `.seg-card`×3) + Task 1 `test_who_its_for_three_cards` |
-| Honest comparison on defensible axes vs named incumbents (factual) | Task 3 `#compare` + quiet disclaimer |
-| Validation quiet+positive+reachable; `/methodology` link | Task 3 `#validation` + footer; Task 1 `test_methodology_link_present_quiet` |
-| Pricing free-tier-live + Enterprise-talk-to-us, no invented prices | Task 3 `#pricing`; Task 1 `test_pricing_no_invented_numbers` |
-| Consumer `/` slimmed: remove #biz sec+CSS, For-Business→/business, Log in | Tasks 5, 6 |
+| Visual system deliberate evolution (color-blocking, bold scale, juice, product mock) | Task 3 (`<style>` bands, SVG mock, reveal/count-up JS) |
+| Honest "juice" only; `prefers-reduced-motion` respected | Task 3 (`@media reduced-motion` + JS bail) + Task 1 `test_reduced_motion_respected` |
+| No social-proof scaffolding (testimonials/logos/ratings/case studies) | Task 1 `test_no_social_proof_scaffolding`; Task 3 copy |
+| Honest-aggressive, no "predict"/traction; positive spine | Task 3 copy + Task 1 `FORBIDDEN` |
+| Audience "Who it's for" 3 segment cards, no logos | Task 3 `#audience` ×3 `.seg-card`; Task 1 guard |
+| Honest comparison vs named incumbents (factual + disclaimer) | Task 3 `#compare` |
+| Validation quiet+positive+reachable; `/methodology` link | Task 3 `#validation`+footer; Task 1 guard |
+| Pricing free-live + Enterprise-talk, no invented prices | Task 3 `#pricing`; Task 1 `test_pricing_no_invented_numbers` |
+| Consumer `/` slimmed: remove #biz sec+CSS, link /business, Log in | Tasks 5, 6 |
 | netlify `/business` 200 rewrite | Task 2 |
-| Tests: existence, EN↔RU parity, honesty guards, consumer + route | Task 1 |
-| RU = 1:1 mirror + per-section parity checklist | Task 4 (string table) + Task 7 Step 4 |
-| No new deps; deep tools linked not duplicated; landing visual system | Tasks 3–6 (token system reused; only the 6 listed files touched) |
-| Login: locate existing entry, fallback /app.html, recorded | Task 5 Step 3 (recorded: no separate login → /app.html) |
+| RU = 1:1 mirror (CSS+JS byte-identical) + parity checklist | Task 4 + Task 7 Step 4 |
+| SVG icons not emoji; focus states; responsive; transitions | Task 3 `<style>` (`:focus-visible`, SVG `<svg>` icons, media queries) |
+| No new deps; deep tools linked not duplicated | Tasks 3–6 (only 6 files touched) |
+| Login: existing entry / fallback /app.html, recorded | Task 5 Step 3 |
 
 No gaps.
 
-**2. Placeholder scan:** None. Full HTML in Task 3; complete RU
-replacement table in Task 4 (every visible string mapped); exact CSS/
-section removal anchored to verifiable in-file comments in Tasks 5–6.
+**2. Placeholder scan:** None. Full HTML+CSS+JS in Task 3; complete
+RU replacement table in Task 4; CSS/section removal anchored to
+verifiable in-file comments in Tasks 5–6.
 
-**3. Consistency:** Section `id`s used in Task 3 (`overview, breadth,
-capabilities, audience, compare, validation, pricing`) are exactly
-the `SECTION_IDS` list asserted in Task 1. `.seg-card` (×3) matches
-`test_who_its_for_three_cards`. `#pricing` has no `$`/`/mo` →
-`test_pricing_no_invented_numbers`. Forbidden tokens absent from the
-Task-3 copy (no "predict"/"lead-time"/"trusted by"/"case study"/
-"join thousands"/"our customers say"/"earlier than WHO"). `/business`
-rewrite regex in Task 1 matches the TOML block added in Task 2.
-Consumer-test strings `>Log in<` / `>Войти<` match Tasks 5/6.
+**3. Consistency:** Section `id`s in Task 3 = `SECTION_IDS` in Task 1.
+`.seg-card`×3 = `test_who_its_for_three_cards`. `#pricing` has no
+`$`/`/mo` = `test_pricing_no_invented_numbers`. `prefers-reduced-motion`
+present (CSS + JS) = `test_reduced_motion_respected`. No social-proof
+class/text = `test_no_social_proof_scaffolding`. `/business` TOML regex
+(Task 1) ↔ block added (Task 2). `>Log in<` / `>Войти<` ↔ Tasks 5/6.
+RU `<script>`/CSS byte-identical to EN ↔ `test_en_ru_structural_parity`.
 
 ---
 
