@@ -7,31 +7,55 @@
 <meta name="description" content="Three production widgets — Location Smart-Card, Checkout Risk Upsell, Pre-trip Email — fully themeable to your brandbook. Live Composite Risk by country.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://vigilo.cc/widgets">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
+  :root{
+    --paper:#F4F2EE;--ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
+    --night:#0D1015;--amber:#E8590C;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    /* legacy compat */
+    --bg:#F4F2EE;--card:#FFF;--muted:#807E76;--line:#ECEAE2;
     --line2:#F3F1EA;--accent:#E8590C;--code:#1A1916;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --mono:"SF Mono",SFMono-Regular,ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace}
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;
     line-height:1.6;-webkit-font-smoothing:antialiased}
   a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header.top{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
-    background:rgba(244,242,238,.88);backdrop-filter:saturate(1.4) blur(7px)}
-  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.02em}
-  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
-  .top nav a{color:var(--muted);font-size:13px;font-weight:600;margin-left:18px}
-  .top nav a:hover{color:var(--ink);text-decoration:none}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 24px}
+  @media(min-width:1024px){.wrap{padding:0 40px}}
+  /* ── nav ── */
+  header{position:sticky;top:0;z-index:50;border-bottom:1px solid transparent;transition:background .2s,border-color .2s}
+  header.scr{background:rgba(244,242,238,.85);backdrop-filter:blur(16px);border-bottom-color:var(--rule)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .nleft{display:flex;align-items:center;gap:40px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+  .brand svg{display:block}
+  .nlinks{display:none;align-items:center;gap:28px;font-size:14px;color:var(--ink500)}
+  .nlinks a{color:inherit;text-decoration:none}
+  .nlinks a:hover{color:var(--ink)}
+  @media(min-width:1000px){.nlinks{display:flex}}
+  .nright{display:flex;align-items:center;gap:10px}
+  .nlogin{display:none;font-size:13.5px;font-weight:600;color:var(--ink700);
+    height:36px;padding:0 14px;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--rule-strong);
+    align-items:center;transition:background .16s,box-shadow .16s;text-decoration:none}
+  .nlogin:hover{background:rgba(20,17,12,.05);box-shadow:inset 0 0 0 1.5px var(--ink400)}
+  @media(min-width:640px){.nlogin{display:inline-flex}}
+  .lang{font-size:13px;font-weight:600;color:var(--ink500);text-decoration:none}
+  .btn-hdr{display:inline-flex;align-items:center;gap:8px;border-radius:10px;font-weight:600;
+    font-size:13.5px;padding:9px 15px;background:var(--amber);color:#FFFEFB;line-height:1;text-decoration:none;transition:background .18s}
+  .btn-hdr:hover{background:#FF6F1F}
+  .btn-hdr svg{display:block}
   .hero{padding:56px 0 30px}
   .eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
     color:var(--accent);margin-bottom:13px}
   h1{font-size:34px;line-height:1.14;letter-spacing:-.035em;font-weight:850;margin-bottom:13px}
   .lede{font-size:17px;color:var(--muted);max-width:640px}
   /* playground */
-  .pg{position:sticky;top:60px;z-index:10;background:var(--card);
+  .pg{position:sticky;top:68px;z-index:10;background:var(--card);
     border:1px solid var(--line);border-radius:14px;padding:14px 16px;
     margin:18px 0 6px;display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center}
   .pg label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
@@ -66,20 +90,32 @@
   .btn:hover{text-decoration:none;opacity:.92}
   footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);
     font-size:12.5px;text-align:center}
-  @media(max-width:780px){.demo{grid-template-columns:1fr}h1{font-size:27px}
-    .top nav a{display:none}}
+  @media(max-width:780px){.demo{grid-template-columns:1fr}h1{font-size:27px}}
+  .content-wrap{max-width:1100px;margin:0 auto;padding:0 40px}
+  @media(max-width:1024px){.content-wrap{padding:0 24px}}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap">
-  <a class="logo" href="/"><span class="mark">V</span> Vigilo</a>
-  <nav>
-    <a href="/api/v1/docs">API Docs</a>
-    <a href="#smartcard">Smart-Card</a>
-    <a href="#checkout">Checkout</a>
-    <a href="#email">Email</a>
-    <a href="mailto:hello@vigilo.cc">Contact</a>
-  </nav>
+<header id="hd"><div class="wrap nav">
+  <div class="nleft">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
+      Vigilo
+    </a>
+    <nav class="nlinks">
+      <a href="/">Overview</a>
+      <a href="/api/v1/docs">API</a>
+      <a href="/widgets">Widgets</a>
+      <a href="/business.html#pricing">Pricing</a>
+      <a href="/methodology">Methodology</a>
+    </nav>
+  </div>
+  <div class="nright">
+    <a class="lang" href="/ru/business.html">RU</a>
+    <a class="nlogin" href="/app.html">Log in</a>
+    <a class="btn-hdr" href="/api/v1/docs">Get an API key
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+  </div>
 </div></header>
 
 <div class="wrap">
@@ -162,6 +198,9 @@
   Not financial or medical advice.</div></footer>
 
 <script src="/widget.js"></script>
+<script>
+(function(){var hd=document.getElementById('hd');function onsc(){if(window.scrollY>8)hd.classList.add('scr');else hd.classList.remove('scr');}window.addEventListener('scroll',onsc,{passive:true});onsc();})();
+</script>
 <script>
 (function(){
   var BAND_C={minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',
