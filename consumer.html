@@ -40,7 +40,7 @@
     --plate:0 1px 0 rgba(20,17,12,.05),0 30px 70px -25px rgba(20,17,12,.22);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--paper)}
+  html{background:var(--night)}body{background:var(--paper)}
   body{color:var(--ink);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:inherit;text-decoration:none}
   ::selection{background:#D5FF3F;color:#14110C}
@@ -101,8 +101,8 @@
   @media(min-width:1000px){.nlinks{display:flex}}
   .nright{display:flex;align-items:center;gap:10px}
   .nlogin{display:none;font-size:13.5px;font-weight:600;color:var(--ink700);
-    padding:8px 14px;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--rule-strong);
-    transition:background .16s,box-shadow .16s}
+    height:36px;padding:0 14px;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--rule-strong);
+    align-items:center;transition:background .16s,box-shadow .16s}
   .nlogin:hover{background:rgba(20,17,12,.05);box-shadow:inset 0 0 0 1.5px var(--ink400)}
   @media(min-width:640px){.nlogin{display:inline-flex}}
   .lang{font-size:13px;font-weight:600;color:var(--ink500)}
@@ -289,7 +289,7 @@
   .fstat{margin-top:36px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--night-muted)}
   .fstat span{display:inline-flex;align-items:center;gap:8px}
   .fcols{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
-  @media(min-width:640px){.fcols{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:640px){.fcols{grid-template-columns:repeat(3,1fr)}}
   .fcols h4{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--night-muted)}
   .fcols ul{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px;font-size:14px}
   .fcols a{color:rgba(255,255,255,.85)}.fcols a:hover{color:#fff}
@@ -327,8 +327,8 @@
     </nav>
   </div>
   <div class="nright">
-    <a class="nlogin" href="/app.html">Log in</a>
     <a class="lang" href="/ru/">RU</a>
+    <a class="nlogin" href="/app.html">Log in</a>
     <a class="btn btn-amber btn-sm" href="/app.html">Open the globe
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
   </div>
@@ -344,7 +344,7 @@
       <div class="cta">
         <a class="btn btn-amber" href="/app.html">Open the live globe
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-        <a class="btn btn-ghost" href="/report">See a live risk dossier</a>
+        <a class="btn btn-ghost" href="/report">See a live risk report</a>
       </div>
       <div class="trust">
         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Free forever</span>
@@ -605,7 +605,7 @@
   <div class="cta" style="margin-top:36px">
     <a class="btn btn-amber" href="/app.html">Open the globe
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-    <a class="btn btn-white" href="/report">See a live risk dossier</a>
+    <a class="btn btn-white" href="/report">See a live risk report</a>
   </div>
 </div>
 </div>
@@ -627,15 +627,9 @@
     <div class="fcols">
       <div><h4>Product</h4><ul>
         <li><a href="/app.html">Live globe</a></li>
-        <li><a href="/report">Risk dossier</a></li>
+        <li><a href="/report">Risk report</a></li>
         <li><a href="/widgets">Widgets</a></li>
         <li><a href="/app.html#alerts">Location alerts</a></li>
-      </ul></div>
-      <div><h4>Use cases</h4><ul>
-        <li><a href="#features">Travel safety</a></li>
-        <li><a href="#features">Expat monitoring</a></li>
-        <li><a href="#features">Remote work zones</a></li>
-        <li><a href="/business.html">For business →</a></li>
       </ul></div>
       <div><h4>Company</h4><ul>
         <li><a href="/methodology">Methodology</a></li>
@@ -646,7 +640,6 @@
       <div><h4>Resources</h4><ul>
         <li><a href="/api/v1/docs">API docs</a></li>
         <li><a href="https://github.com/arablex/episwope">GitHub</a></li>
-        <li><a href="/methodology">Published backtests</a></li>
         <li><a href="https://vigilo.cc">vigilo.cc</a></li>
       </ul></div>
     </div>
