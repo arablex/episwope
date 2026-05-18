@@ -97,5 +97,21 @@ class NetlifyRouteTest(unittest.TestCase):
             r'\s*\n\s*status\s*=\s*200')
 
 
+
+class MethodologyPageTest(unittest.TestCase):
+    def test_page_exists_and_publishes_verdicts(self):
+        h = read("methodology.html")
+        self.assertEqual(h.count("NOT DEMONSTRATED"), 3)
+        for n in ("-0.541", "0.004902", "-0.1201"):
+            self.assertIn(n, h)
+        self.assertIn("github.com/arablex/episwope/blob/main/docs/validation/", h)
+
+    def test_netlify_methodology_route(self):
+        toml = read("netlify.toml")
+        self.assertRegex(
+            toml,
+            r'from\s*=\s*"/methodology"\s*\n\s*to\s*=\s*"/methodology\.html"'
+            r'\s*\n\s*status\s*=\s*200')
+
 if __name__ == "__main__":
     unittest.main()

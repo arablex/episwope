@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigilo — Methodology &amp; validation</title>
+<meta name="description" content="We pre-register, backtest and publish — including the signals we tested and ruled out. The full validation record.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F4F2EE;--card:#FFFFFF;--ink:#14110C;--ink600:#6A6358;--ink500:#8A8377;
+    --ink400:#A8A092;--rule:#E5E1D8;--accent:#E8590C;--bad:#C8480A;
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,Menlo,monospace;--serif:'Instrument Serif',Georgia,serif;
+    --shadow:0 1px 2px rgba(20,17,12,.04),0 12px 40px -16px rgba(20,17,12,.18)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font:400 16px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 28px}
+  header{position:sticky;top:0;z-index:50;background:rgba(244,242,238,.82);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+  .nav{display:flex;align-items:center;gap:16px;height:64px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;letter-spacing:-.03em;text-decoration:none}
+  .sp{flex:1}
+  .pill{display:inline-flex;align-items:center;border:1px solid var(--ink);border-radius:999px;
+    padding:9px 18px;font-size:14px;font-weight:600;text-decoration:none;background:var(--ink);color:var(--paper)}
+  section{padding:clamp(56px,8vw,104px) 0}
+  .kick{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ink500)}
+  h1{font-size:clamp(40px,6vw,76px);font-weight:800;letter-spacing:-.045em;line-height:1.0;margin:22px 0}
+  h1 .it{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--ink600)}
+  h2{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-.03em;margin:54px 0 8px}
+  p{color:var(--ink600);max-width:64ch;margin-top:14px;line-height:1.62}
+  p b{color:var(--ink);font-weight:600}
+  .lead{font-size:clamp(17px,1.5vw,20px);color:var(--ink600)}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:30px}
+  @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+  .col{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:24px}
+  .col h3{font-size:15px;font-weight:700;letter-spacing:-.01em}
+  .col ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .col li{font-size:14px;color:var(--ink600);padding-left:18px;position:relative}
+  .col li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:999px;background:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:26px;
+    margin-top:16px;box-shadow:var(--shadow)}
+  .verdict{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+    font-weight:700;color:var(--bad);background:rgba(200,72,10,.08);border:1px solid rgba(200,72,10,.25);
+    border-radius:999px;padding:5px 12px;letter-spacing:.02em}
+  .card h3{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:14px}
+  .card .nums{font-family:var(--mono);font-size:13px;color:var(--ink600);margin-top:12px}
+  .card .take{font-size:14.5px;color:var(--ink600);margin-top:12px}
+  .card a.src{display:inline-block;margin-top:16px;font-size:13px;font-weight:700;color:var(--accent);text-decoration:none}
+  footer{border-top:1px solid var(--rule);padding:36px 0;font-size:13px;color:var(--ink500)}
+  footer a{color:var(--ink500);text-decoration:none}footer a:hover{color:var(--ink)}
+  .frow{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="/business.html">
+    <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.6" fill="currentColor"/></svg>
+    Vigilo
+  </a>
+  <span class="sp"></span>
+  <a class="pill" href="/api/v1/docs">Get a free API key</a>
+</div></header>
+
+<section><div class="wrap">
+  <span class="kick">Methodology &amp; validation</span>
+  <h1>What we tested. <span class="it">Including what failed.</span></h1>
+  <p class="lead">Every signal is pre-registered, backtested with no lookahead, and only ships if it survives. We publish the full record — the verdicts below are real, committed, and were not tuned.</p>
+
+  <h2>What we claim — and what we don't</h2>
+  <div class="grid">
+    <div class="col"><h3>We claim</h3><ul>
+      <li>Aggregation of 44 verified data streams across 7 domains</li>
+      <li>A deterministic composite score; every value links to its source line</li>
+      <li>Seasonal &amp; historical (25-yr ERA5) risk baselines</li>
+      <li>Open API, published pricing, published methodology</li>
+    </ul></div>
+    <div class="col"><h3>We do NOT claim</h3><ul>
+      <li>Validated outbreak prediction</li>
+      <li>Beating WHO / a lead-time guarantee</li>
+      <li>Black-box ML accuracy</li>
+      <li>Compliance certifications we don't hold</li>
+    </ul></div>
+  </div>
+
+  <h2>What our own backtests found</h2>
+  <p>Three pre-registered backtests. All returned the same honest verdict — the
+  raw report for each is committed in the repository, unedited.</p>
+
+  <div class="card">
+    <span class="verdict">NOT DEMONSTRATED</span>
+    <h3>Climate → dengue (standalone heuristic)</h3>
+    <p class="take">A standalone climate heuristic does not beat a trivial seasonal calendar. It performs about as well as chance.</p>
+    <div class="nums">TSS indicator 0.1213 · seasonal baseline 0.6624 · skill vs seasonal -0.541</div>
+    <a class="src" href="https://github.com/arablex/episwope/blob/main/docs/validation/dengue-backtest.md">Raw report ↗</a>
+  </div>
+
+  <div class="card">
+    <span class="verdict">NOT DEMONSTRATED · near-miss</span>
+    <h3>GDELT × seasonal — Phase 1</h3>
+    <p class="take">Adding a GDELT health-news signal produced a small ranking lift but failed the pre-registered calibration clause. We did not move the bar.</p>
+    <div class="nums">PR-AUC skill +0.025 · 95% CI [0.004902, 0.104248] · calibration regressed</div>
+    <a class="src" href="https://github.com/arablex/episwope/blob/main/docs/validation/gdelt-combined-backtest.md">Raw report ↗</a>
+  </div>
+
+  <div class="card">
+    <span class="verdict">NOT DEMONSTRATED · decisive</span>
+    <h3>GDELT × seasonal — Phase 2 (real BigQuery GKG, 6 countries, calibrated)</h3>
+    <p class="take">With more data, all six countries and a calibration layer — same frozen criterion — the combined model decisively loses to seasonality (a visible 2020–22 volume confound). The predictive hypothesis is not supported.</p>
+    <div class="nums">PR-AUC 0.0724 vs seasonal 0.1925 · skill -0.1201</div>
+    <a class="src" href="https://github.com/arablex/episwope/blob/main/docs/validation/gdelt-phase2-backtest.md">Raw report ↗</a>
+  </div>
+
+  <h2>How to read this</h2>
+  <p>Each success criterion was registered <b>before</b> the run. Reconstruction is strictly causal (no lookahead, enforced by unit tests). We never re-subset data or move the bar to manufacture a positive. The validation harness is reusable and lives in the repository. A negative is a valid, committed outcome — that discipline is the product.</p>
+</div></section>
+
+<footer><div class="wrap frow">
+  <span>© Vigilo</span>
+  <span class="sp"></span>
+  <a href="/business.html">For Business</a>
+  <a href="/api/v1/docs">API</a>
+  <a href="/report">Sample dossier</a>
+  <a href="/">← Consumer site</a>
+</div></footer>
+</body>
+</html>
