@@ -70,6 +70,16 @@ def _get(url, retries=6):
                 time.sleep(wait)
                 continue
             raise
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            # The free DOC endpoint is flaky (SSL handshake / read
+            # timeouts). Treat as transient: back off and retry.
+            if attempt < retries - 1:
+                wait = 35 * (attempt + 1)
+                print(f"    net error ({e}) — backoff {wait}s "
+                      f"(attempt {attempt + 1}/{retries})")
+                time.sleep(wait)
+                continue
+            return ""
     return ""
 
 
