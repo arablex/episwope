@@ -38,6 +38,10 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib import request, error, parse
 
+# ReliefWeb API appname — approved, non-secret public identifier
+# (ReliefWeb uses it for contact/analytics, NOT auth). Server-side only.
+RELIEFWEB_APPNAME = "episcope-ownalex-9yimg"
+
 # Local analytics modules (literature params + signal-derived dynamics)
 sys.path.insert(0, str(Path(__file__).parent))
 from epi_analytics import enrich_signal  # noqa: E402
@@ -952,14 +956,73 @@ def fetch_wikipedia_changes() -> list[Article]:
     return results
 
 # ---------------------------------------------------------------------------
-# Source 7: ReliefWeb API — epidemic-tagged reports
+# Source 7: ReliefWeb v2 API — epidemic-tagged reports
 # ---------------------------------------------------------------------------
 
-def fetch_reliefweb() -> list[Article]:
-    log("Fetching ReliefWeb API...")
-    # ReliefWeb API requires app registration (returns 403 without it).
-    # Use Google News targeting reliefweb.int epidemic reports as primary source.
-    results = []
+def parse_reliefweb_json(text: str) -> list[Article]:
+    """Pure parser: ReliefWeb v2 /reports JSON -> [Article].
+
+    No network. Robust to garbage / missing keys -> []. Article's
+    __init__ HTML-strips & truncates the body, so raw body is passed.
+    """
+    try:
+        data = json.loads(text)
+    except (ValueError, TypeError):
+        return []
+    rows = data.get("data") if isinstance(data, dict) else None
+    if not isinstance(rows, list):
+        return []
+    out: list[Article] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        f = item.get("fields") or {}
+        title = (f.get("title") or "").strip()
+        if not title:
+            continue
+        body = f.get("body") or title
+        url = f.get("url") or item.get("href") or ""
+        date_str = ""
+        d = f.get("date")
+        if isinstance(d, dict):
+            date_str = d.get("created") or d.get("changed") or ""
+        out.append(Article("reliefweb", title, body, url, date_str))
+    return out
+
+
+def _fetch_reliefweb_api() -> list[Article]:
+    """Real ReliefWeb v2 API (approved appname). Empty list on any error."""
+    params = parse.urlencode([
+        ("appname", RELIEFWEB_APPNAME),
+        ("filter[field]", "primary_type.name"),
+        ("filter[value]", "Epidemic"),
+        ("limit", "30"),
+        ("sort[]", "date.created:desc"),
+        ("fields[include][]", "title"),
+        ("fields[include][]", "body"),
+        ("fields[include][]", "country"),
+        ("fields[include][]", "date"),
+        ("fields[include][]", "source"),
+        ("fields[include][]", "disease"),
+        ("fields[include][]", "url"),
+    ])
+    raw = fetch_url(
+        f"https://api.reliefweb.int/v2/reports?{params}",
+        extra_headers={"Accept": "application/json"},
+        retries=1,
+    )
+    if not raw:
+        return []
+    try:
+        return parse_reliefweb_json(raw.decode("utf-8", "ignore"))
+    except Exception as e:  # noqa: BLE001 - defensive: never break the run
+        log(f"  ReliefWeb API parse error: {e}")
+        return []
+
+
+def _fetch_reliefweb_gnews() -> list[Article]:
+    """Honest fallback: Google-News targeting reliefweb.int."""
+    results: list[Article] = []
     url = (
         "https://news.google.com/rss/search?q=epidemic+disease+outbreak+"
         "site:reliefweb.int&hl=en&gl=US&ceid=US:en"
@@ -967,7 +1030,17 @@ def fetch_reliefweb() -> list[Article]:
     raw = fetch_url(url, retries=1)
     if raw:
         results.extend(_parse_feed_items(raw, "reliefweb"))
-    log(f"  -> {len(results)} ReliefWeb reports")
+    return results
+
+
+def fetch_reliefweb() -> list[Article]:
+    log("Fetching ReliefWeb v2 API...")
+    results = _fetch_reliefweb_api()
+    if results:
+        log(f"  -> {len(results)} ReliefWeb reports (API)")
+        return results
+    results = _fetch_reliefweb_gnews()
+    log(f"  -> {len(results)} ReliefWeb reports (Google-News fallback)")
     return results
 
 # ---------------------------------------------------------------------------
