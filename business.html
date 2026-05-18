@@ -272,7 +272,8 @@
   .price{background:#fff;border-radius:18px;box-shadow:var(--card);padding:34px}
   .price.acc{box-shadow:var(--plate);outline:2px solid var(--amber)}
   .price h3{font-size:19px;font-weight:700}
-  .price .big{font-weight:700;letter-spacing:-.03em;font-size:32px;margin:14px 0}
+  .price .big{font-weight:700;letter-spacing:-.03em;font-size:32px;margin:14px 0 4px}
+  .price .psub{font-size:13px;color:var(--ink500);margin-bottom:10px}
   .price ul{list-style:none;margin:16px 0 26px;display:flex;flex-direction:column;gap:10px}
   .price li{display:flex;align-items:baseline;gap:10px;font-size:14px;color:var(--ink600)}
   .price li svg{color:var(--greenDk);transform:translateY(2px);flex-shrink:0}
@@ -777,16 +778,19 @@
       <div class="kick">Pricing</div>
       <h2>Start free. <span class="h-it">Talk</span> when you scale.</h2>
     </div>
-    <p>No invented prices on a landing page. The free tier is live now; enterprise terms we discuss with you directly.</p>
+    <p>Concrete scope, no invented numbers. The free tier is live now; enterprise terms we scope with you on a call.</p>
   </div>
   <div class="price-grid">
     <div class="price acc">
       <h3>Free tier</h3>
       <div class="big">Live now</div>
+      <div class="psub">Anonymous · no key required · fair-use rate limit</div>
       <ul>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Open REST API (anonymous)</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Composite score + events</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Source-traced responses</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Open REST API — every ISO-2 country</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Composite score + 7-domain breakdown</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Live events &amp; signals feed</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Source-traced responses — links to the raw line</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Published methodology &amp; backtests</li>
       </ul>
       <a class="btn btn-dark" href="/api/v1/docs">Get a free API key
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
@@ -794,9 +798,12 @@
     <div class="price">
       <h3>Enterprise</h3>
       <div class="big">Talk to us</div>
+      <div class="psub">Scoped on a call · no fixed list price</div>
       <ul>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Higher rate limits</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Webhooks at scale</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Higher / custom rate limits</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Webhooks &amp; geofencing at scale</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Backtest &amp; methodology support</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> On-prem / data-residency on request</li>
         <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Priority support &amp; terms</li>
       </ul>
       <a class="btn btn-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Talk to us</a>

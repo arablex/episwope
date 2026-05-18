@@ -272,7 +272,8 @@
   .price{background:#fff;border-radius:18px;box-shadow:var(--card);padding:34px}
   .price.acc{box-shadow:var(--plate);outline:2px solid var(--amber)}
   .price h3{font-size:19px;font-weight:700}
-  .price .big{font-weight:700;letter-spacing:-.03em;font-size:32px;margin:14px 0}
+  .price .big{font-weight:700;letter-spacing:-.03em;font-size:32px;margin:14px 0 4px}
+  .price .psub{font-size:13px;color:var(--ink500);margin-bottom:10px}
   .price ul{list-style:none;margin:16px 0 26px;display:flex;flex-direction:column;gap:10px}
   .price li{display:flex;align-items:baseline;gap:10px;font-size:14px;color:var(--ink600)}
   .price li svg{color:var(--greenDk);transform:translateY(2px);flex-shrink:0}
@@ -777,16 +778,19 @@
       <div class="kick">Цены</div>
       <h2>Начните бесплатно. <span class="h-it">Поговорим</span>, когда масштаб.</h2>
     </div>
-    <p>Никаких выдуманных цен на лендинге. Бесплатный тариф уже работает; энтерпрайз-условия обсуждаем напрямую.</p>
+    <p>Конкретный scope, без выдуманных цифр. Бесплатный тариф уже работает; энтерпрайз-условия скоупим с вами на звонке.</p>
   </div>
   <div class="price-grid">
     <div class="price acc">
       <h3>Бесплатный тариф</h3>
       <div class="big">Уже онлайн</div>
+      <div class="psub">Анонимно · без ключа · fair-use лимит</div>
       <ul>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Открытый REST API (анонимно)</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Композитная оценка + события</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Ответы со ссылкой на источник</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Открытый REST API — любая страна ISO-2</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Композит + разбивка по 7 доменам</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Лента живых событий и сигналов</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Ответы со ссылкой на исходную строку</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Опубликованная методология и бэктесты</li>
       </ul>
       <a class="btn btn-dark" href="/api/v1/docs">Получить бесплатный API-ключ
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
@@ -794,9 +798,12 @@
     <div class="price">
       <h3>Энтерпрайз</h3>
       <div class="big">Свяжитесь</div>
+      <div class="psub">Скоупим на звонке · без фиксированного прайса</div>
       <ul>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Выше лимиты запросов</li>
-        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Вебхуки в масштабе</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Выше / кастомные лимиты</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Вебхуки и геозоны в масштабе</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Поддержка по бэктестам и методологии</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> On-prem / резидентность данных по запросу</li>
         <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Приоритетная поддержка и условия</li>
       </ul>
       <a class="btn btn-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Связаться</a>
