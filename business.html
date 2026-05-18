@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
 <style>
   :root{
     --paper:#F4F2EE;--paper50:#FBF9F4;--paper100:#EBE6D9;--paper200:#DDD5C3;
@@ -312,6 +314,30 @@
   .fbot a:hover{color:#fff}
   .fbot .r{display:flex;flex-wrap:wrap;gap:24px}
 
+  /* hero globe */
+  .gwrap{position:relative;min-height:540px}
+  @media(max-width:999px){.gwrap{min-height:380px}}
+  #hero-globe{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--paper)}
+  #hero-globe canvas{outline:none}
+  .glegend{position:absolute;top:18px;left:18px;background:rgba(255,255,255,.9);
+    backdrop-filter:blur(6px);border-radius:14px;padding:14px 16px;box-shadow:var(--card)}
+  .glegend ul{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:7px}
+  .glegend li{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink700)}
+  .glegend li i{width:9px;height:9px;border-radius:999px;display:inline-block;flex-shrink:0}
+  .glive{position:absolute;top:18px;right:18px;display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border-radius:999px;
+    padding:7px 14px;font-size:12.5px;font-weight:600;box-shadow:var(--card)}
+  .gcard{position:absolute;left:18px;bottom:18px;max-width:330px;background:#fff;
+    border-radius:16px;padding:18px;box-shadow:var(--plate)}
+  .gc-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .gc-dis{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .gc-lv{font-family:var(--mono);font-size:10.5px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.1em;color:var(--red);background:rgba(201,42,42,.1);
+    border:1px solid rgba(201,42,42,.25);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .gc-sub{margin-top:7px;font-size:13px;color:var(--ink600);line-height:1.4}
+  .gc-meta{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink500)}
+  @media(max-width:560px){.gcard{max-width:none;left:14px;right:14px;bottom:14px}.glegend{padding:10px 12px}}
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){
@@ -374,28 +400,27 @@
       </div>
     </div>
 
-    <div class="plate" aria-hidden="true">
-      <div class="ph">
-        <div class="ttl">
-          <svg width="18" height="18" viewBox="0 0 28 28" fill="none"><path d="M4 5 L14 23 L24 5" stroke="#14110C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="#14110C"/></svg>
-          Risk console <span style="color:var(--ink400)">/</span>
-          <span class="mono">ET · ISO-2026-W20</span>
-        </div>
-        <span class="sync"><span class="dot"><b></b><i></i></span> illustrative</span>
+    <div class="gwrap" role="img" aria-label="Live globe of verified outbreak signals from the Vigilo feed">
+      <div id="hero-globe"></div>
+      <div class="glegend">
+        <div class="kick" style="font-size:11px">Severity</div>
+        <ul>
+          <li><i style="background:#8B1A1A"></i>critical</li>
+          <li><i style="background:#C92A2A"></i>alert</li>
+          <li><i style="background:#E8590C"></i>warning</li>
+          <li><i style="background:#E4B514"></i>low</li>
+          <li><i style="background:#A09F95"></i>monitoring</li>
+        </ul>
       </div>
-      <div class="pb">
-        <div class="kick">Composite risk · Ethiopia · sample</div>
-        <div style="display:flex;align-items:baseline;gap:14px;margin-top:10px">
-          <span class="score">3.8</span><span class="mono" style="color:var(--ink500);font-size:13px">/ 5 · 7 domains</span>
+      <span class="glive"><span class="dot"><b></b><i></i></span> <span id="g-badge">Live feed</span></span>
+      <figure class="gcard" id="g-card">
+        <div class="gc-h">
+          <span class="gc-dis" id="gc-dis">Ebola virus disease</span>
+          <span class="gc-lv" id="gc-lv">urgent</span>
         </div>
-        <div style="margin-top:22px;display:flex;flex-direction:column;gap:14px">
-          <div class="brk"><div class="r"><span>Health &amp; outbreaks</span><span class="mono">3.9</span></div><div class="t"><i style="width:78%;background:var(--ink800)"></i></div></div>
-          <div class="brk"><div class="r"><span>Armed conflict</span><span class="mono">3.1</span></div><div class="t"><i style="width:62%;background:var(--ink800)"></i></div></div>
-          <div class="brk"><div class="r"><span>Seasonal climate prior</span><span class="mono">2.4</span></div><div class="t"><i style="width:48%;background:var(--green)"></i></div></div>
-          <div class="brk"><div class="r"><span>Transport &amp; border</span><span class="mono">1.3</span></div><div class="t"><i style="width:26%;background:var(--ink800)"></i></div></div>
-        </div>
-        <div class="smp">Illustrative sample · every score is deterministic and links to its source line</div>
-      </div>
+        <div class="gc-sub" id="gc-sub">DR Congo · WHO IHR + ReliefWeb</div>
+        <div class="gc-meta"><span id="gc-src">84 verified sources</span><span class="mono" id="gc-age">live</span></div>
+      </figure>
     </div>
   </div>
 
@@ -840,6 +865,56 @@
     });
   },{threshold:.6});
   cnt.forEach(function(e){cio.observe(e);});
+})();
+</script>
+<script>
+(function(){
+  if(!window.mapboxgl){return;}
+  var el=document.getElementById("hero-globe"); if(!el){return;}
+  var RU=(document.documentElement.lang||"").slice(0,2)==="ru";
+  var T=RU?{live:"Онлайн · ",sig:" сигналов",ill:"Иллюстративно",src:" проверенных источников",ago:" ч назад",now:"только что"}
+          :{live:"Live · ",sig:" signals",ill:"Illustrative",src:" verified sources",ago:"h ago",now:"live"};
+  mapboxgl.accessToken="pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXA1M2wxbWExM25xMnFxeWJzZG9tOWJuIn0.PJ8o0uIDJDvtKib-EoKXBw";
+  var SEV=["match",["get","sev"],"monitoring","#A09F95","low","#E4B514","warning","#E8590C","alert","#C92A2A","critical","#8B1A1A","#888"];
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var map=new mapboxgl.Map({container:"hero-globe",style:"mapbox://styles/mapbox/light-v11",
+    projection:"globe",center:[18,12],zoom:1.45,minZoom:1,maxZoom:5,
+    attributionControl:false,pitchWithRotate:false,dragRotate:false,interactive:false});
+  map.addControl(new mapboxgl.AttributionControl({compact:true}),"bottom-right");
+  function fc(p){return {type:"FeatureCollection",features:p.filter(function(o){return typeof o.lng==="number"&&typeof o.lat==="number";}).map(function(o){return {type:"Feature",geometry:{type:"Point",coordinates:[o.lng,o.lat]},properties:{sev:o.sev||"monitoring"}};})};}
+  function tier(s){var t=s.threat_tier||s.level;return t==="critical"?"critical":(t==="alert"||t==="urgent")?"alert":t==="watch"?"warning":t==="low"?"low":"monitoring";}
+  function srcLabel(k){return ({who_ihr:"WHO IHR",who_don:"WHO DON",who_afro:"WHO AFRO",who_emro:"WHO EMRO",who_euro:"WHO EURO",reliefweb:"ReliefWeb",cdc_mmwr:"CDC MMWR",ecdc_cdtr:"ECDC",africa_cdc:"Africa CDC",promed:"ProMED",nigeria_ncdc:"NCDC",flunet:"FluNet",google_news:"news wire"}[k]||String(k).replace(/_/g," ").toUpperCase());}
+  function cap(s){return String(s||"").replace(/\b\w/g,function(m){return m.toUpperCase();});}
+  function rel(iso){var t=Date.parse(iso);if(!t)return T.now;var h=Math.round((Date.now()-t)/3.6e6);return h<1?T.now:h+T.ago;}
+  var FB=[{lat:-4,lng:21.7,sev:"critical"},{lat:1.4,lng:32.3,sev:"critical"},{lat:9.1,lng:40.5,sev:"critical"},{lat:35.9,lng:104.2,sev:"alert"},{lat:-10,lng:-52,sev:"alert"},{lat:15.5,lng:30.2,sev:"warning"},{lat:12.8,lng:121.8,sev:"warning"},{lat:28.6,lng:77.2,sev:"alert"},{lat:9.1,lng:8.7,sev:"warning"},{lat:30,lng:69,sev:"monitoring"}];
+  function paint(p){
+    if(map.getSource("sig")){map.getSource("sig").setData(fc(p));return;}
+    map.addSource("sig",{type:"geojson",data:fc(p)});
+    [["o",34,.06],["m",23,.13],["n",15,.22]].forEach(function(L){map.addLayer({id:"h"+L[0],type:"circle",source:"sig",paint:{"circle-radius":L[1],"circle-color":SEV,"circle-opacity":L[2]}});});
+    map.addLayer({id:"sdot",type:"circle",source:"sig",paint:{"circle-radius":6,"circle-color":SEV,"circle-opacity":1,"circle-stroke-width":1.4,"circle-stroke-color":"rgba(255,255,255,.85)"}});
+  }
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  map.on("style.load",function(){map.setFog({"color":"rgb(244,242,238)","high-color":"rgb(220,220,220)","horizon-blend":0.06,"space-color":"rgb(244,242,238)","star-intensity":0});});
+  map.on("load",function(){
+    paint(FB);
+    if(!reduce){var spin=true;function s(){if(!spin)return;var c=map.getCenter();c.lng-=0.16;map.easeTo({center:c,duration:100,easing:function(n){return n;}});}map.on("moveend",function(){if(spin)requestAnimationFrame(s);});requestAnimationFrame(s);}
+    fetch("/public/signals.json",{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+      var sg=(d&&d.signals)||[];
+      var geo=sg.filter(function(s){return typeof s.lat==="number"&&typeof s.lng==="number";});
+      if(!geo.length)return;
+      paint(geo.map(function(s){return {lat:s.lat,lng:s.lng,sev:tier(s)};}));
+      set("g-badge",T.live+geo.length+T.sig);
+      var named=geo.filter(function(s){return s.iso&&s.iso!=="XX"&&s.country&&s.country!=="XX";})
+        .sort(function(a,c){return (c.threat_index||0)-(a.threat_index||0);});
+      var t=named[0]; if(!t){return;}
+      set("gc-dis",t.disease||"Signal");
+      var srcs=(t.sources||[]).slice(0,2).map(srcLabel).join(" + ");
+      set("gc-sub",cap(t.country)+(srcs?" · "+srcs:""));
+      set("gc-src",(t.source_count||(t.sources||[]).length)+T.src);
+      set("gc-age",rel(t.detected_at));
+      set("gc-lv",String(t.level||t.threat_tier||"").toUpperCase());
+    }).catch(function(){set("g-badge",T.ill);});
+  });
 })();
 </script>
 </body>
