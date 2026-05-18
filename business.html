@@ -3,163 +3,369 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vigilo for Business — risk intelligence API</title>
-<meta name="description" content="Vigilo aggregates 44 verified data streams over a 25-year ERA5 climate & bio-seasonality baseline. Deterministic, no black-box ML, open API.">
+<title>Vigilo for Business — risk &amp; seasonality intelligence API</title>
+<meta name="description" content="Vigilo aggregates 44 verified data streams over a 25-year ERA5 climate & bio-seasonality baseline. Deterministic, no black-box ML, open API, published methodology.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F4F2EE;--paper2:#EFEDE8;--card:#FFFFFF;--ink:#14110C;
-    --ink700:#3B362D;--ink600:#6A6358;--ink500:#8A8377;--ink400:#A8A092;
-    --rule:#E5E1D8;--accent:#E8590C;--accent-d:#C8480A;
-    --green:#00A56F;--green-bg:rgba(0,165,111,.10);
+    --paper:#F4F2EE;--paper50:#FBF9F4;--paper100:#EBE6D9;--paper200:#DDD5C3;
+    --ink:#14110C;--ink800:#221E18;--ink700:#332E26;--ink600:#544D42;
+    --ink500:#7A7263;--ink400:#9F9685;--ink300:#C2BAA9;
+    --night:#0D1015;--night850:#13171D;--night-muted:#9CA3B0;
+    --green:#00A56F;--greenDk:#076446;--green10:rgba(0,165,111,.10);
+    --amber:#E8590C;--red:#C92A2A;--yellow:#E4B514;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);--rule-dark:rgba(255,255,255,.10);
     --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
     --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
     --serif:'Instrument Serif',Georgia,serif;
-    --shadow:0 1px 2px rgba(20,17,12,.04),0 12px 40px -16px rgba(20,17,12,.18);
+    --card:0 1px 0 rgba(20,17,12,.04),0 20px 50px -20px rgba(20,17,12,.18);
+    --plate:0 1px 0 rgba(20,17,12,.05),0 30px 70px -25px rgba(20,17,12,.22);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);
-    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  html,body{background:var(--paper)}
+  body{color:var(--ink);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:inherit;text-decoration:none}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
-  .display{font-weight:800;letter-spacing:-.045em;line-height:.96}
-  .h-it{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+  ::selection{background:#D5FF3F;color:#14110C}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+  .wrap{max-width:1360px;margin:0 auto;padding:0 24px}
+  @media(min-width:1024px){.wrap{padding:0 40px}}
+  .display{font-weight:700;letter-spacing:-.04em;line-height:.94}
+  .display-t{font-weight:700;letter-spacing:-.045em;line-height:.9}
+  .h-it{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--ink600)}
   .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-  .kick{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ink500)}
+  .kick{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink500)}
+  .hl{box-shadow:inset 0 0 0 1px var(--rule)}
+  .grn{color:var(--greenDk)}
 
-  header{position:sticky;top:0;z-index:50;background:rgba(244,242,238,.82);
-    backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
-  .nav{display:flex;align-items:center;gap:26px;height:66px}
-  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;letter-spacing:-.03em}
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;font-weight:600;
+    font-size:14.5px;padding:13px 20px;cursor:pointer;transition:background .18s,transform .18s,box-shadow .18s;line-height:1}
+  .btn svg{display:block}
+  .btn-dark{background:var(--ink);color:var(--paper50)}
+  .btn-dark:hover{background:var(--ink700)}
+  .btn-amber{background:var(--amber);color:#FFFEFB}
+  .btn-amber:hover{background:#FF6F1F}
+  .btn-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule-strong)}
+  .btn-ghost:hover{background:rgba(20,17,12,.04)}
+  .btn-white{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule-strong)}
+  .btn-white:hover{background:var(--paper50)}
+  .btn-sm{font-size:13.5px;padding:9px 15px;border-radius:10px}
+  .lnk{display:inline-flex;align-items:center;gap:6px;font-weight:600;
+    background-image:linear-gradient(currentColor,currentColor);background-size:0 1px;
+    background-position:0 100%;background-repeat:no-repeat;transition:background-size .25s}
+  .lnk:hover{background-size:100% 1px}
+
+  /* live dot */
+  .dot{position:relative;display:inline-flex;width:8px;height:8px}
+  .dot b{position:absolute;inset:0;border-radius:999px;background:var(--green);opacity:.30}
+  .dot i{position:absolute;inset:2px;border-radius:999px;background:var(--green);animation:pd 1.6s ease-in-out infinite}
+  .dot.am b,.dot.am i{background:var(--amber)}
+  @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.82)}}
+
+  /* announce */
+  .announce{border-bottom:1px solid var(--rule);background:var(--paper100)}
+  .announce .wrap{display:flex;align-items:center;justify-content:center;gap:12px;
+    height:40px;font-size:12.5px;color:var(--ink600)}
+  .announce .tag{background:var(--amber);color:#fff;font-size:10.5px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  @media(max-width:640px){.announce .hide{display:none}}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;border-bottom:1px solid transparent;transition:background .2s,border-color .2s}
+  header.scr{background:rgba(244,242,238,.85);backdrop-filter:blur(16px);border-bottom-color:var(--rule)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .nleft{display:flex;align-items:center;gap:40px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
   .brand svg{display:block}
-  .sp{flex:1}
-  .nav a.nl{font-size:14px;font-weight:500;color:var(--ink600);display:none;transition:color .15s}
-  .nav a.nl:hover{color:var(--ink)}
-  @media(min-width:920px){.nav a.nl{display:inline}}
-  .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;font-weight:600;
-    font-size:14px;padding:11px 20px;border:1px solid var(--ink);transition:.18s;cursor:pointer}
-  .pill:hover{transform:translateY(-1px)}
-  .pill-dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-  .pill-dark:hover{background:#000}
-  .pill-ghost{background:transparent;color:var(--ink)}
-  .pill-ghost:hover{background:var(--ink);color:var(--paper)}
-  .lang{font-size:13px;font-weight:700;color:var(--ink500)}
+  .nlinks{display:none;align-items:center;gap:28px;font-size:14px;color:var(--ink600)}
+  .nlinks a:hover{color:var(--ink)}
+  @media(min-width:1000px){.nlinks{display:flex}}
+  .nright{display:flex;align-items:center;gap:10px}
+  .nlogin{display:none;font-size:14px;color:var(--ink600);margin-right:6px}
+  .nlogin:hover{color:var(--ink)}
+  @media(min-width:640px){.nlogin,.ntalk{display:inline-flex}}
+  .ntalk{display:none}
+  .lang{font-size:13px;font-weight:600;color:var(--ink500)}
 
-  section{padding:clamp(72px,10vw,132px) 0}
-  .band{background:var(--card);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-  .chip{display:inline-flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--rule);
-    border-radius:999px;padding:6px 14px 6px 7px;font-size:12.5px;font-weight:500;color:var(--ink700)}
-  .chip .badge{background:var(--green-bg);color:var(--green);font-size:10px;font-weight:800;
-    letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+  section{padding:clamp(72px,9vw,128px) 0}
+  .band50{background:var(--paper50)}
+  .band100{background:var(--paper100);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .shead{display:grid;gap:30px;align-items:end}
+  @media(min-width:1000px){.shead{grid-template-columns:1.05fr 1fr}}
+  h2{font-weight:700;letter-spacing:-.04em;line-height:.95;font-size:clamp(36px,5.4vw,76px);margin-top:18px}
+  .shead p{max-width:46ch;font-size:17px;line-height:1.55;color:var(--ink600)}
 
-  h1{font-size:clamp(46px,7.4vw,108px);margin:26px 0 0}
-  h1 .h-it{color:var(--ink600);font-size:.96em}
-  h2{font-size:clamp(28px,3.6vw,46px);font-weight:800;letter-spacing:-.04em;margin:14px 0 14px}
-  .lead{font-size:clamp(17px,1.5vw,19px);color:var(--ink600);max-width:58ch;line-height:1.6;margin-top:26px}
-  .lead b{color:var(--ink);font-weight:600}
-  .cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px}
-  .trust{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:26px;font-size:13px;color:var(--ink500)}
+  /* hero */
+  .hero{display:grid;gap:48px;align-items:center}
+  @media(min-width:1000px){.hero{grid-template-columns:1fr 1fr;gap:48px}}
+  .badge{display:inline-flex;align-items:center;gap:10px;background:#fff;border-radius:999px;
+    padding:5px 14px 5px 5px;font-size:12.5px;font-weight:500;color:var(--ink700)}
+  .badge .new{background:var(--green10);color:var(--greenDk);font-size:10.5px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  h1{font-weight:700;letter-spacing:-.04em;line-height:.94;font-size:clamp(48px,7.4vw,104px);margin-top:28px}
+  .hlead{margin-top:30px;max-width:56ch;font-size:18px;line-height:1.55;color:var(--ink600)}
+  .hlead b{color:var(--ink);font-weight:600}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:28px;font-size:13px;color:var(--ink500)}
   .trust span{display:inline-flex;align-items:center;gap:7px}
-  .trust svg{color:var(--green)}
+  .trust svg{color:var(--greenDk)}
 
-  .hero{display:grid;gap:56px;align-items:center;grid-template-columns:1fr}
-  @media(min-width:1000px){.hero{grid-template-columns:1.04fr .96fr}}
-  .plate{background:var(--card);border:1px solid var(--rule);border-radius:20px;
-    box-shadow:var(--shadow);overflow:hidden}
-  .plate-hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--rule);
-    font-size:13px}
-  .plate-hd .mono{font-size:12px;color:var(--ink500)}
-  .plate-bd{padding:24px}
-  .score{font-weight:800;letter-spacing:-.05em;font-size:clamp(56px,8vw,92px);line-height:.84}
-  .bar{height:9px;border-radius:5px;background:var(--paper2);overflow:hidden;margin-top:7px}
-  .bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
-  .brk{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink600);margin-top:14px}
-  .smp{font-size:11px;color:var(--ink400);margin-top:18px;font-family:var(--mono)}
+  /* plate */
+  .plate{background:#fff;border-radius:18px;box-shadow:var(--plate);overflow:hidden}
+  .pcard{background:#fff;border-radius:18px;box-shadow:var(--card);overflow:hidden}
+  .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 18px;border-bottom:1px solid var(--rule)}
+  .ph .ttl{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600}
+  .ph .mono{font-size:12px;color:var(--ink500)}
+  .sync{display:inline-flex;align-items:center;gap:7px;background:var(--green10);color:var(--greenDk);
+    border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600}
+  .pb{padding:24px}
+  .score{font-weight:700;letter-spacing:-.045em;line-height:.85;font-size:clamp(64px,9vw,96px)}
+  .pill-up{border-radius:7px;background:var(--green10);color:var(--greenDk);padding:5px 9px;
+    font-size:12px;font-weight:600;font-family:var(--mono)}
+  .brk{margin-top:6px}
+  .brk .r{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink700)}
+  .brk .t{height:6px;border-radius:999px;background:var(--paper200);overflow:hidden;margin-top:6px}
+  .brk .t i{display:block;height:100%;border-radius:999px}
+  .smp{margin-top:18px;font-size:11px;color:var(--ink400);font-family:var(--mono)}
+  .feed{margin-top:12px;display:flex;flex-direction:column;gap:7px;font-family:var(--mono);font-size:12px}
+  .feed .row{display:flex;align-items:center;gap:12px}
+  .feed .ts{color:var(--ink400)}
+  .feed .sr{width:104px;color:var(--greenDk)}
+  .feed .tx{flex:1;color:var(--ink700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:0;margin-top:54px;
-    border-top:1px solid var(--rule)}
-  @media(min-width:780px){.stats{grid-template-columns:repeat(4,1fr)}}
-  .stat{padding:26px 22px;border-left:1px solid var(--rule)}
-  .stat:first-child{border-left:0}
-  .stat .n{font-weight:800;letter-spacing:-.04em;font-size:clamp(34px,4vw,50px);line-height:.9}
-  .stat .l{font-size:13px;color:var(--ink500);margin-top:8px}
+  /* stats row */
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 0;margin-top:64px;
+    border-top:1px solid var(--rule);padding-top:40px}
+  @media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+  .stat{padding:0 22px;border-left:1px solid var(--rule)}
+  .stat:first-child{border-left:0;padding-left:0}
+  @media(max-width:759px){.stat:nth-child(3){border-left:0;padding-left:0}}
+  .stat .n{font-weight:700;letter-spacing:-.04em;line-height:.9;font-size:clamp(38px,4.6vw,52px)}
+  .stat .l{margin-top:9px;font-size:13px;color:var(--ink500)}
 
-  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:46px}
-  @media(min-width:780px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
-  .card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:28px;
-    transition:transform .2s,box-shadow .2s}
-  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
-  .card .ic{width:38px;height:38px;border-radius:11px;background:var(--paper2);color:var(--accent);
-    display:grid;place-items:center;margin-bottom:18px}
-  .card h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
-  .card p{color:var(--ink600);font-size:14.5px;margin-top:8px}
-  .card a.deep{display:inline-block;margin-top:16px;font-size:13px;font-weight:700;color:var(--accent)}
+  /* marquee */
+  .mq-mask{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+  .mq{display:flex;width:max-content;align-items:center;gap:48px;animation:mv 60s linear infinite}
+  .mq .s{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+  .mq .s b{font-size:22px;font-weight:700;letter-spacing:-.02em}
+  .mq .s span{font-size:12px;color:var(--ink500)}
+  @keyframes mv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-  .seg-card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:28px;
-    transition:transform .2s}
-  .seg-card:hover{transform:translateY(-3px)}
-  .seg-card h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
-  .seg-card .pain{color:var(--ink500);font-size:14px;margin-top:12px}
-  .seg-card .out{font-weight:600;margin-top:14px;font-size:15px;color:var(--ink)}
+  /* product showcase */
+  .prod{display:grid;gap:48px;align-items:start}
+  @media(min-width:1000px){.prod{grid-template-columns:.95fr 1.05fr;gap:72px}.prod.rev{grid-template-columns:1.05fr .95fr}}
+  .pintro .num{display:flex;align-items:baseline;gap:18px}
+  .pintro .num b{font-weight:700;letter-spacing:-.04em;font-size:44px;color:var(--ink400);line-height:.9}
+  .pintro h3{font-weight:700;letter-spacing:-.04em;line-height:.95;font-size:clamp(36px,4.4vw,64px);margin-top:22px}
+  .pintro .pl{margin-top:24px;max-width:54ch;font-size:17px;line-height:1.55;color:var(--ink600)}
+  .pintro ul{list-style:none;margin-top:26px;border-top:1px solid var(--rule);padding-top:24px;
+    display:flex;flex-direction:column;gap:13px;font-size:15px}
+  .pintro li{display:flex;align-items:baseline;gap:12px}
+  .pintro li svg{color:var(--greenDk);transform:translateY(2px);flex-shrink:0}
+  .pintro li b{font-weight:600}.pintro li span{color:var(--ink500)}
+  .codep{background:var(--ink);color:#fff;border-radius:18px;box-shadow:var(--plate);overflow:hidden}
+  .codep .ch{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.1);font-family:var(--mono);font-size:12px}
+  .codep .ch .m{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7)}
+  .codep .verb{background:rgba(232,89,12,.2);color:var(--amber);font-size:10.5px;font-weight:700;
+    padding:2px 7px;border-radius:5px}
+  .codep pre{margin:0;overflow-x:auto;padding:22px;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:rgba(255,255,255,.72)}
+  .codep .cc{color:rgba(255,255,255,.42)}.codep .ck{color:rgba(255,255,255,.6)}
+  .codep .cs{color:#FFB976}.codep .cv{color:#fff}
+  .codep .cols{display:grid}
+  @media(min-width:1000px){.codep .cols{grid-template-columns:1fr 1fr}.codep .cols pre+pre{border-left:1px solid rgba(255,255,255,.1)}}
+  .codep .cols pre+pre{border-top:1px solid rgba(255,255,255,.1)}
+  @media(min-width:1000px){.codep .cols pre+pre{border-top:0}}
+  .codep .feet{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.1);
+    background:rgba(255,255,255,.03);text-align:center}
+  .codep .feet div{padding:14px 8px;border-left:1px solid rgba(255,255,255,.1)}
+  .codep .feet div:first-child{border-left:0}
+  .codep .feet .a{font-family:var(--mono);font-size:13.5px;color:#fff}
+  .codep .feet .b{margin-top:4px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .diagram{background:#fff;border-radius:18px;box-shadow:var(--card);padding:26px}
+  .diagram svg{width:100%;height:auto;display:block;margin-top:18px}
+  .diagram .ft{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;
+    border-top:1px solid var(--rule);margin-top:14px;padding-top:18px}
+  .diagram .ft .a{font-family:var(--mono);font-size:18px}
+  .diagram .ft .b{margin-top:3px;font-size:11px;color:var(--ink500)}
 
-  table{width:100%;border-collapse:collapse;margin-top:34px;font-size:14.5px;background:var(--card);
-    border:1px solid var(--rule);border-radius:16px;overflow:hidden}
-  th,td{padding:16px 18px;text-align:left;border-bottom:1px solid var(--rule)}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink500);font-weight:700}
-  td.us{font-weight:800;color:var(--accent)}
+  /* checkout mock */
+  .mock .row1{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 18px;border-bottom:1px solid var(--rule);font-size:12.5px;color:var(--ink700)}
+  .mock .row1 b{font-weight:600;color:var(--ink)}
+  .mock .bd{padding:18px}
+  .mock .trip{border-radius:12px;background:var(--paper100);padding:16px}
+  .mock .opt{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:12.5px}
+  .mock .opt div{border-radius:9px;background:#fff;padding:10px 0}
+  .mock .opt .sel{background:var(--ink);color:#fff}
+  .mock .opt .sel s{color:rgba(255,255,255,.7);text-decoration:none}
+  .mock .opt b{display:block;font-weight:600}.mock .opt s{display:block;color:var(--ink500);text-decoration:none}
+  .mock .ins{margin-top:16px;border:2px dashed rgba(232,89,12,.55);background:rgba(232,89,12,.07);
+    border-radius:12px;padding:16px;display:flex;gap:13px}
+  .mock .ins .ib{flex-shrink:0;width:36px;height:36px;border-radius:999px;background:var(--amber);
+    color:#fff;display:grid;place-items:center}
+  .mock .ins .pw{background:var(--ink);color:#fff;font-family:var(--mono);font-size:10px;
+    font-weight:600;padding:2px 7px;border-radius:5px}
+  .mock .ins h4{font-size:14px;font-weight:600}
+  .mock .ins p{margin-top:6px;font-size:12.5px;line-height:1.5;color:var(--ink700)}
+  .mock .ins .add{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+  .mock .ins .add .pr{font-family:var(--mono);font-size:12px;color:var(--ink600)}
+
+  /* corridor */
+  .corr{background:#fff;border-radius:18px;box-shadow:var(--card);padding:24px}
+  .corr .map{position:relative;margin-top:18px;height:300px;border-radius:12px;background:var(--paper100);overflow:hidden}
+  .corr .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .corr .pop{position:absolute;right:14px;bottom:14px;max-width:300px;border:1px solid rgba(232,89,12,.4);
+    background:#fff;border-radius:10px;padding:13px;box-shadow:var(--card)}
+  .corr .pop .h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--amber)}
+  .corr .pop p{margin-top:5px;font-size:12px;line-height:1.5;color:var(--ink700)}
+  .corr pre{margin-top:18px;overflow-x:auto;border-radius:10px;background:var(--ink);padding:16px;
+    font-family:var(--mono);font-size:12px;line-height:1.7;color:rgba(255,255,255,.72)}
+  .corr pre .cc{color:rgba(255,255,255,.42)}.corr pre .cs{color:#FFB976}.corr pre .cv{color:#fff}
+
+  /* seg cards */
+  .seg{display:grid;gap:18px;margin-top:54px}
+  @media(min-width:880px){.seg{grid-template-columns:repeat(3,1fr)}}
+  .seg-card{background:#fff;border-radius:18px;box-shadow:var(--card);padding:30px;
+    transition:box-shadow .2s,transform .2s}
+  .seg-card:hover{box-shadow:var(--plate);transform:translateY(-3px)}
+  .seg-card .si{width:38px;height:38px;border-radius:11px;background:var(--green10);
+    color:var(--greenDk);display:grid;place-items:center;margin-bottom:20px}
+  .seg-card h3{font-size:19px;font-weight:700;letter-spacing:-.02em}
+  .seg-card .pain{margin-top:14px;font-size:14px;color:var(--ink500)}
+  .seg-card .with{margin-top:10px;font-size:14px;color:var(--ink700)}
+  .seg-card .out{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);
+    font-size:15px;font-weight:600;color:var(--ink)}
+
+  /* compare table */
+  .tbl{margin-top:54px;border-radius:16px;background:#fff;box-shadow:var(--card);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{padding:18px 20px;text-align:left;border-bottom:1px solid var(--rule)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink500);font-weight:600}
+  th .sub{display:block;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink400);margin-top:4px}
+  td.us{font-weight:700;color:var(--greenDk)}
   tr:last-child td{border-bottom:0}
-  .quiet{font-size:13px;color:var(--ink500);margin-top:18px}
-  .quiet a{color:var(--accent);font-weight:700}
+  .quiet{margin-top:18px;font-size:13px;color:var(--ink500)}
+  .quiet a{color:var(--amber);font-weight:600}
 
-  .price-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:38px}
-  @media(min-width:660px){.price-grid{grid-template-columns:1fr 1fr}}
-  .price{background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:34px}
-  .price.acc{border:2px solid var(--accent)}
-  .price h3{font-size:19px;font-weight:800}
-  .price .big{font-weight:800;letter-spacing:-.03em;font-size:30px;margin:12px 0}
-  .price ul{list-style:none;margin:14px 0 24px;display:flex;flex-direction:column;gap:9px}
-  .price li{font-size:14px;color:var(--ink600)}
+  /* validation verdict plates */
+  .vgrid{display:grid;gap:16px;margin-top:46px}
+  @media(min-width:760px){.vgrid{grid-template-columns:repeat(3,1fr)}}
+  .vcard{background:#fff;border-radius:16px;box-shadow:var(--card);padding:24px;display:flex;flex-direction:column}
+  .verdict{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);
+    font-size:11px;font-weight:700;color:var(--red);background:rgba(201,42,42,.08);
+    border:1px solid rgba(201,42,42,.25);border-radius:999px;padding:5px 11px;letter-spacing:.02em}
+  .vcard h3{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-top:14px}
+  .vcard .tk{font-size:14px;color:var(--ink600);margin-top:10px;line-height:1.5;flex:1}
+  .vcard .nums{font-family:var(--mono);font-size:12px;color:var(--ink600);margin-top:14px}
+  .vcard a{margin-top:16px;font-size:13px;font-weight:600;color:var(--amber)}
 
-  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  /* pricing */
+  .price-grid{display:grid;gap:18px;margin-top:46px}
+  @media(min-width:680px){.price-grid{grid-template-columns:1fr 1fr}}
+  .price{background:#fff;border-radius:18px;box-shadow:var(--card);padding:34px}
+  .price.acc{box-shadow:var(--plate);outline:2px solid var(--amber)}
+  .price h3{font-size:19px;font-weight:700}
+  .price .big{font-weight:700;letter-spacing:-.03em;font-size:32px;margin:14px 0}
+  .price ul{list-style:none;margin:16px 0 26px;display:flex;flex-direction:column;gap:10px}
+  .price li{display:flex;align-items:baseline;gap:10px;font-size:14px;color:var(--ink600)}
+  .price li svg{color:var(--greenDk);transform:translateY(2px);flex-shrink:0}
+
+  /* final */
+  .final{background:var(--paper100);border-top:1px solid var(--rule)}
+  .final .g{display:grid;gap:48px;align-items:center}
+  @media(min-width:1000px){.final .g{grid-template-columns:1.3fr 1fr}}
+  .final h2{margin-top:18px}
+  .final p{margin-top:26px;max-width:52ch;font-size:18px;line-height:1.5;color:var(--ink600)}
+  .final .chk{background:#fff;border-radius:18px;box-shadow:var(--card);padding:28px;
+    list-style:none;display:flex;flex-direction:column;gap:15px}
+  .final .chk .hd{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink500)}
+  .final .chk li{display:flex;align-items:flex-start;gap:12px;font-size:14.5px}
+  .final .chk li svg{color:var(--greenDk);transform:translateY(2px);flex-shrink:0}
+  .final .chk li b{font-weight:600}.final .chk li span{color:var(--ink500)}
+
+  /* footer */
+  footer{background:var(--night);color:#fff}
+  footer .wrap{padding:80px 24px}
+  @media(min-width:1024px){footer .wrap{padding:80px 40px}}
+  .fgrid{display:grid;gap:56px}
+  @media(min-width:1000px){.fgrid{grid-template-columns:1.3fr 2.4fr}}
+  .fbrand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.02em}
+  footer .desc{margin-top:24px;max-width:34ch;font-size:14px;line-height:1.6;color:var(--night-muted)}
+  .fbadge{margin-top:26px;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:500}
+  .fbadge svg{color:var(--amber)}
+  .fstat{margin-top:36px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--night-muted)}
+  .fstat span{display:inline-flex;align-items:center;gap:8px}
+  .fcols{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
+  @media(min-width:640px){.fcols{grid-template-columns:repeat(4,1fr)}}
+  .fcols h4{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--night-muted)}
+  .fcols ul{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px;font-size:14px}
+  .fcols a{color:rgba(255,255,255,.85)}.fcols a:hover{color:#fff}
+  .fbot{margin-top:60px;border-top:1px solid var(--rule-dark);padding-top:28px;
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+    font-size:12.5px;color:var(--night-muted)}
+  .fbot a:hover{color:#fff}
+  .fbot .r{display:flex;flex-wrap:wrap;gap:24px}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
-  .final{background:var(--ink);color:var(--paper);text-align:center}
-  .final h2{color:#fff}.final .lead{color:rgba(244,242,238,.62);margin:24px auto 0}
-  footer{border-top:1px solid var(--rule);padding:38px 0;font-size:13px;color:var(--ink500)}
-  footer a{color:var(--ink500);transition:color .15s}footer a:hover{color:var(--ink)}
-  .frow{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
   @media(prefers-reduced-motion:reduce){
     .reveal{opacity:1;transform:none;transition:none}
-    .pill:hover,.card:hover,.seg-card:hover{transform:none}
+    .btn:hover,.seg-card:hover{transform:none}
+    .mq{animation:none}.dot i{animation:none}
+    .corr .map svg [data-pulse]{display:none}
   }
 </style>
 </head>
 <body>
-<header><div class="wrap nav">
-  <a class="brand" href="/">
-    <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.6" fill="currentColor"/></svg>
-    Vigilo
-  </a>
-  <span class="sp"></span>
-  <a class="nl" href="#overview">Overview</a>
-  <a class="nl" href="/api/v1/docs">API</a>
-  <a class="nl" href="/widgets">Widgets</a>
-  <a class="nl" href="#pricing">Pricing</a>
-  <a class="lang" href="/ru/business.html">RU</a>
-  <a class="pill pill-dark" href="/api/v1/docs">Get a free API key</a>
+
+<div class="announce"><div class="wrap">
+  <span class="tag">Live</span>
+  <span class="hide">ReliefWeb + 43 more verified streams now feeding the composite.</span>
+  <a class="lnk" href="/methodology">Read the methodology
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div></div>
+
+<header id="hd"><div class="wrap nav">
+  <div class="nleft">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
+      Vigilo
+    </a>
+    <nav class="nlinks">
+      <a href="#overview">Overview</a>
+      <a href="/api/v1/docs">API</a>
+      <a href="/widgets">Widgets</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/methodology">Methodology</a>
+    </nav>
+  </div>
+  <div class="nright">
+    <a class="nlogin" href="/app.html">Log in</a>
+    <a class="lang" href="/ru/business.html">RU</a>
+    <a class="btn btn-ghost btn-sm ntalk" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
+    <a class="btn btn-dark btn-sm" href="/api/v1/docs">Get an API key
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+  </div>
 </div></header>
 
+<!-- ===== OVERVIEW / HERO ===== -->
 <section id="overview"><div class="wrap">
   <div class="hero">
     <div>
-      <span class="chip"><span class="badge">New</span> 25-year ERA5 baseline — methodology published</span>
+      <span class="badge"><span class="new">New</span> 25-year ERA5 baseline — methodology published</span>
       <h1 class="display">Risk you can <span class="h-it">actually</span> defend.</h1>
-      <p class="lead">Vigilo aggregates <b>44 verified data streams</b> over a <b>25-year ERA5 climate &amp; bio-seasonality baseline</b>. No black-box ML. Every score is deterministic and links to the raw source line that produced it.</p>
+      <p class="hlead">Vigilo aggregates <b>44 verified data streams</b> over a <b>25-year ERA5 climate &amp; bio-seasonality baseline</b>. No black-box ML. Every score is deterministic and links to the raw source line that produced it.</p>
       <div class="cta">
-        <a class="pill pill-dark" href="/api/v1/docs">Get B2B API access</a>
-        <a class="pill pill-ghost" href="/report">See a live dossier</a>
+        <a class="btn btn-dark" href="/api/v1/docs">Get B2B API access
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        <a class="btn btn-ghost" href="/report">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> See a live dossier</a>
       </div>
       <div class="trust">
         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Sandbox key in 60 seconds</span>
@@ -167,158 +373,472 @@
         <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Deterministic — no black-box ML</span>
       </div>
     </div>
+
     <div class="plate reveal" aria-hidden="true">
-      <div class="plate-hd">
-        <svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M4 5 L14 23 L24 5" stroke="#14110C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <strong style="font-size:13px">Risk console</strong>
-        <span style="color:var(--ink400)">/</span>
-        <span class="mono">ET · sample</span>
+      <div class="ph">
+        <div class="ttl">
+          <svg width="18" height="18" viewBox="0 0 28 28" fill="none"><path d="M4 5 L14 23 L24 5" stroke="#14110C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="#14110C"/></svg>
+          Risk console <span style="color:var(--ink400)">/</span>
+          <span class="mono">ET · ISO-2026-W20</span>
+        </div>
+        <span class="sync"><span class="dot"><b></b><i></i></span> illustrative</span>
       </div>
-      <div class="plate-bd">
-        <div style="display:flex;align-items:baseline;gap:14px">
-          <span class="score">3.8</span>
-          <span class="mono" style="color:var(--ink500);font-size:13px">/ 5 composite</span>
+      <div class="pb">
+        <div class="kick">Composite risk · Ethiopia · sample</div>
+        <div style="display:flex;align-items:baseline;gap:14px;margin-top:10px">
+          <span class="score">3.8</span><span class="mono" style="color:var(--ink500);font-size:13px">/ 5 · 7 domains</span>
         </div>
         <div style="margin-top:22px;display:flex;flex-direction:column;gap:14px">
-          <div><div class="brk" style="margin:0"><span>health</span><span class="mono">3.9</span></div><div class="bar"><i style="width:78%"></i></div></div>
-          <div><div class="brk" style="margin:0"><span>conflict</span><span class="mono">3.1</span></div><div class="bar"><i style="width:62%"></i></div></div>
-          <div><div class="brk" style="margin:0"><span>climate</span><span class="mono">2.1</span></div><div class="bar"><i style="width:42%"></i></div></div>
-          <div><div class="brk" style="margin:0"><span>transport</span><span class="mono">1.3</span></div><div class="bar"><i style="width:26%"></i></div></div>
+          <div class="brk"><div class="r"><span>Health &amp; outbreaks</span><span class="mono">3.9</span></div><div class="t"><i style="width:78%;background:var(--ink800)"></i></div></div>
+          <div class="brk"><div class="r"><span>Armed conflict</span><span class="mono">3.1</span></div><div class="t"><i style="width:62%;background:var(--ink800)"></i></div></div>
+          <div class="brk"><div class="r"><span>Seasonal climate prior</span><span class="mono">2.4</span></div><div class="t"><i style="width:48%;background:var(--green)"></i></div></div>
+          <div class="brk"><div class="r"><span>Transport &amp; border</span><span class="mono">1.3</span></div><div class="t"><i style="width:26%;background:var(--ink800)"></i></div></div>
         </div>
         <div class="smp">Illustrative sample · every score is deterministic and links to its source line</div>
       </div>
     </div>
   </div>
+
   <div class="stats">
-    <div class="stat reveal"><div class="n" data-count="44" data-suffix="+">0</div><div class="l">verified data streams</div></div>
-    <div class="stat reveal"><div class="n" data-count="7">0</div><div class="l">risk domains</div></div>
-    <div class="stat reveal"><div class="n" data-count="25" data-suffix="-yr">0</div><div class="l">ERA5 baseline</div></div>
-    <div class="stat reveal"><div class="n" data-count="15" data-prefix="~" data-suffix="m">0</div><div class="l">refresh cadence</div></div>
+    <div class="stat reveal"><div class="n"><span data-count="44">0</span>+</div><div class="l">verified data streams</div></div>
+    <div class="stat reveal"><div class="n"><span data-count="7">0</span></div><div class="l">risk domains</div></div>
+    <div class="stat reveal"><div class="n"><span data-count="25">0</span> yrs</div><div class="l">ERA5 baseline</div></div>
+    <div class="stat reveal"><div class="n">~<span data-count="15">0</span> m</div><div class="l">refresh cadence</div></div>
   </div>
 </div></section>
 
-<section id="breadth" class="band"><div class="wrap">
-  <span class="kick">Coverage</span>
-  <h2>One composite. Seven domains. Every source named.</h2>
-  <p class="lead">Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — aggregated continuously and rolled into one deterministic composite. Drill any score down to the exact source line behind it.</p>
+<!-- ===== BREADTH / SOURCE MARQUEE ===== -->
+<section id="breadth" class="band100"><div class="wrap">
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:30px">
+    <div>
+      <div class="kick">Aggregated, not invented</div>
+      <p style="margin-top:10px;max-width:62ch;font-size:15px;color:var(--ink700)">Every signal traces to an official feed. Confirmed events are kept separate from unverified signals — we say so in-app rather than smooth it over.</p>
+    </div>
+    <a class="lnk" href="/methodology" style="font-size:13px;color:var(--ink700)">How the composite is built
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  </div>
+  <div class="mq-mask"><div class="mq">
+    <div class="s"><b>WHO</b><span>Disease Outbreak News</span></div>
+    <div class="s"><b>CDC</b><span>Health Alert Network</span></div>
+    <div class="s"><b>ECDC</b><span>EU surveillance</span></div>
+    <div class="s"><b>GDACS</b><span>Global disasters</span></div>
+    <div class="s"><b>USGS</b><span>Seismic &amp; volcanic</span></div>
+    <div class="s"><b>NASA EONET</b><span>Earth observatory</span></div>
+    <div class="s"><b>NOAA</b><span>Weather &amp; storm</span></div>
+    <div class="s"><b>ReliefWeb</b><span>OCHA situation reports</span></div>
+    <div class="s"><b>WFP</b><span>HungerMap Live</span></div>
+    <div class="s"><b>OpenDengue</b><span>Arboviral series</span></div>
+    <div class="s"><b>ACLED</b><span>Armed conflict</span></div>
+    <div class="s"><b>ERA5</b><span>25-yr climate reanalysis</span></div>
+    <div class="s" aria-hidden="true"><b>WHO</b><span>Disease Outbreak News</span></div>
+    <div class="s" aria-hidden="true"><b>CDC</b><span>Health Alert Network</span></div>
+    <div class="s" aria-hidden="true"><b>ECDC</b><span>EU surveillance</span></div>
+    <div class="s" aria-hidden="true"><b>GDACS</b><span>Global disasters</span></div>
+    <div class="s" aria-hidden="true"><b>USGS</b><span>Seismic &amp; volcanic</span></div>
+    <div class="s" aria-hidden="true"><b>NASA EONET</b><span>Earth observatory</span></div>
+    <div class="s" aria-hidden="true"><b>NOAA</b><span>Weather &amp; storm</span></div>
+    <div class="s" aria-hidden="true"><b>ReliefWeb</b><span>OCHA situation reports</span></div>
+    <div class="s" aria-hidden="true"><b>WFP</b><span>HungerMap Live</span></div>
+    <div class="s" aria-hidden="true"><b>OpenDengue</b><span>Arboviral series</span></div>
+    <div class="s" aria-hidden="true"><b>ACLED</b><span>Armed conflict</span></div>
+    <div class="s" aria-hidden="true"><b>ERA5</b><span>25-yr climate reanalysis</span></div>
+  </div></div>
+  <div class="shead" style="margin-top:56px">
+    <div>
+      <div class="kick">Coverage</div>
+      <h2>One composite. <span class="h-it">Seven</span> domains. Every source named.</h2>
+    </div>
+    <p>Health &amp; outbreaks · armed conflict · civil unrest · transport · border · infrastructure · climate — aggregated continuously and rolled into one deterministic composite you can drill down to the exact source line.</p>
+  </div>
 </div></section>
 
+<!-- ===== CAPABILITIES ===== -->
 <section id="capabilities"><div class="wrap">
-  <span class="kick">Build on it</span>
-  <h2>Integrate in an afternoon</h2>
-  <div class="grid c3">
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Composite Risk Score</h3><p>0–5 per country across 7 domains, with the per-domain breakdown and the source line behind each.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5l-1 4z"/></svg></div><h3>Webhooks</h3><p>A callback the moment a country crosses a risk threshold you set.</p><a class="deep" href="/api/v1/docs">API docs →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>What-if simulator</h3><p>Drop a synthetic shock, cascade it across the exposure graph, read the impact.</p><a class="deep" href="/api/v1/docs">/api/v1/simulate →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/></svg></div><h3>Embeddable widgets</h3><p>Brandable risk cards &amp; checkout components — one snippet, your colours.</p><a class="deep" href="/widgets">Widgets →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div><h3>Country dossier</h3><p>A full shareable risk report per country, all 7 domains, print-ready.</p><a class="deep" href="/report">Sample dossier →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Transparent method</h3><p>Pre-registered, backtested signals — the full methodology is public.</p><a class="deep" href="/methodology">Methodology →</a></div>
+  <div class="shead" style="margin-bottom:8px">
+    <div>
+      <div class="kick">Build on it</div>
+      <h2>Four surfaces. <span class="h-it">One</span> deterministic core.</h2>
+    </div>
+    <p>The API, the live pipeline, the embeddable widget and geofenced webhooks — all reading the same source-traced score. Integrate in an afternoon.</p>
   </div>
-</div></section>
+</div>
 
-<section id="audience" class="band"><div class="wrap">
-  <span class="kick">Who it's for</span>
-  <h2>What changes for your business</h2>
-  <div class="grid c3">
+<div class="band50" style="padding:clamp(56px,7vw,104px) 0"><div class="wrap"><div class="prod">
+  <div class="pintro">
+    <div class="num"><b>01</b><span class="kick">Risk API · v1</span></div>
+    <h3>One endpoint. <span class="h-it">Every</span> region.</h3>
+    <p class="pl">Score any ISO-2 country against the full 25-year baseline plus today's live overlay. Every score returns the raw source lines that produced it — nothing is a black box.</p>
+    <ul>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Source-traced</b> <span>· each score returns the URLs that moved it</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Deterministic</b> <span>· same inputs, same score, replayable</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Free tier, live</b> <span>· anonymous REST, no sales call</span></span></li>
+    </ul>
+    <a class="btn btn-white btn-sm" href="/api/v1/docs" style="margin-top:28px">Read the API docs
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  </div>
+  <div class="codep">
+    <div class="ch"><div class="m"><span class="verb">GET</span> https://api.vigilo.cc/api/v1/risk/ET</div><span style="color:var(--green)">200</span></div>
+    <div class="cols">
+<pre><span class="cc"># request</span>
+<span class="cc">$</span> curl https://api.vigilo.cc/api/v1/risk/ET \
+  -H <span class="cs">"Accept: application/json"</span>
+</pre>
+<pre><span class="cc">// 200 OK</span>
+<span class="cv">{</span>
+  <span class="ck">"iso2"</span>: <span class="cs">"ET"</span>,
+  <span class="ck">"composite"</span>: <span class="cv">3.8</span>,
+  <span class="ck">"domains"</span>: <span class="cv">{</span>
+     <span class="ck">"health"</span>: <span class="cv">3.9</span>,
+     <span class="ck">"conflict"</span>: <span class="cv">3.1</span><span class="cv">}</span>,
+  <span class="ck">"sources"</span>: [
+     { <span class="ck">"id"</span>: <span class="cs">"who.don#9821"</span> },
+     { <span class="ck">"id"</span>: <span class="cs">"acled#5502"</span> } ]
+<span class="cv">}</span>
+</pre>
+    </div>
+    <div class="feet">
+      <div><div class="a">REST</div><div class="b">JSON</div></div>
+      <div><div class="a">Anonymous</div><div class="b">free tier</div></div>
+      <div><div class="a">Source-traced</div><div class="b">every score</div></div>
+    </div>
+  </div>
+</div></div></div>
+
+<section style="padding:clamp(56px,7vw,104px) 0"><div class="wrap"><div class="prod rev">
+  <div class="diagram">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="kick">Pipeline</div>
+      <span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--greenDk)"><span class="dot"><b></b><i></i></span> continuous ingest</span>
+    </div>
+    <svg viewBox="0 0 700 420" role="img" aria-label="Source streams flow into the extractor, then the scorer, then API and webhook outputs">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#E8590C"/></marker>
+        <linearGradient id="fl" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(20,17,12,0.18)"/><stop offset="100%" stop-color="rgba(232,89,12,0.85)"/></linearGradient>
+      </defs>
+      <g font-family="Geist Mono" font-size="12" fill="#221E18">
+        <g><rect x="20" y="34" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="56">WHO·DON</text><path d="M195 51 C 260 51, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="84" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="106">CDC·HAN</text><path d="M195 101 C 260 101, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="134" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="156">ReliefWeb</text><path d="M195 151 C 260 151, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="184" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="206">ACLED</text><path d="M195 201 C 250 201, 290 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="234" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="256">OpenDengue</text><path d="M195 251 C 260 251, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="284" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="306">NOAA</text><path d="M195 301 C 260 301, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+        <g><rect x="20" y="334" width="170" height="34" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.14)"/><text x="38" y="356">ERA5</text><path d="M195 351 C 260 351, 280 210, 330 210" stroke="url(#fl)" stroke-width="1.2" fill="none" opacity="0.7" marker-end="url(#ar)"/></g>
+      </g>
+      <g><rect x="335" y="182" width="170" height="58" rx="10" fill="#FFF5E8" stroke="#E8590C" stroke-width="1.4"/><text x="420" y="208" text-anchor="middle" font-family="Geist" font-size="13" font-weight="700" fill="#221E18">Extract &amp; classify</text><text x="420" y="227" text-anchor="middle" font-family="Geist Mono" font-size="11" fill="#E8590C">structured at ingest</text></g>
+      <path d="M 505 211 L 575 175" stroke="url(#fl)" stroke-width="1.4" fill="none" marker-end="url(#ar)"/>
+      <path d="M 505 211 L 575 250" stroke="url(#fl)" stroke-width="1.4" fill="none" marker-end="url(#ar)"/>
+      <g font-family="Geist Mono" font-size="11" fill="#332E26">
+        <rect x="575" y="150" width="105" height="40" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.18)"/><text x="627" y="175" text-anchor="middle">composite</text>
+        <rect x="575" y="232" width="105" height="40" rx="6" fill="#FBF9F4" stroke="rgba(20,17,12,0.18)"/><text x="627" y="257" text-anchor="middle">source map</text>
+      </g>
+      <path d="M 627 150 L 627 70 L 560 70" stroke="rgba(20,17,12,0.22)" stroke-width="1" fill="none"/>
+      <path d="M 627 272 L 627 360 L 560 360" stroke="rgba(20,17,12,0.22)" stroke-width="1" fill="none"/>
+      <g><rect x="430" y="50" width="130" height="42" rx="6" fill="#E8FFF4" stroke="#076446" stroke-width="1.2"/><text x="495" y="69" text-anchor="middle" font-family="Geist" font-size="12" font-weight="700" fill="#221E18">/api/v1/risk</text><text x="495" y="84" text-anchor="middle" font-family="Geist Mono" font-size="10" fill="#076446">JSON · REST</text></g>
+      <g><rect x="430" y="340" width="130" height="42" rx="6" fill="#E8FFF4" stroke="#076446" stroke-width="1.2"/><text x="495" y="359" text-anchor="middle" font-family="Geist" font-size="12" font-weight="700" fill="#221E18">webhook</text><text x="495" y="374" text-anchor="middle" font-family="Geist Mono" font-size="10" fill="#076446">HTTP · Slack</text></g>
+    </svg>
+    <div class="ft">
+      <div><div class="a">44+</div><div class="b">streams</div></div>
+      <div><div class="a">7</div><div class="b">domains</div></div>
+      <div><div class="a grn">~15 m</div><div class="b">refresh</div></div>
+    </div>
+  </div>
+  <div class="pintro">
+    <div class="num"><b>02</b><span class="kick">Live pipeline</span></div>
+    <h3>The wire — <span class="h-it">indexed</span> and weighted.</h3>
+    <p class="pl">A source publishes, we ingest, extract, classify and roll it into the composite. Every event keeps its original URL, its publish timestamp and its raw text. No paraphrase, no invented numbers.</p>
+    <ul>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Structured extraction</b> <span>· at ingest, not after</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Confirmed vs signal</b> <span>· tagged, never blended silently</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Replayable history</b> <span>· source-traceable, auditable</span></span></li>
+    </ul>
+  </div>
+</div></div></section>
+
+<div class="band100" style="padding:clamp(56px,7vw,104px) 0"><div class="wrap"><div class="prod">
+  <div class="pintro">
+    <div class="num"><b>03</b><span class="kick">Embeddable widgets</span></div>
+    <h3>Risk, <span class="h-it">in the checkout drawer.</span></h3>
+    <p class="pl">A lightweight async widget that surfaces the relevant risk context where your user is already deciding. Drop it in with one snippet; it inherits your typography and colour.</p>
+    <ul>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Async, no layout shift</b> <span>· loads after paint</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Themed</b> <span>· inherits your tokens</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Source-linked</b> <span>· every figure traces back</span></span></li>
+    </ul>
+    <a class="btn btn-white btn-sm" href="/widgets" style="margin-top:28px">Explore widgets
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  </div>
+  <div>
+    <div class="pcard mock">
+      <div class="row1"><div style="display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg><b>LHR → ADD</b> <span style="color:var(--ink400)">· 16 Aug · 2 pax</span></div><span class="mono" style="font-size:11px;color:var(--ink400)">illustrative</span></div>
+      <div class="bd">
+        <div class="trip">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;font-weight:600">Trip details</span><span style="font-size:12.5px;color:var(--ink500)">1 stop · CAI</span></div>
+          <div class="opt"><div><b>Economy</b><s>included</s></div><div><b>Premium</b><s>upgrade</s></div><div class="sel"><b>Flex</b><s>upgrade</s></div></div>
+        </div>
+        <div class="ins">
+          <div class="ib"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div style="flex:1">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px"><h4>Elevated health &amp; seasonal risk at destination</h4><span class="pw">Powered by Vigilo</span></div>
+            <p>Based on a 25-year ERA5 climatology plus active WHO &amp; ReliefWeb advisories — with a link to each source line.</p>
+            <div class="add"><span class="pr">refundable add-on</span><button class="btn btn-dark btn-sm">Add cover</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="overflow:hidden;border-radius:14px;background:var(--ink);margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.55)"><span>index.html</span><span style="color:var(--amber)">async · no layout shift</span></div>
+      <pre style="margin:0;overflow-x:auto;padding:0 16px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.72)"><span style="color:rgba(255,255,255,.42)">&lt;!-- one snippet, your colours --&gt;</span>
+<span style="color:#fff">&lt;script</span> src=<span style="color:#FFB976">"https://cdn.vigilo.cc/v1/widget.js"</span>
+        data-iso2=<span style="color:#FFB976">"ET"</span> defer<span style="color:#fff">&gt;&lt;/script&gt;</span></pre>
+    </div>
+  </div>
+</div></div></div>
+
+<section style="padding:clamp(56px,7vw,104px) 0"><div class="wrap"><div class="prod rev">
+  <div class="corr">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px">
+      <div class="kick">Corridor · watch area</div>
+      <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(232,89,12,.1);color:var(--amber);border:1px solid rgba(232,89,12,.3);border-radius:999px;padding:4px 10px;font-family:var(--mono);font-size:11px;font-weight:600"><span class="dot am"><b></b><i></i></span> 1 advisory active</span>
+    </div>
+    <div class="map">
+      <svg viewBox="0 0 640 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A watched shipping corridor with an active advisory node">
+        <defs><pattern id="dg" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="rgba(20,17,12,0.10)"/></pattern></defs>
+        <rect width="640" height="300" fill="url(#dg)"/>
+        <path d="M40,230 C 160,260 220,160 320,170 S 520,80 600,60" stroke="rgba(0,165,111,0.15)" stroke-width="36" fill="none"/>
+        <path d="M40,230 C 160,260 220,160 320,170 S 520,80 600,60" stroke="#076446" stroke-width="1.8" fill="none" stroke-dasharray="3 4"/>
+        <g font-family="Geist Mono" font-size="11" fill="#332E26">
+          <circle cx="40" cy="230" r="4.5" fill="#00A56F"/><circle cx="40" cy="230" r="11" fill="none" stroke="rgba(0,165,111,0.45)"/><text x="52" y="234">SGP</text>
+          <circle cx="320" cy="170" r="4.5" fill="#00A56F"/><circle cx="320" cy="170" r="11" fill="none" stroke="rgba(0,165,111,0.45)"/><text x="332" y="174">IND·OCN</text>
+          <circle cx="600" cy="60" r="4.5" fill="#00A56F"/><circle cx="600" cy="60" r="11" fill="none" stroke="rgba(0,165,111,0.45)"/><text x="558" y="50">RTM</text>
+        </g>
+        <circle cx="430" cy="130" r="4.5" fill="#E8590C"/>
+        <circle data-pulse cx="430" cy="130" r="14" fill="none" stroke="rgba(232,89,12,0.6)"><animate attributeName="r" from="8" to="26" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" from="0.8" to="0" dur="2s" repeatCount="indefinite"/></circle>
+        <text x="430" y="120" font-family="Geist Mono" font-size="11" fill="#E8590C" text-anchor="middle">SUEZ</text>
+      </svg>
+      <div class="pop">
+        <div class="h"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Suez · transit advisory</div>
+        <p>ReliefWeb bulletin + ACLED cluster on the corridor. Webhook fired with the source links attached.</p>
+      </div>
+    </div>
+    <pre><span class="cc">// payload (signed)</span>
+<span class="cv">{</span> <span class="cs">"corridor"</span>:<span class="cs">"sgp-rtm"</span>, <span class="cs">"node"</span>:<span class="cs">"SUEZ"</span>,
+  <span class="cs">"sources"</span>:[<span class="cs">"reliefweb#7741"</span>,<span class="cs">"acled#5502"</span>] <span class="cv">}</span></pre>
+  </div>
+  <div class="pintro">
+    <div class="num"><b>04</b><span class="kick">Geofenced webhooks</span></div>
+    <h3>Draw a corridor. <span class="h-it">Get paged.</span></h3>
+    <p class="pl">Polygons, buffers or ISO regions — Vigilo watches the area and pushes to Slack, HTTP or your queue the moment a source publishes inside it. Every payload carries the source links.</p>
+    <ul>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Shape engine</b> <span>· polygon · buffer · ISO-2 / ISO-3</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Delivery</b> <span>· webhook · Slack · queue</span></span></li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Signed &amp; replayable</b> <span>· every payload auditable</span></span></li>
+    </ul>
+    <a class="btn btn-white btn-sm" href="/api/v1/docs" style="margin-top:28px">Webhook &amp; simulate docs
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>
+  </div>
+</div></div></section>
+
+<!-- ===== AUDIENCE ===== -->
+<section id="audience" class="band100"><div class="wrap">
+  <div class="shead">
+    <div>
+      <div class="kick">Who it's for</div>
+      <h2>What changes for <span class="h-it">your</span> business.</h2>
+    </div>
+    <p>The same source-traced score, mapped to the decision you actually have to defend — to a reviewer, an underwriter or an ops desk.</p>
+  </div>
+  <div class="seg">
     <div class="seg-card reveal">
+      <div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
       <h3>Travel · insurers · OTAs</h3>
       <p class="pain">Today: enterprise-priced incumbents, black-box, not embeddable.</p>
+      <p class="with">With Vigilo: a themed widget and a free API that names its sources.</p>
       <p class="out">→ Duty-of-care &amp; checkout trust — without an enterprise contract.</p>
     </div>
     <div class="seg-card reveal">
+      <div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
       <h3>Insurance · reinsurance</h3>
       <p class="pain">Today: non-auditable signals, slow, expensive.</p>
-      <p class="out">→ Auditable, regulator-defensible geo risk monitoring, cheaper.</p>
+      <p class="with">With Vigilo: a deterministic score with the source line behind it.</p>
+      <p class="out">→ Auditable, regulator-defensible geo-risk monitoring, cheaper.</p>
     </div>
     <div class="seg-card reveal">
+      <div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></div>
       <h3>Supply chain · ops</h3>
       <p class="pain">Today: a siloed vendor per domain, no API.</p>
+      <p class="with">With Vigilo: one composite, geofenced webhooks, one integration.</p>
       <p class="out">→ One integration replaces several; earlier cascade awareness.</p>
     </div>
   </div>
 </div></section>
 
+<!-- ===== COMPARE ===== -->
 <section id="compare"><div class="wrap">
-  <span class="kick">How we differ</span>
-  <h2>What they gate. What we open.</h2>
-  <table>
-    <tr><th>&nbsp;</th><th>Enterprise incumbents<br><span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink400)">Recorded Future · Dataminr · Crisis24</span></th><th>Vigilo</th></tr>
+  <div class="shead">
+    <div>
+      <div class="kick">How we differ</div>
+      <h2>What they gate. <span class="h-it">What</span> we open.</h2>
+    </div>
+    <p>An honest read on posture you can verify yourself — access model, pricing, methodology — not a capability ranking.</p>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>&nbsp;</th><th>Enterprise incumbents<span class="sub">Recorded Future · Dataminr · Crisis24</span></th><th>Vigilo</th></tr>
     <tr><td>Self-serve API key</td><td>Sales call required</td><td class="us">Free, instant</td></tr>
     <tr><td>Pricing</td><td>Quote on request</td><td class="us">Published</td></tr>
     <tr><td>Source breadth</td><td>Domain-specialised</td><td class="us">7 domains, one composite</td></tr>
     <tr><td>Integration</td><td>Onboarding project</td><td class="us">REST + webhooks, copy-paste</td></tr>
     <tr><td>Methodology</td><td>Proprietary / opaque</td><td class="us">Published, backtested</td></tr>
-  </table>
-  <p class="quiet">Comparison reflects publicly observable posture (self-serve access, published pricing &amp; methodology), not a capability ranking.</p>
+  </table></div>
+  <p class="quiet">Reflects publicly observable posture (self-serve access, published pricing &amp; methodology), not a capability ranking. <a href="/methodology">See our methodology →</a></p>
 </div></section>
 
-<section id="validation" class="band"><div class="wrap">
-  <span class="kick">Validation discipline</span>
-  <h2>Only validated logic ships</h2>
-  <p class="lead">Every signal is pre-registered and backtested before it influences a score. The methodology and results — including what we tested and ruled out — are public.</p>
-  <p class="quiet"><a href="/methodology">Read the methodology →</a></p>
+<!-- ===== VALIDATION ===== -->
+<section id="validation" class="band100"><div class="wrap">
+  <div class="shead">
+    <div>
+      <div class="kick">Validation discipline</div>
+      <h2>We don't demo. <span class="h-it">We publish the receipts.</span></h2>
+    </div>
+    <p>Every signal is pre-registered and backtested before it can move a score. Here are three of our own backtests — including the ones that did not work. That discipline is the product.</p>
+  </div>
+  <div class="vgrid">
+    <div class="vcard reveal">
+      <span class="verdict">NOT DEMONSTRATED</span>
+      <h3>Climate → dengue heuristic</h3>
+      <p class="tk">A standalone climate heuristic does not beat a trivial seasonal calendar. About as good as chance.</p>
+      <div class="nums">TSS 0.1213 · seasonal 0.6624 · skill -0.541</div>
+      <a class="lnk" href="https://github.com/arablex/episwope/blob/main/docs/validation/dengue-backtest.md">Raw report ↗</a>
+    </div>
+    <div class="vcard reveal">
+      <span class="verdict">NOT DEMONSTRATED · near-miss</span>
+      <h3>GDELT × seasonal — Phase 1</h3>
+      <p class="tk">A small ranking lift, but it failed the pre-registered calibration clause. We did not move the bar.</p>
+      <div class="nums">PR-AUC skill +0.025 · 95% CI [0.004902, 0.104248]</div>
+      <a class="lnk" href="https://github.com/arablex/episwope/blob/main/docs/validation/gdelt-combined-backtest.md">Raw report ↗</a>
+    </div>
+    <div class="vcard reveal">
+      <span class="verdict">NOT DEMONSTRATED · decisive</span>
+      <h3>GDELT × seasonal — Phase 2</h3>
+      <p class="tk">More data, six countries, calibration layer — same frozen criterion. The combined model decisively loses to seasonality.</p>
+      <div class="nums">PR-AUC 0.0724 vs 0.1925 · skill -0.1201</div>
+      <a class="lnk" href="https://github.com/arablex/episwope/blob/main/docs/validation/gdelt-phase2-backtest.md">Raw report ↗</a>
+    </div>
+  </div>
+  <p class="quiet" style="margin-top:30px">The full validation record — what we tested, what shipped, what we ruled out. <a href="/methodology">Read the methodology →</a></p>
 </div></section>
 
+<!-- ===== PRICING ===== -->
 <section id="pricing"><div class="wrap">
-  <span class="kick">Pricing</span>
-  <h2>Start free. Talk when you scale.</h2>
+  <div class="shead">
+    <div>
+      <div class="kick">Pricing</div>
+      <h2>Start free. <span class="h-it">Talk</span> when you scale.</h2>
+    </div>
+    <p>No invented prices on a landing page. The free tier is live now; enterprise terms we discuss with you directly.</p>
+  </div>
   <div class="price-grid">
     <div class="price acc">
       <h3>Free tier</h3>
       <div class="big">Live now</div>
-      <ul><li>Open REST API (anonymous)</li><li>60 requests / hour</li><li>Composite score + events</li></ul>
-      <a class="pill pill-dark" href="/api/v1/docs">Get a free API key</a>
+      <ul>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Open REST API (anonymous)</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Composite score + events</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Source-traced responses</li>
+      </ul>
+      <a class="btn btn-dark" href="/api/v1/docs">Get a free API key
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
     <div class="price">
       <h3>Enterprise</h3>
       <div class="big">Talk to us</div>
-      <ul><li>Higher rate limits</li><li>Webhooks at scale</li><li>Priority support &amp; SLAs</li></ul>
-      <a class="pill pill-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Talk to us</a>
+      <ul>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Higher rate limits</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Webhooks at scale</li>
+        <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg> Priority support &amp; terms</li>
+      </ul>
+      <a class="btn btn-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Talk to us</a>
     </div>
   </div>
 </div></section>
 
-<section class="final"><div class="wrap">
-  <h2>Ship risk intelligence this week</h2>
-  <p class="lead">A free API key, a working request on real data, no procurement.</p>
-  <div class="cta" style="justify-content:center">
-    <a class="pill pill-dark" style="background:var(--accent);border-color:var(--accent);color:#fff" href="/api/v1/docs">Get a free API key</a>
-    <a class="pill" style="border-color:rgba(244,242,238,.4);color:var(--paper)" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
+<!-- ===== FINAL CTA ===== -->
+<section class="final"><div class="wrap"><div class="g">
+  <div>
+    <div class="kick">Get started</div>
+    <h2 class="display">Wire Vigilo in <span class="h-it">this week.</span></h2>
+    <p>A free API key, a working request on real data, and a methodology you can hand to a reviewer. No procurement.</p>
+    <div class="cta">
+      <a class="btn btn-amber" href="/api/v1/docs">Get a free API key
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+      <a class="btn btn-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Talk to us</a>
+    </div>
   </div>
-</div></section>
+  <ul class="chk">
+    <li class="hd">What you can rely on</li>
+    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><div><b>Deterministic scoring</b> <span>· replayable, no black-box ML</span></div></li>
+    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><div><b>Source-traced</b> <span>· every score links to its raw line</span></div></li>
+    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><div><b>Published methodology</b> <span>· backtests, including failures</span></div></li>
+    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><div><b>Open API</b> <span>· free tier, no sales gate</span></div></li>
+  </ul>
+</div></div></section>
 
-<footer><div class="wrap frow">
-  <span>© Vigilo</span>
-  <span class="sp"></span>
-  <a href="/api/v1/docs">API</a>
-  <a href="/widgets">Widgets</a>
-  <a href="/report">Sample dossier</a>
-  <a href="/methodology">Methodology</a>
-  <a href="/">← Consumer site</a>
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div>
+      <a class="fbrand" href="/">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
+        Vigilo
+      </a>
+      <p class="desc">Global risk &amp; seasonality intelligence — raw data aggregation, validated baselines, radical transparency.</p>
+      <div class="fbadge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg> Built with rigid data-integrity rules</div>
+      <div class="fstat">
+        <span><span class="dot"><b></b><i></i></span> aggregation running</span>
+        <span>Methodology &amp; backtests public</span>
+      </div>
+    </div>
+    <div class="fcols">
+      <div><h4>Platform</h4><ul><li><a href="/api/v1/docs">Risk API</a></li><li><a href="/widgets">Widgets</a></li><li><a href="/api/v1/docs">Webhooks</a></li><li><a href="/report">Sample dossier</a></li></ul></div>
+      <div><h4>Solutions</h4><ul><li><a href="#audience">Travel &amp; insurance</a></li><li><a href="#audience">Reinsurance</a></li><li><a href="#audience">Supply chain</a></li><li><a href="#audience">Public sector</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="/methodology">Methodology</a></li><li><a href="#validation">Validation</a></li><li><a href="#compare">How we differ</a></li><li><a href="mailto:hello@vigilo.cc">Contact</a></li></ul></div>
+      <div><h4>Resources</h4><ul><li><a href="/api/v1/docs">API docs</a></li><li><a href="https://github.com/arablex/episwope">GitHub</a></li><li><a href="/methodology">Backtests</a></li><li><a href="/">Consumer site</a></li></ul></div>
+    </div>
+  </div>
+  <div class="fbot">
+    <div>© 2026 Vigilo · vigilo.cc</div>
+    <div class="r">
+      <a href="/methodology">Methodology</a>
+      <a href="/api/v1/docs">API</a>
+      <a href="/">← Consumer site</a>
+    </div>
+  </div>
 </div></footer>
 
 <script>
 (function(){
+  var hd=document.getElementById("hd");
+  function onsc(){ if(window.scrollY>8) hd.classList.add("scr"); else hd.classList.remove("scr"); }
+  onsc(); window.addEventListener("scroll",onsc,{passive:true});
+
   var rm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var rev=[].slice.call(document.querySelectorAll(".reveal"));
   var cnt=[].slice.call(document.querySelectorAll("[data-count]"));
-  function fill(e){e.textContent=(e.dataset.prefix||"")+e.dataset.count+(e.dataset.suffix||"");}
-  if(rm||!("IntersectionObserver"in window)){
+  function fill(e){ e.textContent=e.dataset.count; }
+  if(rm||!("IntersectionObserver" in window)){
     rev.forEach(function(e){e.classList.add("in");}); cnt.forEach(fill); return;
   }
   var io=new IntersectionObserver(function(es){
-    es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});
+    es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target);} });
   },{threshold:.14});
   rev.forEach(function(e){io.observe(e);});
   var cio=new IntersectionObserver(function(es){
     es.forEach(function(en){
-      if(!en.isIntersecting)return; var el=en.target; cio.unobserve(el);
-      var to=+el.dataset.count,pf=el.dataset.prefix||"",sf=el.dataset.suffix||"",t0=null;
-      function tick(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/850,1);
-        el.textContent=pf+Math.round(p*to)+sf;if(p<1)requestAnimationFrame(tick);}
+      if(!en.isIntersecting) return; var el=en.target; cio.unobserve(el);
+      var to=+el.dataset.count,t0=null;
+      function tick(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/850,1);
+        el.textContent=Math.round(p*to); if(p<1)requestAnimationFrame(tick); }
       requestAnimationFrame(tick);
     });
-  },{threshold:.5});
+  },{threshold:.6});
   cnt.forEach(function(e){cio.observe(e);});
 })();
 </script>
