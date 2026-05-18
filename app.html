@@ -663,6 +663,12 @@
   }
 
   /* ── My Feed ──────────────────────────────────── */
+  .feed-collapse-hd{ user-select:none; }
+  .feed-country-filter{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px; padding-top:2px; }
+  .feed-cf-chip{ font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:99px;
+    background:var(--line); color:var(--muted); border:none; cursor:pointer; transition:background .15s, color .15s; }
+  .feed-cf-chip.active{ background:var(--accent); color:#fff; }
+  .feed-cf-chip:hover:not(.active){ background:var(--line-2); }
   .feed-empty{ font-size:12px; color:var(--muted); padding:6px 0 2px; line-height:1.5; }
   .feed-empty a{ color:var(--accent); text-decoration:none; cursor:pointer; }
   .feed-item{ display:flex; gap:9px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line-2); }
@@ -1106,6 +1112,7 @@
                   color:#fff; background:linear-gradient(180deg,#E8590C,#C92A2A); cursor:pointer;
                   box-shadow:0 4px 12px -5px rgba(201,42,42,.5); transition:transform .15s; }
   .cp-assess-btn:hover{ transform:translateY(-1px); }
+  .cp-assess-btn.assess-limit{ background:#E0DED9; color:var(--muted); cursor:not-allowed; }
   .cp-hist-title{ font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:10px; }
   .cp-hist-chart{ background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 8px; }
   .cp-hist-legend{ display:flex; gap:16px; margin-top:8px; font-size:10.5px; color:var(--muted); }
@@ -1200,7 +1207,7 @@
 
   .sw-row{
     display:flex; align-items:center;
-    padding:0 14px 0 20px; height:42px;
+    padding:0 14px 0 12px; height:42px;
   }
   .sw-expand{
     display:flex; align-items:center; gap:9px;
@@ -1228,8 +1235,9 @@
   }
   .cat-section.cat-off .sw-count{ opacity:.4; }
   .sw-chevron{
-    flex-shrink:0; color:var(--muted-2); font-size:9px;
-    transition:transform .2s; margin-left:4px;
+    flex-shrink:0; color:var(--muted-2);
+    display:flex; align-items:center;
+    transition:transform .2s;
   }
   .cat-section.expanded .sw-chevron{ transform:rotate(180deg); }
 
@@ -2273,8 +2281,16 @@
       </div>
 
       <div class="side-section" id="myFeedSection">
-        <div class="side-h">My feed <span class="count" id="myFeedCount">0</span></div>
-        <div id="myFeed"></div>
+        <div class="side-h feed-collapse-hd" id="myFeedHd" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+          <span>My feed <span class="count" id="myFeedCount">0</span></span>
+          <span class="feed-hd-chevron" id="myFeedChevron" style="display:flex;align-items:center;color:var(--muted-2);transition:transform .2s;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div id="myFeedBody">
+          <div class="feed-country-filter" id="myFeedFilter"></div>
+          <div id="myFeed"></div>
+        </div>
       </div>
 
       <div class="side-section">
@@ -2293,10 +2309,10 @@
           <div class="cat-section expanded" data-cat="epidemic">
             <div class="sw-row">
               <div class="sw-expand" data-cat="epidemic">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg></span>
                 <span class="sw-label">Epidemics</span>
                 <span class="sw-count" id="catCount-epidemic">—</span>
-                <span class="sw-chevron">▾</span>
               </div>
               <button class="sw-toggle is-on" data-cat="epidemic" title="Show on map"></button>
             </div>
@@ -2306,10 +2322,10 @@
           <div class="cat-section expanded" data-cat="disaster">
             <div class="sw-row">
               <div class="sw-expand" data-cat="disaster">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
                 <span class="sw-label">Disasters</span>
                 <span class="sw-count" id="catCount-disaster">—</span>
-                <span class="sw-chevron">▾</span>
               </div>
               <button class="sw-toggle is-on" data-cat="disaster" title="Show on map"></button>
             </div>
@@ -2319,10 +2335,10 @@
           <div class="cat-section cat-off" data-cat="air">
             <div class="sw-row">
               <div class="sw-expand" data-cat="air">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg></span>
                 <span class="sw-label">Air</span>
                 <span class="sw-count" id="catCount-air">—</span>
-                <span class="sw-chevron">▾</span>
               </div>
               <button class="sw-toggle" data-cat="air" title="Show on map"></button>
             </div>
@@ -2332,10 +2348,10 @@
           <div class="cat-section cat-off" data-cat="food">
             <div class="sw-row">
               <div class="sw-expand" data-cat="food">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg></span>
                 <span class="sw-label">Food</span>
                 <span class="sw-count" id="catCount-food">—</span>
-                <span class="sw-chevron">▾</span>
               </div>
               <button class="sw-toggle" data-cat="food" title="Show on map"></button>
             </div>
@@ -2345,10 +2361,10 @@
           <div class="cat-section cat-off" data-cat="humanitarian">
             <div class="sw-row">
               <div class="sw-expand" data-cat="humanitarian">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
                 <span class="sw-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>
                 <span class="sw-label">Humanitarian</span>
                 <span class="sw-count" id="catCount-humanitarian">—</span>
-                <span class="sw-chevron">▾</span>
               </div>
               <button class="sw-toggle" data-cat="humanitarian" title="Show on map"></button>
             </div>
@@ -3781,6 +3797,20 @@ function _urlB64ToUint8Array(base64String) {
   const raw = atob(base64);
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
+</script>
+<script>
+// ── Feed collapse ──
+(function(){
+  const hd = document.getElementById('myFeedHd');
+  const body = document.getElementById('myFeedBody');
+  const chev = document.getElementById('myFeedChevron');
+  if(!hd || !body) return;
+  hd.addEventListener('click', function(){
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : '';
+    if(chev) chev.style.transform = open ? 'rotate(-90deg)' : '';
+  });
+})();
 </script>
 </body>
 </html>

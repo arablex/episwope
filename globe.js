@@ -837,6 +837,31 @@ function isWatched(country){ return WATCHED.has(country); }
 
 /* ── Session / Auth ─────────────────────────────────────── */
 const FREE_COUNTRY_LIMIT = 3;
+const FREE_ASSESS_LIMIT = 10;
+
+function getAssessQuota(){
+  try { return parseInt(localStorage.getItem('vigilo_assess_left') ?? FREE_ASSESS_LIMIT, 10); }
+  catch(e){ return FREE_ASSESS_LIMIT; }
+}
+
+function useAssessment(){
+  const left = getAssessQuota();
+  if(left <= 0) return false;
+  localStorage.setItem('vigilo_assess_left', String(left - 1));
+  updateAssessCounter();
+  return true;
+}
+
+function updateAssessCounter(){
+  const el = document.getElementById('assessCounter');
+  if(!el) return;
+  const left = getAssessQuota();
+  const ru = LANG === 'ru';
+  el.textContent = left > 0
+    ? (ru ? `Осталось: ${left}` : `${left} left`)
+    : (ru ? 'Лимит исчерпан' : 'Limit reached');
+  el.style.color = left <= 2 ? 'var(--red, #C92A2A)' : 'var(--muted)';
+}
 
 function getSession() {
   try {
@@ -1536,22 +1561,32 @@ function renderMyCountries(){
 }
 
 /* ── My Feed ─────────────────────────────────────────────── */
-function renderMyFeed(){
+let feedCountryFilter = null; // null = все страны
+
+function renderFeedFilter(countries){
+  const fil = document.getElementById('myFeedFilter');
+  if(!fil) return;
+  if(!countries || countries.length < 2){ fil.innerHTML=''; return; }
+  fil.innerHTML = countries.map(c =>
+    `<button class="feed-cf-chip${feedCountryFilter===c?' active':''}" data-fc="${escapeAttr(c)}">${countryName(c)}</button>`
+  ).join('');
+  fil.querySelectorAll('.feed-cf-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      feedCountryFilter = feedCountryFilter === btn.dataset.fc ? null : btn.dataset.fc;
+      renderFeedFilter(countries);
+      renderMyFeedItems();
+    });
+  });
+}
+
+function renderMyFeedItems(){
   const root    = document.getElementById('myFeed');
   const countEl = document.getElementById('myFeedCount');
   if(!root) return;
 
-  if(!WATCHED.size){
-    if(countEl) countEl.textContent = '0';
-    root.innerHTML = `<div class="feed-empty">${LANG==='ru'
-      ? 'Добавь страны через правую панель — здесь появится твой персональный фид алертов.'
-      : 'Watch countries from the right panel — your personal alerts feed appears here.'}</div>`;
-    return;
-  }
-
   const SEV_ORD = {catastrophic:6, critical:5, alert:4, warning:3, low:2, monitoring:1};
+  const ru = LANG === 'ru';
 
-  // Recalls now live in OUTBREAKS as type:'food' — single source, no dupes.
   const all = OUTBREAKS
     .filter(o => WATCHED.has(o.country))
     .map(o => ({
@@ -1562,22 +1597,24 @@ function renderMyFeed(){
       color: SEV[o.sev]?.color||'#A09F95',
       id: o.id,
     }))
-    .sort((a,b)=>b.ord-a.ord).slice(0,12);
+    .sort((a,b)=>b.ord-a.ord);
+
+  const filtered = feedCountryFilter
+    ? all.filter(item => item.meta === feedCountryFilter)
+    : all.slice(0, 12);
 
   if(countEl) countEl.textContent = all.length||'0';
 
-  if(!all.length){
-    root.innerHTML = `<div class="feed-empty">${LANG==='ru'
-      ? 'Нет активных событий для ваших регионов.'
-      : 'No active events for your watched regions.'}</div>`;
+  const tagLbl = t => t==='food'
+    ? (ru?'Продукт':'Recall')
+    : (ru?'Вспышка':'Outbreak');
+
+  if(!filtered.length){
+    root.innerHTML = `<div class="feed-empty">${ru ? 'Нет активных событий.' : 'No active events.'}</div>`;
     return;
   }
 
-  const tagLbl = t => t==='food'
-    ? (LANG==='ru'?'Продукт':'Recall')
-    : (LANG==='ru'?'Вспышка':'Outbreak');
-
-  root.innerHTML = all.map((item,i) => `
+  root.innerHTML = filtered.map((item,i) => `
     <div class="feed-item" data-fi="${i}">
       <span class="feed-dot" style="background:${item.color}"></span>
       <div class="feed-body">
@@ -1588,15 +1625,33 @@ function renderMyFeed(){
 
   root.querySelectorAll('.feed-item').forEach(el => {
     el.addEventListener('click', () => {
-      const item = all[+el.dataset.fi];
+      const item = filtered[+el.dataset.fi];
       if(!item) return;
-      if(item.id!=null){
-        selectOutbreak(item.id);
-      } else if(item.link){
-        window.open(item.link, '_blank', 'noopener');
-      }
+      if(item.id!=null) selectOutbreak(item.id);
+      else if(item.link) window.open(item.link, '_blank', 'noopener');
     });
   });
+}
+
+function renderMyFeed(){
+  const root = document.getElementById('myFeed');
+  const countEl = document.getElementById('myFeedCount');
+  if(!root) return;
+  const ru = LANG === 'ru';
+
+  if(!WATCHED.size){
+    if(countEl) countEl.textContent = '0';
+    const fil = document.getElementById('myFeedFilter');
+    if(fil) fil.innerHTML = '';
+    root.innerHTML = `<div class="feed-empty">${ru
+      ? 'Добавь страны через правую панель — здесь появится твой персональный фид алертов.'
+      : 'Watch countries from the right panel — your personal alerts feed appears here.'}</div>`;
+    return;
+  }
+
+  const watchedArr = [...WATCHED].sort((a,b)=> countryName(a).localeCompare(countryName(b)));
+  renderFeedFilter(watchedArr);
+  renderMyFeedItems();
 }
 
 /* ── Country Profile ─────────────────────────────────────── */
@@ -1808,6 +1863,7 @@ function renderCountryPanel(country){
     </div>
     <div class="cp-section">
       <button class="cp-assess-btn" id="cpAssessBtn" data-country="${escapeAttr(country)}">${ru?'Оценить риски →':'Assess risks →'}</button>
+      <div id="assessCounter" style="text-align:center;font-size:10.5px;margin-top:4px;color:var(--muted);"></div>
     </div>
     <div class="cp-section">
       <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
@@ -2054,7 +2110,21 @@ function renderCountryPanel(country){
   document.getElementById('cpBack')?.addEventListener('click', () => selectCountry(null));
 
   // Assess risks button
-  document.getElementById('cpAssessBtn')?.addEventListener('click', () => openRiskReport(country));
+  const assessBtn = document.getElementById('cpAssessBtn');
+  if(assessBtn){
+    updateAssessCounter();
+    assessBtn.addEventListener('click', function(){
+      if(!useAssessment()){
+        assessBtn.classList.add('assess-limit');
+        const ru = LANG === 'ru';
+        const msg = ru ? 'Лимит оценок исчерпан' : 'Assessment limit reached';
+        const counter = document.getElementById('assessCounter');
+        if(counter){ counter.textContent = msg; counter.style.color = 'var(--red, #C92A2A)'; }
+        return;
+      }
+      openRiskReport(country);
+    });
+  }
 
   // Subscribe form
   const subForm = document.querySelector('.cp-subscribe');
@@ -3970,6 +4040,7 @@ window.CATEGORY_META = CATEGORY_META;
 window.toggleCat     = toggleCat;
 window.switchView    = switchView;
 window.renderMyFeed  = renderMyFeed;
+window.renderMyFeedItems = renderMyFeedItems;
 window.selectOutbreak = selectOutbreak;
 window.OUTBREAKS     = OUTBREAKS;
 window.SEV           = SEV;
