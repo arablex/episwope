@@ -47,3 +47,37 @@ seasonal 0.0656).
   (pre-registered), not tuned.
 - Validates this signal as-is; climate / EpiNow2 / spatial smoothing
   are Phase 2, only if this phase shows signal.
+
+## Honest conclusion (scope addendum)
+
+This is a *near-miss*, not a flat negative — and that distinction is
+itself the decision-grade finding.
+
+- The pre-registered criterion is a conjunction. The **ranking clause
+  PASSED**: PR-AUC skill +0.025, 95% block-bootstrap CI [0.0049,
+  0.1042] — lower bound strictly > 0, so GDELT health-news adds a
+  small but statistically non-trivial ranking lift over pure
+  seasonality. The **calibration clause FAILED**: Brier 0.0658 vs
+  0.0656 (a 0.0002 regression, wrong side). Verdict therefore
+  **NOT DEMONSTRATED**. We pre-committed to the AND; we do not move
+  the goalposts post-hoc.
+- Data reality (honest, not hidden): GDELT free DOC 2.0 covered only
+  **3 of 6** gate-passing countries (BD, ID, TH; KH/LK/VN return
+  "Invalid/Unsupported Country") and never serves 2015–16. KH/LK/VN
+  enter the panel with z=0, so for half the countries combined ≡
+  seasonal — this **dilutes both the skill and the Brier delta toward
+  zero**. The true effect on covered countries is partially masked.
+  This is stated as a limitation, NOT used to re-subset the panel
+  (post-hoc subsetting to beat a pre-registered bar would be the
+  integrity breach this whole harness exists to prevent).
+- Strategic read vs the climate result: climate was ≈ random and
+  decisively beaten by seasonality (killed). GDELT is **different** —
+  directionally promising, ranking-significant, but calibration-poor
+  and data-starved by the free API. The hypothesis is **not killed
+  and not proven**.
+- Pre-registered Phase 2 (the honest next step, not a retrofit): real
+  GKG ingestion (BigQuery / raw GKG files, multi-theme, all target
+  countries, full 2015→ history) AND an explicit calibration layer
+  (isotonic/Platt fit on the strictly-prior window) — because the gap
+  here is calibration, not ranking. Re-validated through this same
+  harness, criterion declared before the run, verdict whatever it is.
