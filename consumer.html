@@ -138,7 +138,6 @@
 
   /* hero globe */
   .gwrap{position:relative;border-radius:18px;background:var(--paper);
-    box-shadow:0 1px 0 rgba(20,17,12,.06),0 40px 90px -30px rgba(20,17,12,.20);
     aspect-ratio:1/1;max-height:540px;overflow:hidden}
   @media(min-width:1000px){.gwrap{max-height:none;aspect-ratio:auto;height:clamp(440px,52vw,580px)}}
   #hero-globe{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--paper)}
@@ -328,7 +327,6 @@
   </div>
   <div class="nright">
     <a class="lang" href="/ru/">RU</a>
-    <a class="nlogin" href="/app.html">Log in</a>
     <a class="btn btn-amber btn-sm" href="/app.html">Open the globe
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
   </div>
@@ -586,15 +584,15 @@
       <ul>
         <li><span class="chk">✓</span> Everything in Free</li>
         <li><span class="chk">✓</span> Location alerts (up to 10 zones)</li>
-        <li><span class="chk">✓</span> Email + webhook notifications</li>
+        <li><span class="chk">✓</span> Email alert notifications</li>
         <li><span class="chk">✓</span> 12-month risk history per country</li>
-        <li><span class="chk">✓</span> API access — 200 calls/day</li>
         <li><span class="chk">✓</span> Export reports as PDF</li>
+        <li><span class="chk">✓</span> Priority support</li>
       </ul>
       <a class="btn btn-amber" href="/app.html" style="justify-content:center;width:100%">Start free trial</a>
     </div>
   </div>
-  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Need unlimited API access or custom integrations? <a href="/business.html" class="lnk" style="color:var(--ink700)">See the business plan →</a></p>
+  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Need this for a team or business? <a href="/business.html" class="lnk" style="color:var(--ink700)">See the business plan →</a></p>
 </div></section>
 
 <!-- ===== FINAL CTA ===== -->
@@ -612,45 +610,23 @@
 
 <!-- ===== FOOTER ===== -->
 <footer><div class="wrap">
-  <div class="fgrid">
-    <div>
-      <a class="fbrand" href="/">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
-        Vigilo
-      </a>
-      <p class="desc">Know the risk before you land. Free live globe, 44 verified sources.</p>
-      <div class="fstat">
-        <span><span class="dot"><b></b><i></i></span> Live feed · 44 verified sources</span>
-        <span>Methodology &amp; backtests published</span>
-      </div>
-    </div>
-    <div class="fcols">
-      <div><h4>Product</h4><ul>
-        <li><a href="/app.html">Live globe</a></li>
-        <li><a href="/report">Risk report</a></li>
-        <li><a href="/widgets">Widgets</a></li>
-        <li><a href="/app.html#alerts">Location alerts</a></li>
-      </ul></div>
-      <div><h4>Company</h4><ul>
-        <li><a href="/methodology">Methodology</a></li>
-        <li><a href="/methodology#backtests">Backtests</a></li>
-        <li><a href="/business.html">For Business</a></li>
-        <li><a href="mailto:hello@vigilo.cc">Contact</a></li>
-      </ul></div>
-      <div><h4>Resources</h4><ul>
-        <li><a href="/api/v1/docs">API docs</a></li>
-        <li><a href="https://github.com/arablex/episwope">GitHub</a></li>
-        <li><a href="https://vigilo.cc">vigilo.cc</a></li>
-      </ul></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+    <a class="fbrand" href="/" style="font-size:18px">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
+      Vigilo
+    </a>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14px">
+      <a href="/app.html" style="color:rgba(255,255,255,.75)">Live globe</a>
+      <a href="/methodology" style="color:rgba(255,255,255,.75)">Methodology</a>
+      <a href="/business.html" style="color:rgba(255,255,255,.75)">For Business</a>
+      <a href="mailto:hello@vigilo.cc" style="color:rgba(255,255,255,.75)">Contact</a>
     </div>
   </div>
-  <div class="fbot">
-    <div>© 2026 Vigilo · vigilo.cc</div>
-    <div class="r">
-      <a href="/methodology">Methodology</a>
-      <a href="/privacy.html">Privacy</a>
-      <a href="/api/v1/docs">API</a>
-    </div>
+  <div style="margin-top:28px;border-top:1px solid var(--rule-dark);padding-top:20px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:12px;color:var(--night-muted)">
+    <span>© 2026 Vigilo</span>
+    <a href="/privacy.html" style="color:rgba(255,255,255,.35)">Privacy</a>
   </div>
 </div></footer>
 

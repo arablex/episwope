@@ -233,13 +233,8 @@
     box-shadow:0 1px 0 rgba(20,18,14,0.02);
   }
   .brand-mark{
-    width:34px; height:34px; border-radius:11px;
-    background:linear-gradient(145deg, #E8590C, #C92A2A 70%);
-    color:#fff; display:grid; place-items:center;
-    font-weight:900; font-size:13px; letter-spacing:-0.02em;
-    box-shadow:
-      0 4px 10px -4px rgba(201,42,42,0.40),
-      inset 0 1px 0 rgba(255,255,255,0.38);
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    color:var(--ink);
   }
   .brand-name{ font-weight:800; font-size:15px; letter-spacing:-0.02em; line-height:1;}
   .brand-sub{ font-size:9px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-top:2px; white-space:nowrap;}
@@ -2204,10 +2199,9 @@
   <!-- ============ TOPBAR ============ -->
   <header class="topbar">
     <div style="display:flex; align-items:center; gap:12px;">
-      <span class="brand-mark">V</span>
+      <span class="brand-mark"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg></span>
       <div>
         <div class="brand-name">Vigilo</div>
-        <div class="brand-sub">Threats · Air · Food · v4.2</div>
       </div>
     </div>
 
@@ -2243,9 +2237,7 @@
       <button class="icon-btn" id="userBtn" title="Sign in" onclick="toggleAuthPopover()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </button>
-      <button class="icon-btn" id="bellBtn" title="Enable push notifications" onclick="togglePushSubscription()">
-        <svg id="bellIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </button>
+      <!-- bell/push removed: email alerts preferred -->
       <button class="pill-btn" id="newAlertBtn" onclick="document.getElementById('subEmail').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('subEmail').focus(),350)">
         <span class="accent-dot"></span>
         Get Alerts

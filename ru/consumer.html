@@ -138,7 +138,6 @@
 
   /* hero globe */
   .gwrap{position:relative;border-radius:18px;background:var(--paper);
-    box-shadow:0 1px 0 rgba(20,17,12,.06),0 40px 90px -30px rgba(20,17,12,.20);
     aspect-ratio:1/1;max-height:540px;overflow:hidden}
   @media(min-width:1000px){.gwrap{max-height:none;aspect-ratio:auto;height:clamp(440px,52vw,580px)}}
   #hero-globe{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--paper)}
@@ -328,7 +327,6 @@
   </div>
   <div class="nright">
     <a class="lang" href="/">EN</a>
-    <a class="nlogin" href="/ru/app.html">Войти</a>
     <a class="btn btn-amber btn-sm" href="/ru/app.html">Открыть глобус
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
   </div>
@@ -339,7 +337,7 @@
   <div class="hero">
     <div>
       <span class="badge"><span class="new">Live</span> 44 проверенных источника · обновление каждые 15 мин</span>
-      <h1 class="display">Знай до того, <span class="h-it">как лететь.</span></h1>
+      <h1 class="display">Знай риск — <span class="h-it">везде.</span></h1>
       <p class="hlead">Vigilo собирает данные от <b>WHO, CDC, ReliefWeb, ACLED, NOAA</b> и 39 других официальных источников — и показывает всё на одном глобусе. Бесплатно, без регистрации.</p>
       <div class="cta">
         <a class="btn btn-amber" href="/ru/app.html">Открыть живой глобус →
@@ -586,15 +584,15 @@
       <ul>
         <li><span class="chk">✓</span> Всё из бесплатного</li>
         <li><span class="chk">✓</span> Уведомления о локации (до 10 зон)</li>
-        <li><span class="chk">✓</span> Email + вебхук уведомления</li>
+        <li><span class="chk">✓</span> Email-уведомления о событиях</li>
         <li><span class="chk">✓</span> 12 месяцев истории риска по стране</li>
-        <li><span class="chk">✓</span> API доступ — 200 запросов/день</li>
         <li><span class="chk">✓</span> Экспорт отчётов в PDF</li>
+        <li><span class="chk">✓</span> Приоритетная поддержка</li>
       </ul>
       <a class="btn btn-amber" href="/ru/app.html" style="justify-content:center;width:100%">Начать бесплатный период</a>
     </div>
   </div>
-  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Нужен неограниченный API? <a href="/ru/business.html" class="lnk" style="color:var(--ink700)">Смотрите бизнес-план →</a></p>
+  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Нужно для команды или бизнеса? <a href="/ru/business.html" class="lnk" style="color:var(--ink700)">Смотрите бизнес-план →</a></p>
 </div></section>
 
 <!-- ===== FINAL CTA ===== -->
@@ -611,46 +609,24 @@
 </div>
 
 <!-- ===== FOOTER ===== -->
-<footer><div class="wrap">
-  <div class="fgrid">
-    <div>
-      <a class="fbrand" href="/ru/">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
-        Vigilo
-      </a>
-      <p class="desc">Знай риск до посадки. Бесплатный живой глобус, 44 проверенных источника.</p>
-      <div class="fstat">
-        <span><span class="dot"><b></b><i></i></span> Живой фид · 44 проверенных источника</span>
-        <span>Методология и бэктесты публичны</span>
-      </div>
-    </div>
-    <div class="fcols">
-      <div><h4>Продукт</h4><ul>
-        <li><a href="/ru/app.html">Живой глобус</a></li>
-        <li><a href="/report">Отчёт по риску</a></li>
-        <li><a href="/widgets">Виджеты</a></li>
-        <li><a href="/ru/app.html#alerts">Уведомления о локации</a></li>
-      </ul></div>
-      <div><h4>Компания</h4><ul>
-        <li><a href="/methodology">Методология</a></li>
-        <li><a href="/methodology#backtests">Бэктесты</a></li>
-        <li><a href="/ru/business.html">Для бизнеса</a></li>
-        <li><a href="mailto:hello@vigilo.cc">Контакты</a></li>
-      </ul></div>
-      <div><h4>Ресурсы</h4><ul>
-        <li><a href="/api/v1/docs">Документация API</a></li>
-        <li><a href="https://github.com/arablex/episwope">GitHub</a></li>
-        <li><a href="https://vigilo.cc">vigilo.cc</a></li>
-      </ul></div>
+<footer><div class="wrap" style="padding:44px 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+    <a class="fbrand" href="/ru/" style="font-size:18px">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.5" fill="currentColor"/></svg>
+      Vigilo
+    </a>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14px">
+      <a href="/ru/app.html" style="color:rgba(255,255,255,.75)">Глобус</a>
+      <a href="/methodology" style="color:rgba(255,255,255,.75)">Методология</a>
+      <a href="/ru/business.html" style="color:rgba(255,255,255,.75)">Для бизнеса</a>
+      <a href="mailto:hello@vigilo.cc" style="color:rgba(255,255,255,.75)">Контакты</a>
     </div>
   </div>
-  <div class="fbot">
-    <div>© 2026 Vigilo · vigilo.cc</div>
-    <div class="r">
-      <a href="/methodology">Методология</a>
-      <a href="/privacy.html">Конфиденциальность</a>
-      <a href="/api/v1/docs">API</a>
-    </div>
+  <div style="margin-top:28px;border-top:1px solid var(--rule-dark);padding-top:20px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:12px;color:var(--night-muted)">
+    <span>© 2026 Vigilo</span>
+    <a href="/privacy.html" style="color:rgba(255,255,255,.35)">Конфиденциальность</a>
   </div>
 </div></footer>
 
