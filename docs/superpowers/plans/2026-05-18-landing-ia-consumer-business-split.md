@@ -4,30 +4,37 @@
 
 **Goal:** Split the landing into a slim consumer `/` and a new self-contained bilingual B2B funnel at `/business` with a deliberately evolved Semrush-energy on-brand visual system — honest-aggressive, no fabricated traction, no predictive overclaim, no social-proof scaffolding.
 
-**Architecture:** New self-contained `business.html` + `ru/business.html` (same pattern as `report.html`: own `<head>`, embedded `<style>` with the shared brand token system + section color-blocking + honest "juice" devices, own header nav, a tiny vanilla-JS reveal/count-up guarded by `prefers-reduced-motion`). Consumer `index.html`/`ru/index.html` lose the in-page `#biz` section + its CSS; "For Business" links to `/business`. A Netlify 200-rewrite mirrors `/report`. A stdlib `unittest` honesty/parity guard is the TDD anchor.
+**Architecture:** New self-contained `business.html` + `ru/business.html` (same pattern as `report.html`: own `<head>`, embedded `<style>` with the shared brand token system + section color-blocking + honest "juice" devices, own header nav, a tiny vanilla-JS reveal/count-up guarded by `prefers-reduced-motion`). The committed consumer `index.html`/`ru/index.html` gain TWO header nav links ("For Business" → `/business`, quiet "Log in" → `/app.html`); nothing is removed (there is no `#biz` in the committed base — see BASE CORRECTION). A Netlify 200-rewrite mirrors `/report`. A stdlib `unittest` honesty/parity guard is the TDD anchor.
 
 **Tech Stack:** Static HTML/CSS/vanilla-JS (no framework — project pattern), Netlify redirects, Python 3.9 stdlib `unittest` (canonical: `python3 -m unittest discover -t . -s tests`). No new dependencies.
 
 **Spec:** `docs/specs/2026-05-18-landing-ia-consumer-business-split-design.md` (read its **"Visual system — deliberate evolution"** + **"Honest-positioning rules"** sections — authoritative).
 
-## Verified codebase facts (do not re-derive)
+## Verified codebase facts (COMMITTED/LIVE base — do not re-derive)
 
-- `index.html` header nav (~460–471): brand `/`, `.nav-lnk` →
-  `#instrument`, `#list`, `#data`, `#biz` (For Business, accent),
-  `.lang` → `/ru/`, `.hbtn` → `/app.html`. **No separate consumer
-  login page** (`/app.html` = app entry, self-auth; `magic-link.mjs`
-  = email-digest verify, NOT a landing login) → quiet "Log in" →
-  `/app.html` (recorded).
-- `index.html` `#biz` CSS: contiguous block from comment
-  `  /* ── For Business section ──...── */` (~387) through the last
-  consecutive `#biz`/`.biz-cards`/`.biz-card`/`.bc-*` rule. `#biz`
-  HTML: bracketed by `<!-- ── For Business ──...── -->` (~705) and
-  `<!-- /For Business -->` (~819) (`<section id="biz"> … </section>`).
-- `ru/index.html`: nav anchors differ (`#how`,`#features`,`#data`,
-  `#pricing`,`#biz` "Для бизнеса"); CTA `/ru/app.html`; `#biz` CSS
-  ~283–288; `#biz` HTML `<section id="biz">` (~634) …
-  `<!-- /Для бизнеса -->` (~747). **Pre-existing EN/RU divergence on
-  consumer pages is OUT OF SCOPE — do not reconcile.**
+> ⚠️ The canonical base is the **committed/deployed** landing (not the
+> uncommitted local `#biz` draft). See spec "BASE CORRECTION".
+
+- `index.html` (committed) header (`<header id="hdr">` …
+  `<div class="wrap nav">`): brand `/`, then
+  `<a class="nav-lnk" href="#how">How it works</a>`,
+  `…href="#features">Features</a>`, `…href="#data">Data</a>`,
+  `…href="#pricing">Pricing</a>`, `<a class="lang" href="/ru/">RU</a>`,
+  `<a class="hbtn" href="/app.html">Open the app →</a>`. Sections:
+  hero, intro, `#how`, `#features`, `#data`, `#pricing`, footer.
+  **There is NO `#biz` and NO "For Business" nav.** `#pricing` is the
+  consumer free/Pro block — it stays (consumer-appropriate).
+- `ru/index.html` (committed) header: same shape with
+  `…href="#how">Как это работает</a>`, `…href="#features">Возможности</a>`,
+  `…href="#data">Данные</a>`, `…href="#pricing">Тарифы</a>`, then the
+  `.lang` link and `<a class="hbtn" href="/ru/app.html">Приложение →</a>`.
+  Structurally **1:1 parallel** to EN.
+- **No separate consumer login page**; `/app.html` (`/ru/app.html`) is
+  the app entry and self-authenticates. "Log in"/"Войти" → that.
+- The uncommitted 928-line `#biz` draft is the founder's WIP — **NOT
+  touched, NOT committed** by this work.
+- Consumer change is therefore minimal: insert TWO nav links right
+  after the `#pricing` nav `<a>` — no section/CSS removal exists to do.
 - Self-contained pattern (`report.html`): `<!doctype html>` …
   `<style>:root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;
   --muted:#807E76;--line:#ECEAE2;--accent:#E8590C;…}` + dark theme.
@@ -42,7 +49,7 @@
 business.html            # CREATE — EN B2B funnel (self-contained, evolved visual)
 ru/business.html         # CREATE — RU 1:1 mirror (byte copy + string swaps)
 netlify.toml             # MODIFY — add /business 200 rewrite
-index.html               # MODIFY — remove #biz sec+css, For-Business→/business, +Log in
+index.html               # MODIFY — +2 header nav links (For Business→/business, Log in)
 ru/index.html            # MODIFY — same, RU
 tests/test_landing_ia.py # CREATE — honesty + structural-parity + no-social-proof guard
 ```
@@ -134,18 +141,18 @@ class BusinessLandingTest(unittest.TestCase):
 
 
 class ConsumerLandingTest(unittest.TestCase):
-    def test_biz_section_removed(self):
+    def test_existing_sections_intact(self):
+        # committed base has these; the IA change must NOT remove them
         for rel in ("index.html", "ru/index.html"):
             h = read(rel)
-            self.assertNotIn('<section id="biz"', h, f"{rel} still has #biz")
-            self.assertNotIn(".biz-card", h, f"{rel} still has #biz CSS")
+            for sid in ("how", "features", "data", "pricing"):
+                self.assertIn(f'id="{sid}"', h,
+                              f"{rel} lost section #{sid}")
 
     def test_for_business_links_to_business_page(self):
         for rel in ("index.html", "ru/index.html"):
-            h = read(rel)
-            self.assertNotIn('href="#biz"', h, f"{rel} still anchors #biz")
-            self.assertIn('href="/business"', h,
-                           f"{rel} For-Business must link /business")
+            self.assertIn('href="/business"', read(rel),
+                          f"{rel} For-Business must link /business")
 
     def test_login_affordance_present(self):
         self.assertIn(">Log in<", read("index.html"))
@@ -168,8 +175,10 @@ if __name__ == "__main__":
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `cd "$(git rev-parse --show-toplevel)" && python3 -m unittest tests.test_landing_ia -v`
-Expected: FAIL — `FileNotFoundError: business.html` + consumer/`#biz`
-assertions red (today `#biz` still present).
+Expected: FAIL — `FileNotFoundError: business.html`, and
+`ConsumerLandingTest` red (no `/business` link / `Log in` in the
+committed consumer pages yet). `test_existing_sections_intact` should
+already PASS (committed base has those sections).
 
 - [ ] **Step 3: Commit**
 
@@ -651,103 +660,97 @@ git commit -m "feat: /business B2B funnel (RU 1:1 mirror)"
 
 ---
 
-## Task 5: Slim `index.html` (consumer, EN)
+## Task 5: Add "For Business" + "Log in" nav to `index.html` (consumer, EN)
+
+Minimal — the committed base has NO `#biz` to remove. Only insert two
+nav links into the existing header. Touch nothing else.
 
 **Files:**
 - Modify: `index.html`
 
-- [ ] **Step 1: Remove the `#biz` CSS block**
+- [ ] **Step 1: Confirm the anchor exists**
 
-Delete the contiguous CSS from the comment line
-`  /* ── For Business section ──...── */` (~387) through the last
-consecutive rule whose selector begins `#biz`/`.biz-cards`/
-`.biz-card`/`.bc-` (read first, confirm the end, remove the whole
-block).
+Run: `grep -n '<a class="nav-lnk" href="#pricing">Pricing</a>' index.html`
+Expected: exactly one match (inside `<header id="hdr">`). If zero/many,
+STOP and report BLOCKED (base differs from spec).
 
-- [ ] **Step 2: Remove the `#biz` HTML section**
+- [ ] **Step 2: Insert the two nav links**
 
-Delete everything from `<!-- ── For Business ──...── -->` (~705)
-through `<!-- /For Business -->` (~819) inclusive. Leave the following
-`<section class="final">` untouched.
-
-- [ ] **Step 3: Repoint "For Business" + add quiet "Log in"**
-
-Replace:
+In `index.html`, replace the single line:
 
 ```html
-    <a class="nav-lnk" href="#biz" style="color:var(--accent);font-weight:600">For Business</a>
+    <a class="nav-lnk" href="#pricing">Pricing</a>
 ```
 
 with:
 
 ```html
+    <a class="nav-lnk" href="#pricing">Pricing</a>
     <a class="nav-lnk" href="/business" style="color:var(--accent);font-weight:600">For Business</a>
     <a class="nav-lnk" href="/app.html">Log in</a>
 ```
 
-(No separate consumer login page exists — `/app.html` is the app
-entry; `magic-link` is the email-digest verify flow. Per spec
-fallback, "Log in" → `/app.html`. Recorded.)
+Change NOTHING else in the file (no section/CSS edits — there are none
+to do; `#pricing` is consumer pricing and stays). Per spec, there is
+no separate consumer login page → "Log in" → `/app.html` (recorded).
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 3: Verify**
 
-Run: `python3 -c "h=open('index.html').read(); print('<section id=\"biz\"' not in h, '.biz-card' not in h, 'href=\"/business\"' in h, '>Log in<' in h)"`
-Expected: `True True True True`.
+Run: `python3 -c "h=open('index.html').read(); print('href=\"/business\"' in h, '>Log in<' in h, all(('id=\"%s\"'%s) in h for s in ('how','features','data','pricing')))"`
+Expected: `True True True` (links added, all sections intact).
 Run: `python3 -m unittest tests.test_landing_ia.ConsumerLandingTest -v`
-Expected: `index.html` assertions PASS (ru still red until Task 6).
+Expected: `index.html` assertions PASS (RU still red until Task 6).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add index.html
-git commit -m "feat: slim consumer landing — remove #biz, link /business, add Log in (EN)"
+git commit -m "feat(landing): add For Business + Log in nav (consumer EN)"
 ```
 
 ---
 
-## Task 6: Slim `ru/index.html` (consumer, RU)
+## Task 6: Add "Для бизнеса" + "Войти" nav to `ru/index.html` (consumer, RU)
+
+Minimal — RU committed base has NO `#biz`. Insert two nav links only.
 
 **Files:**
 - Modify: `ru/index.html`
 
-- [ ] **Step 1: Remove the RU `#biz` CSS block**
+- [ ] **Step 1: Confirm the anchor exists**
 
-Delete the contiguous `#biz`-prefixed CSS block (~283–288 plus any
-immediately-consecutive `.biz-card`/`.bc-` rules) up to the next
-unrelated selector/comment.
+Run: `grep -n '<a class="nav-lnk" href="#pricing">Тарифы</a>' ru/index.html`
+Expected: exactly one match. If zero/many, STOP and report BLOCKED.
 
-- [ ] **Step 2: Remove the RU `#biz` HTML section**
+- [ ] **Step 2: Insert the two nav links**
 
-Delete from `<section id="biz">` (~634) through
-`<!-- /Для бизнеса -->` (~747) inclusive. Leave the following section
-untouched.
-
-- [ ] **Step 3: Repoint "Для бизнеса" + add quiet "Войти"**
-
-Replace:
+In `ru/index.html`, replace the single line:
 
 ```html
-    <a class="nav-lnk" href="#biz" style="color:var(--accent);font-weight:600">Для бизнеса</a>
+    <a class="nav-lnk" href="#pricing">Тарифы</a>
 ```
 
 with:
 
 ```html
+    <a class="nav-lnk" href="#pricing">Тарифы</a>
     <a class="nav-lnk" href="/business" style="color:var(--accent);font-weight:600">Для бизнеса</a>
     <a class="nav-lnk" href="/ru/app.html">Войти</a>
 ```
 
-- [ ] **Step 4: Verify — full suite**
+Change NOTHING else.
+
+- [ ] **Step 3: Verify — full suite**
 
 Run: `python3 -m unittest discover -t . -s tests`
-Expected: ALL OK — `tests.test_landing_ia` fully green and no
-regressions elsewhere.
+Expected: ALL OK — `tests.test_landing_ia` fully green (Business +
+Consumer + Netlify classes) and no regressions elsewhere.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add ru/index.html
-git commit -m "feat: slim consumer landing — remove #biz, link /business, add Войти (RU)"
+git commit -m "feat(landing): add Для бизнеса + Войти nav (consumer RU)"
 ```
 
 ---
@@ -805,7 +808,7 @@ and the `<script>` byte-identical.
 | Honest comparison vs named incumbents (factual + disclaimer) | Task 3 `#compare` |
 | Validation quiet+positive+reachable; `/methodology` link | Task 3 `#validation`+footer; Task 1 guard |
 | Pricing free-live + Enterprise-talk, no invented prices | Task 3 `#pricing`; Task 1 `test_pricing_no_invented_numbers` |
-| Consumer `/` slimmed: remove #biz sec+CSS, link /business, Log in | Tasks 5, 6 |
+| Consumer `/`: +2 nav links (For Business→/business, Log in), sections intact | Tasks 5, 6 |
 | netlify `/business` 200 rewrite | Task 2 |
 | RU = 1:1 mirror (CSS+JS byte-identical) + parity checklist | Task 4 + Task 7 Step 4 |
 | SVG icons not emoji; focus states; responsive; transitions | Task 3 `<style>` (`:focus-visible`, SVG `<svg>` icons, media queries) |
