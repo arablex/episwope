@@ -60,6 +60,15 @@ DEDUP_WINDOW_HOURS   = 6    # suppress re-emitting same (iso, disease) signal
 SIGNAL_PERSIST_HOURS = 48   # keep signal active in output for N hours after detection
 SPIKE_RATIO_THRESHOLD = 2.5
 SPIKE_MIN_COUNT       = 3   # must see at least this many raw mentions
+
+# Countries with known media suppression / few monitoring sources.
+# For these, require only 2 mentions (vs. 3 globally) so that Rospotrebnadzor
+# fallback + Google News RU/ZH combination can still trigger a signal.
+LOW_COVERAGE_ISOS = {
+    "RU", "BY", "CN", "KP",           # Russia, Belarus, China, North Korea
+    "KZ", "UZ", "TJ", "KG", "TM",     # Central Asia
+    "AZ", "AM", "GE", "MD",           # Caucasus + Moldova
+}
 CONFIDENCE_EMIT_LOW   = 0.40
 CONFIDENCE_EMIT_HIGH  = 0.60
 
@@ -3030,8 +3039,15 @@ def build_signals(
         previously_emitted = emitted_key in history.get("emitted", {})
 
         # Need at least SPIKE_MIN_COUNT for a new signal,
-        # but only 1 article to sustain a previously-seen outbreak
-        min_count = 1 if previously_emitted else SPIKE_MIN_COUNT
+        # but only 1 article to sustain a previously-seen outbreak.
+        # Low-coverage countries (media-suppressed regions) use min=2
+        # so that a single Rospotrebnadzor or HK CHP report still fires.
+        if previously_emitted:
+            min_count = 1
+        elif iso in LOW_COVERAGE_ISOS:
+            min_count = 2
+        else:
+            min_count = SPIKE_MIN_COUNT
         if current_count < min_count:
             continue  # Not enough raw signal
 

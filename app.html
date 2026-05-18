@@ -871,7 +871,10 @@
   .popup-name{
     font-size:24px; font-weight:900; letter-spacing:-0.035em;
     font-family:var(--display);
-    line-height:1.02; margin-top:6px;
+    line-height:1.1; margin-top:6px;
+    /* clamp long titles (e.g. earthquake news headlines) to 3 lines */
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+    overflow:hidden;
   }
   .popup-loc{
     font-size:11.5px; color:var(--ink-2); margin-top:6px; letter-spacing:-0.005em;
@@ -1118,6 +1121,79 @@
   .cp-hist-stats .k{ font-size:9.5px; color:var(--muted); margin-top:2px; }
   .cp-hist-note{ font-size:10px; color:var(--muted-2); margin-top:12px; text-align:center; font-variant-numeric:tabular-nums; }
   .cp-hist-empty{ font-size:12.5px; color:var(--muted); padding:18px 0; text-align:center; line-height:1.5; }
+  /* History tab — improved clarity */
+  .cp-hist-narrative{ font-size:13.5px; line-height:1.55; color:var(--ink-2); margin-bottom:16px; }
+  .cp-hist-narrative b{ color:var(--ink); }
+  .cp-hist-chart-wrap{ position:relative; }
+  .cp-hist-xlabels{ display:flex; justify-content:space-between; font-size:9.5px; color:var(--muted-2); margin-top:4px; }
+  .cp-hist-ylabel{ position:absolute; left:-2px; top:4px; font-size:9px; color:var(--muted-2);
+    writing-mode:vertical-rl; transform:rotate(180deg); line-height:1; }
+  .cp-hist-ev-title{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); margin:16px 0 8px; }
+  .cp-hist-evlist{ display:flex; flex-direction:column; }
+  .cp-hist-ev{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line-2); }
+  .cp-hist-ev:last-child{ border-bottom:0; }
+  .cp-hist-ev-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+  .cp-hist-ev-body{ flex:1; min-width:0; }
+  .cp-hist-ev-name{ font-size:13px; font-weight:600; color:var(--ink); }
+  .cp-hist-ev-sev{ font-size:10px; font-weight:700; margin-left:6px; }
+  .cp-hist-ev-txt{ font-size:11.5px; color:var(--muted); line-height:1.45; margin-top:4px; }
+  .cp-hist-ev-date{ font-size:10px; color:var(--muted-2); margin-top:3px; }
+
+  /* ── Country panel: Health tab ────────────────────── */
+  .cp-aqi{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:var(--bg); }
+  .cp-aqi-none{ opacity:.65; }
+  .cp-aqi-val{ font-size:30px; font-weight:900; letter-spacing:-0.04em; line-height:1; flex-shrink:0; }
+  .cp-aqi-info{ flex:1; min-width:0; }
+  .cp-aqi-cat{ font-size:12px; font-weight:700; }
+  .cp-aqi-lbl{ font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .cp-aqi-src{ font-size:10px; color:var(--muted-2); }
+
+  .cp-health-list{ display:flex; flex-direction:column; gap:0; }
+  .cp-health-item{ padding:10px 0; border-bottom:1px solid var(--line-2); }
+  .cp-health-item:last-child{ border-bottom:0; }
+  .cp-hi-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .cp-hi-sev{ font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:99px; white-space:nowrap; flex-shrink:0; }
+  .cp-hi-blurb{ font-size:11.5px; color:var(--muted); line-height:1.45; margin-top:5px; }
+  .cp-hi-meta{ font-size:10.5px; color:var(--muted-2); margin-top:4px; }
+
+  .cp-food-list{ display:flex; flex-direction:column; }
+  .cp-food-item{ display:flex; align-items:flex-start; gap:9px; padding:9px 0; border-bottom:1px solid var(--line-2); }
+  .cp-food-item:last-child{ border-bottom:0; }
+  .cp-food-hazard{ font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:5px;
+    background:rgba(232,89,12,.1); color:var(--accent); white-space:nowrap; flex-shrink:0; margin-top:1px; }
+  .cp-food-detail{ flex:1; min-width:0; }
+  .cp-food-product{ font-size:12px; font-weight:600; color:var(--ink); }
+  .cp-food-firm{ font-size:10px; color:var(--muted-2); margin-top:2px; }
+  .cp-count-tag{ font-size:10px; font-weight:700; padding:1px 6px; border-radius:99px;
+    background:var(--line); color:var(--muted); vertical-align:middle; }
+
+  /* ── Country panel: Risk tab ──────────────────────── */
+  .cp-composite{ display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:center;
+    padding:14px; border-radius:12px; background:var(--bg); margin-bottom:14px; }
+  .cp-composite-num{ font-size:38px; font-weight:900; letter-spacing:-0.04em; line-height:1; }
+  .cp-composite-band{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; }
+  .cp-composite-sub{ font-size:10.5px; color:var(--muted-2); margin-top:3px; line-height:1.4; }
+
+  .cp-cats{ display:flex; flex-direction:column; gap:0; }
+  .cp-cat-row{
+    display:flex; flex-direction:column; gap:5px;
+    padding:11px 0; border-bottom:1px solid var(--line);
+  }
+  .cp-cat-row:last-child{ border-bottom:0; }
+  .cp-cat-hd{ display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .cp-cat-label{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--ink); }
+  .cp-cat-label svg{ flex-shrink:0; color:var(--muted); }
+  .cp-cat-score{ font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; flex-shrink:0; }
+  .cp-cat-track{ height:4px; border-radius:99px; background:var(--line); overflow:hidden; }
+  .cp-cat-fill{ height:100%; border-radius:99px; transition:width .5s cubic-bezier(.4,0,.2,1); }
+  /* detail = raw top_threat (shown only when active via inline script) */
+  .cp-cat-detail{ font-size:10px; color:var(--muted-2); display:none; }
+  /* desc = human-readable description shown when score > 0 */
+  .cp-cat-desc{
+    font-size:11.5px; line-height:1.4; color:var(--ink-2);
+    margin-top:1px;
+  }
 
   /* ── Category sections with switch toggles + collapsible lists ── */
   .cat-sections{
@@ -3346,6 +3422,7 @@ async function loadSignals() {
 
     _lastSignalIds = new Set(sigs.map(s => s.id));
     _signalsLoaded = true;
+    window.VIGILO_SIGNALS = sigs;
     _renderSignals(sigs, data.meta);
   } catch(e) {
     console.debug('Signals fetch error', e);

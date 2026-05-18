@@ -55,10 +55,13 @@ RSS_FEEDS = [
     {"name": "PAHO",             "url": "https://www.paho.org/hq/index.php?format=feed&type=rss",           "tag": "PAHO"},
     # CDC Health Alert Network
     {"name": "CDC HAN",          "url": "https://emergency.cdc.gov/han/feed/atom.xml",                      "tag": "CDC-HAN"},
+    # WHO EURO — covers Europe + Russia/CIS/Central Asia outbreak alerts
+    {"name": "WHO EURO",         "url": "https://www.euro.who.int/en/media-centre/sections/news/rss",       "tag": "WHO-EURO"},
     # NOTE: Eurosurveillance (403 bot-block) and old ECDC news RSS (404)
     # removed — dead/blocked. ReliefWeb v2 API is ACTIVE via the approved
     # appname RELIEFWEB_APPNAME (episcope-ownalex-9yimg); fetch_reliefweb()
     # returns real epidemic reports (still fails gracefully to [] on error).
+    # ProMED: handled by dedicated fetch_promed() (JSON API + Google News fallback).
 ]
 
 KEYWORDS = [
@@ -779,8 +782,24 @@ def fetch_rospotrebnadzor() -> list:
         if content:
             break
     if not content:
-        print(f"  ✗ Rospotrebnadzor (timed out from CI — geo-throttled): {last_err}", flush=True)
-        return []
+        print(f"  ✗ Rospotrebnadzor direct (geo-blocked): {last_err} — trying Google News RU fallback", flush=True)
+        # Google News RU — indexes Rospotrebnadzor and Russian MoH announcements.
+        # Works from any IP; picks up same content 10-30 min after publication.
+        _q = urllib.parse.quote("Роспотребнадзор вспышка OR эпидемия OR заражение", safe="")
+        gnews_url = f"https://news.google.com/rss/search?q={_q}&hl=ru&gl=RU&ceid=RU:ru"
+        try:
+            gn_req = urllib.request.Request(gnews_url, headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/rss+xml,application/xml,text/xml,*/*",
+            })
+            with opener.open(gn_req, timeout=20) as resp:
+                content = resp.read()
+            print("  ✓ Rospotrebnadzor: using Google News RU mirror", flush=True)
+        except Exception as gn_e:
+            print(f"  ✗ Rospotrebnadzor Google News fallback: {gn_e}", flush=True)
+            return []
+        if not content:
+            return []
 
     try:
         root = ET.fromstring(content)
@@ -1007,6 +1026,149 @@ def fetch_china_cdc_weekly() -> list:
         return []
 
     return _parse_china_cdc_notifiable(article_html, article_url)
+
+
+# ---------------------------------------------------------------------------
+# Source 5b: Hong Kong CHP — Centre for Health Protection
+#            English-language real-time Asia/China disease alerts.
+#            First to report novel pathogens crossing from mainland China.
+#            Historically caught SARS (2003), MERS (2015), H5N1 waves.
+# ---------------------------------------------------------------------------
+
+def fetch_hk_chp() -> list:
+    """HK Centre for Health Protection RSS → raw event dicts."""
+    print("Fetching HK CHP...", flush=True)
+    results = []
+    opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+    for url in [
+        "https://www.chp.gov.hk/en/rss/enhanced-surveillance.xml",
+        "https://www.chp.gov.hk/files/rss/cda_alert.xml",
+        "https://www.chp.gov.hk/en/rss/cda_alert.xml",
+        "https://www.chp.gov.hk/files/rss/surveillance.xml",
+    ]:
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Vigilo/2.0 (vigilo.cc; outbreak-monitoring)",
+                "Accept": "application/rss+xml, text/xml, */*",
+            })
+            with opener.open(req, timeout=15) as resp:
+                content = resp.read()
+            root = ET.fromstring(content)
+            for item in root.findall(".//item"):
+                title = (item.findtext("title") or "").strip()
+                link  = (item.findtext("link")  or "").strip()
+                desc  = re.sub(r"<[^>]+>", " ", item.findtext("description") or "").strip()
+                pub   = (item.findtext("pubDate") or "").strip()
+                if title and any(kw in (title + " " + desc).lower() for kw in KEYWORDS):
+                    results.append({
+                        "source":      "HK-CHP",
+                        "title":       title,
+                        "description": desc[:600] or title,
+                        "link":        link,
+                        "pub_date":    pub,
+                    })
+            if results:
+                print(f"  → {len(results)} HK CHP items (direct)", flush=True)
+                return results
+        except Exception as e:
+            print(f"  HK CHP {url[:60]}: {e}", flush=True)
+
+    # Google News fallback — CHP press releases indexed within minutes
+    try:
+        gn_url = (
+            "https://news.google.com/rss/search"
+            "?q=Hong+Kong+CHP+infectious+disease+outbreak+OR+alert"
+            "&hl=en-HK&gl=HK&ceid=HK:en"
+        )
+        req = urllib.request.Request(gn_url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
+        with opener.open(req, timeout=15) as resp:
+            content = resp.read()
+        root = ET.fromstring(content)
+        for item in root.findall(".//item"):
+            title = (item.findtext("title") or "").strip()
+            link  = (item.findtext("link")  or "").strip()
+            desc  = re.sub(r"<[^>]+>", " ", item.findtext("description") or "").strip()
+            pub   = (item.findtext("pubDate") or "").strip()
+            if title:
+                results.append({
+                    "source": "HK-CHP", "title": title,
+                    "description": desc[:600], "link": link, "pub_date": pub,
+                })
+    except Exception as e:
+        print(f"  HK CHP Google News fallback: {e}", flush=True)
+
+    print(f"  → {len(results)} HK CHP items (Google News fallback)", flush=True)
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Source 5c: ProMED — expert-curated outbreak intelligence
+#             Expert moderated; covers Russia, CIS, China, all regions.
+#             JSON API (RSS deprecated in 2025 after SPA migration).
+# ---------------------------------------------------------------------------
+
+def fetch_promed() -> list:
+    """ProMED Payload CMS JSON API → raw event dicts."""
+    print("Fetching ProMED...", flush=True)
+    results = []
+    opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+
+    try:
+        req = urllib.request.Request(
+            "https://www.promedmail.org/api/posts?page=1&limit=20",
+            headers={
+                "User-Agent": "Vigilo/2.0 (vigilo.cc; outbreak-monitoring)",
+                "Accept": "application/json",
+            },
+        )
+        with opener.open(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+        for doc in (data.get("docs") or []):
+            title   = (doc.get("title") or "").strip()
+            slug    = doc.get("slug") or str(doc.get("id") or "")
+            link    = f"https://www.promedmail.org/promed-post/{slug}" if slug else ""
+            excerpt = (doc.get("excerpt") or "").strip()
+            pubdate = doc.get("publishedAt") or doc.get("createdAt") or ""
+            combined = (title + " " + excerpt).lower()
+            if title and any(kw in combined for kw in KEYWORDS):
+                results.append({
+                    "source":      "ProMED",
+                    "title":       title,
+                    "description": excerpt[:600] or title,
+                    "link":        link,
+                    "pub_date":    pubdate,
+                })
+        if results:
+            print(f"  → {len(results)} ProMED items (API)", flush=True)
+            return results
+    except Exception as e:
+        print(f"  ✗ ProMED JSON API: {e}", flush=True)
+
+    # Google News fallback — ProMED posts indexed by Google within hours
+    try:
+        gn_url = (
+            "https://news.google.com/rss/search"
+            "?q=ProMED+outbreak+disease+alert&hl=en&gl=US&ceid=US:en"
+        )
+        req = urllib.request.Request(gn_url, headers={"User-Agent": "Vigilo/2.0 (vigilo.cc)"})
+        with opener.open(req, timeout=15) as resp:
+            content = resp.read()
+        root = ET.fromstring(content)
+        for item in root.findall(".//item"):
+            title = (item.findtext("title") or "").strip()
+            link  = (item.findtext("link")  or "").strip()
+            desc  = re.sub(r"<[^>]+>", " ", item.findtext("description") or "").strip()
+            pub   = (item.findtext("pubDate") or "").strip()
+            if title:
+                results.append({
+                    "source": "ProMED", "title": title,
+                    "description": desc[:600], "link": link, "pub_date": pub,
+                })
+    except Exception as e:
+        print(f"  ProMED Google News fallback: {e}", flush=True)
+
+    print(f"  → {len(results)} ProMED items (Google News fallback)", flush=True)
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -2096,6 +2258,72 @@ def main():
         })
     time.sleep(1)
 
+    # ── 5b. HK CHP (Hong Kong Centre for Health Protection) ──────────────
+    for raw in fetch_hk_chp():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = None
+        if has_ai:
+            extracted = call_ai(text)
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
+        if not extracted or not extracted.get("disease"):
+            continue
+        # HK CHP covers HK + mainland China spillovers; default country = HK
+        if not extracted.get("country"):
+            extracted["country"] = "China"
+            extracted["iso"], extracted["lat"], extracted["lng"], extracted["region"] = COUNTRY_DB["china"]
+        sev = normalise_sev(extracted.get("severity", "monitoring"))
+        add_event({
+            "id":         f"hkchp-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    extracted.get("disease"),
+            "country":    extracted.get("country"),
+            "iso":        extracted.get("iso"),
+            "region":     extracted.get("region"),
+            "lat":        extracted.get("lat"),
+            "lng":        extracted.get("lng"),
+            "cases":      extracted.get("cases"),
+            "deaths":     extracted.get("deaths"),
+            "severity":   sev,
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
+            "source":     "HK CHP",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+    time.sleep(1)
+
+    # ── 5c. ProMED — expert-curated outbreak intelligence ────────────────
+    for raw in fetch_promed():
+        text = raw["title"] + "\n\n" + raw["description"]
+        extracted = None
+        if has_ai:
+            extracted = call_ai(text)
+        if not extracted or not extracted.get("disease"):
+            extracted = extract_free(raw["title"], raw["description"])
+        if not extracted or not extracted.get("disease") or not extracted.get("country"):
+            continue
+        sev = normalise_sev(extracted.get("severity", "monitoring"))
+        add_event({
+            "id":         f"promed-{event_id_counter[0]}",
+            "type":       "epidemic",
+            "disease":    extracted.get("disease"),
+            "country":    extracted.get("country"),
+            "iso":        extracted.get("iso"),
+            "region":     extracted.get("region"),
+            "lat":        extracted.get("lat"),
+            "lng":        extracted.get("lng"),
+            "cases":      extracted.get("cases"),
+            "deaths":     extracted.get("deaths"),
+            "severity":   sev,
+            "summary":    extracted.get("summary", raw["title"])[:300],
+            "summary_ru": extracted.get("summary_ru", "")[:300],
+            "source":     "ProMED",
+            "link":       raw.get("link", ""),
+            "date":       raw.get("pub_date", ""),
+        })
+    time.sleep(1)
+
     # ── 6. RSS feeds ─────────────────────────────────────────────────────
     for feed in RSS_FEEDS:
         rss_items = fetch_rss(feed)
@@ -2262,6 +2490,11 @@ def main():
         extracted = call_ai(text) if has_ai else None
         if not extracted or not extracted.get("disease"):
             extracted = extract_free(raw["title"], raw["description"])
+        # Russian-language articles need a separate extraction path
+        if not extracted or not extracted.get("disease") or not extracted.get("country"):
+            extracted_ru = extract_russian(raw["title"], raw["description"])
+            if extracted_ru and extracted_ru.get("disease") and extracted_ru.get("country"):
+                extracted = extracted_ru
         if not extracted or not extracted.get("disease") or not extracted.get("country"):
             continue
         sev = normalise_sev(extracted.get("severity", "monitoring"))

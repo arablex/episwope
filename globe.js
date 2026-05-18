@@ -516,6 +516,8 @@ function countryRiskTier(country){
   return worst>=4 ? 'high' : worst>=2 ? 'medium' : 'low';
 }
 
+let RISK_INDEX = {};  /* keyed by ISO-2, loaded from public/risk_index.json */
+
 /* ── Food Safety Recalls ─────────────────────────── */
 let FOOD_RECALLS = [];
 let _foodExpanded = false;
@@ -1662,74 +1664,121 @@ function generateRecommendation(country, outbreaks){
 }
 
 function renderCountryPanel(country){
-  const outbreaks = OUTBREAKS.filter(o => o.country === country);
-  const totalCases  = outbreaks.reduce((s,o) => s + (o.cases  || 0), 0);
-  const totalDeaths = outbreaks.reduce((s,o) => s + (o.deaths || 0), 0);
-  const risk    = countryTravelRisk(country);
-  const adv     = TRAVEL_ADVISORY[LANG]?.[risk] || TRAVEL_ADVISORY.en[risk];
-  const rec     = generateRecommendation(country, outbreaks);
-  const cname   = countryName(country);
+  // ── Data collection ──────────────────────────────
+  const outbreaks     = OUTBREAKS.filter(o => o.country === country);
+  const epidemics     = outbreaks.filter(o => !o.type || o.type === 'epidemic');
+  const airEvents     = outbreaks.filter(o => o.type === 'air');
+  const disasters     = outbreaks.filter(o => o.type === 'disaster');
+  const humanitarians = outbreaks.filter(o => o.type === 'humanitarian');
 
-  // Dominant severity
+  const totalCases  = epidemics.reduce((s,o) => s + (o.cases  || 0), 0);
+  const totalDeaths = epidemics.reduce((s,o) => s + (o.deaths || 0), 0);
+
+  const iso2     = findCountry(country)?.iso2;
+  const riskData = iso2 ? RISK_INDEX[iso2] : null;
+
+  const risk  = countryTravelRisk(country);
+  const adv   = TRAVEL_ADVISORY[LANG]?.[risk] || TRAVEL_ADVISORY.en[risk];
+  const rec   = generateRecommendation(country, outbreaks);
+  const cname = countryName(country);
+
   let domSev = 'monitoring';
-  if(outbreaks.length){
-    domSev = outbreaks.reduce((m,o) => (SEV[o.sev]?.idx ?? 0) > (SEV[m.sev]?.idx ?? 0) ? o : m).sev;
+  if(epidemics.length){
+    domSev = epidemics.reduce((m,o) => (SEV[o.sev]?.idx ?? 0) > (SEV[m.sev]?.idx ?? 0) ? o : m).sev;
   }
   const sev = SEV[domSev];
+  const ru  = LANG === 'ru';
 
-  const labels = {
-    en: { profile:'Country Profile', threats:'Active threats', totalCases:'Total cases', totalDeaths:'Total deaths', noThreats:'No active outbreaks reported.', recommendation:'Recommendation', source:'Source', watchCountry:'Watch country', watching:'Watching', back:'Back',
-          tabMain:'Overview', tabHist:'History', histTitle:'Threat activity over time', histEmpty:'History is accumulating — check back soon.', histDays:'days tracked', histPeak:'Peak threats', histNow:'Now', histTrend:'Trend', legendTotal:'Total threats', legendCrit:'Critical', assessRisk:'Assess risks →' },
-    ru: { profile:'Профиль страны',  threats:'Активные угрозы', totalCases:'Всего случаев', totalDeaths:'Всего смертей', noThreats:'Активных вспышек не зарегистрировано.', recommendation:'Рекомендация', source:'Источник', watchCountry:'Следить за страной', watching:'Слежу', back:'Назад',
-          tabMain:'Основное', tabHist:'История', histTitle:'Динамика угроз во времени', histEmpty:'История накапливается — загляните позже.', histDays:'дней данных', histPeak:'Пик угроз', histNow:'Сейчас', histTrend:'Тренд', legendTotal:'Всего угроз', legendCrit:'Критические', assessRisk:'Оценить риски →' },
-  };
-  const L = labels[LANG] || labels.en;
-
-  // ── History tab content ──────────────────────────────────────
-  const hs = historySeries(country);
-  let histBody;
-  if (!hs || hs.dates.length < 1) {
-    histBody = `<div class="cp-hist-empty">${L.histEmpty}</div>`;
-  } else {
-    const cur  = hs.total[hs.total.length - 1] || 0;
-    const peak = Math.max(...hs.total);
-    const first = hs.total.find(v => v > 0) ?? hs.total[0];
-    const delta = cur - (hs.total[0] || 0);
-    const trendTxt = delta > 0 ? `▲ +${delta}` : delta < 0 ? `▼ ${delta}` : '→ 0';
-    const trendClr = delta > 0 ? '#C92A2A' : delta < 0 ? '#3D8B5C' : 'var(--muted)';
-    histBody = `
-      <div class="cp-hist-title">${L.histTitle}</div>
-      <div class="cp-hist-chart">${renderHistoryChart(hs, sev.color)}</div>
-      <div class="cp-hist-legend">
-        <span><i style="background:${sev.color}"></i>${L.legendTotal}</span>
-        <span><i class="dash" style="background:#C92A2A"></i>${L.legendCrit}</span>
-      </div>
-      <div class="cp-hist-stats">
-        <div><div class="v">${hs.dates.length}</div><div class="k">${L.histDays}</div></div>
-        <div><div class="v">${peak}</div><div class="k">${L.histPeak}</div></div>
-        <div><div class="v">${cur}</div><div class="k">${L.histNow}</div></div>
-        <div><div class="v" style="color:${trendClr}">${trendTxt}</div><div class="k">${L.histTrend}</div></div>
-      </div>
-      <div class="cp-hist-note">${HISTORY?.meta?.from || ''} → ${HISTORY?.meta?.to || ''}</div>`;
+  // AQI from air-type outbreaks
+  const aqiEvent = airEvents[0];
+  let aqiVal = null;
+  if(aqiEvent){
+    const m = (aqiEvent.blurb || aqiEvent.summary || '').match(/AQI\s*(\d+)/i);
+    if(m) aqiVal = parseInt(m[1]);
   }
 
-  // Honest data-provenance note (esp. for limited-surveillance regions)
-  const LOW_COVERAGE = new Set(['Russia','China','Belarus','Turkmenistan',
-    'North Korea','Tajikistan','Uzbekistan','Kyrgyzstan']);
-  const provNote = (() => {
-    const base = LANG === 'ru'
-      ? 'Данные отражают то, что публикуют WHO/ECDC/GDACS и др. Отсутствие событий ≠ «всё спокойно».'
-      : 'Data reflects what WHO/ECDC/GDACS et al. publish. Absence of events is not an all-clear.';
-    const extra = LOW_COVERAGE.has(country)
-      ? (LANG === 'ru'
-          ? ' Независимый эпиднадзор по этой стране ограничен — опираемся на международные отчёты WHO.'
-          : ' Independent surveillance from this country is limited — coverage relies on WHO international reports.')
-      : '';
-    return base + extra;
-  })();
+  // Food recalls for country
+  const foodForCountry = FOOD_RECALLS.filter(r =>
+    (iso2 && r.iso === iso2) || r.country === country
+  );
 
-  const threatsHtml = outbreaks.length
-    ? outbreaks.map(o => {
+  // ── History tab (existing logic) ──────────────────
+  const LOW_COV = new Set(['Russia','China','Belarus','Turkmenistan','North Korea','Tajikistan','Uzbekistan','Kyrgyzstan']);
+  const provNote = (ru
+    ? 'Данные: WHO/ECDC/GDACS и др. Отсутствие событий ≠ «всё спокойно».'
+    : 'Data: WHO/ECDC/GDACS et al. Absence of events is not an all-clear.')
+    + (LOW_COV.has(country) ? (ru
+      ? ' Независимый надзор ограничен — данные из межд. отчётов WHO.'
+      : ' Independent surveillance is limited — based on WHO international reports.') : '');
+
+  const hs = historySeries(country);
+  let histBody;
+  if(!hs || hs.dates.length < 1){
+    histBody = `<div class="cp-hist-empty">${ru ? 'История накапливается — загляните позже.' : 'History is accumulating — check back soon.'}</div>`;
+  } else {
+    const cur   = hs.total[hs.total.length - 1] || 0;
+    const peak  = Math.max(...hs.total);
+    const delta = cur - (hs.total[0] || 0);
+    const trendClr = delta > 0 ? 'var(--s3)' : delta < 0 ? '#3D8B5C' : 'var(--muted)';
+
+    // Narrative — one sentence that explains what you're looking at
+    const situationWord = delta > 0
+      ? (ru ? 'ухудшается' : 'worsening')
+      : delta < 0 ? (ru ? 'улучшается' : 'improving')
+      : (ru ? 'стабильна' : 'stable');
+    const narrative = cur === 0
+      ? (ru
+          ? `За последние ${hs.dates.length} дней активных угроз не зафиксировано.`
+          : `No active threats recorded in the last ${hs.dates.length} days.`)
+      : (ru
+          ? `За ${hs.dates.length} дней наблюдается <b>${cur}</b> ${cur === 1 ? 'активная угроза' : 'активных угрозы'}. Ситуация <span style="color:${trendClr}">${situationWord}</span>.`
+          : `Over ${hs.dates.length} days — <b>${cur}</b> active ${cur === 1 ? 'threat' : 'threats'}. Situation <span style="color:${trendClr}">${situationWord}</span>.`);
+
+    // Date labels
+    const fmt = d => { const p = d.split('-'); return p[2] + '.' + p[1]; };
+    const dateFrom = fmt(hs.dates[0]);
+    const dateTo   = fmt(hs.dates[hs.dates.length - 1]);
+
+    // Current threats list (from live OUTBREAKS for this country)
+    const eventsHtml = outbreaks.length
+      ? outbreaks.map(o => {
+          const s = SEV[o.sev];
+          const dateMatch = (o.code || '').match(/(\d{4}-\d{2}-\d{2})/);
+          const dStr = dateMatch ? fmt(dateMatch[1]) : '';
+          const blurb = (ru ? o.blurb_ru : o.blurb) || '';
+          return `<div class="cp-hist-ev">
+            <span class="cp-hist-ev-dot" style="background:${s.color}"></span>
+            <div class="cp-hist-ev-body">
+              <div class="cp-hist-ev-name">${diseaseName(o.name)}
+                <span class="cp-hist-ev-sev" style="color:${s.color}">${s.label}</span>
+              </div>
+              ${blurb ? `<div class="cp-hist-ev-txt">${blurb.slice(0,110)}${blurb.length>110?'…':''}</div>` : ''}
+              ${dStr ? `<div class="cp-hist-ev-date">${ru?'обнаружено':'detected'} ${dStr}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')
+      : `<div class="cp-hist-empty" style="padding:8px 0">${ru?'Нет активных угроз.':'No active threats.'}</div>`;
+
+    histBody = `
+      <div class="cp-hist-narrative">${narrative}</div>
+      <div class="cp-hist-chart-wrap">
+        <div class="cp-hist-chart">${renderHistoryChart(hs, sev.color)}</div>
+        <div class="cp-hist-xlabels"><span>${dateFrom}</span><span>${dateTo}</span></div>
+        <div class="cp-hist-ylabel">${ru?'угрозы':'threats'}</div>
+      </div>
+      ${peak > 0 ? `<div class="cp-hist-stats" style="grid-template-columns:repeat(3,1fr)">
+        <div><div class="v">${peak}</div><div class="k">${ru?'макс. одноврем.':'peak active'}</div></div>
+        <div><div class="v">${cur}</div><div class="k">${ru?'активно сейчас':'active now'}</div></div>
+        <div><div class="v" style="color:${trendClr}">${delta > 0 ? '+' : ''}${delta}</div><div class="k">${ru?'динамика':'change'}</div></div>
+      </div>` : ''}
+      <div class="cp-hist-ev-title">${ru?'Текущие угрозы':'Current threats'}</div>
+      <div class="cp-hist-evlist">${eventsHtml}</div>
+      <div class="cp-hist-note">${ru?'Период':'Period'}: ${hs.dates[0]} → ${hs.dates[hs.dates.length-1]}</div>`;
+  }
+
+  // ── Tab 1: Overview ───────────────────────────────
+  const threatsHtml = epidemics.length
+    ? epidemics.map(o => {
         const s = SEV[o.sev];
         return `<div class="cp-threat-row">
           <span class="cp-threat-dot" style="background:${s.color}"></span>
@@ -1737,123 +1786,299 @@ function renderCountryPanel(country){
             <span class="cp-threat-name">${diseaseName(o.name)}</span>
             <span class="cp-threat-sev" style="color:${s.color}">${s.label}</span>
           </div>
-          <div class="cp-threat-num">${fmtNum(o.cases||0)}<small>${LANG==='ru'?'сл.':'cases'}</small></div>
+          <div class="cp-threat-num">${fmtNum(o.cases||0)}<small>${ru?'сл.':'cases'}</small></div>
         </div>`;
       }).join('')
-    : `<div class="cp-no-threats">${L.noThreats}</div>`;
+    : `<div class="cp-no-threats">${ru ? 'Активных вспышек не зарегистрировано.' : 'No active outbreaks reported.'}</div>`;
 
-  const watchedState = isWatched(country);
+  const overviewHtml = `
+    <div class="cp-stats-row">
+      <div class="cp-stat"><div class="cp-stat-val">${fmtNum(totalCases)}</div><div class="cp-stat-lbl">${ru?'Случаев':'Cases'}</div></div>
+      <div class="cp-stat"><div class="cp-stat-val" style="color:${sev.color}">${fmtNum(totalDeaths)}</div><div class="cp-stat-lbl">${ru?'Смертей':'Deaths'}</div></div>
+      <div class="cp-stat"><div class="cp-stat-val">${epidemics.length + disasters.length}</div><div class="cp-stat-lbl">${ru?'Угрозы':'Threats'}</div></div>
+    </div>
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Активные угрозы':'Active threats'}</div>
+      ${threatsHtml}
+      <div class="cp-prov">${provNote}</div>
+    </div>
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Рекомендация':'Recommendation'}</div>
+      <div class="cp-rec-text">${rec}</div>
+    </div>
+    <div class="cp-section">
+      <button class="cp-assess-btn" id="cpAssessBtn" data-country="${escapeAttr(country)}">${ru?'Оценить риски →':'Assess risks →'}</button>
+    </div>
+    <div class="cp-section">
+      <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
+        <label class="cp-sub-label">${ru ? 'Спокойный недельный digest на email' : 'Calm weekly digest by email'}</label>
+        <div class="cp-sub-row">
+          <input type="email" class="cp-sub-input" name="email" required placeholder="${ru ? 'твой email' : 'your email'}" autocomplete="email">
+          <button type="submit" class="cp-sub-btn">${ru ? 'Следить' : 'Watch'}</button>
+        </div>
+        <div class="cp-sub-status" aria-live="polite"></div>
+      </form>
+    </div>`;
 
+  // ── Tab 2: Health ─────────────────────────────────
+  const AQI_CATS_LOCAL = [
+    {max:50,  label:ru?'Хороший':'Good',                    color:'#19A463'},
+    {max:100, label:ru?'Умеренный':'Moderate',              color:'#E4B514'},
+    {max:150, label:ru?'Вреден для чувствит.':'Unhealthy for Sensitive', color:'#E8590C'},
+    {max:200, label:ru?'Вредный':'Unhealthy',               color:'#C92A2A'},
+    {max:300, label:ru?'Очень вредный':'Very Unhealthy',    color:'#8B1A1A'},
+    {max:500, label:ru?'Опасный':'Hazardous',               color:'#5C2010'},
+  ];
+  const aqiCat = aqiVal != null
+    ? (AQI_CATS_LOCAL.find(c => aqiVal <= c.max) || AQI_CATS_LOCAL[AQI_CATS_LOCAL.length-1])
+    : null;
+
+  const aqiHtml = (aqiEvent && aqiVal != null) ? `
+    <div class="cp-aqi">
+      <div class="cp-aqi-val" style="color:${aqiCat.color}">${aqiVal}</div>
+      <div class="cp-aqi-info">
+        <div class="cp-aqi-cat" style="color:${aqiCat.color}">${aqiCat.label}</div>
+        <div class="cp-aqi-lbl">PM2.5 · ${ru?'Индекс качества воздуха':'Air Quality Index'}</div>
+        <div class="cp-aqi-src">${aqiEvent.who || 'Open-Meteo AQI'}</div>
+      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${aqiCat.color}" stroke-width="1.8" stroke-linecap="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg>
+    </div>` : `
+    <div class="cp-aqi cp-aqi-none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted-2)" stroke-width="1.8" stroke-linecap="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M17.73 2.27A2.5 2.5 0 1 1 19.5 6.5H2"/><path d="M14.5 15.5A2.5 2.5 0 1 0 16.5 19H2"/></svg>
+      <div class="cp-aqi-info"><div class="cp-aqi-src">${ru?'Нет данных о качестве воздуха для этой страны':'No air quality data for this country'}</div></div>
+    </div>`;
+
+  const diseaseListHtml = epidemics.length
+    ? `<div class="cp-health-list">` + epidemics.map(o => {
+        const s = SEV[o.sev];
+        const blurb = (LANG === 'ru' ? o.blurb_ru : o.blurb) || '';
+        return `<div class="cp-health-item">
+          <div class="cp-hi-top">
+            <span class="cp-threat-name">${diseaseName(o.name)}</span>
+            <span class="cp-hi-sev" style="background:${s.color}1A;color:${s.color};border:1px solid ${s.color}40">${s.label}</span>
+          </div>
+          ${blurb ? `<div class="cp-hi-blurb">${blurb.slice(0,120)}${blurb.length>120?'…':''}</div>` : ''}
+          <div class="cp-hi-meta">${fmtNum(o.cases||0)} ${ru?'случаев':'cases'}${o.who ? ' · ' + o.who : ''}</div>
+        </div>`;
+      }).join('') + `</div>`
+    : `<div class="cp-no-threats">${ru ? 'Активных болезней не зарегистрировано.' : 'No active disease outbreaks.'}</div>`;
+
+  const foodHtml = foodForCountry.length ? `
+    <div class="cp-section-title" style="margin-top:4px">${ru?'Отзывы продуктов':'Food recalls'} <span class="cp-count-tag">${foodForCountry.length}</span></div>
+    <div class="cp-food-list">` + foodForCountry.slice(0,4).map(r => `
+      <div class="cp-food-item">
+        <span class="cp-food-hazard">${(r.hazard||'').split(':')[0].slice(0,18)}</span>
+        <div class="cp-food-detail">
+          <div class="cp-food-product">${(r.product||'').slice(0,56)}${(r.product||'').length>56?'…':''}</div>
+          <div class="cp-food-firm">${r.firm || r.source || ''}</div>
+        </div>
+      </div>`).join('') + `</div>` : '';
+
+  const healthHtml = `
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Качество воздуха':'Air quality'}</div>
+      ${aqiHtml}
+    </div>
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Болезни и вспышки':'Diseases & outbreaks'}</div>
+      ${diseaseListHtml}
+    </div>
+    ${foodForCountry.length ? `<div class="cp-section">${foodHtml}</div>` : ''}
+    <div class="cp-section" style="border-bottom:0">
+      <div class="cp-prov">${provNote}</div>
+    </div>`;
+
+  // ── Tab 3: Risk Factors ───────────────────────────
+  const CAT_META = {
+    health:        { en:'Health & Outbreaks', ru:'Здоровье и вспышки',      icon:'<circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2"/>' },
+    conflict:      { en:'Armed Conflict',     ru:'Вооружённые конфликты',    icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+    civil_unrest:  { en:'Civil Unrest',       ru:'Гражданские беспорядки',   icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
+    transport:     { en:'Transport',          ru:'Транспорт',                icon:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>' },
+    border:        { en:'Border & Entry',     ru:'Граница и въезд',          icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/>' },
+    infrastructure:{ en:'Infrastructure',     ru:'Инфраструктура',           icon:'<path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/>' },
+    climate:       { en:'Climate',            ru:'Климат',                   icon:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>' },
+  };
+  const BAND_CLR = {
+    minimal:'var(--s0)',low:'var(--s1)',moderate:'var(--s2)',
+    elevated:'var(--s3)',severe:'var(--s4)',high:'var(--s4)',critical:'var(--s5)',
+  };
+
+  let riskCatsHtml;
+  // Band-level descriptions for each risk category (shown when score > 0)
+  const CAT_BAND_DESC = {
+    health: {
+      ru: { low:'Единичные случаи, риск для туристов невысок', moderate:'Активные вспышки — соблюдайте осторожность', elevated:'Множественные вспышки — консультация врача', severe:'Серьёзные угрозы здоровью', high:'Серьёзные угрозы здоровью', critical:'Чрезвычайная ситуация со здоровьем' },
+      en: { low:'Isolated cases, low tourist risk', moderate:'Active outbreaks — take precautions', elevated:'Multiple outbreaks — consult a doctor', severe:'Serious health threats', high:'Serious health threats', critical:'Health emergency' },
+    },
+    conflict: {
+      ru: { low:'Напряжённость в отдельных районах', moderate:'Локальные конфликты, избегайте зон риска', elevated:'Активные боевые действия', severe:'Вооружённый конфликт', high:'Вооружённый конфликт', critical:'Военные действия' },
+      en: { low:'Tensions in some areas', moderate:'Localised conflicts, avoid risk zones', elevated:'Active hostilities', severe:'Armed conflict', high:'Armed conflict', critical:'War conditions' },
+    },
+    civil_unrest: {
+      ru: { low:'Периодические протесты', moderate:'Беспорядки и демонстрации', elevated:'Масштабные беспорядки', severe:'Гражданская чрезвычайная ситуация', high:'Гражданская чрезвычайная ситуация', critical:'Гражданская чрезвычайная ситуация' },
+      en: { low:'Occasional protests', moderate:'Unrest and demonstrations', elevated:'Widespread unrest', severe:'Civil emergency', high:'Civil emergency', critical:'Civil emergency' },
+    },
+    transport: {
+      ru: { low:'Незначительные перебои', moderate:'Нарушения транспортного сообщения', elevated:'Серьёзные транспортные сбои', severe:'Транспортный коллапс', high:'Транспортный коллапс', critical:'Транспортный коллапс' },
+      en: { low:'Minor disruptions', moderate:'Transport disruptions', elevated:'Significant transport failures', severe:'Transport collapse', high:'Transport collapse', critical:'Transport collapse' },
+    },
+    border: {
+      ru: { low:'Усиленный пограничный контроль', moderate:'Ограничения на въезд', elevated:'Жёсткий пограничный режим', severe:'Граница в основном закрыта', high:'Граница в основном закрыта', critical:'Граница закрыта' },
+      en: { low:'Enhanced border checks', moderate:'Entry restrictions in place', elevated:'Strict border controls', severe:'Border largely closed', high:'Border largely closed', critical:'Border closed' },
+    },
+    infrastructure: {
+      ru: { low:'Незначительные повреждения', moderate:'Нарушения инфраструктуры', elevated:'Значительный ущерб инфраструктуре', severe:'Серьёзные проблемы с инфраструктурой', high:'Серьёзные проблемы с инфраструктурой', critical:'Коллапс инфраструктуры' },
+      en: { low:'Minor damage', moderate:'Infrastructure disruptions', elevated:'Significant infrastructure damage', severe:'Serious infrastructure failure', high:'Serious infrastructure failure', critical:'Infrastructure collapse' },
+    },
+    climate: {
+      ru: { low:'Неблагоприятные погодные условия', moderate:'Природные угрозы', elevated:'Значительные стихийные бедствия', severe:'Экстремальные природные условия', high:'Экстремальные природные условия', critical:'Природная катастрофа' },
+      en: { low:'Adverse weather conditions', moderate:'Natural hazards present', elevated:'Significant natural disasters', severe:'Extreme conditions', high:'Extreme conditions', critical:'Natural catastrophe' },
+    },
+  };
+
+  if(riskData){
+    const comp     = riskData.composite_risk;
+    const compClr  = BAND_CLR[comp.band] || 'var(--s2)';
+    const BAND_LBL_RU = {minimal:'Минимальный',low:'Низкий',moderate:'Умеренный',elevated:'Повышенный',severe:'Серьёзный',high:'Высокий',critical:'Критический'};
+    const bandLbl  = ru
+      ? (BAND_LBL_RU[comp.band] || comp.band)
+      : (comp.band.charAt(0).toUpperCase() + comp.band.slice(1));
+    riskCatsHtml = `
+      <div class="cp-composite">
+        <div class="cp-composite-num" style="color:${compClr}">${comp.score.toFixed(1)}</div>
+        <div class="cp-composite-info">
+          <div class="cp-composite-band" style="color:${compClr}">${bandLbl}</div>
+          <div class="cp-composite-sub">${ru?'Композит · 44 источника · 7 доменов':'Composite · 44 sources · 7 domains'}</div>
+        </div>
+      </div>
+      <div class="cp-cats">` +
+      Object.entries(riskData.category_breakdown).map(([cat, d]) => {
+        const m    = CAT_META[cat] || {en:cat, ru:cat, icon:''};
+        const lbl  = ru ? m.ru : m.en;
+        const clr  = BAND_CLR[d.band] || 'var(--s0)';
+        const w    = Math.round(d.score / 5 * 100);
+        // Description shown only when category is active (score > 0)
+        const descMap  = CAT_BAND_DESC[cat]?.[ru ? 'ru' : 'en'] || {};
+        let desc = d.score > 0 ? (descMap[d.band] || '') : '';
+        if(desc && d.active_events) desc += ` · ${d.active_events} ${ru?'соб.':'evt'}`;
+        return `<div class="cp-cat-row">
+          <div class="cp-cat-hd">
+            <span class="cp-cat-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg>
+              ${lbl}
+            </span>
+            <span class="cp-cat-score" style="color:${clr}">${d.score.toFixed(1)}</span>
+          </div>
+          <div class="cp-cat-track"><div class="cp-cat-fill" style="width:${w}%;background:${clr}"></div></div>
+          ${desc ? `<div class="cp-cat-desc" style="color:${clr}">${desc}</div>` : ''}
+        </div>`;
+      }).join('') +
+      `</div>`;
+  } else {
+    riskCatsHtml = `<div class="cp-no-threats">${ru?'Нет данных индекса риска для этой страны.':'No risk index data for this country.'}</div>`;
+  }
+
+  // Trim news-style event names (strip " - SourceName" suffix, cap at 72 chars)
+  const trimEvName = n => {
+    const s = (n || '').replace(/\s+-\s+\S[^-]{0,40}$/, '').trim();
+    return s.length > 72 ? s.slice(0,72)+'…' : s;
+  };
+
+  const secEventsHtml = [...disasters, ...humanitarians].length ? `
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Активные события':'Active events'}</div>
+      <div class="cp-health-list">` +
+      [...disasters, ...humanitarians].map(o => {
+        const s = SEV[o.sev];
+        const blurb = (ru ? o.blurb_ru : o.blurb) || o.summary || '';
+        return `<div class="cp-health-item">
+          <div class="cp-hi-top">
+            <span class="cp-threat-name">${trimEvName(diseaseName(o.name))}</span>
+            <span class="cp-hi-sev" style="background:${s.color}1A;color:${s.color};border:1px solid ${s.color}40">${s.label}</span>
+          </div>
+          ${blurb ? `<div class="cp-hi-blurb">${blurb.slice(0,120)}${blurb.length>120?'…':''}</div>` : ''}
+        </div>`;
+      }).join('') + `</div></div>` : '';
+
+  const riskTabHtml = `
+    <div class="cp-section">
+      <div class="cp-section-title">${ru?'Индекс риска по доменам':'Risk index by domain'}</div>
+      ${riskCatsHtml}
+    </div>
+    ${secEventsHtml}
+    <div class="cp-section" style="border-bottom:0">
+      <div class="cp-prov">${ru
+        ? 'Композитный индекс — агрегат 44 верифицированных потоков. Не является официальной рекомендацией МИД.'
+        : 'Composite index — aggregate of 44 verified streams. Not an official government travel advisory.'}</div>
+    </div>`;
+
+  // ── Render ────────────────────────────────────────
   document.querySelector('.panel-scroll').innerHTML = `
     <div class="cp-head" style="border-top:4px solid ${sev.color}">
-      <div class="cp-back" id="cpBack">${L.back}</div>
-      <div class="cp-eyebrow">${L.profile}</div>
+      <div class="cp-back" id="cpBack">${ru?'Назад':'Back'}</div>
+      <div class="cp-eyebrow">${ru?'Профиль страны':'Country Profile'}</div>
       <div class="cp-country-name">${cname}</div>
-      <div class="cp-advisory" style="background:${adv.bg};border:1px solid ${adv.border || adv.bg}">
+      <div class="cp-advisory" style="background:${adv.bg};border:1px solid ${adv.border||adv.bg}">
         <span class="adv-dot" style="background:${adv.dot}"></span><span>${adv.label}</span>
       </div>
     </div>
 
     <div class="cp-tabs" id="cpTabs">
-      <button class="cp-tab is-active" data-tab="main">${L.tabMain}</button>
-      <button class="cp-tab" data-tab="hist">${L.tabHist}</button>
+      <button class="cp-tab is-active" data-tab="main">${ru?'Обзор':'Overview'}</button>
+      <button class="cp-tab" data-tab="health">${ru?'Здоровье':'Health'}</button>
+      <button class="cp-tab" data-tab="risk">${ru?'Риски':'Risk'}</button>
+      <button class="cp-tab" data-tab="hist">${ru?'История':'History'}</button>
     </div>
 
-    <div class="cp-tabbody" data-body="main">
-      <div class="cp-stats-row">
-        <div class="cp-stat"><div class="cp-stat-val">${fmtNum(totalCases)}</div><div class="cp-stat-lbl">${L.totalCases}</div></div>
-        <div class="cp-stat"><div class="cp-stat-val" style="color:${sev.color}">${fmtNum(totalDeaths)}</div><div class="cp-stat-lbl">${L.totalDeaths}</div></div>
-        <div class="cp-stat"><div class="cp-stat-val">${outbreaks.length}</div><div class="cp-stat-lbl">${L.threats}</div></div>
-      </div>
-
-      <div class="cp-section">
-        <div class="cp-section-title">${L.threats}</div>
-        ${threatsHtml}
-        <div class="cp-prov">${provNote}</div>
-      </div>
-
-      <div class="cp-section">
-        <div class="cp-section-title">${L.recommendation}</div>
-        <div class="cp-rec-text">${rec}</div>
-      </div>
-
-      <div class="cp-section">
-        <button class="cp-assess-btn" id="cpAssessBtn" data-country="${escapeAttr(country)}">${L.assessRisk}</button>
-      </div>
-
-      <div class="cp-section">
-        <form class="cp-subscribe" data-country="${escapeAttr(country)}" data-lang="${LANG}">
-          <label class="cp-sub-label">${LANG==='ru' ? 'Спокойный недельный digest на email' : 'Calm weekly digest by email'}</label>
-          <div class="cp-sub-row">
-            <input type="email" class="cp-sub-input" name="email" required placeholder="${LANG==='ru' ? 'твой email' : 'your email'}" autocomplete="email">
-            <button type="submit" class="cp-sub-btn">${LANG==='ru' ? 'Следить' : 'Watch'}</button>
-          </div>
-          <div class="cp-sub-status" aria-live="polite"></div>
-        </form>
-      </div>
-    </div>
-
-    <div class="cp-tabbody" data-body="hist" style="display:none">
-      <div class="cp-section">${histBody}</div>
-    </div>
+    <div class="cp-tabbody" data-body="main">${overviewHtml}</div>
+    <div class="cp-tabbody" data-body="health" style="display:none">${healthHtml}</div>
+    <div class="cp-tabbody" data-body="risk"   style="display:none">${riskTabHtml}</div>
+    <div class="cp-tabbody" data-body="hist"   style="display:none"><div class="cp-section">${histBody}</div></div>
   `;
 
   // Tab switching
   const tabsEl = document.getElementById('cpTabs');
-  if (tabsEl) {
+  if(tabsEl){
     tabsEl.addEventListener('click', e => {
       const b = e.target.closest('.cp-tab');
-      if (!b) return;
+      if(!b) return;
       tabsEl.querySelectorAll('.cp-tab').forEach(x => x.classList.toggle('is-active', x === b));
       document.querySelectorAll('.panel-scroll .cp-tabbody').forEach(bd => {
         bd.style.display = bd.dataset.body === b.dataset.tab ? '' : 'none';
       });
-      if (b.dataset.tab === 'hist' && window.ym) ym(109240834, 'reachGoal', 'history_view');
+      if(b.dataset.tab === 'hist' && window.ym) ym(109240834, 'reachGoal', 'history_view');
     });
   }
-  // "Assess risks" → premium report (validation: route to Pro waitlist)
-  const assessBtn = document.getElementById('cpAssessBtn');
-  if (assessBtn) assessBtn.addEventListener('click', () => openRiskReport(country));
 
-  // Wire back button
-  document.getElementById('cpBack').addEventListener('click', ()=>{
-    selectCountry(null);
-  });
+  // Back button
+  document.getElementById('cpBack')?.addEventListener('click', () => selectCountry(null));
 
-  // Wire subscribe form
+  // Assess risks button
+  document.getElementById('cpAssessBtn')?.addEventListener('click', () => openRiskReport(country));
+
+  // Subscribe form
   const subForm = document.querySelector('.cp-subscribe');
-  if (subForm) {
-    subForm.addEventListener('submit', async (e) => {
+  if(subForm){
+    subForm.addEventListener('submit', async e => {
       e.preventDefault();
-      const btn = subForm.querySelector('.cp-sub-btn');
+      const btn      = subForm.querySelector('.cp-sub-btn');
       const statusEl = subForm.querySelector('.cp-sub-status');
-      const email = subForm.querySelector('.cp-sub-input').value.trim();
-      if (!email) return;
+      const email    = subForm.querySelector('.cp-sub-input').value.trim();
+      if(!email) return;
       btn.disabled = true;
-      statusEl.textContent = LANG === 'ru' ? 'Отправляем…' : 'Sending…';
+      statusEl.textContent = ru ? 'Отправляем…' : 'Sending…';
       try {
-        const res = await fetch('/api/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            country: subForm.dataset.country,
-            lang: subForm.dataset.lang,
-          }),
+        const res  = await fetch('/api/subscribe', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email, country: subForm.dataset.country, lang: subForm.dataset.lang }),
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || 'failed');
-        statusEl.textContent = LANG === 'ru'
-          ? 'Проверь почту — там ссылка для подтверждения.'
-          : 'Check your inbox to confirm.';
+        if(!res.ok) throw new Error(json.error || 'failed');
+        statusEl.textContent = ru ? 'Проверь почту — там ссылка.' : 'Check your inbox to confirm.';
         subForm.querySelector('.cp-sub-input').value = '';
-      } catch (err) {
-        statusEl.textContent = LANG === 'ru'
-          ? 'Не удалось подписаться. Попробуй ещё раз.'
-          : 'Subscription failed. Try again.';
-      } finally {
-        btn.disabled = false;
-      }
+      } catch(_err){
+        statusEl.textContent = ru ? 'Не удалось. Попробуй ещё раз.' : 'Failed. Please try again.';
+      } finally { btn.disabled = false; }
     });
   }
 }
@@ -3608,6 +3833,12 @@ async function loadLiveData(){
         }
       }
     } catch (e) { /* risk feed optional — never break the globe */ }
+
+    // ── Risk index (7-domain breakdown per ISO-2) ──
+    try {
+      const ri = await fetch(base + 'public/risk_index.json?_=' + Date.now());
+      if(ri.ok){ const rj = await ri.json(); RISK_INDEX = rj.index || {}; }
+    } catch(_e){ /* graceful — country panel shows "no data" */ }
 
     if(injected > 0){
       console.log(`[Vigilo] Injected ${injected} live events`);
