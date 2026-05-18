@@ -139,6 +139,40 @@ Sections top→bottom:
 Visual system identical to the consumer landing (same tokens, Inter,
 light theme). Self-contained static page (project pattern).
 
+## Visual system — deliberate evolution (Semrush-energy, on-brand)
+
+The B2B landing **deliberately evolves** the visual system (the spec's
+"preserve unless deliberately evolved" clause — this is the
+evolution). Reference vibe: Semrush-level energy/polish, re-expressed
+in Vigilo's brand — NOT a clone (no copying their layout/assets;
+copyright + brand-fit).
+
+- **Palette:** brand DNA kept — `--bg #F4F2EE`, ink `#0F0E0C`,
+  `--accent #E8590C`. No new brand colour. Energy comes from
+  **section color-blocking**: cream → warm orange-wash
+  `rgba(232,89,12,.06)` → dark ink band `#1C1A16` → cream. Data accents
+  reuse the existing severity scale (`--s0..s5`) in tasteful
+  micro-gauges (authentic — it is the product's own output).
+- **Typography:** Inter retained (brand consistency over a font swap);
+  scale pushed bolder/larger (hero `clamp(40px,6vw,76px)`, tracking
+  `-.05em`, weight 800).
+- **Rhythm:** large vertical air `clamp(80px,11vw,150px)`, alternating
+  band backgrounds.
+- **"Juice" devices (honest only):** number count-up on the Breadth
+  stats; on-scroll fade/translate-in; card hover lift + accent border
+  (150–250ms, cursor-pointer); bold sticky orange CTA; one authentic
+  product mock (clean inline SVG of the composite score / API
+  response — our real output).
+- **Quality bar:** SVG icons (no emoji), visible focus states,
+  contrast ≥ 4.5:1, responsive 375/768/1024/1440,
+  `prefers-reduced-motion` respected, transitions 150–300ms.
+
+**Explicit prohibition (honesty):** NO social-proof scaffolding —
+no testimonials, client-logo wall, user/customer counters, star
+ratings, or case studies (we have no customers; the design engine
+suggested this pattern and it is rejected). The honesty-guard test
+enforces absence of this scaffolding.
+
 ## Bilingual sync strategy
 
 Four files total: `index.html`, `ru/index.html`, `business.html`,
