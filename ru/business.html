@@ -4,160 +4,219 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vigilo для бизнеса — API риск-аналитики</title>
-<meta name="description" content="44+ живых источника риска по 7 доменам, один открытый API. Прозрачно, self-serve, без enterprise sales-gate.">
+<meta name="description" content="Vigilo агрегирует 44 проверенных потока данных на 25-летней базе ERA5 (климат и био-сезонность). Детерминированно, без black-box ML, открытый API.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
-    --accent:#E8590C;--accent-d:#cf4d09;--wash:rgba(232,89,12,.06);--ink2:#1C1A16;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  :root{
+    --paper:#F4F2EE;--paper2:#EFEDE8;--card:#FFFFFF;--ink:#14110C;
+    --ink700:#3B362D;--ink600:#6A6358;--ink500:#8A8377;--ink400:#A8A092;
+    --rule:#E5E1D8;--accent:#E8590C;--accent-d:#C8480A;
+    --green:#00A56F;--green-bg:rgba(0,165,111,.10);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --serif:'Instrument Serif',Georgia,serif;
+    --shadow:0 1px 2px rgba(20,17,12,.04),0 12px 40px -16px rgba(20,17,12,.18);
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font:16px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+  body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
   :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-  header{position:sticky;top:0;background:rgba(244,242,238,.85);backdrop-filter:blur(12px);
-    border-bottom:1px solid var(--line);z-index:50}
-  .nav{display:flex;align-items:center;gap:24px;height:62px}
-  .brand{font-weight:800;letter-spacing:-.04em;font-size:20px}
-  .brand b{color:var(--accent)}
-  .logo{display:inline-grid;place-items:center;width:25px;height:25px;background:var(--accent);
-    color:#fff;border-radius:7px;font-size:13px;margin-right:8px;vertical-align:-5px}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  .display{font-weight:800;letter-spacing:-.045em;line-height:.96}
+  .h-it{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .kick{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ink500)}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(244,242,238,.82);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
+  .nav{display:flex;align-items:center;gap:26px;height:66px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;letter-spacing:-.03em}
+  .brand svg{display:block}
   .sp{flex:1}
-  .nav a.nl{font-size:14px;font-weight:600;color:var(--muted);display:none;transition:color .18s}
+  .nav a.nl{font-size:14px;font-weight:500;color:var(--ink600);display:none;transition:color .15s}
   .nav a.nl:hover{color:var(--ink)}
-  @media(min-width:880px){.nav a.nl{display:inline}}
-  .btn{display:inline-block;font-weight:700;font-size:14.5px;border-radius:11px;padding:11px 20px;
-    border:1.5px solid var(--ink);cursor:pointer;transition:transform .18s,background .18s,color .18s,border-color .18s}
-  .btn:hover{background:var(--ink);color:var(--bg);transform:translateY(-1px)}
-  .btn-acc{background:var(--accent);border-color:var(--accent);color:#fff}
-  .btn-acc:hover{background:var(--accent-d);border-color:var(--accent-d);color:#fff}
-  .lang{font-size:13px;font-weight:700;color:var(--muted)}
-  section{padding:clamp(80px,11vw,150px) 0}
-  .band-wash{background:var(--wash);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .band-dark{background:var(--ink2);color:#F2EFE9}
-  .band-dark h2,.band-dark h1{color:#fff}
-  .band-dark .lead{color:rgba(242,239,233,.62)}
-  .kick{font-size:11px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
-  h1{font-size:clamp(40px,6vw,76px);font-weight:800;letter-spacing:-.05em;line-height:1.02;margin:20px 0}
-  h2{font-size:clamp(28px,3.6vw,46px);font-weight:800;letter-spacing:-.04em;margin:14px 0 12px}
-  .lead{font-size:clamp(17px,1.75vw,22px);color:var(--muted);max-width:660px;line-height:1.55}
-  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
-  .hero-grid{display:grid;gap:48px;align-items:center;grid-template-columns:1fr}
-  @media(min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr}}
-  .mock{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;
-    box-shadow:0 24px 60px -28px rgba(28,26,22,.32)}
-  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:44px}
-  @media(min-width:760px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;
-    transition:transform .2s,border-color .2s,box-shadow .2s}
-  .card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 18px 40px -26px rgba(28,26,22,.3)}
-  .card .ic{width:40px;height:40px;border-radius:11px;background:var(--wash);color:var(--accent);
+  @media(min-width:920px){.nav a.nl{display:inline}}
+  .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;font-weight:600;
+    font-size:14px;padding:11px 20px;border:1px solid var(--ink);transition:.18s;cursor:pointer}
+  .pill:hover{transform:translateY(-1px)}
+  .pill-dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill-dark:hover{background:#000}
+  .pill-ghost{background:transparent;color:var(--ink)}
+  .pill-ghost:hover{background:var(--ink);color:var(--paper)}
+  .lang{font-size:13px;font-weight:700;color:var(--ink500)}
+
+  section{padding:clamp(72px,10vw,132px) 0}
+  .band{background:var(--card);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .chip{display:inline-flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--rule);
+    border-radius:999px;padding:6px 14px 6px 7px;font-size:12.5px;font-weight:500;color:var(--ink700)}
+  .chip .badge{background:var(--green-bg);color:var(--green);font-size:10px;font-weight:800;
+    letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+
+  h1{font-size:clamp(46px,7.4vw,108px);margin:26px 0 0}
+  h1 .h-it{color:var(--ink600);font-size:.96em}
+  h2{font-size:clamp(28px,3.6vw,46px);font-weight:800;letter-spacing:-.04em;margin:14px 0 14px}
+  .lead{font-size:clamp(17px,1.5vw,19px);color:var(--ink600);max-width:58ch;line-height:1.6;margin-top:26px}
+  .lead b{color:var(--ink);font-weight:600}
+  .cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:26px;font-size:13px;color:var(--ink500)}
+  .trust span{display:inline-flex;align-items:center;gap:7px}
+  .trust svg{color:var(--green)}
+
+  .hero{display:grid;gap:56px;align-items:center;grid-template-columns:1fr}
+  @media(min-width:1000px){.hero{grid-template-columns:1.04fr .96fr}}
+  .plate{background:var(--card);border:1px solid var(--rule);border-radius:20px;
+    box-shadow:var(--shadow);overflow:hidden}
+  .plate-hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--rule);
+    font-size:13px}
+  .plate-hd .mono{font-size:12px;color:var(--ink500)}
+  .plate-bd{padding:24px}
+  .score{font-weight:800;letter-spacing:-.05em;font-size:clamp(56px,8vw,92px);line-height:.84}
+  .bar{height:9px;border-radius:5px;background:var(--paper2);overflow:hidden;margin-top:7px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+  .brk{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink600);margin-top:14px}
+  .smp{font-size:11px;color:var(--ink400);margin-top:18px;font-family:var(--mono)}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:0;margin-top:54px;
+    border-top:1px solid var(--rule)}
+  @media(min-width:780px){.stats{grid-template-columns:repeat(4,1fr)}}
+  .stat{padding:26px 22px;border-left:1px solid var(--rule)}
+  .stat:first-child{border-left:0}
+  .stat .n{font-weight:800;letter-spacing:-.04em;font-size:clamp(34px,4vw,50px);line-height:.9}
+  .stat .l{font-size:13px;color:var(--ink500);margin-top:8px}
+
+  .grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:46px}
+  @media(min-width:780px){.grid.c3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:28px;
+    transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .card .ic{width:38px;height:38px;border-radius:11px;background:var(--paper2);color:var(--accent);
     display:grid;place-items:center;margin-bottom:18px}
-  .card h3{font-size:19px;font-weight:700;letter-spacing:-.02em}
-  .card p{color:var(--muted);font-size:14.5px;margin-top:8px}
+  .card h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
+  .card p{color:var(--ink600);font-size:14.5px;margin-top:8px}
   .card a.deep{display:inline-block;margin-top:16px;font-size:13px;font-weight:700;color:var(--accent)}
-  .stats{display:flex;gap:clamp(24px,5vw,72px);flex-wrap:wrap;margin-top:40px}
-  .stat .n{font-size:clamp(34px,5vw,58px);font-weight:800;letter-spacing:-.04em;color:var(--accent)}
-  .stat .l{font-size:14px;color:var(--muted);margin-top:4px}
-  .seg-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;
-    transition:transform .2s,border-color .2s}
-  .seg-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+
+  .seg-card{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:28px;
+    transition:transform .2s}
+  .seg-card:hover{transform:translateY(-3px)}
   .seg-card h3{font-size:18px;font-weight:700;letter-spacing:-.02em}
-  .seg-card .pain{color:var(--muted);font-size:14px;margin-top:10px}
-  .seg-card .out{font-weight:700;margin-top:14px;font-size:15px;color:var(--ink)}
-  table{width:100%;border-collapse:collapse;margin-top:36px;font-size:14.5px;background:var(--card);
-    border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  th,td{padding:15px 18px;text-align:left;border-bottom:1px solid var(--line)}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700}
+  .seg-card .pain{color:var(--ink500);font-size:14px;margin-top:12px}
+  .seg-card .out{font-weight:600;margin-top:14px;font-size:15px;color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;margin-top:34px;font-size:14.5px;background:var(--card);
+    border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+  th,td{padding:16px 18px;text-align:left;border-bottom:1px solid var(--rule)}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink500);font-weight:700}
   td.us{font-weight:800;color:var(--accent)}
   tr:last-child td{border-bottom:0}
-  .quiet{font-size:13px;color:var(--muted);margin-top:20px}
+  .quiet{font-size:13px;color:var(--ink500);margin-top:18px}
   .quiet a{color:var(--accent);font-weight:700}
-  .price-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:40px}
-  @media(min-width:680px){.price-grid{grid-template-columns:1fr 1fr}}
-  .price{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px}
+
+  .price-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:38px}
+  @media(min-width:660px){.price-grid{grid-template-columns:1fr 1fr}}
+  .price{background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:34px}
   .price.acc{border:2px solid var(--accent)}
-  .price h3{font-size:20px;font-weight:800}
-  .price .big{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:12px 0}
-  .price ul{list-style:none;margin:16px 0 24px;display:flex;flex-direction:column;gap:9px}
-  .price li{font-size:14px;color:var(--muted)}
-  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .price h3{font-size:19px;font-weight:800}
+  .price .big{font-weight:800;letter-spacing:-.03em;font-size:30px;margin:12px 0}
+  .price ul{list-style:none;margin:14px 0 24px;display:flex;flex-direction:column;gap:9px}
+  .price li{font-size:14px;color:var(--ink600)}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
-  footer{border-top:1px solid var(--line);padding:36px 0;font-size:13px;color:var(--muted)}
-  footer a{color:var(--muted);transition:color .15s}
-  footer a:hover{color:var(--ink)}
+  .final{background:var(--ink);color:var(--paper);text-align:center}
+  .final h2{color:#fff}.final .lead{color:rgba(244,242,238,.62);margin:24px auto 0}
+  footer{border-top:1px solid var(--rule);padding:38px 0;font-size:13px;color:var(--ink500)}
+  footer a{color:var(--ink500);transition:color .15s}footer a:hover{color:var(--ink)}
   .frow{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
   @media(prefers-reduced-motion:reduce){
     .reveal{opacity:1;transform:none;transition:none}
-    .btn:hover,.card:hover,.seg-card:hover{transform:none}
+    .pill:hover,.card:hover,.seg-card:hover{transform:none}
   }
 </style>
 </head>
 <body>
 <header><div class="wrap nav">
-  <a class="brand" href="/ru/"><span class="logo">V</span>Vigi<b>lo</b></a>
+  <a class="brand" href="/ru/">
+    <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 5 L14 23 L24 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="1.6" fill="currentColor"/></svg>
+    Vigilo
+  </a>
   <span class="sp"></span>
-  <a class="nl" href="#overview">Overview</a>
+  <a class="nl" href="#overview">Обзор</a>
   <a class="nl" href="/api/v1/docs">API</a>
   <a class="nl" href="/widgets">Widgets</a>
   <a class="nl" href="#pricing">Цены</a>
   <a class="lang" href="/business.html">EN</a>
-  <a class="btn btn-acc" href="/api/v1/docs">Получить бесплатный API-ключ</a>
+  <a class="pill pill-dark" href="/api/v1/docs">Получить бесплатный API-ключ</a>
 </div></header>
 
 <section id="overview"><div class="wrap">
-  <div class="hero-grid">
+  <div class="hero">
     <div>
-      <span class="kick">Vigilo для бизнеса</span>
-      <h1>Risk-аналитика в реальном времени, один открытый API.</h1>
-      <p class="lead">Большинство risk-вендоров прячутся за enterprise sales-звонками. Мы — нет: 44+ живых источника по 7 доменам, прозрачный composite-скор, self-serve с первой минуты.</p>
+      <span class="chip"><span class="badge">Ново</span> 25-летняя база ERA5 — методология опубликована</span>
+      <h1 class="display">Риск, от которого <span class="h-it">реально</span> защититься.</h1>
+      <p class="lead">Vigilo агрегирует <b>44 проверенных потока данных</b> на <b>25-летней базе ERA5 (климат и био-сезонность)</b>. Никакого black-box ML. Каждый скор детерминирован и ссылается на исходную строку источника.</p>
       <div class="cta">
-        <a class="btn btn-acc" href="/api/v1/docs">Получить бесплатный API-ключ</a>
-        <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Связаться с нами</a>
+        <a class="pill pill-dark" href="/api/v1/docs">Получить доступ к B2B API</a>
+        <a class="pill pill-ghost" href="/report">Смотреть живое досье</a>
+      </div>
+      <div class="trust">
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Sandbox-ключ за 60 секунд</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Без карты</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Детерминированно — без black-box ML</span>
       </div>
     </div>
-    <div class="mock reveal" aria-hidden="true">
-      <svg viewBox="0 0 360 240" width="100%" role="img" aria-label="Composite risk score sample">
-        <rect width="360" height="240" rx="14" fill="#FBFAF7"/>
-        <text x="22" y="36" font-family="var(--sans)" font-size="12" fill="#807E76" font-weight="700">GET /api/v1/risk?country=ET</text>
-        <text x="22" y="74" font-family="var(--sans)" font-size="13" fill="#0F0E0C">composite_risk</text>
-        <text x="338" y="74" text-anchor="end" font-family="var(--sans)" font-size="22" font-weight="800" fill="#E8590C">3.8 / 5</text>
-        <g font-family="var(--sans)" font-size="11" fill="#807E76">
-          <text x="22" y="108">health</text><rect x="120" y="98" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="98" width="170" height="9" rx="4.5" fill="#E8590C"/>
-          <text x="22" y="134">conflict</text><rect x="120" y="124" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="124" width="120" height="9" rx="4.5" fill="#E8590C"/>
-          <text x="22" y="160">climate</text><rect x="120" y="150" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="150" width="84" height="9" rx="4.5" fill="#E8590C"/>
-          <text x="22" y="186">transport</text><rect x="120" y="176" width="218" height="9" rx="4.5" fill="#EFEAE2"/><rect x="120" y="176" width="52" height="9" rx="4.5" fill="#E8590C"/>
-        </g>
-        <text x="22" y="220" font-family="var(--sans)" font-size="10" fill="#A8A399">7 доменов · 44+ источника · обновление ~15 мин</text>
-      </svg>
+    <div class="plate reveal" aria-hidden="true">
+      <div class="plate-hd">
+        <svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M4 5 L14 23 L24 5" stroke="#14110C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <strong style="font-size:13px">Risk-консоль</strong>
+        <span style="color:var(--ink400)">/</span>
+        <span class="mono">ET · образец</span>
+      </div>
+      <div class="plate-bd">
+        <div style="display:flex;align-items:baseline;gap:14px">
+          <span class="score">3.8</span>
+          <span class="mono" style="color:var(--ink500);font-size:13px">/ 5 композит</span>
+        </div>
+        <div style="margin-top:22px;display:flex;flex-direction:column;gap:14px">
+          <div><div class="brk" style="margin:0"><span>здоровье</span><span class="mono">3.9</span></div><div class="bar"><i style="width:78%"></i></div></div>
+          <div><div class="brk" style="margin:0"><span>конфликт</span><span class="mono">3.1</span></div><div class="bar"><i style="width:62%"></i></div></div>
+          <div><div class="brk" style="margin:0"><span>климат</span><span class="mono">2.1</span></div><div class="bar"><i style="width:42%"></i></div></div>
+          <div><div class="brk" style="margin:0"><span>транспорт</span><span class="mono">1.3</span></div><div class="bar"><i style="width:26%"></i></div></div>
+        </div>
+        <div class="smp">Иллюстративный образец · каждый скор детерминирован и ссылается на источник</div>
+      </div>
     </div>
+  </div>
+  <div class="stats">
+    <div class="stat reveal"><div class="n" data-count="44" data-suffix="+">0</div><div class="l">проверенных потоков</div></div>
+    <div class="stat reveal"><div class="n" data-count="7">0</div><div class="l">домена риска</div></div>
+    <div class="stat reveal"><div class="n" data-count="25" data-suffix="-yr">0</div><div class="l">база ERA5</div></div>
+    <div class="stat reveal"><div class="n" data-count="15" data-prefix="~" data-suffix="m">0</div><div class="l">каденс обновления</div></div>
   </div>
 </div></section>
 
-<section id="breadth" class="band-dark"><div class="wrap">
-  <span class="kick">Охват</span>
-  <h2>Живой мульти-доменный охват</h2>
-  <p class="lead">Здоровье и вспышки · вооружённые конфликты · беспорядки · транспорт · границы · инфраструктура · климат — непрерывная агрегация в один composite-сигнал.</p>
-  <div class="stats">
-    <div class="stat"><div class="n" data-count="44" data-suffix="+">0</div><div class="l">живых источника</div></div>
-    <div class="stat"><div class="n" data-count="7">0</div><div class="l">домена риска</div></div>
-    <div class="stat"><div class="n" data-count="15" data-prefix="~" data-suffix=" min">0</div><div class="l">каденс обновления</div></div>
-  </div>
+<section id="breadth" class="band"><div class="wrap">
+  <span class="kick">Coverage</span>
+  <h2>Один композит. Семь доменов. Каждый источник назван.</h2>
+  <p class="lead">Здоровье и вспышки · вооружённые конфликты · беспорядки · транспорт · границы · инфраструктура · климат — непрерывная агрегация в один детерминированный композит. Любой скор раскрывается до точной строки источника.</p>
 </div></section>
 
 <section id="capabilities"><div class="wrap">
   <span class="kick">На чём строить</span>
   <h2>Интеграция за полдня</h2>
   <div class="grid c3">
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Composite Risk Score</h3><p>0–5 по стране и 7 доменам, с разбивкой по доменам.</p><a class="deep" href="/api/v1/docs">API-доки →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5l-1 4z"/></svg></div><h3>Вебхуки</h3><p>Колбэк, когда страна пересекает заданный вами порог риска.</p><a class="deep" href="/api/v1/docs">API-доки →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>What-if симулятор</h3><p>Бросьте синтетический шок, прогоните каскад по графу экспозиции.</p><a class="deep" href="/api/v1/docs">/api/v1/simulate →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/></svg></div><h3>Встраиваемые виджеты</h3><p>Брендируемые риск-карточки и checkout-компоненты — один сниппет.</p><a class="deep" href="/widgets">Виджеты →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div><h3>Страновое досье</h3><p>Полный риск-отчёт по стране, готов к печати.</p><a class="deep" href="/report">Образец отчёта →</a></div>
-    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Прозрачный метод</h3><p>Pre-registered, бэктестенные сигналы — валидация публична.</p><a class="deep" href="/methodology">Методология →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Composite Risk Score</h3><p>0–5 по стране и 7 доменам, с разбивкой по доменам и строкой источника за каждым.</p><a class="deep" href="/api/v1/docs">API-доки →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5l-1 4z"/></svg></div><h3>Вебхуки</h3><p>Колбэк в момент, когда страна пересекает заданный вами порог риска.</p><a class="deep" href="/api/v1/docs">API-доки →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>What-if симулятор</h3><p>Бросьте синтетический шок, прогоните каскад по графу экспозиции, читайте эффект.</p><a class="deep" href="/api/v1/docs">/api/v1/simulate →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/></svg></div><h3>Встраиваемые виджеты</h3><p>Брендируемые риск-карточки и checkout-компоненты — один сниппет, ваши цвета.</p><a class="deep" href="/widgets">Виджеты →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div><h3>Страновое досье</h3><p>Полный риск-отчёт по стране, все 7 доменов, готов к печати.</p><a class="deep" href="/report">Образец досье →</a></div>
+    <div class="card reveal"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Прозрачный метод</h3><p>Pre-registered, бэктестенные сигналы — полная методология публична.</p><a class="deep" href="/methodology">Методология →</a></div>
   </div>
 </div></section>
 
-<section id="audience" class="band-wash"><div class="wrap">
+<section id="audience" class="band"><div class="wrap">
   <span class="kick">Для кого</span>
   <h2>Что меняется для вашего бизнеса</h2>
   <div class="grid c3">
@@ -183,20 +242,20 @@
   <span class="kick">Чем мы отличаемся</span>
   <h2>Что они закрывают. Что мы открываем.</h2>
   <table>
-    <tr><th>&nbsp;</th><th>Enterprise-инкумбенты<br><span style="font-weight:400;text-transform:none;letter-spacing:0">Recorded Future · Dataminr · Crisis24</span></th><th>Vigilo</th></tr>
+    <tr><th>&nbsp;</th><th>Enterprise-инкумбенты<br><span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink400)">Recorded Future · Dataminr · Crisis24</span></th><th>Vigilo</th></tr>
     <tr><td>Self-serve API-ключ</td><td>Нужен sales-звонок</td><td class="us">Бесплатно, сразу</td></tr>
     <tr><td>Цены</td><td>Цена по запросу</td><td class="us">Опубликованы</td></tr>
-    <tr><td>Широта источников</td><td>Узкая специализация</td><td class="us">7 доменов, один composite</td></tr>
+    <tr><td>Широта источников</td><td>Узкая специализация</td><td class="us">7 доменов, один композит</td></tr>
     <tr><td>Интеграция</td><td>Проект внедрения</td><td class="us">REST + вебхуки, copy-paste</td></tr>
     <tr><td>Методология</td><td>Проприетарно / непрозрачно</td><td class="us">Опубликовано, бэктестено</td></tr>
   </table>
   <p class="quiet">Сравнение отражает публично наблюдаемую позицию (self-serve доступ, опубликованные цены и методология), не рейтинг возможностей.</p>
 </div></section>
 
-<section id="validation" class="band-wash"><div class="wrap">
+<section id="validation" class="band"><div class="wrap">
   <span class="kick">Дисциплина валидации</span>
   <h2>В продукт идёт только проверенная логика</h2>
-  <p class="lead">Каждый сигнал pre-registered и бэктестится прежде чем влиять на скор; методология и результаты публичны.</p>
+  <p class="lead">Каждый сигнал pre-registered и бэктестится прежде чем влиять на скор. Методология и результаты — включая то, что мы протестировали и отвергли — публичны.</p>
   <p class="quiet"><a href="/methodology">Читать методологию →</a></p>
 </div></section>
 
@@ -208,23 +267,23 @@
       <h3>Бесплатный тариф</h3>
       <div class="big">Уже работает</div>
       <ul><li>Открытый REST API (анонимный)</li><li>60 запросов / час</li><li>Composite-скор + события</li></ul>
-      <a class="btn btn-acc" href="/api/v1/docs">Получить бесплатный API-ключ</a>
+      <a class="pill pill-dark" href="/api/v1/docs">Получить бесплатный API-ключ</a>
     </div>
     <div class="price">
       <h3>Enterprise</h3>
-      <div class="big">Связаться с нами</div>
+      <div class="big">Связаться</div>
       <ul><li>Выше лимиты</li><li>Вебхуки на масштабе</li><li>Приоритетная поддержка и SLA</li></ul>
-      <a class="btn" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Связаться с нами</a>
+      <a class="pill pill-ghost" href="mailto:hello@vigilo.cc?subject=Vigilo%20Enterprise">Связаться с нами</a>
     </div>
   </div>
 </div></section>
 
-<section class="band-dark" style="text-align:center"><div class="wrap">
+<section class="final"><div class="wrap">
   <h2>Запустите risk-аналитику на этой неделе</h2>
-  <p class="lead" style="margin:0 auto">Бесплатный API-ключ, рабочий запрос на реальных данных, без procurement.</p>
+  <p class="lead">Бесплатный API-ключ, рабочий запрос на реальных данных, без procurement.</p>
   <div class="cta" style="justify-content:center">
-    <a class="btn btn-acc" href="/api/v1/docs">Получить бесплатный API-ключ</a>
-    <a class="btn" style="border-color:rgba(242,239,233,.4);color:#F2EFE9" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Связаться с нами</a>
+    <a class="pill pill-dark" style="background:var(--accent);border-color:var(--accent);color:#fff" href="/api/v1/docs">Получить бесплатный API-ключ</a>
+    <a class="pill" style="border-color:rgba(244,242,238,.4);color:var(--paper)" href="mailto:hello@vigilo.cc?subject=Vigilo%20for%20Business">Связаться с нами</a>
   </div>
 </div></section>
 
@@ -232,10 +291,10 @@
   <span>© Vigilo</span>
   <span class="sp"></span>
   <a href="/api/v1/docs">API</a>
-  <a href="/widgets">Виджеты</a>
-  <a href="/report">Образец отчёта</a>
-  <a href="/methodology">Методология</a>
-  <a href="/ru/">← Сайт для людей</a>
+  <a href="/widgets">Widgets</a>
+  <a href="/report">Образец досье</a>
+  <a href="/methodology">Methodology</a>
+  <a href="/">← Сайт для людей</a>
 </div></footer>
 
 <script>
@@ -243,25 +302,23 @@
   var rm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var rev=[].slice.call(document.querySelectorAll(".reveal"));
   var cnt=[].slice.call(document.querySelectorAll("[data-count]"));
+  function fill(e){e.textContent=(e.dataset.prefix||"")+e.dataset.count+(e.dataset.suffix||"");}
   if(rm||!("IntersectionObserver"in window)){
-    rev.forEach(function(e){e.classList.add("in");});
-    cnt.forEach(function(e){
-      e.textContent=(e.dataset.prefix||"")+e.dataset.count+(e.dataset.suffix||"");});
-    return;
+    rev.forEach(function(e){e.classList.add("in");}); cnt.forEach(fill); return;
   }
   var io=new IntersectionObserver(function(es){
-    es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target);}});
-  },{threshold:.15});
+    es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});
+  },{threshold:.14});
   rev.forEach(function(e){io.observe(e);});
   var cio=new IntersectionObserver(function(es){
     es.forEach(function(en){
       if(!en.isIntersecting)return; var el=en.target; cio.unobserve(el);
-      var to=+el.dataset.count,pf=el.dataset.prefix||"",sf=el.dataset.suffix||"",s=0,t0=null;
-      function tick(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/900,1);
-        el.textContent=pf+Math.round(p*to)+sf; if(p<1)requestAnimationFrame(tick);}
+      var to=+el.dataset.count,pf=el.dataset.prefix||"",sf=el.dataset.suffix||"",t0=null;
+      function tick(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/850,1);
+        el.textContent=pf+Math.round(p*to)+sf;if(p<1)requestAnimationFrame(tick);}
       requestAnimationFrame(tick);
     });
-  },{threshold:.4});
+  },{threshold:.5});
   cnt.forEach(function(e){cio.observe(e);});
 })();
 </script>
