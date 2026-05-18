@@ -57,7 +57,7 @@ class BusinessLandingTest(unittest.TestCase):
     def test_who_its_for_three_cards(self):
         for page in (self.en, self.ru):
             seg = page.split('id="audience"', 1)[1].split("</section>", 1)[0]
-            self.assertEqual(seg.count('class="seg-card"'), 3)
+            self.assertEqual(len(re.findall(r'class="seg-card\b', seg)), 3)
 
     def test_pricing_no_invented_numbers(self):
         for page in (self.en, self.ru):
