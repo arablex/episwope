@@ -73,29 +73,50 @@ breadth / price — NOT on predicting outbreaks earlier.
 
 - `netlify.toml`: add `[[redirects]] from="/business" to="/business.html" status=200`
   (mirror the existing `/report`, `/reports`, `/widgets` entries).
-- Consumer header "For Business" link: `href="#biz"` → `href="/business"`.
 - Deep B2B tools are **linked, not duplicated/absorbed**:
   `/api/v1/docs` (api-docs.html), `/widgets` (widgets.html),
   `/report` (report.html), `/methodology` (methodology.html, separate
   queued work). `business.html` is a funnel wrapper.
 
+## BASE CORRECTION (read — supersedes earlier assumptions)
+
+The earlier draft of this spec assumed the consumer landing had an
+in-page `#biz` / "For Business" section to extract. **It does not.**
+Fact-finding had been done against an *uncommitted local working
+draft* of `index.html`/`ru/index.html`. The **canonical base is the
+committed/deployed landing** (what vigilo.cc serves):
+
+- `index.html` (committed, ~625 lines): header nav = `#how` (How it
+  works) · `#features` (Features) · `#data` (Data) · `#pricing`
+  (Pricing) · `.lang /ru/` · `.hbtn /app.html` ("Open the app →").
+  Sections: hero, intro, `#how` (band), `#features`, `#data` (band),
+  `#pricing` ("Free to use. Pro when you need depth"), footer. **No
+  `#biz`, no "For Business" nav.** `#pricing` is consumer pricing.
+- `ru/index.html` (committed, ~615 lines): structurally **1:1
+  parallel** to EN (`#how/#features/#data/#pricing`, `/ru/app.html`).
+- The uncommitted 928-line `#biz` draft is the founder's WIP — **NOT
+  touched, NOT committed** by this work (shipping an unvalidated
+  redesign as a side-effect would be scope creep + risk).
+- There is no separate consumer login page; `/app.html` is the app
+  entry and self-authenticates.
+
 ## Consumer landing changes (`index.html`, `ru/index.html`)
 
-- **Remove:** the in-page `#biz` section (block ~lines 705–819) and
-  its `/* For Business section */` CSS (~line 387). This content seeds
-  `business.html`.
-- **Keep unchanged:** hero, `#instrument`, `#list` (Coverage),
-  `#risk`, `#data`, `.final`, footer, the waitlist form + its JS.
-- **Header:** "For Business" → `/business`; add a quiet **"Log in"**
-  link. The implementation MUST first locate the existing
-  consumer login entry point (magic-link / `/app.html` auth flow
-  already in the codebase) and point the link there — it must NOT
-  invent a new auth backend or endpoint. If no distinct consumer
-  login entry exists, the "Log in" link falls back to `/app.html`
-  (the app handles its own auth) and this is recorded in the plan.
+Minimal, low-risk (no section/CSS surgery — there is no `#biz`):
+
+- **Header — add two nav items** before the `.lang` link:
+  a `For Business` link → `/business` (accent-styled, matching the
+  other `.nav-lnk`) and a quiet `Log in` link → `/app.html`
+  (RU: `Для бизнеса` → `/business`; `Войти` → `/ru/app.html`).
   Primary CTA stays "Open the app" → `/app.html`.
-- Visual system + i18n approach unchanged
-  (`--bg #F4F2EE`, `--accent #E8590C`, Inter).
+- **Keep unchanged:** everything else — hero, intro section, `#how`,
+  `#features`, `#data`, `#pricing` (consumer pricing — legitimately
+  consumer, NOT moved/removed), footer. The B2B/API/widgets/Enterprise
+  story lives ONLY on `/business`; consumer `#pricing` stays as the
+  free/Pro consumer block.
+- Visual system + i18n unchanged (`--bg #F4F2EE`, `--accent #E8590C`,
+  Inter). Committed EN/RU are already structural mirrors — do not
+  reconcile anything else (out of scope).
 
 ## Business landing structure (`business.html`, `ru/business.html`)
 
@@ -193,9 +214,11 @@ files mirrored manually (a recurring drift source). To bound the debt:
 - `business.html` and `ru/business.html` exist; both contain each
   required section anchor id (overview, api, widgets, pricing) and the
   same set of section ids (structural EN↔RU parity).
-- Consumer `index.html` & `ru/index.html` no longer contain the
-  `#biz` section id; their "For Business" link points to `/business`
-  (not `#biz`).
+- Consumer `index.html` & `ru/index.html`: their "For Business" link
+  points to `/business`, a `Log in`/`Войти` affordance is present,
+  and their existing real sections remain intact (EN still has
+  `id="how"`/`id="features"`/`id="data"`/`id="pricing"`; RU likewise).
+  (There is no `#biz` to remove — see BASE CORRECTION.)
 - Honesty guards: business pages contain NO forbidden tokens —
   case-insensitive absence of "trusted by", "predict", "lead-time",
   "earlier than WHO" — and DO contain a `/methodology` link.
@@ -221,8 +244,9 @@ No new dependencies. No network in tests.
 ## Success criteria
 
 - `/business` resolves to a self-contained bilingual B2B funnel with
-  its own nav; consumer `/` is slimmed (no `#biz`) and "For Business"
-  links out to `/business`; deep tools linked not duplicated.
+  its own nav; the committed consumer `/` gains a "For Business" →
+  `/business` nav item + a quiet "Log in" → `/app.html`, all its
+  existing sections intact; deep tools linked not duplicated.
 - Honest-positioning rules hold (test-enforced: no fabricated
   traction, no predictive overclaim, methodology reachable).
 - Full suite green; no new deps; visual system unchanged.
