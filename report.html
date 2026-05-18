@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vigilo — Country Risk Dossier</title>
+<title>Vigilo — Country Risk Report</title>
 <meta name="robots" content="noindex">
 <style>
   :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
@@ -101,7 +101,7 @@
 </head>
 <body>
 <div class="sheet" id="sheet">
-  <div class="loading" id="loading">Загрузка досье…</div>
+  <div class="loading" id="loading">Loading…</div>
 </div>
 <script>
 (function(){
@@ -135,7 +135,7 @@
     proj:'Прогноз на 7 дней',pnow:'сейчас',pdrv:'Драйверы',
     tr:{accelerating:'ускоряется',rising:'растёт',stable:'стабильно',
         declining:'снижается',easing:'спадает'},
-    discl:'Образец живого досье. Не является фин./мед. советом.'},
+    discl:'Образец живого отчёт. Не является фин./мед. советом.'},
     en:{title:'Country Risk Dossier',sub:'Vigilo Country Risk Dossier · v4.2',
     live:'LIVE',exec:'Composite assessment',dom:'Risk by domain',
     feed:'Verified signals',meth:'Methodology',
@@ -146,7 +146,7 @@
     proj:'7-day projection',pnow:'now',pdrv:'Drivers',
     tr:{accelerating:'accelerating',rising:'rising',stable:'stable',
         declining:'declining',easing:'easing'},
-    discl:'Live dossier sample. Not financial or medical advice.'}}[L];
+    discl:'Live report sample. Not financial or medical advice.'}}[L];
   function svg(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
   var IC={health:svg('<path d="M3 12h3l2 5 4-12 2 7h7"/>'),
     conflict:svg('<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
@@ -236,7 +236,7 @@
       '<div class="foot">Vigilo Risk Intelligence · vigilo.cc · '+T.discl+'</div>';
   }).catch(function(){
     document.getElementById('sheet').innerHTML='<div class="loading">'+
-      (L==='ru'?'Не удалось загрузить досье. Повторите позже.':'Failed to load. Try later.')+'</div>';
+      (L==='ru'?'Не удалось загрузить отчёт. Повторите позже.':'Failed to load. Try later.')+'</div>';
   });
 })();
 </script>
