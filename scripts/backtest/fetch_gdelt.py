@@ -100,19 +100,30 @@ def fetch(iso, force=False):
             print(f"    {iso} {y}: no timeline ({body[:60].strip()!r}) "
                   "— skipped")
         time.sleep(3)
-    if ok_years == 0:
-        raise SystemExit(f"FATAL: GDELT returned no usable timeline for "
-                         f"{iso} across all years — endpoint/schema "
-                         "changed. Update fetch_gdelt.py.")
     text = json.dumps({"timeline": [{"series": "Article Count",
                                      "data": merged}]})
     cache.write_text(text, encoding="utf-8")
-    print(f"  {iso}: {ok_years}/{len(list(YEARS))} years, "
-          f"{len(merged)} daily points cached")
+    if ok_years == 0:
+        # Honest data reality: GDELT DOC 2.0 does not cover this country
+        # under the frozen query (e.g. "Invalid/Unsupported Country").
+        # Cache an EMPTY timeline so the country is cleanly EXCLUDED and
+        # counted downstream — NOT a fatal abort of the whole run.
+        print(f"  {iso}: EXCLUDED — no GDELT coverage (0 usable years)")
+    else:
+        print(f"  {iso}: {ok_years}/{len(list(YEARS))} years, "
+              f"{len(merged)} daily points cached")
     return text
 
 
 if __name__ == "__main__":
-    for iso in sys.argv[1:] or ["TH"]:
-        n = len(parse_gdelt_timeline(fetch(iso, force="--force" in sys.argv)))
-        print(f"gdelt {iso}: {n} months cached")
+    isos = sys.argv[1:] or ["TH"]
+    isos = [a for a in isos if a != "--force"]
+    counts = {}
+    for iso in isos:
+        counts[iso] = len(parse_gdelt_timeline(
+            fetch(iso, force="--force" in sys.argv)))
+        print(f"gdelt {iso}: {counts[iso]} months cached")
+    if isos and all(v == 0 for v in counts.values()):
+        raise SystemExit("FATAL: GDELT returned no usable data for ANY "
+                         "requested country — endpoint/schema changed. "
+                         "Update fetch_gdelt.py.")
