@@ -31,6 +31,8 @@ import urllib.request, urllib.error, urllib.parse
 # ---------------------------------------------------------------------------
 
 MAX_EVENT_AGE_DAYS = 90   # skip events older than this
+# ReliefWeb API appname — approved, non-secret public identifier.
+RELIEFWEB_APPNAME = "episcope-ownalex-9yimg"
 MAX_EVENTS         = 200  # cap total output (was 80 — starved GDELT/epidemics)
 MAX_PER_FEED       = 20
 
@@ -54,9 +56,9 @@ RSS_FEEDS = [
     # CDC Health Alert Network
     {"name": "CDC HAN",          "url": "https://emergency.cdc.gov/han/feed/atom.xml",                      "tag": "CDC-HAN"},
     # NOTE: Eurosurveillance (403 bot-block) and old ECDC news RSS (404)
-    # removed — dead/blocked. ReliefWeb API now needs an APPROVED appname
-    # (register: https://apidoc.reliefweb.int/parameters#appname) — until
-    # then fetch_reliefweb() returns 0 (it fails gracefully).
+    # removed — dead/blocked. ReliefWeb v2 API is ACTIVE via the approved
+    # appname RELIEFWEB_APPNAME (episcope-ownalex-9yimg); fetch_reliefweb()
+    # returns real epidemic reports (still fails gracefully to [] on error).
 ]
 
 KEYWORDS = [
@@ -589,7 +591,7 @@ def fetch_reliefweb() -> list:
 
     # Use GET with query params — simpler and avoids 400 errors
     params = urllib.parse.urlencode([
-        ("appname", "vigilo"),
+        ("appname", RELIEFWEB_APPNAME),
         ("filter[field]", "primary_type.name"),
         ("filter[value]", "Epidemic"),
         ("limit", "30"),
