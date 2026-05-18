@@ -44,6 +44,26 @@ The B2B landing is "honest-aggressive" (user-chosen). Hard lines:
 - **Comparison must be defensible per cell.** Axes only where we
   genuinely win; competitors described factually/neutrally.
 
+## Audience — pain → solution → outcome (drives B2B copy)
+
+The B2B landing sells to organisations that embed risk data, not to
+consumers. Primary **entry persona** = the developer/integrator
+(evaluates, converts to a free API key). Three **buyer segments** are
+the "who it's for / outcomes" proof. Outcomes are phrased as value we
+credibly deliver — never fabricated case studies or named clients.
+
+| Segment | Pain today | What we give | Their business becomes |
+|---|---|---|---|
+| Travel / insurers / TMC / OTA | Enterprise-priced incumbents (Crisis24, Int.SOS), black-box, not embeddable | Open API + brandable widgets + composite | Duty-of-care + checkout trust without an enterprise contract |
+| Insurance / reinsurance / parametric | Non-auditable signals, slow, expensive | Machine-readable composite + webhooks + published methodology | Auditable, regulator-defensible geo risk monitoring, cheaper |
+| Supply chain / logistics / ops-risk | Siloed per-domain vendors, no API | 7 domains in one API + what-if cascade + webhooks | One integration replaces several; earlier cascade awareness |
+| Developer / integrator (champion) | Everything behind a sales call, no self-serve key, opaque pricing | Free API key, working curl on real data, transparent docs | Evaluate & ship in a day, no procurement |
+
+Messaging spine: lead for the developer/integrator (the free-key
+conversion), with a "Who it's for" block carrying the three segments'
+pain→outcome. Honesty: we win on accessibility / transparency /
+breadth / price — NOT on predicting outbreaks earlier.
+
 ## IA / routing
 
 ```
@@ -96,20 +116,25 @@ Sections top→bottom:
    domains) → `/api/v1/docs`; webhooks; What-if simulator
    (`/api/v1/simulate`); embeddable widgets → `/widgets`; country
    dossier → `/report`.
-4. **Honest comparison table.** Axes (each cell defensible):
+4. **Who it's for — outcomes by segment** (3 cards from the audience
+   matrix above): Travel/insurers/TMC; Insurance/reinsurance;
+   Supply-chain/ops. Each card = one-line pain → "with Vigilo" →
+   business outcome. Phrased as credible delivered value; **no named
+   client logos, no case-study claims** (none exist).
+5. **Honest comparison table.** Axes (each cell defensible):
    self-serve open API (no sales gate) · transparent pricing · source
    breadth · integration friction · published methodology.
    Competitors as a neutral factual category ("Enterprise incumbents:
    Recorded Future / Dataminr / Crisis24"). We win by contrast, no
    puffery, no capability war.
-5. **Validation discipline (quiet, positive)** — one calm line:
+6. **Validation discipline (quiet, positive)** — one calm line:
    "Every signal is pre-registered and backtested; only validated
    logic ships." → quiet `Methodology` link. Not a hero block.
-6. **Pricing (no invented tiers)** — "Free tier — live now (anon API,
+7. **Pricing (no invented tiers)** — "Free tier — live now (anon API,
    60 req/h)." + "Enterprise — Talk to us." Mirrors the real
    `risk-v1.mjs` rate-limit scaffold (anon/partner/enterprise). No
    fabricated prices.
-7. **Final CTA band** + footer (quiet Methodology / Sample report).
+8. **Final CTA band** + footer (quiet Methodology / Sample report).
 
 Visual system identical to the consumer landing (same tokens, Inter,
 light theme). Self-contained static page (project pattern).
@@ -140,6 +165,11 @@ files mirrored manually (a recurring drift source). To bound the debt:
 - Honesty guards: business pages contain NO forbidden tokens —
   case-insensitive absence of "trusted by", "predict", "lead-time",
   "earlier than WHO" — and DO contain a `/methodology` link.
+- The "Who it's for" block exists (3 segment cards present) and the
+  business pages contain no fabricated-traction phrases
+  (case-insensitive absence of "case study", "trusted by", "join
+  thousands", "our customers say"). The bare word "customers" is NOT
+  banned (legitimate in benign copy) — only the listed phrases.
 - `netlify.toml` has the `/business` → `/business.html` 200 rewrite.
 
 No new dependencies. No network in tests.
