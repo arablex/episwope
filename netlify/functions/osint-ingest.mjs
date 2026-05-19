@@ -23,9 +23,11 @@ const FX_HISTORY_KEY = 'fx-history';
 const FEED_KEY        = 'country-signals';
 const JOURNAL_KEY     = 'journal';
 const MISSED_KEY      = 'missed';
+const GLOBAL_KEY      = 'global-history';   // our own daily world snapshot
 const HISTORY_MAX     = 45;   // days of FX snapshots to retain
 const JOURNAL_MAX     = 4000; // durable observations retained
 const MISSED_MAX      = 2000;
+const GLOBAL_MAX      = 400;  // ~13 months of daily global snapshots
 
 function store(){ return getStore({ name: 'osint', consistency: 'strong' }); }
 
@@ -157,6 +159,47 @@ export default async () => {
 
     report.score = score;
     report.missedNew = missedNow.length;
+
+    // ── Accumulate OUR daily global snapshot (the model learns the
+    //    world baseline — what's normal globally — for later drift /
+    //    "whole world heating up" detection. Product use decided later) ──
+    try{
+      const todays = journal.filter(e => e.day === day);
+      const byTier = {};
+      let behSum = 0, divSum = 0;
+      for(const e of todays){
+        byTier[e.tier] = (byTier[e.tier]||0)+1;
+        behSum += e.behavioral||0; divSum += e.adjDivergence||0;
+      }
+      const byBand = {}; const doms = {}; let indexed=0, severe=0;
+      for(const k in RISK_INDEX){
+        indexed++;
+        const cr = RISK_INDEX[k].composite_risk || {};
+        byBand[cr.band] = (byBand[cr.band]||0)+1;
+        if(cr.band==='severe'||cr.band==='critical') severe++;
+        if(cr.dominant_category) doms[cr.dominant_category]=(doms[cr.dominant_category]||0)+1;
+      }
+      const topDomains = Object.entries(doms).sort((a,b)=>b[1]-a[1]).slice(0,5)
+        .map(([d,c])=>({d,c}));
+      const snap = {
+        day, ts: Date.now(),
+        official: { indexed, severe, byBand, topDomains },
+        osint: {
+          predictions: todays.length,
+          byTier,
+          avgBehavioral: todays.length ? +(behSum/todays.length).toFixed(2) : 0,
+          avgDivergence: todays.length ? +(divSum/todays.length).toFixed(2) : 0,
+          missedNew: missedNow.length,
+        },
+        precision: score.precision, avgLeadDays: score.avgLeadDays,
+      };
+      const gh = (await s.get(GLOBAL_KEY, { type:'json' })) || [];
+      if(!gh.some(x => x.day === day)){
+        gh.push(snap);
+        await s.setJSON(GLOBAL_KEY, gh.slice(-GLOBAL_MAX));
+      }
+      report.globalSnap = true;
+    }catch(e){ report.errors.push('global:'+e.message); }
   }catch(e){ report.errors.push('journal:'+e.message); }
 
   return new Response(JSON.stringify({ ok:true, ...report,

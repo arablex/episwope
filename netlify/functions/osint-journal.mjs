@@ -17,6 +17,7 @@ export default async (req) => {
     const s = getStore({ name:'osint', consistency:'strong' });
     const journal = (await s.get('journal', { type:'json' })) || [];
     const missed  = (await s.get('missed',  { type:'json' })) || [];
+    const globalHistory = (await s.get('global-history', { type:'json' })) || [];
 
     const url = new URL(req.url);
     const iso = url.searchParams.get('iso');
@@ -52,6 +53,7 @@ export default async (req) => {
       },
       rows: rows.slice(-500),
       missed: missed.slice(-200),
+      globalHistory: globalHistory.slice(-180),
     }, null, 2), {
       status: 200,
       headers: { 'Content-Type':'application/json' },

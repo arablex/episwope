@@ -68,6 +68,11 @@
     </div>
 
     <div class="sec">
+      <h2>Our global learning <span class="tag">our engine · accumulating daily</span></h2>
+      <div id="ourGlobal"></div>
+    </div>
+
+    <div class="sec">
       <h2>OSINT predictions <span class="tag" id="predTag"></span></h2>
       <div id="preds"></div>
     </div>
@@ -119,6 +124,7 @@ async function load(){
   gate.style.display='none'; app.style.display='block';
   const d=await r.json();
   renderScore(d.scorecard||{}, d.total||0);
+  renderOurGlobal(d.globalHistory||[]);
   renderPreds(d.rows||[]);
   renderMissed(d.missed||[]);
   document.getElementById('stamp').textContent='loaded '+new Date().toLocaleTimeString();
@@ -168,6 +174,31 @@ function renderMissed(m){
   el.innerHTML='<table><tr><th>Day</th><th>ISO</th><th>Composite</th><th>Band</th></tr>'+
     m.slice(-30).reverse().map(x=>`<tr><td>${x.day}</td><td><b>${x.iso2}</b></td>
       <td>${x.composite}</td><td style="color:${band(x.band)}">${x.band||'—'}</td></tr>`).join('')+'</table>';
+}
+
+function renderOurGlobal(gh){
+  const el=document.getElementById('ourGlobal');
+  if(!gh.length){
+    el.innerHTML='<div class="empty">Accumulating — day 0. Our engine snapshots the world picture each cron run; this series grows daily and is what the model learns the global baseline from. Trend appears after a few days.</div>';
+    return;
+  }
+  const days=gh.map(x=>x.day);
+  const preds=gh.map(x=>x.osint?.predictions||0);
+  const severe=gh.map(x=>x.official?.severe||0);
+  const beh=gh.map(x=>x.osint?.avgBehavioral||0);
+  const spark=(arr,clr)=>{ const mx=Math.max(1,...arr);
+    return `<div class="spark">${arr.map((v,i)=>`<i title="${days[i]}: ${v}" style="height:${v/mx*100}%;background:${clr}"></i>`).join('')}</div>`; };
+  const last=gh[gh.length-1];
+  el.innerHTML=
+    `<div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:10px">
+       <div><div class="muted" style="font-size:11px">flagged today</div><b style="font-size:20px">${last.osint?.predictions||0}</b></div>
+       <div><div class="muted" style="font-size:11px">severe/critical (world)</div><b style="font-size:20px;color:var(--red)">${last.official?.severe||0}</b></div>
+       <div><div class="muted" style="font-size:11px">avg behavioral</div><b style="font-size:20px">${last.osint?.avgBehavioral||0}</b></div>
+       <div><div class="muted" style="font-size:11px">depth</div><b style="font-size:20px">${gh.length}d</b></div>
+     </div>
+     <div class="muted" style="font-size:11px;margin:6px 0 2px">Our daily flag rate</div>${spark(preds,'var(--acc)')}
+     <div class="muted" style="font-size:11px;margin:10px 0 2px">World severe/critical count</div>${spark(severe,'var(--red)')}
+     <div class="muted" style="margin-top:10px;font-size:11px">${gh.length} days accumulated — deepens automatically. This is OUR series (engine's view), independent of the official pipeline above. Product use of it: decided later.</div>`;
 }
 
 async function loadGlobal(){
