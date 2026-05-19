@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "generated_at": "2026-05-19T12:00:00Z",
+    "version": "1.1",
+    "description": "Indirect risk signals per country. v1.1: currency uses FLOW (30-day velocity + acceleration), not absolute STOCK — chronic weakness is background noise, acute movement is the signal. Used to enrich Risk Score — not displayed directly on globe.",
+    "methodology": "stock_vs_flow: drop_pct = cumulative (context only); drop_30d_pct = velocity (the actual signal); accelerating = is the decline speeding up (2nd derivative)",
+    "sources": ["NetBlocks", "IODA", "Cloudflare Radar", "CDC NWSS", "ECDC Wastewater", "FAO", "IMF", "Frankfurter FX"]
+  },
+  "signals": {
+    "RU": {
+      "internet": { "shutdown": true,  "severity": "severe",   "source": "NetBlocks", "note": "Widespread blocking of foreign platforms, VPN throttling" },
+      "currency": { "drop_pct": 35, "drop_30d_pct": 3,  "accelerating": false, "severity": "low",      "source": "IMF/CBR", "note": "Ruble cumulatively weak but stable in recent weeks — background, not acute" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 128
+    },
+    "IR": {
+      "internet": { "shutdown": true,  "severity": "elevated", "source": "NetBlocks/IODA", "note": "Recurring shutdowns during protests; Instagram, WhatsApp blocked" },
+      "currency": { "drop_pct": 60, "drop_30d_pct": 9,  "accelerating": true,  "severity": "high",     "source": "IMF",     "note": "Rial decline accelerating under renewed sanctions pressure" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 185
+    },
+    "CU": {
+      "internet": { "shutdown": false, "severity": "moderate", "source": "NetBlocks", "note": "Recurring blackouts during protests; state controls all ISPs" },
+      "currency": { "drop_pct": 70, "drop_30d_pct": 14, "accelerating": true,  "severity": "severe",   "source": "IMF",     "note": "Peso in active freefall — acute, not chronic" },
+      "power_grid": { "alert": true, "severity": "critical", "note": "National grid failures, rolling 12-20h daily blackouts" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 210
+    },
+    "VE": {
+      "internet": { "shutdown": false, "severity": "moderate", "source": "NetBlocks", "note": "Periodic outages during political events" },
+      "currency": { "drop_pct": 99, "drop_30d_pct": 3,  "accelerating": false, "severity": "low",      "source": "IMF",     "note": "Cumulative -99% but recent rate stable — 'stable instability', priced in. NOT an acute signal (stock-vs-flow fix)" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 195
+    },
+    "MM": {
+      "internet": { "shutdown": true,  "severity": "severe",   "source": "NetBlocks/IODA", "note": "Military junta controls internet; nighttime shutdowns since 2021 coup" },
+      "currency": { "drop_pct": 55, "drop_30d_pct": 5,  "accelerating": false, "severity": "moderate", "source": "IMF",     "note": "Kyat gradual managed decline, not acute" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 155
+    },
+    "ET": {
+      "internet": { "shutdown": true,  "severity": "elevated", "source": "NetBlocks", "note": "Internet shutdowns in Tigray region during conflict" },
+      "currency": { "drop_pct": 45, "drop_30d_pct": 7,  "accelerating": true,  "severity": "high",     "source": "IMF",     "note": "Birr still adjusting post float reform; rate accelerating" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 162
+    },
+    "SD": {
+      "internet": { "shutdown": true,  "severity": "severe",   "source": "NetBlocks/IODA", "note": "Recurring full blackouts during civil war; Khartoum hit hardest" },
+      "currency": { "drop_pct": 80, "drop_30d_pct": 20, "accelerating": true,  "severity": "severe",   "source": "IMF",     "note": "Pound in freefall — war-driven, sharply accelerating. Strong acute signal" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 220
+    },
+    "AF": {
+      "internet": { "shutdown": false, "severity": "elevated", "source": "IODA",      "note": "Severe infrastructure degradation; 30%+ of population offline" },
+      "currency": { "drop_pct": 25, "drop_30d_pct": 2,  "accelerating": false, "severity": "low",      "source": "IMF",     "note": "Afghani stabilized by capital controls + USD aid inflows — not acute" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 175
+    },
+    "US": {
+      "internet": { "shutdown": false, "severity": "none" },
+      "currency": { "drop_pct": 0,  "drop_30d_pct": 0,  "accelerating": false, "severity": "none" },
+      "wastewater": { "alert": true, "severity": "moderate", "source": "CDC NWSS", "note": "Flu A elevated in Northeast, West Coast wastewater signals; COVID variants detected" },
+      "food_price_idx": 105
+    },
+    "DE": {
+      "internet": { "shutdown": false, "severity": "none" },
+      "currency": { "drop_pct": 0,  "drop_30d_pct": 0,  "accelerating": false, "severity": "none" },
+      "wastewater": { "alert": true, "severity": "low", "source": "RKI/ECDC", "note": "Seasonal flu signal in wastewater above baseline" },
+      "food_price_idx": 107
+    },
+    "GB": {
+      "internet": { "shutdown": false, "severity": "none" },
+      "currency": { "drop_pct": 0,  "drop_30d_pct": 0,  "accelerating": false, "severity": "none" },
+      "wastewater": { "alert": true, "severity": "low", "source": "UKHSA", "note": "Norovirus above seasonal average in wastewater" },
+      "food_price_idx": 108
+    },
+    "IN": {
+      "internet": { "shutdown": true,  "severity": "moderate", "source": "NetBlocks", "note": "Most internet shutdowns globally; primarily Jammu & Kashmir (regional, not nationwide)" },
+      "currency": { "drop_pct": 5,  "drop_30d_pct": 1,  "accelerating": false, "severity": "none" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 118
+    },
+    "PK": {
+      "internet": { "shutdown": true,  "severity": "elevated", "source": "NetBlocks/IODA", "note": "X (Twitter) blocked nationwide; VPN throttling widespread" },
+      "currency": { "drop_pct": 40, "drop_30d_pct": 2,  "accelerating": false, "severity": "low",      "source": "IMF",     "note": "Rupee stabilized after IMF programme — cumulative weak but not acute" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 148
+    },
+    "TH": {
+      "internet": { "shutdown": false, "severity": "none" },
+      "currency": { "drop_pct": 8,  "drop_30d_pct": 1,  "accelerating": false, "severity": "none" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 112
+    },
+    "NG": {
+      "internet": { "shutdown": false, "severity": "low",      "source": "IODA",      "note": "Occasional outages due to infrastructure issues" },
+      "currency": { "drop_pct": 55, "drop_30d_pct": 5,  "accelerating": false, "severity": "moderate", "source": "IMF",     "note": "Naira post-reform volatility slowing — decelerating" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 168
+    },
+    "UA": {
+      "internet": { "shutdown": false, "severity": "elevated", "source": "Cloudflare Radar", "note": "Missile strikes on energy/infrastructure cause regional outages" },
+      "currency": { "drop_pct": 25, "drop_30d_pct": 2,  "accelerating": false, "severity": "low",      "source": "NBU",     "note": "Hryvnia managed float, capital controls — stable despite war" },
+      "power_grid": { "alert": true, "severity": "elevated", "note": "Deliberate strikes on power infrastructure; rolling blackouts" },
+      "wastewater": { "alert": false },
+      "food_price_idx": 125
+    }
+  }
+}

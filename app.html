@@ -2197,6 +2197,12 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/109240834" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
 </head>
 <body>
 
@@ -2242,6 +2248,7 @@
     <div class="top-actions">
       <button class="pro-pill" onclick="openProWaitlist('header')" title="Vigilo Pro"><span class="spark">✦</span> Pro</button>
       <a href="/ru/app.html" class="lang-btn" title="Русская версия">RU</a>
+      <button class="icon-btn" id="tourBtn" title="Restart tour" onclick="localStorage.removeItem('vigilo_app_onboarding_done');location.reload();" style="opacity:.55;font-size:13px;font-weight:700;letter-spacing:-.01em">?</button>
       <button class="icon-btn" id="userBtn" title="Sign in" onclick="toggleAuthPopover()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </button>
@@ -2369,6 +2376,19 @@
               <button class="sw-toggle" data-cat="humanitarian" title="Show on map"></button>
             </div>
             <div class="cat-list" id="catList-humanitarian"></div>
+          </div>
+
+          <div class="cat-section cat-off" data-cat="blackout">
+            <div class="sw-row">
+              <div class="sw-expand" data-cat="blackout">
+                <span class="sw-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+                <span class="sw-icon" style="color:#B45309"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></span>
+                <span class="sw-label">Blackout</span>
+                <span class="sw-count" id="catCount-blackout">—</span>
+              </div>
+              <button class="sw-toggle" data-cat="blackout" title="Show on map"></button>
+            </div>
+            <div class="cat-list" id="catList-blackout"></div>
           </div>
 
         </div>
@@ -3386,6 +3406,7 @@ document.getElementById('eventsToggle')?.addEventListener('click', ()=>{
       const data = new FormData(form);
       await fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(data).toString() });
       form.style.display = 'none'; ok.style.display = 'block';
+      if(typeof window.plausible === 'function') window.plausible('Alert Subscribe', { props: { country: 'global' } });
     } catch(_){
       btn.disabled = false; btn.textContent = 'Subscribe';
       alert('Something went wrong. Please try again.');
@@ -4092,6 +4113,10 @@ function _urlB64ToUint8Array(base64String) {
     tip.style.opacity = '1';
   }
 
+  function plsv(event, props){
+    if(typeof window.plausible === 'function') window.plausible(event, props ? { props: props } : undefined);
+  }
+
   window._appOnbNext = function(){
     if(step >= STEPS.length - 1){ window._appOnbSkip(); return; }
     show(step + 1);
@@ -4103,6 +4128,8 @@ function _urlB64ToUint8Array(base64String) {
     // Run onLeave for current step
     var cur = STEPS[step];
     if(cur && cur.onLeave) cur.onLeave();
+    var isComplete = step >= STEPS.length - 1;
+    plsv(isComplete ? 'Onboarding Complete' : 'Onboarding Skip', { step: step + 1 });
     localStorage.setItem(DONE_KEY, '1');
     [ring, tip, backdrop].forEach(function(e){ if(e && e.parentNode) e.parentNode.removeChild(e); });
     delete window._appOnbNext; delete window._appOnbPrev; delete window._appOnbSkip;

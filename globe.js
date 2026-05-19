@@ -2,6 +2,13 @@
    Vigilo v2 — refined globe + 2026 UI bindings
    ========================================================= */
 
+/* ── Analytics helper ────────────────────────────────────── */
+function track(event, props){
+  if(typeof window.plausible === 'function'){
+    window.plausible(event, props ? { props } : undefined);
+  }
+}
+
 /* ── i18n ────────────────────────────────────────────────── */
 const LANG = window.EPISWOPE_LANG || 'en';
 
@@ -506,6 +513,26 @@ function countryBaselineRisk(country){
   if(BASELINE_HIGH.has(country)) return 'high';
   return 'medium';
 }
+
+/* Country transparency 0–1: how reliably does this country surface real
+   signal? Bayesian core of the covert-risk engine — official silence is
+   only evidence of a cover-up if the country would normally report.
+   Closed regimes: silence is the baseline (likelihood ratio ≈ 1, ~0 bits). */
+const TRANSPARENCY_OPAQUE = new Set([
+  'North Korea','Korea, Democratic People\'s Republic of','Turkmenistan',
+  'Eritrea','Syria','Syrian Arab Republic','Afghanistan',
+]);
+const TRANSPARENCY_SEMI = new Set([
+  'Russia','China','Belarus','Iran','Iran, Islamic Republic of','Venezuela',
+  'Myanmar','Tajikistan','Uzbekistan','Cuba','Laos','Lao People\'s Democratic Republic',
+  'Equatorial Guinea','Azerbaijan','Nicaragua','Burundi',
+]);
+function countryTransparency(country){
+  if(TRANSPARENCY_OPAQUE.has(country)) return 0.25;
+  if(TRANSPARENCY_SEMI.has(country))   return 0.45;
+  if(BASELINE_LOW.has(country))        return 0.92; // developed + free press + strong surveillance
+  return 0.70;                                       // default — most countries
+}
 /* Capacity-aware effective tier: baseline blended with current worst *disease*
    severity. Strong-system countries absorb more before escalating. */
 function countryRiskTier(country){
@@ -518,7 +545,9 @@ function countryRiskTier(country){
   return worst>=4 ? 'high' : worst>=2 ? 'medium' : 'low';
 }
 
-let RISK_INDEX = {};  /* keyed by ISO-2, loaded from public/risk_index.json */
+let RISK_INDEX = {};          /* keyed by ISO-2, from public/risk_index.json */
+let COUNTRY_SIGNALS = {};    /* indirect signals: connectivity, wastewater, currency — from public/country-signals.json */
+let COUNTRY_STRUCTURAL = {}; /* INFORM structural indices — from public/country-structural.json */
 
 /* ── Food Safety Recalls ─────────────────────────── */
 let FOOD_RECALLS = [];
@@ -1053,53 +1082,295 @@ function _riskVerdict(country, outbreaks){
   return { lvl, color, label:(map[LANG==='ru'?'ru':'en'])[lvl] };
 }
 
-/* Composite 0-100 risk score from all signals + component breakdown. */
+/* Composite 0-100 risk score from all signals + component breakdown.
+   Incorporates: outbreaks, health baseline, air, food, trend,
+   + indirect signals from RISK_INDEX: conflict, civil unrest, blackout/infrastructure. */
 function _riskScore({ obs, country, air, recalls, hs }){
   const ru = LANG==='ru';
+  const iso2 = findCountry(country)?.iso2;
+  const ri   = iso2 ? RISK_INDEX[iso2] : null;  // risk_index.json data for this country
+
   // Disease/disaster only — air & food have their own components (no triple-count).
   const dz = obs.filter(o => { const t=o.type||'epidemic'; return t!=='air' && t!=='food'; });
   const worstIdx = dz.reduce((m,o)=> Math.max(m, SEV[o.sev]?.idx ?? 0), 0);
   const serious  = dz.filter(o => (SEV[o.sev]?.idx ?? 0) >= 3).length;
-  // Health-system capacity factor: the same outbreak is far less dangerous to a
-  // traveller in a high-capacity country. Also kills reporting-volume bias —
-  // we no longer reward raw event count (transparent countries report more).
+
+  // Health-system capacity factor
   const base = countryBaselineRisk(country);
   const cap  = base==='low' ? 0.42 : base==='high' ? 1.12 : 0.82;
-  const sevPts = Math.max(0, Math.min(45,
-    (worstIdx/5)*42*cap + Math.min(serious*2, 6)*cap));
-  // Honest baseline (development + health system) — NOT an official advisory,
-  // and decoupled from severity above so a single event isn't counted twice.
-  const advPts  = base==='high' ? 27 : base==='medium' ? 15 : 5;
-  const advBump = worstIdx>=5 ? 6 : worstIdx>=4 ? 3 : 0;  // truly catastrophic still matters
-  const aqiPts  = air==null ? 4 : Math.max(0, Math.min(15, (air-40)/160*15));
+  const sevPts = Math.max(0, Math.min(42,
+    (worstIdx/5)*40*cap + Math.min(serious*2, 6)*cap));
+
+  // Honest baseline (development + health system)
+  const advPts  = base==='high' ? 24 : base==='medium' ? 13 : 4;
+  const advBump = worstIdx>=5 ? 5 : worstIdx>=4 ? 2 : 0;
+
+  // Air quality
+  const aqiPts  = air==null ? 3 : Math.max(0, Math.min(12, (air-40)/160*12));
+
+  // Food
   const foodIns = dz.some(o=>/insecur|food crisis|дефицит еды|нехватк/i.test((o.name||'')+(o.name_ru||'')));
-  const foodCap = base==='low' ? 0.5 : base==='high' ? 1 : 0.85; // recalls in strong-oversight systems = routine
-  const foodPts = Math.min(10, (recalls.length*1.5 + (foodIns?6:0)) * foodCap);
+  const foodCap = base==='low' ? 0.5 : base==='high' ? 1 : 0.85;
+  const foodPts = Math.min(8, (recalls.length*1.5 + (foodIns?5:0)) * foodCap);
+
+  // Trend
   let trendPts = 0, trendLbl = ru?'стабилен':'stable';
   if(hs && hs.total.length>1){
     const d=(hs.total[hs.total.length-1]||0)-(hs.total[0]||0);
-    if(d>0){ trendPts=6; trendLbl=ru?'растёт':'rising'; }
-    else if(d<0){ trendPts=-4; trendLbl=ru?'снижается':'falling'; }
+    if(d>0){ trendPts=5; trendLbl=ru?'растёт':'rising'; }
+    else if(d<0){ trendPts=-3; trendLbl=ru?'снижается':'falling'; }
   }
-  const raw = sevPts + advPts + advBump + aqiPts + foodPts + trendPts;
+
+  // ── Indirect signals from RISK_INDEX ─────────────────────────
+  // Conflict: armed clashes, kinetic strikes (0-5 scale → 0-10 pts)
+  const conflictRaw  = ri?.category_breakdown?.conflict?.score     || 0;
+  const unrestRaw    = ri?.category_breakdown?.civil_unrest?.score  || 0;
+  const infraRaw     = ri?.category_breakdown?.infrastructure?.score|| 0;
+  const borderRaw    = ri?.category_breakdown?.border?.score        || 0;
+  const conflictPts  = Math.min(10, (conflictRaw / 5) * 10);
+  const unrestPts    = Math.min(6,  (unrestRaw   / 5) * 6);
+  let   blackoutPts  = Math.min(5,  (infraRaw    / 5) * 5);
+  const borderPts    = Math.min(4,  (borderRaw   / 5) * 4);
+
+  // ── Indirect signals from COUNTRY_SIGNALS ─────────────────────
+  const cs = iso2 ? COUNTRY_SIGNALS[iso2] : null;
+  // Internet shutdown → boost blackout component
+  if(cs?.internet?.shutdown){
+    const sev = { severe:3, elevated:2, moderate:1 }[cs.internet.severity] || 0;
+    blackoutPts = Math.min(5, blackoutPts + sev);
+  }
+  if(cs?.power_grid?.alert){
+    const sev = { critical:2, elevated:1 }[cs.power_grid.severity] || 0.5;
+    blackoutPts = Math.min(5, blackoutPts + sev);
+  }
+  // Wastewater signal → early disease signal (small boost to outbreak component)
+  const wastewaterBoost = cs?.wastewater?.alert
+    ? ({ critical:4, moderate:2, low:1 }[cs.wastewater.severity] || 1)
+    : 0;
+  // Currency: FLOW not STOCK — recent velocity + acceleration, not cumulative.
+  // Chronic weakness (e.g. Venezuela -99% for years) is background, not signal.
+  const fxFlow = cs?.currency?.drop_30d_pct || 0;
+  let currencyBoost = fxFlow >= 20 ? 4 : fxFlow >= 12 ? 3 : fxFlow >= 6 ? 1.5 : fxFlow >= 3 ? 0.5 : 0;
+  if(cs?.currency?.accelerating && currencyBoost > 0) currencyBoost = Math.min(4, currencyBoost + 1);
+
+  const raw = sevPts + advPts + advBump + aqiPts + foodPts + trendPts
+            + conflictPts + unrestPts + blackoutPts + borderPts
+            + wastewaterBoost + currencyBoost;
   const score = Math.max(0, Math.min(100, Math.round(raw)));
+
   const band = score>=75 ? {k:'severe',  c:'#C92A2A', en:'Severe',   ru:'Серьёзный'}
              : score>=50 ? {k:'high',    c:'#E8590C', en:'High',     ru:'Высокий'}
              : score>=25 ? {k:'moderate',c:'#E4B514', en:'Moderate', ru:'Умеренный'}
              :             {k:'low',     c:'#19A463', en:'Low',      ru:'Низкий'};
+
   const parts = [
-    { l: ru?'Вспышки':'Outbreaks',    v: Math.round(sevPts), max:45, c:'#C92A2A',
+    { l: ru?'Вспышки':'Outbreaks',      v: Math.round(sevPts),       max:42, c:'#C92A2A',
       desc: ru?'Тяжесть вспышек с поправкой на систему здравоохранения':'Outbreak severity, adjusted for health-system capacity' },
-    { l: ru?'Базовый риск страны':'Country baseline', v: Math.round(advPts+advBump), max:30, c:'#E8590C',
+    { l: ru?'Базовый риск':'Baseline',  v: Math.round(advPts+advBump), max:29, c:'#E8590C',
       desc: ru?'Развитость и система здравоохранения (не офиц. рекомендация)':'Development & health-system baseline (not an official advisory)' },
-    { l: ru?'Воздух':'Air quality',   v: Math.round(aqiPts), max:15, c:'#6B7F3A',
+    ...(conflictPts > 0 ? [{ l: ru?'Конфликт':'Conflict', v: Math.round(conflictPts), max:10, c:'#7C3AED',
+      desc: ru?'Вооружённые столкновения и активные боевые действия (ACLED/GDELT)':'Armed clashes and active hostilities (ACLED/GDELT)' }] : []),
+    ...(unrestPts > 0   ? [{ l: ru?'Беспорядки':'Unrest',  v: Math.round(unrestPts),  max:6,  c:'#9333EA',
+      desc: ru?'Протесты, гражданские волнения, беспорядки':'Protests, civil unrest, demonstrations' }] : []),
+    ...(blackoutPts > 0 ? [{ l: ru?'Блэкаут':'Blackout',   v: Math.round(blackoutPts),max:5,  c:'#B45309',
+      desc: ru?'Отключения интернета, электросети и инфраструктуры связи':'Internet shutdowns, power grid and connectivity outages' }] : []),
+    ...(borderPts > 0   ? [{ l: ru?'Граница':'Border',     v: Math.round(borderPts),  max:4,  c:'#0369A1',
+      desc: ru?'Ограничения въезда, закрытые границы, контроль':'Entry restrictions, closed borders, enhanced checks' }] : []),
+    { l: ru?'Воздух':'Air quality',     v: Math.round(aqiPts),       max:12, c:'#6B7F3A',
       desc: ru?'Качество воздуха (индекс AQI)':'Air quality (AQI index)' },
-    { l: ru?'Еда':'Food',             v: Math.round(foodPts), max:10, c:'#A0522D',
+    { l: ru?'Еда':'Food',               v: Math.round(foodPts),      max:8,  c:'#A0522D',
       desc: ru?'Отзывы продуктов и продовольственный кризис':'Food recalls and food-insecurity crisis' },
-    { l: ru?'Тренд':'Trend',          v: trendPts, max:6,  c:'#1D6FA4', note: trendLbl,
+    { l: ru?'Тренд':'Trend',            v: trendPts,                 max:5,  c:'#1D6FA4', note: trendLbl,
       desc: ru?'Динамика угроз за период (растёт/снижается)':'Threat dynamics over time (rising/falling)' },
+    ...(wastewaterBoost > 0 ? [{ l: ru?'Сточные воды':'Wastewater', v: wastewaterBoost, max:4, c:'#0891B2',
+      desc: ru ? `Сигнал в сточных водах: ${cs?.wastewater?.source||'CDC/ECDC'} — ранний индикатор до клинических случаев`
+               : `Wastewater signal: ${cs?.wastewater?.source||'CDC/ECDC'} — early indicator ahead of clinical cases` }] : []),
+    ...(currencyBoost > 0 ? [{ l: ru?'Валюта':'Currency',           v: Math.round(currencyBoost), max:4, c:'#DC2626',
+      note: (cs?.currency?.accelerating ? '↑' : ''),
+      desc: ru ? `Валюта −${fxFlow}% за 30 дней${cs?.currency?.accelerating?' (ускоряется)':''} — скорость падения, а не накопленный фон`
+               : `Currency −${fxFlow}% in 30 days${cs?.currency?.accelerating?' (accelerating)':''} — rate of decline, not cumulative background` }] : []),
   ];
   return { score, band, parts };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   OSINT SHADOW ENGINE — private observation mode (owner only)
+   Deterministic covert-risk detection from signals we already load.
+   Does NOT dispatch anything. Only logs to localStorage for validation.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Owner gate: admin JWT OR manual flag. Fully private — never shown to
+   regular users. Toggle in console: localStorage.vigilo_osint='1' */
+function isOsintObserver(){
+  try{
+    if(localStorage.getItem('vigilo_osint') === '1') return true;
+    const s = (typeof getSession === 'function') ? getSession() : null;
+    return s?.b2b_role === 'b2b_admin';
+  }catch(_){ return false; }
+}
+
+/* Deterministic covert-risk verdict for a country.
+   Core idea: behavioral/indirect signals HIGH while official health
+   activity LOW  →  "officially quiet but behaviorally loud" = covert risk. */
+function computeCovertRisk(country){
+  const iso2 = findCountry(country)?.iso2;
+  const ri   = iso2 ? RISK_INDEX[iso2] : null;
+  const cs   = iso2 ? COUNTRY_SIGNALS[iso2] : null;
+  const cb   = ri?.category_breakdown || {};
+
+  const conflict = cb.conflict?.score      || 0;   // 0-5
+  const unrest   = cb.civil_unrest?.score  || 0;
+  const border   = cb.border?.score        || 0;
+  let   infra    = cb.infrastructure?.score|| 0;
+
+  // Boost infra by hard connectivity/power signals
+  if(cs?.internet?.shutdown){
+    infra += ({ severe:2, elevated:1.3, moderate:0.7 }[cs.internet.severity] || 0);
+  }
+  if(cs?.power_grid?.alert){
+    infra += ({ critical:1.5, elevated:1 }[cs.power_grid.severity] || 0.5);
+  }
+  infra = Math.min(5, infra);
+
+  // Currency: FLOW not STOCK — 30-day velocity + acceleration (Meadows fix).
+  // Chronic hyperinflation (Venezuela) is steady-state background, not a covert signal.
+  const fxFlow = cs?.currency?.drop_30d_pct || 0;
+  let currencyIdx = fxFlow >= 20 ? 5 : fxFlow >= 12 ? 3.5 : fxFlow >= 6 ? 2 : fxFlow >= 3 ? 1 : 0;
+  if(cs?.currency?.accelerating && currencyIdx > 0) currencyIdx = Math.min(5, currencyIdx + 0.5);
+
+  // Weighted behavioral index (0-5)
+  const behavioralRaw = Math.min(5,
+      0.30*conflict + 0.20*unrest + 0.22*infra + 0.16*currencyIdx + 0.12*border);
+
+  // INFORM structural modifier (must match server osint-engine.mjs exactly):
+  // F = clamp((vuln*coping)/100,0,1); M = clamp(0.70 + F*1.6, 0.70, 1.60)
+  const _st = COUNTRY_STRUCTURAL[iso2];
+  let informM = 1.0;
+  if(_st && _st.vulnerability != null && _st.coping != null){
+    const F = Math.max(0, Math.min(1, (_st.vulnerability * _st.coping) / 100));
+    informM = +Math.max(0.70, Math.min(1.60, 0.70 + F * 1.6)).toFixed(3);
+  }
+  const behavioral = +Math.min(5, behavioralRaw * informM).toFixed(2);
+
+  // Official health activity (the "is it officially loud?" denominator)
+  const healthScore = cb.health?.score || 0;
+  const liveEpi = OUTBREAKS.filter(o =>
+    o.country === country && (!o.type || o.type === 'epidemic')).length;
+  const officialActivity = healthScore + Math.min(2, liveEpi * 0.4);
+
+  const divergence = +(behavioral - officialActivity).toFixed(2);
+
+  // ── Bayesian transparency discount ───────────────────────────
+  // Official silence is evidence of a cover-up ONLY in proportion to how
+  // reliably the country normally reports. In an opaque regime, silence is
+  // the baseline (P(silent|crisis) ≈ P(silent|no crisis) ≈ 1 → ~0 bits),
+  // so we must NOT read "officially quiet" as a covert signal there.
+  const transparency = countryTransparency(country);
+  const silenceInformative = officialActivity <= 1.0 ? transparency : 1;
+  const adjDivergence = +(divergence * silenceInformative).toFixed(2);
+
+  // Deterministic tiering — fixed cut points (now on adjusted divergence)
+  let tier;
+  if(behavioral >= 3.5 && officialActivity <= 1.0 && adjDivergence >= 2.5)
+       tier = 'covert_elevated';     // genuinely anomalous silence + loud behavior
+  else if(behavioral >= 3.0)
+       tier = 'elevated_watch';
+  else tier = 'nominal';
+  // Opacity-suppressed: would have flagged covert but country is too closed
+  // to treat silence as informative — log it so we can study these.
+  const opacitySuppressed =
+    behavioral >= 3.5 && officialActivity <= 1.0 && divergence >= 2.5
+    && tier !== 'covert_elevated';
+
+  const reasons = [];
+  if(conflict   >= 2) reasons.push({ k:'conflict',  v:conflict.toFixed(1),  src:'risk_index' });
+  if(unrest     >= 2) reasons.push({ k:'unrest',    v:unrest.toFixed(1),    src:'risk_index' });
+  if(cs?.internet?.shutdown) reasons.push({ k:'internet_shutdown', v:cs.internet.severity, src:cs.internet.source });
+  if(cs?.power_grid?.alert)  reasons.push({ k:'power_grid', v:cs.power_grid.severity, src:'grid' });
+  if(fxFlow >= 6)     reasons.push({ k:'currency_30d', v:'-'+fxFlow+'%'+(cs?.currency?.accelerating?'↑':''), src:cs?.currency?.source||'IMF' });
+  if(border     >= 2) reasons.push({ k:'border',    v:border.toFixed(1),    src:'risk_index' });
+  if(informM !== 1.0) reasons.push({ k:'inform',     v:'M='+informM,         src:'INFORM' });
+  if(opacitySuppressed)
+    reasons.push({ k:'opacity_suppressed', v:'T='+transparency, src:'bayes' });
+
+  return { iso2, country, tier,
+           behavioralRaw:+behavioralRaw.toFixed(2), behavioral:+behavioral.toFixed(2), informM,
+           officialActivity:+officialActivity.toFixed(2),
+           divergence, adjDivergence, transparency, opacitySuppressed, reasons };
+}
+
+/* Auto-accumulate observations on the owner's browser (one snapshot per
+   country per day). Later: export & compare predicted vs what happened. */
+function logOsintObservation(v){
+  if(!v || v.tier === 'nominal') return;
+  try{
+    const KEY = 'vigilo_osint_journal';
+    const day = new Date().toISOString().slice(0,10);
+    const log = JSON.parse(localStorage.getItem(KEY) || '[]');
+    if(log.some(e => e.day === day && e.iso2 === v.iso2)) return; // dedup
+    log.push({ day, iso2:v.iso2, country:v.country, tier:v.tier,
+               behavioral:v.behavioral, officialActivity:v.officialActivity,
+               divergence:v.divergence, adjDivergence:v.adjDivergence,
+               transparency:v.transparency, opacitySuppressed:v.opacitySuppressed,
+               reasons:v.reasons.map(r=>r.k+':'+r.v),
+               ts:Date.now(), outcome:null });   // outcome filled later by review
+    localStorage.setItem(KEY, JSON.stringify(log.slice(-500)));
+  }catch(_){}
+}
+
+/* One-line export for pasting back to Claude for validation review. */
+window.osintJournal = function(){
+  try{
+    const log = JSON.parse(localStorage.getItem('vigilo_osint_journal') || '[]');
+    console.log('[Vigilo OSINT journal] '+log.length+' observations');
+    console.table(log);
+    return JSON.stringify(log);
+  }catch(_){ return '[]'; }
+};
+
+/* Render the private observer panel (owner only). Quiet, dashed style —
+   visually distinct from verified domains so we never confuse the two. */
+function osintObserverPanel(country){
+  if(!isOsintObserver()) return '';
+  const v = computeCovertRisk(country);
+  logOsintObservation(v);
+  const ru = LANG === 'ru';
+
+  const TIER = {
+    covert_elevated: { c:'#B45309', en:'Covert risk — officially quiet, behaviorally loud',
+                                     ru:'Скрытый риск — официально тихо, поведенчески громко' },
+    elevated_watch:  { c:'#9333EA', en:'Elevated watch',  ru:'Повышенное наблюдение' },
+    nominal:         { c:'#807E76', en:'Nominal',         ru:'В норме' },
+  };
+  const t = TIER[v.tier];
+  const reasonRow = v.reasons.length
+    ? v.reasons.map(r =>
+        `<span style="display:inline-block;font-size:10.5px;background:rgba(180,83,9,.10);color:#B45309;border:1px solid rgba(180,83,9,.22);border-radius:6px;padding:2px 7px;margin:2px 4px 2px 0">${r.k} · ${r.v}</span>`
+      ).join('')
+    : `<span style="font-size:11px;color:#807E76">${ru?'нет активных косвенных сигналов':'no active indirect signals'}</span>`;
+
+  return `
+    <div class="cp-section" style="border:1px dashed rgba(180,83,9,.4);border-radius:12px;background:rgba(180,83,9,.04);margin-top:10px">
+      <div class="cp-section-title" style="display:flex;align-items:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        ${ru?'OSINT · приватное наблюдение':'OSINT · private observation'}
+      </div>
+      <div style="font-size:13px;font-weight:700;color:${t.c};margin:4px 0 8px">${ru?t.ru:t.en}</div>
+      <div style="display:flex;gap:14px;font-size:11px;color:#807E76;margin-bottom:6px;flex-wrap:wrap">
+        <span title="${ru?'сырой сигнал → после INFORM-модификатора':'raw signal → after INFORM modifier'}">${ru?'Поведенч.':'Behavioral'}: <b style="color:#14110C">${v.behavioral}</b>/5${v.informM!==1?` <span style="color:#807E76">(${v.behavioralRaw}×${v.informM})</span>`:''}</span>
+        <span>${ru?'Официально':'Official'}: <b style="color:#14110C">${v.officialActivity}</b>/5</span>
+        <span title="${ru?'надёжность раскрытия данных страной':'how reliably the country surfaces signal'}">${ru?'Прозрачность':'Transparency'}: <b style="color:#14110C">${v.transparency}</b></span>
+      </div>
+      <div style="display:flex;gap:14px;font-size:11px;color:#807E76;margin-bottom:8px;flex-wrap:wrap">
+        <span>${ru?'Расхожд. сырое':'Divergence raw'}: <b style="color:#807E76">${v.divergence>0?'+':''}${v.divergence}</b></span>
+        <span title="${ru?'после байесовской поправки на прозрачность':'after Bayesian transparency discount'}">${ru?'скорр.':'adjusted'}: <b style="color:${v.adjDivergence>=2.5?'#B45309':'#14110C'}">${v.adjDivergence>0?'+':''}${v.adjDivergence}</b></span>
+        ${v.opacitySuppressed ? `<span style="color:#9333EA;font-weight:600">${ru?'подавлено непрозрачностью':'opacity-suppressed'}</span>` : ''}
+      </div>
+      <div>${reasonRow}</div>
+      <div class="cp-prov" style="margin-top:8px">${ru
+        ? 'Только для владельца. Не рассылается. Журнал копится локально — <code>osintJournal()</code> в консоли для экспорта.'
+        : 'Owner-only. Never dispatched. Journal accumulates locally — call <code>osintJournal()</code> in console to export.'}</div>
+    </div>`;
 }
 
 /* Pro semicircle gauge (SVG). 0-100, colored arc + needle + big number. */
@@ -1653,8 +1924,10 @@ function selectCountry(country){
   const dd = document.getElementById('countryDropdown');
   if(dd) dd.style.display = 'none';
   renderList();
-  if(country) renderCountryPanel(country);
-  else renderPanel();
+  if(country){
+    renderCountryPanel(country);
+    track('Country Open', { country: countryName(country) });
+  } else renderPanel();
   renderMyCountries();
   if(country && window.innerWidth <= 768 && typeof window.mobOpenDetail === 'function') window.mobOpenDetail(true);
 }
@@ -1930,7 +2203,7 @@ function renderCountryPanel(country){
     civil_unrest:  { en:'Civil Unrest',       ru:'Гражданские беспорядки',   icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
     transport:     { en:'Transport',          ru:'Транспорт',                icon:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>' },
     border:        { en:'Border & Entry',     ru:'Граница и въезд',          icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/>' },
-    infrastructure:{ en:'Infrastructure',     ru:'Инфраструктура',           icon:'<path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/>' },
+    infrastructure:{ en:'Blackout',            ru:'Блэкаут',                  icon:'<line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>' },
     climate:       { en:'Climate',            ru:'Климат',                   icon:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>' },
   };
   const BAND_CLR = {
@@ -1962,8 +2235,8 @@ function renderCountryPanel(country){
       en: { low:'Enhanced border checks', moderate:'Entry restrictions in place', elevated:'Strict border controls', severe:'Border largely closed', high:'Border largely closed', critical:'Border closed' },
     },
     infrastructure: {
-      ru: { low:'Незначительные повреждения', moderate:'Нарушения инфраструктуры', elevated:'Значительный ущерб инфраструктуре', severe:'Серьёзные проблемы с инфраструктурой', high:'Серьёзные проблемы с инфраструктурой', critical:'Коллапс инфраструктуры' },
-      en: { low:'Minor damage', moderate:'Infrastructure disruptions', elevated:'Significant infrastructure damage', severe:'Serious infrastructure failure', high:'Serious infrastructure failure', critical:'Infrastructure collapse' },
+      ru: { low:'Перебои в сети и связи', moderate:'Ограниченный доступ в интернет', elevated:'Массовые отключения интернета или электросети', severe:'Блэкаут — связь и инфраструктура нарушены', high:'Блэкаут — связь и инфраструктура нарушены', critical:'Полное отключение связи и инфраструктуры' },
+      en: { low:'Minor connectivity issues', moderate:'Partial internet or grid outages', elevated:'Widespread blackout or internet shutdown', severe:'Major infrastructure blackout', high:'Major infrastructure blackout', critical:'Full connectivity and infrastructure collapse' },
     },
     climate: {
       ru: { low:'Неблагоприятные погодные условия', moderate:'Природные угрозы', elevated:'Значительные стихийные бедствия', severe:'Экстремальные природные условия', high:'Экстремальные природные условия', critical:'Природная катастрофа' },
@@ -2010,7 +2283,44 @@ function renderCountryPanel(country){
       }).join('') +
       `</div>`;
   } else {
-    riskCatsHtml = `<div class="cp-no-threats">${ru?'Нет данных индекса риска для этой страны.':'No risk index data for this country.'}</div>`;
+    // No live event index → NOT an error. "No active threats" is good news.
+    // Always show the INFORM structural baseline so the card is never empty.
+    const st = iso2 ? COUNTRY_STRUCTURAL[iso2] : null;
+    if(st && st.hazard != null){
+      const inf = Math.cbrt(st.hazard * st.vulnerability * st.coping); // 0–10
+      const band = inf>=6.5 ? {k:'high',c:'#C92A2A',ru:'Высокая уязвимость',en:'High vulnerability'}
+                 : inf>=4.5 ? {k:'elevated',c:'#E8590C',ru:'Повышенная уязвимость',en:'Elevated vulnerability'}
+                 : inf>=2.5 ? {k:'moderate',c:'#E4B514',ru:'Умеренная устойчивость',en:'Moderate resilience'}
+                 :            {k:'low',c:'#19A463',ru:'Высокая устойчивость',en:'High resilience'};
+      const bar = (lbl, val) => `<div class="cp-cat-row">
+        <div class="cp-cat-hd"><span class="cp-cat-label">${lbl}</span>
+          <span class="cp-cat-score" style="color:${band.c}">${val.toFixed(1)}</span></div>
+        <div class="cp-cat-track"><div class="cp-cat-fill" style="width:${Math.round(val/10*100)}%;background:${band.c}"></div></div>
+      </div>`;
+      riskCatsHtml = `
+        <div class="cp-composite">
+          <div class="cp-composite-num" style="color:#19A463">✓</div>
+          <div class="cp-composite-info">
+            <div class="cp-composite-band" style="color:#19A463">${ru?'Активных угроз не зафиксировано':'No active threats detected'}</div>
+            <div class="cp-composite-sub">${ru?'Нормальное состояние · структурный профиль ниже':'Normal state · structural profile below'}</div>
+          </div>
+        </div>
+        <div class="cp-cats">
+          ${bar(ru?'Подверженность угрозам':'Hazard & exposure', st.hazard)}
+          ${bar(ru?'Уязвимость':'Vulnerability', st.vulnerability)}
+          ${bar(ru?'Дефицит устойчивости':'Lack of coping capacity', st.coping)}
+          <div class="cp-cat-desc" style="color:${band.c};margin-top:4px">${ru?band.ru:band.en} · INFORM ${inf.toFixed(1)}/10</div>
+        </div>`;
+    } else {
+      riskCatsHtml = `
+        <div class="cp-composite">
+          <div class="cp-composite-num" style="color:#19A463">✓</div>
+          <div class="cp-composite-info">
+            <div class="cp-composite-band" style="color:#19A463">${ru?'Активных угроз не зафиксировано':'No active threats detected'}</div>
+            <div class="cp-composite-sub">${ru?'Нормальное состояние. Отсутствие событий ≠ гарантия безопасности.':'Normal state. Absence of events is not an all-clear.'}</div>
+          </div>
+        </div>`;
+    }
   }
 
   // Trim news-style event names (strip " - SourceName" suffix, cap at 72 chars)
@@ -2040,6 +2350,7 @@ function renderCountryPanel(country){
       <div class="cp-section-title">${ru?'Индекс риска по доменам':'Risk index by domain'}</div>
       ${riskCatsHtml}
     </div>
+    ${osintObserverPanel(country)}
     ${secEventsHtml}
     <div class="cp-section" style="border-bottom:0">
       <div class="cp-prov">${ru
@@ -2125,6 +2436,7 @@ function renderCountryPanel(country){
         if(!res.ok) throw new Error(json.error || 'failed');
         statusEl.textContent = ru ? 'Проверь почту — там ссылка.' : 'Check your inbox to confirm.';
         subForm.querySelector('.cp-sub-input').value = '';
+        track('Alert Subscribe', { country: subForm.dataset.country || 'global' });
       } catch(_err){
         statusEl.textContent = ru ? 'Не удалось. Попробуй ещё раз.' : 'Failed. Please try again.';
       } finally { btn.disabled = false; }
@@ -2153,6 +2465,8 @@ const CATEGORY_META = {
                   icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z"/></svg>' },
   humanitarian: { color:'#8B5CF6', en:'Humanitarian', ru:'Гуманитар.',  type:'humanitarian',
                   icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>' },
+  blackout:     { color:'#B45309', en:'Blackout',     ru:'Блэкаут',     type:'blackout',
+                  icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>' },
 };
 
 function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
@@ -2168,7 +2482,7 @@ function toggleCat(key){
 }
 
 function renderCatLists(){
-  const CATS = ['epidemic','disaster','air','food','humanitarian'];
+  const CATS = ['epidemic','disaster','air','food','humanitarian','blackout'];
   for(const cat of CATS){
     const items = OUTBREAKS.filter(o => (o.type||'epidemic') === cat);
     const countEl = document.getElementById(`catCount-${cat}`);
@@ -2393,7 +2707,7 @@ const state = {
   query: '',
   selectedId: null,
   selectedCountry: null,
-  cats: { epidemic:true, disaster:true, air:false, food:false, humanitarian:false },
+  cats: { epidemic:true, disaster:true, air:false, food:false, humanitarian:false, blackout:false },
   hoveredId: null,
   countries: [],
   t: 0,
@@ -3655,12 +3969,19 @@ if(_searchEl){
   };
 
   _searchEl.addEventListener('focus', () => renderGlobal(_searchEl.value));
+  let _searchTracked = false;
   _searchEl.addEventListener('input', e=>{
     clearTimeout(_searchTimer);
     _searchTimer = setTimeout(()=>{
-      state.query = e.target.value.trim();
+      const q = e.target.value.trim();
+      state.query = q;
       renderGlobal(_searchEl.value);
       renderList();
+      if(q.length >= 2 && !_searchTracked){
+        _searchTracked = true;
+        track('Search', { query: q });
+      }
+      if(!q) _searchTracked = false;
     }, 140);
   });
   document.addEventListener('click', e=>{
@@ -3841,7 +4162,7 @@ async function loadLiveData(){
         const RTYPE = { health:'epidemic', climate:'disaster',
           conflict:'humanitarian', civil_unrest:'humanitarian',
           transport:'humanitarian', border:'humanitarian',
-          infrastructure:'humanitarian' };
+          infrastructure:'blackout' };
         for (const ev of (rj.events || [])) {
           if (ev.category === 'health') continue;   // health already via events.json
           const g = ev.geo || {};
@@ -3888,6 +4209,29 @@ async function loadLiveData(){
       const ri = await fetch(base + 'public/risk_index.json?_=' + Date.now());
       if(ri.ok){ const rj = await ri.json(); RISK_INDEX = rj.index || {}; }
     } catch(_e){ /* graceful — country panel shows "no data" */ }
+
+    try {
+      // Live feed first (daily osint-ingest → /api/country-signals).
+      // 204 or any failure → fall back to committed static seed. Zero-risk.
+      let cj = null;
+      try {
+        const live = await fetch('/api/country-signals', { signal: AbortSignal.timeout(6000) });
+        if(live.ok) cj = await live.json();   // 204 → live.ok false → fallback
+      } catch(_live){ /* fall through to static seed */ }
+      if(!cj){
+        const cs = await fetch(base + 'public/country-signals.json?_=' + Date.now());
+        if(cs.ok) cj = await cs.json();
+      }
+      if(cj){
+        COUNTRY_SIGNALS = cj.signals || {};
+        if(cj.meta?.bootstrapping) console.log('[Vigilo] OSINT feed bootstrapping — FX flow blends curated until ~30 daily snapshots');
+      }
+    } catch(_e){ /* graceful — signals are additive, never block */ }
+
+    try {
+      const st = await fetch(base + 'public/country-structural.json?_=' + Date.now());
+      if(st.ok){ const sj = await st.json(); COUNTRY_STRUCTURAL = sj.structural || {}; }
+    } catch(_e){ /* graceful — INFORM modifier defaults to neutral 1.0 */ }
 
     if(injected > 0){
       console.log(`[Vigilo] Injected ${injected} live events`);
@@ -4276,7 +4620,10 @@ function switchView(name){
 
 // Wire up top tabs by data-view (3D / Карта / Список)
 document.querySelectorAll('.top-tab[data-view]').forEach(tab => {
-  tab.addEventListener('click', () => switchView(tab.dataset.view));
+  tab.addEventListener('click', () => {
+    switchView(tab.dataset.view);
+    track('View Switch', { view: tab.dataset.view });
+  });
 });
 
 /* =========================================================

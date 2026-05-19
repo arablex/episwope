@@ -77,6 +77,7 @@ function login(role){
   ]));
 
   if(role === 'admin'){
+    localStorage.setItem('vigilo_osint', '1'); // private OSINT observer mode
     localStorage.setItem('vigilo_company', JSON.stringify({
       name: 'Vigilo Internal',
       available_credits: 500,
