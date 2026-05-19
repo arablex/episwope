@@ -3900,11 +3900,14 @@ function _urlB64ToUint8Array(base64String) {
       sel: function(){ return document.getElementById('panel'); },
       pos: 'left',
       onEnter: function(){
-        // 1. Collapse all cat-sections so globe is fully visible
+        // 1. Collapse cat-sections
         document.querySelectorAll('.cat-section.expanded').forEach(function(s){
           s.classList.remove('expanded');
         });
-        // 2. Open Turkey — slight delay so collapse animates first
+        // 2. Collapse Early Signals widget so it doesn't overlap the panel
+        var sig = document.getElementById('sigWidget');
+        if(sig) sig.classList.add('is-collapsed');
+        // 3. Open Turkey after a beat
         setTimeout(function(){
           if(typeof window.selectCountry === 'function'){
             window.selectCountry('Turkey');
@@ -3912,7 +3915,9 @@ function _urlB64ToUint8Array(base64String) {
         }, 180);
       },
       onLeave: function(){
-        // Close the panel when moving away
+        // Restore Early Signals widget and close panel
+        var sig = document.getElementById('sigWidget');
+        if(sig) sig.classList.remove('is-collapsed');
         if(typeof window.selectCountry === 'function'){
           window.selectCountry(null);
         }
