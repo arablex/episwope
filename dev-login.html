@@ -68,7 +68,8 @@ function login(role){
   localStorage.setItem('vigilo_jwt', 'eyJhbGciOiJub25lIn0.' + b64 + '.sig');
   localStorage.setItem('vigilo_api_key', 'vgl_dev_xK9mP2qRtL8nVw3jZ5yA');
   localStorage.setItem('vigilo_assess_left', '10');
-  localStorage.setItem('vigilo_watched', JSON.stringify(['US','TH','DE','JP','BR','AE','SG']));
+  // Full EN country names — globe.js uses these for flag lookup and display
+  localStorage.setItem('vigilo_watched', JSON.stringify(['United States','Thailand','Germany','Japan','Brazil','United Arab Emirates','Singapore']));
   localStorage.setItem('vigilo_reports', JSON.stringify([
     {country:'TH',type:'Traveler',date:new Date(Date.now()-86400000*2).toISOString()},
     {country:'DE',type:'Business Trip',date:new Date(Date.now()-86400000*5).toISOString()},

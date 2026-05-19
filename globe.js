@@ -370,6 +370,8 @@ const COUNTRY_BY_RU = Object.fromEntries(ALL_COUNTRIES.map(c => [c.ru.toLowerCas
 const COUNTRY_BY_ISO2 = Object.fromEntries(ALL_COUNTRIES.map(c => [c.iso2, c]));
 function findCountry(name){
   if(!name) return null;
+  // ISO2 shortcut — handles codes like 'TH', 'US' stored by external tools
+  if(name.length === 2) return COUNTRY_BY_ISO2[name.toUpperCase()] || null;
   const k = name.toLowerCase();
   return COUNTRY_BY_EN[k] || COUNTRY_BY_RU[k] || null;
 }
@@ -383,10 +385,10 @@ const REGION_RU = {
 };
 function countryName(n){
   if(!n) return n;
-  if(LANG !== 'ru') return n;
-  if(COUNTRY_RU[n]) return COUNTRY_RU[n];
   const c = findCountry(n);
-  return c ? c.ru : n;
+  if(LANG === 'ru') return c ? c.ru : (COUNTRY_RU[n] || n);
+  // EN: expand ISO2 to full name, pass full names through unchanged
+  return c ? c.en : n;
 }
 function countryISO2(n){
   if(!n) return null;
