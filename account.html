@@ -990,14 +990,15 @@ boot();
     delete window._onbNext; delete window._onbPrev; delete window._onbSkip;
   };
 
-  // Wait until dashboard renders (boot() is synchronous but renders via innerHTML)
+  // Only start tour when dashboard (sidebar) is actually rendered — not on auth screen
   var wait = 0;
   var check = setInterval(function(){
     wait += 50;
-    if(document.querySelector('.sb-nav') || wait > 3000){
+    if(document.querySelector('.sb-nav')){
       clearInterval(check);
-      // Give user a moment to see the UI before tour starts
       setTimeout(init, 500);
+    } else if(wait > 4000){
+      clearInterval(check); // user not logged in — skip tour
     }
   }, 50);
 })();
