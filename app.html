@@ -3853,6 +3853,14 @@ function _urlB64ToUint8Array(base64String) {
       sel: null
     },
     {
+      icon: 'globe',
+      title: t('The live globe', 'Живой глобус'),
+      desc:  t('Every dot is a real verified event — disease outbreak, disaster or alert. Color = severity. Click any dot to open the full report.',
+               'Каждая точка — реальное верифицированное событие: вспышка, катастрофа, алерт. Цвет = уровень угрозы. Кликни на точку — откроется полный отчёт.'),
+      sel: function(){ return document.getElementById('globe'); },
+      pos: 'right'
+    },
+    {
       icon: 'search',
       title: t('Search anything', 'Поиск'),
       desc:  t('Type a country, disease, or region. Instant risk summary with source links.',
