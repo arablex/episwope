@@ -2835,13 +2835,13 @@ function initMap(){
   });
 
   map.on('style.load', () => {
-    // Dramatic atmosphere: blue haze, dark space, faint stars
+    // Light atmosphere — pale sky, no stars (matches site background)
     map.setFog({
-      color:           'rgb(205, 215, 230)',   // horizon haze — soft blue-white
-      'high-color':    'rgb(65, 110, 200)',    // upper atmosphere — vivid blue
-      'horizon-blend': 0.10,
-      'space-color':   'rgb(6, 9, 22)',        // deep space — near-black navy
-      'star-intensity': 0.18,                  // faint stars
+      color:           'rgb(244, 242, 238)',
+      'high-color':    'rgb(220, 220, 220)',
+      'horizon-blend': 0.06,
+      'space-color':   'rgb(244, 242, 238)',
+      'star-intensity': 0,
     });
   });
 
