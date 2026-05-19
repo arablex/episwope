@@ -16,13 +16,16 @@
 import { getStore } from '@netlify/blobs';
 import { fetchFxSnapshot, computeFxFlow, fetchIodaInternet, CCY }
   from './_lib/osint-sources.mjs';
-import { computeCovertRisk } from './_lib/osint-engine.mjs';
+import { computeCovertRisk, transparency } from './_lib/osint-engine.mjs';
+import { labelJournal, detectMissed, officialSnapshot } from './_lib/osint-label.mjs';
 
 const FX_HISTORY_KEY = 'fx-history';
 const FEED_KEY        = 'country-signals';
 const JOURNAL_KEY     = 'journal';
+const MISSED_KEY      = 'missed';
 const HISTORY_MAX     = 45;   // days of FX snapshots to retain
 const JOURNAL_MAX     = 4000; // durable observations retained
+const MISSED_MAX      = 2000;
 
 function store(){ return getStore({ name: 'osint', consistency: 'strong' }); }
 
@@ -132,13 +135,28 @@ export default async () => {
         day, iso2, tier:v.tier,
         behavioralRaw:v.behavioralRaw, behavioral:v.behavioral, informM:v.informM,
         officialActivity:v.officialActivity,
+        officialSnapshot: officialSnapshot(RISK_INDEX[iso2]), // prediction-time baseline for independent confirmation
         divergence:v.divergence, adjDivergence:v.adjDivergence,
         transparency:v.transparency, opacitySuppressed:v.opacitySuppressed,
         reasons:v.reasons, ts:Date.now(), outcome:null, source:'server',
       });
       journalWrites++;
     }
+
+    // ── Close the loop: auto-label past predictions vs official reality ──
+    const score = labelJournal(journal, RISK_INDEX, transparency);
     await s.setJSON(JOURNAL_KEY, journal.slice(-JOURNAL_MAX));
+
+    // ── Recall side: official escalations we did NOT flag (false-neg) ──
+    const missedLog = (await s.get(MISSED_KEY, { type:'json' })) || [];
+    const missedNow = detectMissed(journal, RISK_INDEX, day)
+      .filter(m => !missedLog.some(x => x.day === m.day && x.iso2 === m.iso2));
+    if(missedNow.length){
+      await s.setJSON(MISSED_KEY, [...missedLog, ...missedNow].slice(-MISSED_MAX));
+    }
+
+    report.score = score;
+    report.missedNew = missedNow.length;
   }catch(e){ report.errors.push('journal:'+e.message); }
 
   return new Response(JSON.stringify({ ok:true, ...report,
