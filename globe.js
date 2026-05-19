@@ -1563,24 +1563,6 @@ function renderMyCountries(){
 }
 
 /* ── My Feed ─────────────────────────────────────────────── */
-let feedCountryFilter = null; // null = все страны
-
-function renderFeedFilter(countries){
-  const fil = document.getElementById('myFeedFilter');
-  if(!fil) return;
-  if(!countries || countries.length < 2){ fil.innerHTML=''; return; }
-  fil.innerHTML = countries.map(c =>
-    `<button class="feed-cf-chip${feedCountryFilter===c?' active':''}" data-fc="${escapeAttr(c)}">${countryName(c)}</button>`
-  ).join('');
-  fil.querySelectorAll('.feed-cf-chip').forEach(btn => {
-    btn.addEventListener('click', () => {
-      feedCountryFilter = feedCountryFilter === btn.dataset.fc ? null : btn.dataset.fc;
-      renderFeedFilter(countries);
-      renderMyFeedItems();
-    });
-  });
-}
-
 function renderMyFeedItems(){
   const root    = document.getElementById('myFeed');
   const countEl = document.getElementById('myFeedCount');
@@ -1589,34 +1571,31 @@ function renderMyFeedItems(){
   const SEV_ORD = {catastrophic:6, critical:5, alert:4, warning:3, low:2, monitoring:1};
   const ru = LANG === 'ru';
 
-  const all = OUTBREAKS
+  const items = OUTBREAKS
     .filter(o => WATCHED.has(o.country))
     .map(o => ({
-      type: o.type === 'food' ? 'food' : 'outbreak',
-      ord: SEV_ORD[o.sev]||0,
+      type:  o.type === 'food' ? 'food' : 'outbreak',
+      ord:   SEV_ORD[o.sev] || 0,
       title: diseaseName(o),
-      meta: o.country,
-      color: SEV[o.sev]?.color||'#A09F95',
-      id: o.id,
+      meta:  countryName(o.country),
+      color: SEV[o.sev]?.color || '#A09F95',
+      id:    o.id,
     }))
-    .sort((a,b)=>b.ord-a.ord);
+    .sort((a, b) => b.ord - a.ord)
+    .slice(0, 20);
 
-  const filtered = feedCountryFilter
-    ? all.filter(item => item.meta === feedCountryFilter)
-    : all.slice(0, 12);
+  if(countEl) countEl.textContent = items.length || '0';
 
-  if(countEl) countEl.textContent = all.length||'0';
+  const tagLbl = t => t === 'food'
+    ? (ru ? 'Продукт' : 'Recall')
+    : (ru ? 'Вспышка' : 'Outbreak');
 
-  const tagLbl = t => t==='food'
-    ? (ru?'Продукт':'Recall')
-    : (ru?'Вспышка':'Outbreak');
-
-  if(!filtered.length){
+  if(!items.length){
     root.innerHTML = `<div class="feed-empty">${ru ? 'Нет активных событий.' : 'No active events.'}</div>`;
     return;
   }
 
-  root.innerHTML = filtered.map((item,i) => `
+  root.innerHTML = items.map((item, i) => `
     <div class="feed-item" data-fi="${i}">
       <span class="feed-dot" style="background:${item.color}"></span>
       <div class="feed-body">
@@ -1627,9 +1606,9 @@ function renderMyFeedItems(){
 
   root.querySelectorAll('.feed-item').forEach(el => {
     el.addEventListener('click', () => {
-      const item = filtered[+el.dataset.fi];
+      const item = items[+el.dataset.fi];
       if(!item) return;
-      if(item.id!=null) selectOutbreak(item.id);
+      if(item.id != null) selectOutbreak(item.id);
       else if(item.link) window.open(item.link, '_blank', 'noopener');
     });
   });
@@ -1637,22 +1616,20 @@ function renderMyFeedItems(){
 
 function renderMyFeed(){
   const root = document.getElementById('myFeed');
-  const countEl = document.getElementById('myFeedCount');
+  const fil  = document.getElementById('myFeedFilter');
   if(!root) return;
-  const ru = LANG === 'ru';
+  if(fil) fil.innerHTML = ''; // no filter chips
 
+  const ru = LANG === 'ru';
   if(!WATCHED.size){
+    const countEl = document.getElementById('myFeedCount');
     if(countEl) countEl.textContent = '0';
-    const fil = document.getElementById('myFeedFilter');
-    if(fil) fil.innerHTML = '';
     root.innerHTML = `<div class="feed-empty">${ru
-      ? 'Добавь страны через правую панель — здесь появится твой персональный фид алертов.'
-      : 'Watch countries from the right panel — your personal alerts feed appears here.'}</div>`;
+      ? 'Добавь страны в список наблюдения — здесь появится твой персональный фид.'
+      : 'Watch countries from the right panel — your alerts feed appears here.'}</div>`;
     return;
   }
 
-  const watchedArr = [...WATCHED].sort((a,b)=> countryName(a).localeCompare(countryName(b)));
-  renderFeedFilter(watchedArr);
   renderMyFeedItems();
 }
 
