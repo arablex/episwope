@@ -14,6 +14,43 @@ import { getStore } from '@netlify/blobs';
 import { createHmac } from 'node:crypto';
 import { checkBearerAuth } from './_lib/auth.mjs';
 
+/**
+ * Deliver a signed webhook with exponential backoff retry.
+ * Attempts: 0 ms → 2 s → 8 s (up to MAX_RETRIES total attempts).
+ * Returns { ok, status, attempts, error }.
+ */
+const MAX_RETRIES = 3;
+const TIMEOUT_MS = 8000;
+
+async function deliverWithRetry(url, rawBody, headers) {
+  let lastErr, lastStatus;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      // Exponential backoff: 2^(attempt-1) * 2000 ms  → 2 s, 8 s
+      await new Promise((r) => setTimeout(r, (2 ** (attempt - 1)) * 2000));
+    }
+    try {
+      const ctrl = AbortSignal.timeout ? AbortSignal.timeout(TIMEOUT_MS) : undefined;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: rawBody,
+        signal: ctrl,
+      });
+      lastStatus = resp.status;
+      if (resp.status >= 200 && resp.status < 300) {
+        return { ok: true, status: resp.status, attempts: attempt + 1, error: null };
+      }
+      // Non-2xx: retry (treat 4xx without retry-after as terminal on last attempt)
+      lastErr = `HTTP ${resp.status}`;
+      if (resp.status >= 400 && resp.status < 500 && resp.status !== 429) break; // client error, don't retry
+    } catch (e) {
+      lastErr = String(e).slice(0, 120);
+    }
+  }
+  return { ok: false, status: lastStatus ?? 0, attempts: MAX_RETRIES, error: lastErr };
+}
+
 const J = (o, s = 200) =>
   new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json' } });
 
@@ -101,33 +138,21 @@ export default async (req) => {
     const raw = JSON.stringify(payload);
     const sig = createHmac('sha256', sub.secret).update(raw).digest('hex');
 
-    try {
-      const ctrl = AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined;
-      const resp = await fetch(sub.callback_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Vigilo-Webhook/1.0',
-          'X-Vigilo-Event': payload.event,
-          'X-Vigilo-Signature': `sha256=${sig}`,
-          'X-Vigilo-Delivery': `${sub.id}.${now}`,
-        },
-        body: raw,
-        signal: ctrl,
-      });
-      const ok = resp.status >= 200 && resp.status < 300;
-      if (ok) report.fired++; else report.errors++;
-      await state.setJSON(key, {
-        was_above: true, last_band: band, last_fired_at: now,
-        last_status: resp.status,
-      });
-    } catch (e) {
-      report.errors++;
-      await state.setJSON(key, {
-        was_above: true, last_band: band, last_fired_at: now,
-        last_error: String(e).slice(0, 120),
-      });
-    }
+    const delivery = await deliverWithRetry(sub.callback_url, raw, {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Vigilo-Webhook/1.0',
+      'X-Vigilo-Event': payload.event,
+      'X-Vigilo-Signature': `sha256=${sig}`,
+      'X-Vigilo-Delivery': `${sub.id}.${now}`,
+    });
+
+    if (delivery.ok) report.fired++; else report.errors++;
+    await state.setJSON(key, {
+      was_above: true, last_band: band, last_fired_at: now,
+      last_status: delivery.status,
+      last_attempts: delivery.attempts,
+      ...(delivery.error ? { last_error: delivery.error } : {}),
+    });
   }
 
   return J({ ok: true, ...report });

@@ -1,0 +1,135 @@
+{
+  "_comment": "Mock response for GET /api/v1/risk?country=TH&include_events=true&history_days=14",
+  "api_version": "1.0",
+  "generated_at": "2026-05-19T10:15:00Z",
+  "cache_ttl_seconds": 300,
+  "query": {
+    "mode": "country",
+    "country": "TH",
+    "history_days": 14,
+    "min_confidence": 0.4,
+    "lang": "en"
+  },
+  "composite_risk": {
+    "score": 2.34,
+    "band": "moderate",
+    "dominant_category": "health"
+  },
+  "category_breakdown": {
+    "health": {
+      "score": 2.34,
+      "band": "moderate",
+      "active_events": 3,
+      "top_threat": "Dengue fever — pre-season surge"
+    },
+    "conflict": {
+      "score": 0.21,
+      "band": "minimal",
+      "active_events": 1,
+      "top_threat": null
+    },
+    "civil_unrest": {
+      "score": 0.44,
+      "band": "minimal",
+      "active_events": 0,
+      "top_threat": null
+    },
+    "transport": {
+      "score": 0.61,
+      "band": "low",
+      "active_events": 2,
+      "top_threat": "Bangkok Suvarnabhumi — runway works, delays"
+    },
+    "border": {
+      "score": 0.18,
+      "band": "minimal",
+      "active_events": 0,
+      "top_threat": null
+    },
+    "infrastructure": {
+      "score": 0.09,
+      "band": "minimal",
+      "active_events": 0,
+      "top_threat": null
+    },
+    "climate": {
+      "score": 1.12,
+      "band": "low",
+      "active_events": 1,
+      "top_threat": "Tropical depression forming — South China Sea"
+    }
+  },
+  "projection": {
+    "horizon_days": 7,
+    "model": "era5-seasonal-v2",
+    "trend": "rising",
+    "projected_score": 2.71,
+    "projected_band": "moderate",
+    "confidence": 0.62
+  },
+  "investigative_leads": null,
+  "events": [
+    {
+      "signal_id": "who.don#9881",
+      "country": "TH",
+      "category": "health",
+      "type": "Dengue fever — pre-season surge",
+      "headline": "Thailand reports 23% above-average dengue incidence in provinces bordering Myanmar",
+      "severity": 3,
+      "confidence": 0.78,
+      "source_class": "tier1_official",
+      "source_url": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON-9881",
+      "first_seen": "2026-05-10T08:00:00Z",
+      "last_updated": "2026-05-18T14:30:00Z",
+      "geo": { "lat": 13.75, "lng": 100.5 }
+    },
+    {
+      "signal_id": "ecdc.cdtr#2026-19-TH",
+      "country": "TH",
+      "category": "health",
+      "type": "Arboviral surveillance alert",
+      "headline": "ECDC CDTR: elevated arboviral transmission risk flagged for South-East Asia travel",
+      "severity": 2,
+      "confidence": 0.71,
+      "source_class": "tier1_official",
+      "source_url": "https://www.ecdc.europa.eu/en/publications-data/communicable-disease-threats-report",
+      "first_seen": "2026-05-12T06:00:00Z",
+      "last_updated": "2026-05-16T12:00:00Z",
+      "geo": null
+    },
+    {
+      "signal_id": "noaa.storm#2026-WP04",
+      "country": "TH",
+      "category": "climate",
+      "type": "Tropical depression forming — South China Sea",
+      "headline": "NOAA NWS: tropical disturbance 94W tracking NW toward Gulf of Thailand, 40% development probability",
+      "severity": 2,
+      "confidence": 0.55,
+      "source_class": "tier1_official",
+      "source_url": "https://www.nhc.noaa.gov/gtwo.php",
+      "first_seen": "2026-05-18T00:00:00Z",
+      "last_updated": "2026-05-19T06:00:00Z",
+      "geo": { "lat": 12.5, "lng": 108.2 }
+    },
+    {
+      "signal_id": "iata.adv#BKK-2026-05",
+      "country": "TH",
+      "category": "transport",
+      "type": "Airport operational disruption",
+      "headline": "Suvarnabhumi (BKK) runway resurfacing works: 23% capacity reduction, expect 45-min average delays",
+      "severity": 2,
+      "confidence": 0.88,
+      "source_class": "tier2_official",
+      "source_url": "https://www.iata.org/en/programs/ops-infra/airport-development/",
+      "first_seen": "2026-05-05T00:00:00Z",
+      "last_updated": "2026-05-14T08:00:00Z",
+      "geo": { "lat": 13.69, "lng": 100.75 }
+    }
+  ],
+  "meta": {
+    "events_total": 4,
+    "events_returned": 4,
+    "sources_checked": 44,
+    "data_freshness_seconds": 312
+  }
+}

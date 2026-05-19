@@ -13,8 +13,8 @@
 <style>
   :root{
     --paper:#F4F2EE;--ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
-    --night:#0D1015;--amber:#E8590C;
-    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --night:#0D1015;--night-muted:#9CA3B0;--amber:#E8590C;--green:#00A56F;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);--rule-dark:rgba(255,255,255,.10);
     --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
     --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
     /* legacy compat */
@@ -99,8 +99,31 @@
   .btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;
     font-size:14px;padding:11px 22px;border-radius:9px}
   .btn:hover{text-decoration:none;opacity:.92}
-  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);
-    font-size:12.5px;text-align:center}
+  /* live dot */
+  .dot{position:relative;display:inline-flex;width:8px;height:8px}
+  .dot b{position:absolute;inset:0;border-radius:999px;background:var(--green);opacity:.30}
+  .dot i{position:absolute;inset:2px;border-radius:999px;background:var(--green);animation:pd 1.6s ease-in-out infinite}
+  @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.82)}}
+  /* footer */
+  footer{background:var(--night);color:#fff}
+  footer .fwrap{padding:80px 24px;max-width:1360px;margin:0 auto}
+  @media(min-width:1024px){footer .fwrap{padding:80px 40px}}
+  .fgrid{display:grid;gap:56px}
+  @media(min-width:1000px){.fgrid{grid-template-columns:1.3fr 2.4fr}}
+  .fbrand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.02em;color:#fff;text-decoration:none}
+  footer .fdesc{margin-top:24px;max-width:34ch;font-size:14px;line-height:1.6;color:var(--night-muted)}
+  .fstat{margin-top:36px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--night-muted)}
+  .fstat span{display:inline-flex;align-items:center;gap:8px}
+  .fcols{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
+  @media(min-width:640px){.fcols{grid-template-columns:repeat(3,1fr)}}
+  .fcols h4{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--night-muted)}
+  .fcols ul{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px;font-size:14px}
+  .fcols a{color:rgba(255,255,255,.85);text-decoration:none}.fcols a:hover{color:#fff}
+  .fbot{margin-top:60px;border-top:1px solid var(--rule-dark);padding-top:28px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+    font-size:13px;color:var(--night-muted)}
+  .fbot a{color:rgba(255,255,255,.55);text-decoration:none}.fbot a:hover{color:#fff}
+  .fbot .r{display:flex;flex-wrap:wrap;gap:24px}
   @media(max-width:640px){ h1{font-size:30px} .tiers{grid-template-columns:1fr} }
   /* Try-it */
   .tryit{background:var(--card);border:1px solid var(--line);border-radius:16px;
@@ -375,11 +398,48 @@ curl <span class="pre-s">"https://vigilo.cc/api/v1/simulate?country=CN&category=
 
 </div>
 
-<footer>
-  <div class="wrap">Vigilo Risk Intelligence · <a href="/">vigilo.cc</a> ·
-  Data aggregated from WHO, ECDC, ReliefWeb, GDELT and 100+ open sources.
-  Not financial or medical advice.</div>
-</footer>
+<footer><div class="fwrap">
+  <div class="fgrid">
+    <div>
+      <a class="fbrand" href="/">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Vigilo
+      </a>
+      <p class="fdesc">Risk intelligence API for insurers, banks and travel platforms. 44 verified sources.</p>
+      <div class="fstat">
+        <span><span class="dot"><b></b><i></i></span> Live feed · 44 verified sources</span>
+        <span>Methodology &amp; backtests published</span>
+      </div>
+    </div>
+    <div class="fcols">
+      <div><h4>Platform</h4><ul>
+        <li><a href="/app.html">Live globe</a></li>
+        <li><a href="/api/v1/docs">API docs</a></li>
+        <li><a href="/widgets">Widgets</a></li>
+        <li><a href="/report">Risk report</a></li>
+      </ul></div>
+      <div><h4>Company</h4><ul>
+        <li><a href="/methodology">Methodology</a></li>
+        <li><a href="/business.html">For Business</a></li>
+        <li><a href="/business.html#pricing">Pricing</a></li>
+        <li><a href="mailto:hello@vigilo.cc">Contact</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="https://github.com/arablex/episwope">GitHub</a></li>
+        <li><a href="/methodology">Backtests</a></li>
+        <li><a href="https://vigilo.cc">vigilo.cc</a></li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="fbot">
+    <div>© 2026 Vigilo · vigilo.cc · Not financial or medical advice.</div>
+    <div class="r">
+      <a href="/methodology">Methodology</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/api/v1/docs">API</a>
+    </div>
+  </div>
+</div></footer>
 
 <script>
 (function(){var hd=document.getElementById('hd');function onsc(){if(window.scrollY>8)hd.classList.add('scr');else hd.classList.remove('scr');}window.addEventListener('scroll',onsc,{passive:true});onsc();})();
