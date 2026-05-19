@@ -3812,5 +3812,174 @@ function _urlB64ToUint8Array(base64String) {
   });
 })();
 </script>
+
+<!-- ─────────────── APP ONBOARDING TOUR ─────────────── -->
+<script>
+(function(){
+  var DONE_KEY = 'vigilo_app_onboarding_done';
+  if(localStorage.getItem(DONE_KEY)) return;
+
+  var STEPS = [
+    {
+      title: 'Welcome to Vigilo',
+      desc: 'Real-time outbreak tracking across 44 verified sources. Quick tour — 30 seconds.',
+      icon: '🌍',
+      sel: null
+    },
+    {
+      title: 'Search anything',
+      desc: 'Type a country, disease, or region. Get an instant risk summary and live signals.',
+      icon: '🔍',
+      sel: function(){ return document.querySelector('.search-wrap') || document.querySelector('#searchInput'); },
+      pos: 'bottom'
+    },
+    {
+      title: 'Live global pulse',
+      desc: 'At a glance: outbreaks, deaths, critical alerts — updated every hour from WHO and CDC.',
+      icon: '📊',
+      sel: function(){ return document.querySelector('.sidebar-globe .side-section'); },
+      pos: 'right'
+    },
+    {
+      title: 'My countries',
+      desc: 'Click any country on the globe to pin it here. Your personal watch list, saved locally.',
+      icon: '📍',
+      sel: function(){ return document.querySelector('#myCountriesSection'); },
+      pos: 'right'
+    },
+    {
+      title: '3D · Map · List',
+      desc: 'Switch views: spinning globe, flat heatmap, or sortable list of all active outbreaks.',
+      icon: '🗺️',
+      sel: function(){ return document.querySelector('.view-toggle'); },
+      pos: 'bottom'
+    },
+    {
+      title: 'Get Alerts',
+      desc: 'Subscribe to email alerts when risk rises in your destinations. Free, cancel anytime.',
+      icon: '🔔',
+      sel: function(){ return document.querySelector('#newAlertBtn'); },
+      pos: 'bottom'
+    }
+  ];
+
+  var step = 0;
+  var ring, tip, backdrop;
+
+  function init(){
+    backdrop = document.createElement('div');
+    backdrop.style.cssText = 'position:fixed;inset:0;z-index:9980;background:rgba(13,16,21,0);pointer-events:all;transition:background .25s';
+    backdrop.addEventListener('click', function(ev){ ev.stopPropagation(); });
+    document.body.appendChild(backdrop);
+
+    ring = document.createElement('div');
+    ring.style.cssText = 'position:fixed;z-index:9992;box-sizing:border-box;border-radius:12px;pointer-events:none;border:2px solid #E8590C;opacity:0;transition:all .28s cubic-bezier(.4,0,.2,1)';
+    document.body.appendChild(ring);
+
+    tip = document.createElement('div');
+    tip.style.cssText = 'position:fixed;z-index:10000;width:288px;background:#fff;border-radius:18px;padding:24px 22px 18px;box-shadow:0 20px 60px rgba(13,16,21,.3),0 0 0 1px rgba(13,16,21,.07);font-family:system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;opacity:0;transition:opacity .2s,top .25s,left .25s,transform .25s';
+    document.body.appendChild(tip);
+
+    show(0);
+  }
+
+  function dots(){
+    return STEPS.map(function(_,i){
+      return '<span style="display:inline-block;width:'+(i===step?'16':'6')+'px;height:6px;border-radius:3px;background:'+(i===step?'#E8590C':'rgba(20,17,12,.15)')+';transition:all .2s"></span>';
+    }).join('');
+  }
+
+  function show(idx){
+    step = idx;
+    var s = STEPS[idx];
+    var isLast = idx === STEPS.length - 1;
+    var el = s.sel ? s.sel() : null;
+    var PAD = 7;
+
+    tip.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
+        '<div style="display:flex;gap:5px;align-items:center">'+dots()+'</div>'+
+        '<button onclick="window._appOnbSkip()" style="background:none;border:none;cursor:pointer;color:#9F9685;font-size:22px;line-height:1;padding:0 2px" title="Skip tour">×</button>'+
+      '</div>'+
+      '<div style="font-size:26px;margin-bottom:10px">'+s.icon+'</div>'+
+      '<div style="font-size:16px;font-weight:700;letter-spacing:-.025em;color:#14110C;line-height:1.25;margin-bottom:8px">'+s.title+'</div>'+
+      '<p style="font-size:13.5px;color:#544D42;line-height:1.65;margin:0 0 20px">'+s.desc+'</p>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between">'+
+        '<span style="font-size:12px;color:#9F9685">'+(idx+1)+' / '+STEPS.length+'</span>'+
+        '<div style="display:flex;gap:8px">'+
+          (idx>0?'<button onclick="window._appOnbPrev()" style="background:none;border:1.5px solid rgba(20,17,12,.14);border-radius:9px;padding:8px 15px;cursor:pointer;font-size:13px;color:#7A7263;font-weight:600">← Back</button>':'')+
+          '<button onclick="window._appOnbNext()" style="background:#E8590C;border:none;border-radius:9px;padding:8px 20px;cursor:pointer;font-size:13px;color:#fff;font-weight:700">'+
+            (isLast?'Done ✓':'Next →')+
+          '</button>'+
+        '</div>'+
+      '</div>';
+
+    if(!el){
+      backdrop.style.background = 'rgba(13,16,21,0.55)';
+      ring.style.opacity = '0';
+      ring.style.boxShadow = '';
+      tip.style.top = '50%';
+      tip.style.left = '50%';
+      tip.style.transform = 'translate(-50%,-50%)';
+      tip.style.opacity = '1';
+    } else {
+      backdrop.style.background = 'rgba(13,16,21,0)';
+      var r = el.getBoundingClientRect();
+      ring.style.top    = (r.top  - PAD)+'px';
+      ring.style.left   = (r.left - PAD)+'px';
+      ring.style.width  = (r.width  + PAD*2)+'px';
+      ring.style.height = (r.height + PAD*2)+'px';
+      ring.style.boxShadow = '0 0 0 4000px rgba(13,16,21,0.58)';
+      ring.style.opacity = '1';
+
+      var tipW=288, tipH=230, gap=16;
+      var top, left;
+      var pos = s.pos || 'right';
+
+      if(pos === 'bottom'){
+        top  = r.bottom + PAD + gap;
+        left = r.left + (r.width/2) - (tipW/2);
+        if(top + tipH > window.innerHeight - 12){
+          top = r.top - PAD - gap - tipH;
+        }
+      } else {
+        // right
+        left = r.right + PAD + gap;
+        top  = r.top + (r.height/2) - (tipH/2);
+        if(left + tipW > window.innerWidth - 12){
+          left = r.left - PAD - gap - tipW;
+        }
+      }
+      top  = Math.max(12, Math.min(top,  window.innerHeight - tipH - 12));
+      left = Math.max(12, Math.min(left, window.innerWidth  - tipW - 12));
+
+      tip.style.transform = '';
+      tip.style.top  = top  + 'px';
+      tip.style.left = left + 'px';
+      tip.style.opacity = '1';
+    }
+  }
+
+  window._appOnbNext = function(){
+    if(step >= STEPS.length-1){ window._appOnbSkip(); return; }
+    show(step+1);
+  };
+  window._appOnbPrev = function(){
+    if(step > 0) show(step-1);
+  };
+  window._appOnbSkip = function(){
+    localStorage.setItem(DONE_KEY,'1');
+    [ring,tip,backdrop].forEach(function(e){ if(e&&e.parentNode) e.parentNode.removeChild(e); });
+    delete window._appOnbNext; delete window._appOnbPrev; delete window._appOnbSkip;
+  };
+
+  // Start after page load + small delay for map to initialise
+  if(document.readyState === 'complete'){
+    setTimeout(init, 1200);
+  } else {
+    window.addEventListener('load', function(){ setTimeout(init, 1200); });
+  }
+})();
+</script>
 </body>
 </html>
