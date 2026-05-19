@@ -3819,45 +3819,87 @@ function _urlB64ToUint8Array(base64String) {
   var DONE_KEY = 'vigilo_app_onboarding_done';
   if(localStorage.getItem(DONE_KEY)) return;
 
+  // ── SVG icon library ──────────────────────────────────────
+  var IC = {
+    globe:   '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    search:  '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    chart:   '<path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/>',
+    layers:  '<path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>',
+    pin:     '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+    cursor:  '<path d="M4 4l7 18 3-7 7-3z"/><path d="M14 14l5 5"/>',
+    bell:    '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+    view:    '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'
+  };
+  function svg(name){
+    return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[name]+'</svg>';
+  }
+
+  // ── Language helper ───────────────────────────────────────
+  // window.LANG is set by the i18n block before this script runs
+  function t(en, ru){ return (window.LANG === 'ru') ? ru : en; }
+
+  // ── Steps ─────────────────────────────────────────────────
   var STEPS = [
     {
-      title: 'Welcome to Vigilo',
-      desc: 'Real-time outbreak tracking across 44 verified sources. Quick tour — 30 seconds.',
-      icon: '🌍',
+      icon: 'globe',
+      title: t('Welcome to Vigilo', 'Добро пожаловать в Vigilo'),
+      desc:  t('Real-time disease and disaster tracking from 44 verified sources. 30-second tour.',
+               'Мониторинг вспышек и катастроф в реальном времени — 44 верифицированных источника. Тур займёт 30 секунд.'),
       sel: null
     },
     {
-      title: 'Search anything',
-      desc: 'Type a country, disease, or region. Get an instant risk summary and live signals.',
-      icon: '🔍',
-      sel: function(){ return document.querySelector('.search-wrap') || document.querySelector('#searchInput'); },
+      icon: 'search',
+      title: t('Search anything', 'Поиск'),
+      desc:  t('Type a country, disease, or region. Get an instant risk summary with source links.',
+               'Введите страну, болезнь или регион — получите сводку рисков со ссылками на источники.'),
+      sel: function(){ return document.querySelector('.search-wrap'); },
       pos: 'bottom'
     },
     {
-      title: 'Live global pulse',
-      desc: 'At a glance: outbreaks, deaths, critical alerts — updated every hour from WHO and CDC.',
-      icon: '📊',
+      icon: 'chart',
+      title: t('Live global pulse', 'Глобальный пульс'),
+      desc:  t('Outbreaks, deaths and critical alerts — updated every hour from WHO, CDC and ECDC.',
+               'Вспышки, смерти и критические алерты — обновляются каждый час от ВОЗ, CDC и ECDC.'),
       sel: function(){ return document.querySelector('.sidebar-globe .side-section'); },
       pos: 'right'
     },
     {
-      title: 'My countries',
-      desc: 'Click any country on the globe to pin it here. Your personal watch list, saved locally.',
-      icon: '📍',
+      icon: 'layers',
+      title: t('Collapse & filter categories', 'Сворачивание и фильтры'),
+      desc:  t('Expand or collapse Epidemics, Disasters, Air quality and more. Toggle the map layer with the switch.',
+               'Разворачивайте и сворачивайте Эпидемии, Катастрофы, Качество воздуха. Переключатель скрывает слой на карте.'),
+      sel: function(){ return document.querySelector('#catSections'); },
+      pos: 'right'
+    },
+    {
+      icon: 'pin',
+      title: t('My countries', 'Мои страны'),
+      desc:  t('Click any country on the globe to pin it here. Your personal watch list, saved in the browser.',
+               'Кликните на страну на глобусе — она появится здесь. Личный список сохраняется в браузере.'),
       sel: function(){ return document.querySelector('#myCountriesSection'); },
       pos: 'right'
     },
     {
-      title: '3D · Map · List',
-      desc: 'Switch views: spinning globe, flat heatmap, or sortable list of all active outbreaks.',
-      icon: '🗺️',
+      icon: 'cursor',
+      title: t('Click a country for details', 'Клик по стране — подробности'),
+      desc:  t('Click any dot or country on the globe. The right panel shows risk breakdown, active outbreaks and travel advice.',
+               'Кликните на точку или страну на глобусе — правая панель покажет риски, активные вспышки и советы по поездкам.'),
+      sel: function(){ return document.getElementById('globe'); },
+      pos: 'left'
+    },
+    {
+      icon: 'view',
+      title: t('3D · Map · List', '3D · Карта · Список'),
+      desc:  t('Switch views: spinning globe, flat heatmap, or sortable list of all active outbreaks.',
+               'Переключайте виды: вращающийся глобус, плоская тепловая карта или список всех активных вспышек.'),
       sel: function(){ return document.querySelector('.view-toggle'); },
       pos: 'bottom'
     },
     {
-      title: 'Get Alerts',
-      desc: 'Subscribe to email alerts when risk rises in your destinations. Free, cancel anytime.',
-      icon: '🔔',
+      icon: 'bell',
+      title: t('Get Alerts', 'Подписаться на алерты'),
+      desc:  t('Email alert when risk rises in your destinations — free, one-click unsubscribe.',
+               'Email-уведомление, когда риск растёт в ваших направлениях — бесплатно, отписка в один клик.'),
       sel: function(){ return document.querySelector('#newAlertBtn'); },
       pos: 'bottom'
     }
@@ -3873,11 +3915,19 @@ function _urlB64ToUint8Array(base64String) {
     document.body.appendChild(backdrop);
 
     ring = document.createElement('div');
-    ring.style.cssText = 'position:fixed;z-index:9992;box-sizing:border-box;border-radius:12px;pointer-events:none;border:2px solid #E8590C;opacity:0;transition:all .28s cubic-bezier(.4,0,.2,1)';
+    ring.style.cssText = 'position:fixed;z-index:9992;box-sizing:border-box;border-radius:14px;pointer-events:none;border:2px solid #E8590C;opacity:0;transition:all .28s cubic-bezier(.4,0,.2,1)';
     document.body.appendChild(ring);
 
     tip = document.createElement('div');
-    tip.style.cssText = 'position:fixed;z-index:10000;width:288px;background:#fff;border-radius:18px;padding:24px 22px 18px;box-shadow:0 20px 60px rgba(13,16,21,.3),0 0 0 1px rgba(13,16,21,.07);font-family:system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;opacity:0;transition:opacity .2s,top .25s,left .25s,transform .25s';
+    tip.style.cssText = [
+      'position:fixed;z-index:10000;width:296px',
+      'background:#FAFAF8;border-radius:20px',
+      'padding:22px 22px 18px',
+      'box-shadow:0 24px 64px rgba(13,16,21,.28),0 0 0 1px rgba(13,16,21,.08)',
+      "font-family:'Geist',system-ui,-apple-system,sans-serif",
+      '-webkit-font-smoothing:antialiased',
+      'opacity:0;transition:opacity .2s,top .25s,left .25s,transform .25s'
+    ].join(';');
     document.body.appendChild(tip);
 
     show(0);
@@ -3885,7 +3935,8 @@ function _urlB64ToUint8Array(base64String) {
 
   function dots(){
     return STEPS.map(function(_,i){
-      return '<span style="display:inline-block;width:'+(i===step?'16':'6')+'px;height:6px;border-radius:3px;background:'+(i===step?'#E8590C':'rgba(20,17,12,.15)')+';transition:all .2s"></span>';
+      return '<span style="display:inline-block;width:'+(i===step?'18':'6')+'px;height:6px;border-radius:3px;'+
+        'background:'+(i===step?'#E8590C':'rgba(20,17,12,.13)')+';transition:all .22s"></span>';
     }).join('');
   }
 
@@ -3894,28 +3945,42 @@ function _urlB64ToUint8Array(base64String) {
     var s = STEPS[idx];
     var isLast = idx === STEPS.length - 1;
     var el = s.sel ? s.sel() : null;
-    var PAD = 7;
+    var PAD = 8;
+
+    var btnBack = idx > 0
+      ? '<button onclick="window._appOnbPrev()" style="background:none;border:1.5px solid rgba(20,17,12,.14);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:#7A7263;font-weight:600;font-family:inherit">'+
+          t('← Back','← Назад')+
+        '</button>'
+      : '';
+    var btnNext = '<button onclick="window._appOnbNext()" style="background:#E8590C;border:none;border-radius:10px;padding:9px 20px;cursor:pointer;font-size:13px;color:#fff;font-weight:700;font-family:inherit">'+
+        (isLast ? t('Done ✓','Готово ✓') : t('Next →','Далее →'))+
+      '</button>';
 
     tip.innerHTML =
+      // header row
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
         '<div style="display:flex;gap:5px;align-items:center">'+dots()+'</div>'+
-        '<button onclick="window._appOnbSkip()" style="background:none;border:none;cursor:pointer;color:#9F9685;font-size:22px;line-height:1;padding:0 2px" title="Skip tour">×</button>'+
+        '<button onclick="window._appOnbSkip()" style="background:none;border:none;cursor:pointer;'+
+          'color:#B5AFA4;font-size:22px;line-height:1;padding:2px 4px;border-radius:6px;'+
+          'transition:color .15s" title="'+t('Skip tour','Пропустить')+'">×</button>'+
       '</div>'+
-      '<div style="font-size:26px;margin-bottom:10px">'+s.icon+'</div>'+
-      '<div style="font-size:16px;font-weight:700;letter-spacing:-.025em;color:#14110C;line-height:1.25;margin-bottom:8px">'+s.title+'</div>'+
-      '<p style="font-size:13.5px;color:#544D42;line-height:1.65;margin:0 0 20px">'+s.desc+'</p>'+
-      '<div style="display:flex;align-items:center;justify-content:space-between">'+
-        '<span style="font-size:12px;color:#9F9685">'+(idx+1)+' / '+STEPS.length+'</span>'+
-        '<div style="display:flex;gap:8px">'+
-          (idx>0?'<button onclick="window._appOnbPrev()" style="background:none;border:1.5px solid rgba(20,17,12,.14);border-radius:9px;padding:8px 15px;cursor:pointer;font-size:13px;color:#7A7263;font-weight:600">← Back</button>':'')+
-          '<button onclick="window._appOnbNext()" style="background:#E8590C;border:none;border-radius:9px;padding:8px 20px;cursor:pointer;font-size:13px;color:#fff;font-weight:700">'+
-            (isLast?'Done ✓':'Next →')+
-          '</button>'+
-        '</div>'+
+      // icon
+      '<div style="width:40px;height:40px;border-radius:11px;background:rgba(232,89,12,.10);'+
+        'display:flex;align-items:center;justify-content:center;color:#E8590C;margin-bottom:14px">'+
+        svg(s.icon)+
+      '</div>'+
+      // title
+      '<div style="font-size:15.5px;font-weight:700;letter-spacing:-.025em;color:#14110C;line-height:1.25;margin-bottom:7px">'+s.title+'</div>'+
+      // desc
+      '<p style="font-size:13px;color:#6B6560;line-height:1.65;margin:0 0 20px">'+s.desc+'</p>'+
+      // footer
+      '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(20,17,12,.07);padding-top:14px">'+
+        '<span style="font-size:11.5px;color:#B5AFA4;font-weight:500">'+(idx+1)+' '+t('of','из')+' '+STEPS.length+'</span>'+
+        '<div style="display:flex;gap:8px">'+btnBack+btnNext+'</div>'+
       '</div>';
 
     if(!el){
-      backdrop.style.background = 'rgba(13,16,21,0.55)';
+      backdrop.style.background = 'rgba(13,16,21,0.52)';
       ring.style.opacity = '0';
       ring.style.boxShadow = '';
       tip.style.top = '50%';
@@ -3925,30 +3990,29 @@ function _urlB64ToUint8Array(base64String) {
     } else {
       backdrop.style.background = 'rgba(13,16,21,0)';
       var r = el.getBoundingClientRect();
-      ring.style.top    = (r.top  - PAD)+'px';
-      ring.style.left   = (r.left - PAD)+'px';
-      ring.style.width  = (r.width  + PAD*2)+'px';
-      ring.style.height = (r.height + PAD*2)+'px';
-      ring.style.boxShadow = '0 0 0 4000px rgba(13,16,21,0.58)';
+      ring.style.top    = (r.top  - PAD) + 'px';
+      ring.style.left   = (r.left - PAD) + 'px';
+      ring.style.width  = (r.width  + PAD*2) + 'px';
+      ring.style.height = (r.height + PAD*2) + 'px';
+      ring.style.boxShadow = '0 0 0 4000px rgba(13,16,21,0.56)';
       ring.style.opacity = '1';
 
-      var tipW=288, tipH=230, gap=16;
+      var tipW = 296, tipH = 260, gap = 16;
       var top, left;
       var pos = s.pos || 'right';
 
       if(pos === 'bottom'){
         top  = r.bottom + PAD + gap;
-        left = r.left + (r.width/2) - (tipW/2);
-        if(top + tipH > window.innerHeight - 12){
-          top = r.top - PAD - gap - tipH;
-        }
+        left = r.left + r.width/2 - tipW/2;
+        if(top + tipH > window.innerHeight - 12) top = r.top - PAD - gap - tipH;
+      } else if(pos === 'left'){
+        left = r.left - PAD - gap - tipW;
+        top  = r.top + r.height/2 - tipH/2;
+        if(left < 12){ left = r.right + PAD + gap; }
       } else {
-        // right
         left = r.right + PAD + gap;
-        top  = r.top + (r.height/2) - (tipH/2);
-        if(left + tipW > window.innerWidth - 12){
-          left = r.left - PAD - gap - tipW;
-        }
+        top  = r.top + r.height/2 - tipH/2;
+        if(left + tipW > window.innerWidth - 12) left = r.left - PAD - gap - tipW;
       }
       top  = Math.max(12, Math.min(top,  window.innerHeight - tipH - 12));
       left = Math.max(12, Math.min(left, window.innerWidth  - tipW - 12));
@@ -3961,19 +4025,18 @@ function _urlB64ToUint8Array(base64String) {
   }
 
   window._appOnbNext = function(){
-    if(step >= STEPS.length-1){ window._appOnbSkip(); return; }
-    show(step+1);
+    if(step >= STEPS.length - 1){ window._appOnbSkip(); return; }
+    show(step + 1);
   };
   window._appOnbPrev = function(){
-    if(step > 0) show(step-1);
+    if(step > 0) show(step - 1);
   };
   window._appOnbSkip = function(){
-    localStorage.setItem(DONE_KEY,'1');
-    [ring,tip,backdrop].forEach(function(e){ if(e&&e.parentNode) e.parentNode.removeChild(e); });
+    localStorage.setItem(DONE_KEY, '1');
+    [ring, tip, backdrop].forEach(function(e){ if(e && e.parentNode) e.parentNode.removeChild(e); });
     delete window._appOnbNext; delete window._appOnbPrev; delete window._appOnbSkip;
   };
 
-  // Start after page load + small delay for map to initialise
   if(document.readyState === 'complete'){
     setTimeout(init, 1200);
   } else {
