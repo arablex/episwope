@@ -3900,10 +3900,16 @@ function _urlB64ToUint8Array(base64String) {
       sel: function(){ return document.getElementById('panel'); },
       pos: 'left',
       onEnter: function(){
-        // Programmatically open Turkey so user sees the panel in action
-        if(typeof window.selectCountry === 'function'){
-          window.selectCountry('Turkey');
-        }
+        // 1. Collapse all cat-sections so globe is fully visible
+        document.querySelectorAll('.cat-section.expanded').forEach(function(s){
+          s.classList.remove('expanded');
+        });
+        // 2. Open Turkey — slight delay so collapse animates first
+        setTimeout(function(){
+          if(typeof window.selectCountry === 'function'){
+            window.selectCountry('Turkey');
+          }
+        }, 180);
       },
       onLeave: function(){
         // Close the panel when moving away
