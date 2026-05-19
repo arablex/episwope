@@ -1,175 +1,835 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>My Profile · Vigilo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
-  <style>
-    :root{ color-scheme:light;
-      --bg:#F4F2EE; --card:#fff; --ink:#0F0E0C; --ink2:#3B3A36;
-      --muted:#807E76; --muted2:#B6B3AA; --line:#ECEAE2; --accent:#E8590C; --gold:#F5A623; --ok:#19A463; }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
-      color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding:32px 18px}
-    .wrap{max-width:600px;margin:0 auto}
-    .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-    .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
-    .badge{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
-    .back{font-size:13px;color:var(--muted);text-decoration:none;font-weight:600}
-    .back:hover{color:var(--accent)}
-    h1{font-size:25px;font-weight:800;letter-spacing:-.03em;margin-bottom:20px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:14px}
-    .card h2{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
-    .row:last-child{border-bottom:0}
-    .row .k{color:var(--muted)}
-    .row .v{font-weight:600;text-align:right;word-break:break-word}
-    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:3px 11px;border-radius:999px}
-    .pill.free{background:#F0EFEA;color:var(--muted)}
-    .pill.pro{background:linear-gradient(180deg,var(--gold),#E8930C);color:#fff}
-    .btn{display:block;width:100%;text-align:center;height:46px;line-height:46px;border:0;border-radius:12px;
-      font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;text-decoration:none}
-    .btn.up{background:linear-gradient(180deg,var(--accent),#C92A2A);color:#fff;box-shadow:0 6px 16px -7px rgba(201,42,42,.55)}
-    .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
-    .btn.ghost:hover{border-color:var(--muted2)}
-    .upsell{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:14px}
-    .upsell b{color:var(--ink)}
-    .feat{font-size:12.5px;color:var(--ink2);display:flex;gap:8px;margin:5px 0}
-    .feat .c{color:var(--ok);font-weight:800}
-    .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
-    .chip{font-size:12px;font-weight:600;background:#F4F2EC;border:1px solid var(--line);border-radius:999px;padding:4px 11px}
-    .empty{font-size:13px;color:var(--muted);padding:14px 0;text-align:center;line-height:1.6}
-    .auth input{width:100%;height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;
-      font:inherit;font-size:14.5px;background:#FAFAF8;outline:none;margin-bottom:9px}
-    .msg{font-size:12.5px;margin-top:9px;min-height:16px;text-align:center}
-    .sub-note{font-size:11px;color:var(--muted);margin-top:9px;text-align:center}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account · Vigilo</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F2EE;--paper50:#FBF9F4;
+    --ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
+    --night:#0D1015;--night2:#13171D;--night-muted:#9CA3B0;
+    --amber:#E8590C;--green:#00A56F;--red:#C92A2A;--yellow:#E4B514;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.16);
+    --rule-dark:rgba(255,255,255,.08);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,Menlo,monospace;
+    --card-shadow:0 1px 0 rgba(20,17,12,.04),0 8px 24px -8px rgba(20,17,12,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--night);font:400 14px/1.55 var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  input,select,textarea,button{font:inherit}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+
+  /* ── Layout ── */
+  .shell{display:flex;height:100vh;overflow:hidden}
+
+  /* Sidebar */
+  .sidebar{width:240px;flex-shrink:0;background:var(--night);display:flex;flex-direction:column;
+    border-right:1px solid var(--rule-dark);overflow-y:auto}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:22px 20px 18px;
+    font-weight:700;font-size:16px;letter-spacing:-.02em;color:#fff;border-bottom:1px solid var(--rule-dark)}
+  .sb-brand svg{display:block;flex-shrink:0}
+  .sb-nav{padding:12px 10px;flex:1}
+  .sb-sec{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,255,255,.3);padding:16px 10px 6px;margin-top:4px}
+  .sb-sec:first-child{padding-top:6px}
+  .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;
+    cursor:pointer;color:rgba(255,255,255,.6);font-size:13.5px;font-weight:500;
+    transition:background .15s,color .15s;user-select:none;border:none;background:none;width:100%;text-align:left}
+  .sb-item svg{flex-shrink:0;opacity:.7}
+  .sb-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .sb-item.active{background:rgba(232,89,12,.15);color:var(--amber)}
+  .sb-item.active svg{opacity:1}
+  .sb-foot{padding:16px 20px;border-top:1px solid var(--rule-dark)}
+  .sb-user{font-size:12px;color:var(--night-muted);line-height:1.4;word-break:break-all;margin-bottom:10px}
+  .sb-user b{color:rgba(255,255,255,.8);display:block;font-weight:600}
+  .btn-out{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+    color:var(--night-muted);background:none;border:1px solid var(--rule-dark);
+    border-radius:8px;padding:7px 12px;cursor:pointer;width:100%;transition:color .15s,border-color .15s}
+  .btn-out:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+
+  /* Main */
+  .main{flex:1;overflow-y:auto;background:var(--paper)}
+  .main-hd{position:sticky;top:0;z-index:10;background:rgba(244,242,238,.9);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);
+    padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .main-hd h1{font-size:16px;font-weight:700;letter-spacing:-.02em}
+  .main-body{padding:28px 32px;max-width:960px}
+
+  /* Cards */
+  .card{background:#fff;border-radius:14px;box-shadow:var(--card-shadow);padding:22px 24px;margin-bottom:16px}
+  .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .card-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink500)}
+
+  /* Stats grid */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:16px}
+  .stat{background:#fff;border-radius:12px;box-shadow:var(--card-shadow);padding:18px 20px}
+  .stat-val{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .stat-lbl{font-size:11.5px;color:var(--ink500);margin-top:5px}
+  .stat-bar{height:4px;border-radius:2px;background:var(--rule);margin-top:10px;overflow:hidden}
+  .stat-fill{height:100%;border-radius:2px;background:var(--amber);transition:width .4s}
+
+  /* Chips */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;
+    background:var(--paper);border:1px solid var(--rule-strong);color:var(--ink700)}
+  .chip.amber{background:rgba(232,89,12,.1);border-color:rgba(232,89,12,.25);color:var(--amber)}
+
+  /* Pill badges */
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+  .pill-free{background:var(--paper);border:1px solid var(--rule-strong);color:var(--ink500)}
+  .pill-pro{background:rgba(232,89,12,.12);border:1px solid rgba(232,89,12,.3);color:var(--amber)}
+  .pill-green{background:rgba(0,165,111,.1);border:1px solid rgba(0,165,111,.25);color:var(--green)}
+  .pill-red{background:rgba(201,42,42,.08);border:1px solid rgba(201,42,42,.2);color:var(--red)}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:10px;font-weight:600;
+    font-size:13.5px;padding:9px 16px;cursor:pointer;border:none;transition:background .16s,opacity .16s;line-height:1}
+  .btn-amber{background:var(--amber);color:#fff}.btn-amber:hover{background:#FF6F1F}
+  .btn-ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rule-strong);color:var(--ink700)}
+  .btn-ghost:hover{background:rgba(20,17,12,.04)}
+  .btn-sm{padding:7px 13px;font-size:12.5px;border-radius:8px}
+  .btn-danger{background:rgba(201,42,42,.08);color:var(--red);box-shadow:inset 0 0 0 1px rgba(201,42,42,.2)}
+  .btn-danger:hover{background:rgba(201,42,42,.14)}
+
+  /* Key display */
+  .key-box{display:flex;align-items:center;gap:10px;background:var(--paper50);
+    border:1px solid var(--rule);border-radius:10px;padding:11px 14px;margin-top:10px}
+  .key-val{flex:1;font-family:var(--mono);font-size:13px;color:var(--ink600);
+    word-break:break-all;min-width:0}
+  .key-copy{flex-shrink:0;font-size:12px;font-weight:700;padding:6px 12px;border-radius:7px;
+    background:var(--amber);color:#fff;border:none;cursor:pointer;transition:background .15s}
+  .key-copy:hover{background:#FF6F1F}
+  .key-copy.done{background:var(--green)}
+
+  /* Form elements */
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink600);margin-bottom:5px}
+  .field input,.field select{width:100%;padding:10px 12px;border:1.5px solid var(--rule-strong);
+    border-radius:9px;background:#fff;color:var(--ink);font-size:13.5px;
+    transition:border-color .15s,box-shadow .15s;outline:none}
+  .field input:focus,.field select:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,89,12,.12)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  .tbl th{text-align:left;padding:8px 10px;font-size:10.5px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink500);border-bottom:1px solid var(--rule)}
+  .tbl td{padding:11px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl tr:hover td{background:var(--paper50)}
+
+  /* Report cards */
+  .rep-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:14px}
+  .rep-card{border:1px solid var(--rule);border-radius:12px;padding:20px;cursor:pointer;
+    transition:border-color .2s,box-shadow .2s;position:relative}
+  .rep-card:hover{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,89,12,.1)}
+  .rep-card.selected{border-color:var(--amber);background:rgba(232,89,12,.04)}
+  .rep-card input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+  .rep-card-ico{width:36px;height:36px;border-radius:9px;background:var(--paper);
+    display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+    border:1px solid var(--rule)}
+  .rep-card h3{font-size:14px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px}
+  .rep-card p{font-size:12px;color:var(--ink500);line-height:1.55}
+  .rep-price{margin-top:10px;font-size:13px;font-weight:700;color:var(--amber)}
+
+  /* Activity feed */
+  .activity{display:flex;flex-direction:column;gap:0}
+  .act-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule)}
+  .act-row:last-child{border-bottom:0}
+  .act-ico{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;
+    justify-content:center;margin-top:1px}
+  .act-ico.amber{background:rgba(232,89,12,.12);color:var(--amber)}
+  .act-ico.green{background:rgba(0,165,111,.1);color:var(--green)}
+  .act-ico.muted{background:var(--paper);color:var(--ink400)}
+  .act-body{flex:1;min-width:0}
+  .act-title{font-size:13px;font-weight:600;color:var(--ink)}
+  .act-sub{font-size:11.5px;color:var(--ink500);margin-top:1px}
+  .act-time{font-size:11px;color:var(--ink400);flex-shrink:0;padding-top:2px}
+
+  /* Team */
+  .team-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule)}
+  .team-row:last-child{border-bottom:0}
+  .team-avatar{width:32px;height:32px;border-radius:50%;background:var(--paper);
+    border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--ink600);flex-shrink:0}
+  .team-info{flex:1}
+  .team-name{font-size:13.5px;font-weight:600}
+  .team-email{font-size:11.5px;color:var(--ink500)}
+
+  /* Auth view */
+  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:var(--night);padding:24px}
+  .auth-box{width:100%;max-width:400px;background:var(--paper);border-radius:20px;padding:36px 32px}
+  .auth-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;
+    letter-spacing:-.02em;margin-bottom:28px}
+  .auth-box h2{font-size:22px;font-weight:700;letter-spacing:-.03em;margin-bottom:8px}
+  .auth-box p{font-size:14px;color:var(--ink600);margin-bottom:22px;line-height:1.55}
+  .auth-input{width:100%;padding:12px 14px;border:1.5px solid var(--rule-strong);border-radius:10px;
+    background:#fff;font-size:15px;outline:none;transition:border-color .15s}
+  .auth-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,89,12,.12)}
+  .auth-btn{width:100%;margin-top:12px;padding:13px;border-radius:10px;
+    background:var(--amber);color:#fff;font-size:15px;font-weight:700;
+    border:none;cursor:pointer;transition:background .15s}
+  .auth-btn:hover{background:#FF6F1F}
+  .auth-msg{font-size:12.5px;margin-top:10px;text-align:center;min-height:18px}
+  .auth-back{margin-top:20px;text-align:center;font-size:13px;color:var(--ink500)}
+  .auth-back a{color:var(--amber);font-weight:600}
+
+  /* Empty state */
+  .empty{text-align:center;padding:32px 16px;color:var(--ink500);font-size:13.5px;line-height:1.6}
+  .empty svg{display:block;margin:0 auto 12px;opacity:.35}
+
+  /* Divider */
+  .divider{height:1px;background:var(--rule);margin:20px 0}
+
+  /* Msg */
+  .msg{font-size:12.5px;padding:9px 12px;border-radius:8px;margin-top:10px}
+  .msg-ok{background:rgba(0,165,111,.1);color:var(--green);border:1px solid rgba(0,165,111,.2)}
+  .msg-err{background:rgba(201,42,42,.08);color:var(--red);border:1px solid rgba(201,42,42,.2)}
+
+  /* Mobile */
+  @media(max-width:760px){
+    .sidebar{display:none}
+    .main-body{padding:20px 18px}
+    .field-row{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+  }
+  @media(min-width:761px){
+    .mobile-nav{display:none}
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <a class="brand" href="/app.html"><span class="badge">V</span> Vigilo</a>
-      <a class="back" href="/app.html">← Back to map</a>
-    </div>
-    <h1 id="hTitle">My Profile</h1>
-    <div id="root"></div>
-  </div>
+
+<div id="appRoot"></div>
 
 <script>
-const LANG='en', APP='/', API='';
-const T=(en,ru)=>LANG==='ru'?ru:en;
+(function(){
+'use strict';
+
+// ── Constants ─────────────────────────────────────────────
+const FREE_ASSESS = 10;
+const FREE_COUNTRIES = 3;
+const COUNTRY_NAMES = {TR:'Turkey',TH:'Thailand',UA:'Ukraine',FR:'France',DE:'Germany',
+  GB:'United Kingdom',US:'United States',AE:'UAE',IN:'India',CN:'China',PK:'Pakistan',
+  EG:'Egypt',NG:'Nigeria',IL:'Israel',IR:'Iran',ES:'Spain',IT:'Italy',RU:'Russia',
+  MX:'Mexico',BR:'Brazil',JP:'Japan',KR:'South Korea',ID:'Indonesia',SA:'Saudi Arabia'};
+const BANDS = {minimal:'Minimal',low:'Low',moderate:'Moderate',elevated:'Elevated',severe:'Severe',critical:'Critical'};
+const BAND_C = {minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',elevated:'#d8531e',severe:'#c0392b',critical:'#7d1a12'};
+
+// ── Storage helpers ────────────────────────────────────────
+const ls = {
+  get: (k, def) => { try{ return JSON.parse(localStorage.getItem(k)??'null')??def; }catch{ return def; } },
+  set: (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} },
+  rm:  (k) => { try{ localStorage.removeItem(k); }catch{} },
+};
 
 function session(){
   try{
-    const jwt=localStorage.getItem('vigilo_jwt'); if(!jwt) return null;
-    const p=JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
-    if(p.exp && p.exp < Date.now()/1000){ localStorage.removeItem('vigilo_jwt'); return null; }
+    const jwt = localStorage.getItem('vigilo_jwt');
+    if(!jwt) return null;
+    const p = JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    if(p.exp && p.exp < Date.now()/1000){ ls.rm('vigilo_jwt'); return null; }
     return p;
   }catch{ return null; }
 }
-function isPaid(s){ return s && s.plan==='pro' && (!s.paid_until || new Date(s.paid_until)>new Date()); }
-function fmtDate(d){ try{ return new Date(d).toLocaleDateString(LANG,{year:'numeric',month:'short',day:'numeric'}); }catch{ return d||'—'; } }
 
-async function joinWaitlist(email,btn){
-  btn.disabled=true; btn.style.opacity=.6; btn.textContent=T('Sending…','Отправляю…');
-  try{ await fetch('/api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email,source:'account_upgrade',lang:LANG})}); }catch(e){}
-  btn.textContent=T('✓ You’re on the list','✓ Ты в списке'); btn.style.background='#19A463';
+function isPro(s){ return s && s.plan === 'pro'; }
+function isB2B(s){ return s && (s.b2b_role === 'b2b_admin' || s.b2b_role === 'b2b_employee'); }
+
+function fmtDate(d){ try{ return new Date(d).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}); }catch{ return '—'; } }
+function esc(s){ return String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+function countryName(iso){ return COUNTRY_NAMES[iso] || iso; }
+
+// ── Icons ──────────────────────────────────────────────────
+const IC = {
+  overview: '<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>',
+  api: '<path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>',
+  webhooks: '<path d="M13 10V3L4 14h7v7l9-11h-7z"/>',
+  reports: '<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>',
+  team: '<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>',
+  globe: '<path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+  logout: '<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>',
+  check: '<polyline points="20 6 9 11 4 16"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  link: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>',
+  bell: '<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>',
+};
+function ico(name, size=16){ return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[name]||''}</svg>`; }
+
+// ── Current tab state ──────────────────────────────────────
+let TAB = 'overview';
+
+function setTab(t){ TAB = t; renderMain(); }
+
+// ── Sidebar ────────────────────────────────────────────────
+function renderSidebar(sess){
+  const tabs = [
+    { id:'overview', label:'Overview' },
+    { id:'api', label:'API Key' },
+    { id:'webhooks', label:'Webhooks' },
+    { id:'reports', label:'Reports' },
+  ];
+  if(isB2B(sess)) tabs.push({ id:'team', label:'Team' });
+
+  const email = sess?.email || '—';
+  const initials = email[0]?.toUpperCase() || '?';
+
+  return `<aside class="sidebar">
+    <div class="sb-brand">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Vigilo
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">Dashboard</div>
+      ${tabs.map(t => `
+        <button class="sb-item${TAB===t.id?' active':''}" onclick="window._tab('${t.id}')">
+          ${ico(t.id,15)} ${t.label}
+        </button>`).join('')}
+      <div class="sb-sec">Tools</div>
+      <a class="sb-item" href="/app.html">${ico('globe',15)} Live globe</a>
+      <a class="sb-item" href="/report?country=${ls.get('vigilo_watched',[])[0]||'TR'}">${ico('reports',15)} View report</a>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <b>${esc(email)}</b>
+        ${isPro(sess)?'<span style="color:var(--amber);font-size:11px">✦ PRO</span>':'<span style="font-size:11px">Free plan</span>'}
+        ${isB2B(sess)?`<span style="font-size:11px;color:var(--amber)">${sess.b2b_role==='b2b_admin'?'Admin':'Employee'}</span>`:''}
+      </div>
+      <button class="btn-out" onclick="window._logout()">
+        ${ico('logout',13)} Sign out
+      </button>
+    </div>
+  </aside>`;
 }
 
-function loggedOutView(){
-  return `<div class="card auth">
-    <h2>${T('Sign in','Вход')}</h2>
-    <p style="font-size:13.5px;color:var(--ink2);margin-bottom:14px">${T('Enter your email — we’ll send a one-time login link. No password.','Введи email — пришлём одноразовую ссылку для входа. Без пароля.')}</p>
-    <input id="em" type="email" placeholder="${T('your@email.com','ваш@email.com')}" autocomplete="email">
-    <button class="btn up" id="sendBtn">${T('Send login link','Прислать ссылку')}</button>
-    <div class="msg" id="msg"></div>
-  </div>`;
+// ── OVERVIEW TAB ───────────────────────────────────────────
+function renderOverview(sess){
+  const assessLeft = ls.get('vigilo_assess_left', FREE_ASSESS);
+  const watched = ls.get('vigilo_watched', []);
+  const assessPct = Math.round((assessLeft / FREE_ASSESS) * 100);
+  const watchPct = Math.round((watched.length / FREE_COUNTRIES) * 100);
+
+  const watchedChips = watched.length
+    ? watched.map(iso => `<span class="chip">${countryName(iso)} <span style="font-size:10px;opacity:.6">${iso}</span></span>`).join('')
+    : '<span style="color:var(--ink500);font-size:13px">No countries watched yet</span>';
+
+  const recentReports = ls.get('vigilo_reports', []).slice(-5).reverse();
+  const actHtml = recentReports.length
+    ? recentReports.map(r => `
+        <div class="act-row">
+          <div class="act-ico amber">${ico('reports',13)}</div>
+          <div class="act-body">
+            <div class="act-title">${esc(r.type)} — ${countryName(r.country)}</div>
+            <div class="act-sub">${fmtDate(r.date)}</div>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="/report?country=${esc(r.country)}" target="_blank">View</a>
+        </div>`).join('')
+    : `<div class="empty" style="padding:20px 0;text-align:left">
+        ${ico('reports',20)}<span style="display:block;margin-top:4px">No reports generated yet</span>
+       </div>`;
+
+  return `
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val">${assessLeft}<span style="font-size:16px;color:var(--ink500)">/10</span></div>
+        <div class="stat-lbl">Risk assessments left</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:${assessPct}%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${watched.length}<span style="font-size:16px;color:var(--ink500)">/${FREE_COUNTRIES}</span></div>
+        <div class="stat-lbl">Countries watched</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:${watchPct}%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${recentReports.length}</div>
+        <div class="stat-lbl">Reports generated</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:${Math.min(100,recentReports.length*10)}%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" style="font-size:18px">${isPro(sess)?'PRO':'Free'}</div>
+        <div class="stat-lbl">Current plan</div>
+        <div style="margin-top:10px">${isPro(sess)
+          ?`<span class="pill pill-pro">✦ Active</span>`
+          :`<span class="pill pill-free">Free tier</span>`}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Watched countries</span>
+        <a class="btn btn-ghost btn-sm" href="/app.html">Manage on globe →</a>
+      </div>
+      <div class="chips">${watchedChips}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Recent reports</span></div>
+      <div class="activity">${actHtml}</div>
+    </div>
+
+    ${!isPro(sess) ? `
+    <div class="card" style="border:1.5px solid rgba(232,89,12,.3);background:rgba(232,89,12,.04)">
+      <div class="card-hd" style="margin-bottom:12px"><span class="card-title" style="color:var(--amber)">Upgrade to Pro</span></div>
+      <p style="font-size:14px;color:var(--ink600);line-height:1.6;margin-bottom:16px">Unlimited countries, real-time alerts, unlimited reports and API access.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-amber" href="mailto:hello@vigilo.cc?subject=Vigilo Pro upgrade">Contact us →</a>
+        <a class="btn btn-ghost" href="/business.html">See plans</a>
+      </div>
+    </div>` : ''}`;
 }
 
-async function loggedInView(s){
-  const pro=isPaid(s);
-  const planPill=pro?`<span class="pill pro">✦ PRO</span>`:`<span class="pill free">${T('Free','Бесплатный')}</span>`;
-
-  // alerts
-  let alertsHtml=`<div class="empty">${T('Loading…','Загрузка…')}</div>`;
-  try{
-    const r=await fetch('/api/my-countries',{headers:{Authorization:'Bearer '+localStorage.getItem('vigilo_jwt')}});
-    if(r.ok){
-      const d=await r.json();
-      const cs=d.countries||[];
-      alertsHtml = cs.length
-        ? `<div class="chips">${cs.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
-           <div class="sub-note">${cs.length} / ${d.limit} ${T('countries watched','стран отслеживается')}</div>`
-        : `<div class="empty">${T('No watched countries yet. Open the map and tap “Watch” on a country.','Пока нет отслеживаемых стран. Открой карту и нажми «Следить» на стране.')}</div>`;
-    } else alertsHtml=`<div class="empty">${T('Could not load alerts.','Не удалось загрузить алерты.')}</div>`;
-  }catch(e){ alertsHtml=`<div class="empty">${T('Could not load alerts.','Не удалось загрузить алерты.')}</div>`; }
-
-  const subCard = pro
-    ? `<div class="card">
-        <h2>${T('Subscription','Подписка')}</h2>
-        <div class="row"><span class="k">${T('Plan','Тариф')}</span><span class="v">${planPill}</span></div>
-        <div class="row"><span class="k">${T('Status','Статус')}</span><span class="v" style="color:var(--ok)">${T('Active','Активен')}</span></div>
-        <div class="row"><span class="k">${T('Renews / valid until','Действует до')}</span><span class="v">${s.paid_until?fmtDate(s.paid_until):T('∞','бессрочно')}</span></div>
-      </div>`
-    : `<div class="card">
-        <h2>${T('Upgrade to Pro','Перейти на Pro')}</h2>
-        <div class="upsell"><b>$4.99/${T('mo','мес')}</b> · ${T('Launching soon — join the waitlist for <b>50% off</b> at launch.','Запускаем скоро — в список ожидания за <b>−50%</b> на старте.')}</div>
-        <div class="feat"><span class="c">✓</span>${T('Unlimited watched countries','Безлимит стран')}</div>
-        <div class="feat"><span class="c">✓</span>${T('Real-time alerts (no 24h delay)','Алерты в реальном времени')}</div>
-        <div class="feat"><span class="c">✓</span>${T('Full History tab + charts','Полная вкладка История + графики')}</div>
-        <div class="feat"><span class="c">✓</span>${T('Risk reports (PDF)','Отчёты по рискам (PDF)')}</div>
-        <div style="height:14px"></div>
-        <button class="btn up" id="upBtn">${T('Join the waitlist','В список ожидания')}</button>
-      </div>`;
+// ── API KEY TAB ────────────────────────────────────────────
+function renderApi(sess){
+  const apiKey = ls.get('vigilo_api_key', null);
+  const maskedKey = apiKey ? (apiKey.slice(0,12) + '••••••••••••' + apiKey.slice(-6)) : null;
 
   return `
     <div class="card">
-      <h2>${T('Account','Аккаунт')}</h2>
-      <div class="row"><span class="k">Email</span><span class="v">${s.email}</span></div>
-      <div class="row"><span class="k">${T('Plan','Тариф')}</span><span class="v">${planPill}</span></div>
-      <div class="row"><span class="k">${T('Member since','С нами с')}</span><span class="v">${s.iat?fmtDate(s.iat*1000):'—'}</span></div>
+      <div class="card-hd"><span class="card-title">Your API key</span></div>
+      ${apiKey ? `
+        <p style="font-size:13.5px;color:var(--ink600);margin-bottom:4px">
+          Use this key in the <code style="font-family:var(--mono);background:var(--paper);padding:2px 6px;border-radius:4px;font-size:12px">X-Api-Key</code> header on requests to <code style="font-family:var(--mono);background:var(--paper);padding:2px 6px;border-radius:4px;font-size:12px">vigilo.cc/api/v1/risk</code>.
+        </p>
+        <div class="key-box">
+          <div class="key-val" id="keyDisp">${esc(maskedKey)}</div>
+          <button class="key-copy" id="keyToggle" onclick="window._toggleKey()">Show</button>
+          <button class="key-copy" id="keyCopy" onclick="window._copyKey()">Copy</button>
+        </div>
+        <p style="font-size:12px;color:var(--ink500);margin-top:10px">Keep this secret. If compromised, contact hello@vigilo.cc to rotate.</p>
+      ` : `
+        <div class="empty">
+          ${ico('api',24)}
+          <span style="display:block;margin-top:8px">No API key yet.</span>
+          <span style="font-size:12px">Contact us to get API access.</span>
+        </div>
+        <div style="margin-top:16px">
+          <a class="btn btn-amber" href="mailto:hello@vigilo.cc?subject=Vigilo API key request">Request API key →</a>
+        </div>
+      `}
     </div>
-    ${subCard}
+
     <div class="card">
-      <h2>${T('My alerts','Мои алерты')}</h2>
-      ${alertsHtml}
-      <div style="height:14px"></div>
-      <a class="btn ghost" href="/app.html">${T('Manage on the map →','Управлять на карте →')}</a>
+      <div class="card-hd"><span class="card-title">Rate limits</span></div>
+      <table class="tbl">
+        <thead><tr><th>Tier</th><th>Requests/min</th><th>Requests/hour</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-free">Anonymous</span></td><td>—</td><td>60</td></tr>
+          <tr><td><span class="pill pill-pro">Partner</span></td><td>60 RPM</td><td>3,600</td></tr>
+          <tr><td><span class="pill" style="background:rgba(20,17,12,.08);color:var(--ink)">Enterprise</span></td><td>Custom</td><td>Custom</td></tr>
+        </tbody>
+      </table>
     </div>
+
     <div class="card">
-      <h2>${T('Report history','История отчётов')}</h2>
-      <div class="empty">${T('Risk reports appear here once generated. “Assess risks” on any country to create one (Pro).','Отчёты по рискам появятся здесь после создания. Нажми «Оценить риски» на любой стране (Pro).')}</div>
+      <div class="card-hd"><span class="card-title">Quick test</span></div>
+      <div class="field">
+        <label>Country (ISO-2)</label>
+        <input id="testIso" placeholder="e.g. TH" maxlength="2" style="max-width:120px;text-transform:uppercase">
+      </div>
+      <button class="btn btn-ghost" onclick="window._testApi()">Run request</button>
+      <pre id="testOut" style="display:none;margin-top:14px;background:var(--night);color:#EDEAE2;font-family:var(--mono);font-size:11.5px;border-radius:10px;padding:16px;overflow-x:auto;max-height:260px;white-space:pre-wrap"></pre>
     </div>
+
     <div class="card">
-      <button class="btn ghost" id="outBtn">${T('Sign out','Выйти')}</button>
+      <div class="card-hd"><span class="card-title">Links</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-ghost" href="/api/v1/docs">${ico('link',14)} API documentation</a>
+        <a class="btn btn-ghost" href="/methodology">${ico('link',14)} Methodology</a>
+      </div>
     </div>`;
 }
 
-async function render(){
-  const s=session();
-  const root=document.getElementById('root');
-  if(!s){ root.innerHTML=loggedOutView();
-    const btn=document.getElementById('sendBtn'), em=document.getElementById('em'), msg=document.getElementById('msg');
-    btn.onclick=async()=>{
-      if(!em.value.includes('@')) return;
-      btn.disabled=true; btn.style.opacity=.6;
-      try{ await fetch('/api/magic-link',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({email:em.value.trim(),lang:LANG})});
-        msg.textContent=T('Check your email ✓','Проверь почту ✓'); msg.style.color='#19A463'; em.disabled=true; btn.style.display='none';
-      }catch{ msg.textContent=T('Error. Try again.','Ошибка. Повтори.'); btn.disabled=false; btn.style.opacity=1; }
-    };
-    return;
-  }
-  root.innerHTML=await loggedInView(s);
-  const out=document.getElementById('outBtn');
-  if(out) out.onclick=()=>{ localStorage.removeItem('vigilo_jwt'); location.href='/'; };
-  const up=document.getElementById('upBtn');
-  if(up) up.onclick=()=>joinWaitlist(s.email,up);
+// ── WEBHOOKS TAB ───────────────────────────────────────────
+let WEBHOOKS = ls.get('vigilo_webhooks', []);
+
+function renderWebhooks(){
+  const rows = WEBHOOKS.length
+    ? WEBHOOKS.map((wh, i) => `
+        <tr>
+          <td><code style="font-family:var(--mono);font-size:12px">${esc(wh.id)}</code></td>
+          <td><span class="chip">${countryName(wh.country)} ${wh.country}</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px">≥ ${wh.threshold}</span></td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${esc(wh.callback_url)}</td>
+          <td><span class="pill pill-green">Active</span></td>
+          <td><button class="btn btn-danger btn-sm" onclick="window._deleteWh(${i})">${ico('trash',13)}</button></td>
+        </tr>`).join('')
+    : `<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--ink500)">No webhooks yet. Create one below.</td></tr>`;
+
+  return `
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Active webhooks</span><span style="font-size:12px;color:var(--ink500)">${WEBHOOKS.length} registered</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>ID</th><th>Country</th><th>Threshold</th><th>Callback URL</th><th>Status</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><span class="card-title">New webhook</span></div>
+      <div class="field-row">
+        <div class="field">
+          <label>Country (ISO-2)</label>
+          <input id="whCountry" placeholder="e.g. TH" maxlength="2" style="text-transform:uppercase">
+        </div>
+        <div class="field">
+          <label>Risk threshold (0–5)</label>
+          <input id="whThreshold" type="number" min="0" max="5" step="0.5" value="2.0">
+        </div>
+      </div>
+      <div class="field">
+        <label>Callback URL (HTTPS)</label>
+        <input id="whUrl" type="url" placeholder="https://your-server.com/webhook">
+      </div>
+      <div class="field">
+        <label>Email (optional — for notifications)</label>
+        <input id="whEmail" type="email" placeholder="you@company.com">
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-amber" onclick="window._createWh()">
+          ${ico('plus',14)} Register webhook
+        </button>
+      </div>
+      <div id="whMsg"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Payload format</span></div>
+      <pre style="background:var(--night);color:#EDEAE2;font-family:var(--mono);font-size:11.5px;border-radius:10px;padding:16px;overflow-x:auto">{
+  "event": "risk.threshold.crossed",
+  "subscription_id": "whk_abc123...",
+  "country": "TH",
+  "threshold": 2.0,
+  "reason": "threshold_crossed",
+  "composite_risk": { "score": 2.34, "band": "moderate", "dominant_category": "health" },
+  "triggered_at": "2026-05-19T10:00:00Z"
+}</pre>
+      <p style="font-size:12px;color:var(--ink500);margin-top:10px">Verify with HMAC-SHA256: compare <code style="font-family:var(--mono)">X-Vigilo-Signature: sha256=&lt;hex&gt;</code> to <code style="font-family:var(--mono)">HMAC(secret, rawBody)</code></p>
+    </div>`;
 }
-render();
+
+// ── REPORTS TAB ────────────────────────────────────────────
+let REP_TYPE = 'traveler';
+let REP_COUNTRY = ls.get('vigilo_watched',[])[0] || '';
+
+function renderReports(){
+  const history = ls.get('vigilo_reports', []).reverse();
+  const histHtml = history.length
+    ? `<table class="tbl"><thead><tr><th>Type</th><th>Country</th><th>Date</th><th></th></tr></thead><tbody>
+        ${history.map(r=>`<tr>
+          <td>${esc(r.type)}</td>
+          <td><span class="chip">${countryName(r.country)} ${r.country}</span></td>
+          <td style="font-size:12px;color:var(--ink500)">${fmtDate(r.date)}</td>
+          <td><a class="btn btn-ghost btn-sm" href="/report?country=${esc(r.country)}" target="_blank">Open →</a></td>
+        </tr>`).join('')}
+       </tbody></table>`
+    : `<div class="empty" style="padding:16px 0;text-align:left">No reports yet. Generate your first one below.</div>`;
+
+  return `
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Report history</span></div>
+      ${histHtml}
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Generate new report</span></div>
+      <div class="field">
+        <label>Country (ISO-2)</label>
+        <input id="repCountry" placeholder="e.g. TH" maxlength="2" value="${esc(REP_COUNTRY)}" style="max-width:120px;text-transform:uppercase" oninput="REP_COUNTRY=this.value.toUpperCase()">
+      </div>
+
+      <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink500);margin-bottom:10px">Report type</div>
+      <div class="rep-grid" id="repGrid">
+        ${[
+          { id:'traveler', label:'Traveler Report', desc:'Health risks, entry requirements, emergency contacts. For individual travel.', price:'Free (demo)' },
+          { id:'business', label:'Business Trip Safe', desc:'Mobility risks, infrastructure, Duty of Care checklist. Corporate format.', price:'1 credit' },
+          { id:'deepdive', label:'Location Deep Dive', desc:'Full analytical report: all domains, projection, historical context.', price:'2 credits' },
+        ].map(r=>`
+          <label class="rep-card${REP_TYPE===r.id?' selected':''}">
+            <input type="radio" name="repType" value="${r.id}" ${REP_TYPE===r.id?'checked':''} onchange="window._repType('${r.id}')">
+            <div class="rep-card-ico">${ico('reports',16)}</div>
+            <h3>${r.label}</h3>
+            <p>${r.desc}</p>
+            <div class="rep-price">${r.price}</div>
+          </label>`).join('')}
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-amber" onclick="window._generateReport()">
+          ${ico('reports',14)} Generate report
+        </button>
+        <span id="repMsg" style="font-size:13px;color:var(--ink500);align-self:center"></span>
+      </div>
+    </div>`;
+}
+
+// ── TEAM TAB (B2B) ─────────────────────────────────────────
+function renderTeam(sess){
+  const company = ls.get('vigilo_company', { name:'Your Company', credits:0, members:[] });
+  const members = company.members || [];
+
+  return `
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val">${company.credits}</div>
+        <div class="stat-lbl">Credits remaining</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${members.length}</div>
+        <div class="stat-lbl">Team members</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Team members</span>
+        ${sess.b2b_role==='b2b_admin'?`<button class="btn btn-ghost btn-sm" onclick="window._inviteModal()">${ico('plus',13)} Invite</button>`:''}
+      </div>
+      <div>
+        ${members.length
+          ? members.map(m=>`
+              <div class="team-row">
+                <div class="team-avatar">${(m.email||'?')[0].toUpperCase()}</div>
+                <div class="team-info">
+                  <div class="team-name">${esc(m.name||m.email)}</div>
+                  <div class="team-email">${esc(m.email)}</div>
+                </div>
+                <span class="pill ${m.role==='b2b_admin'?'pill-amber':'pill-free'}">${m.role==='b2b_admin'?'Admin':'Employee'}</span>
+              </div>`)
+            .join('')
+          : `<div class="empty" style="padding:16px 0;text-align:left">No team members yet. Invite your colleagues.</div>`
+        }
+      </div>
+    </div>
+
+    ${sess.b2b_role==='b2b_admin' ? `
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Invite employee</span></div>
+      <div class="field">
+        <label>Email address</label>
+        <input id="inviteEmail" type="email" placeholder="colleague@company.com">
+      </div>
+      <button class="btn btn-amber" onclick="window._invite()">Send invite link</button>
+      <div id="inviteMsg"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Company</span></div>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="color:var(--ink500)">Name</td><td style="font-weight:600">${esc(company.name)}</td></tr>
+          <tr><td style="color:var(--ink500)">Credits</td><td style="font-weight:600">${company.credits}</td></tr>
+          <tr><td style="color:var(--ink500)">Plan</td><td><span class="pill pill-pro">Enterprise</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:14px">
+        <a class="btn btn-ghost btn-sm" href="mailto:hello@vigilo.cc?subject=Top up credits">Top up credits →</a>
+      </div>
+    </div>` : ''}`;
+}
+
+// ── Main area ──────────────────────────────────────────────
+const TAB_TITLES = { overview:'Overview', api:'API Key', webhooks:'Webhooks', reports:'Reports', team:'Team' };
+
+function renderMain(){
+  const sess = session();
+  const main = document.getElementById('mainContent');
+  if(!main) return;
+
+  document.getElementById('mainTitle').textContent = TAB_TITLES[TAB] || TAB;
+
+  // Update sidebar active states
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick') === `window._tab('${TAB}')`);
+  });
+
+  let content = '';
+  if(TAB === 'overview') content = renderOverview(sess);
+  else if(TAB === 'api') content = renderApi(sess);
+  else if(TAB === 'webhooks') content = renderWebhooks();
+  else if(TAB === 'reports') content = renderReports();
+  else if(TAB === 'team') content = renderTeam(sess);
+  main.innerHTML = content;
+}
+
+// ── Auth view ──────────────────────────────────────────────
+function renderAuth(){
+  document.getElementById('appRoot').innerHTML = `
+    <div class="auth-wrap">
+      <div class="auth-box">
+        <div class="auth-logo">
+          <svg width="32" height="32" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Vigilo
+        </div>
+        <h2>Sign in to your account</h2>
+        <p>Enter your email — we'll send a one-time login link. No password needed.</p>
+        <input class="auth-input" id="authEmail" type="email" placeholder="you@email.com" autocomplete="email">
+        <button class="auth-btn" id="authBtn" onclick="window._sendLink()">Send login link</button>
+        <div class="auth-msg" id="authMsg"></div>
+        <div class="auth-back"><a href="/app.html">← Back to the globe</a></div>
+      </div>
+    </div>`;
+}
+
+// ── Full dashboard ─────────────────────────────────────────
+function renderDashboard(sess){
+  document.getElementById('appRoot').innerHTML = `
+    <div class="shell">
+      ${renderSidebar(sess)}
+      <div class="main" id="mainPanel">
+        <div class="main-hd">
+          <h1 id="mainTitle">${TAB_TITLES[TAB]}</h1>
+          <a class="btn btn-ghost btn-sm" href="/app.html">${ico('globe',14)} Open globe</a>
+        </div>
+        <div class="main-body" id="mainContent"></div>
+      </div>
+    </div>`;
+  renderMain();
+}
+
+// ── Global handlers ────────────────────────────────────────
+window._tab = (t) => { TAB = t; renderMain(); };
+window._logout = () => { ls.rm('vigilo_jwt'); location.reload(); };
+window._repType = (t) => {
+  REP_TYPE = t;
+  document.querySelectorAll('.rep-card').forEach(c => c.classList.toggle('selected', c.querySelector('input').value === t));
+};
+
+window._toggleKey = () => {
+  const disp = document.getElementById('keyDisp');
+  const btn = document.getElementById('keyToggle');
+  const key = ls.get('vigilo_api_key','');
+  if(btn.textContent === 'Show'){ disp.textContent = key; btn.textContent = 'Hide'; }
+  else{
+    const masked = key.slice(0,12) + '••••••••••••' + key.slice(-6);
+    disp.textContent = masked; btn.textContent = 'Show';
+  }
+};
+window._copyKey = () => {
+  const key = ls.get('vigilo_api_key','');
+  if(!key) return;
+  navigator.clipboard.writeText(key).then(() => {
+    const btn = document.getElementById('keyCopy');
+    btn.textContent = 'Copied!'; btn.classList.add('done');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 2000);
+  });
+};
+
+window._testApi = async () => {
+  const iso = (document.getElementById('testIso')?.value||'').trim().toUpperCase();
+  const out = document.getElementById('testOut');
+  if(!/^[A-Z]{2}$/.test(iso)){ out.style.display='block'; out.textContent='Enter a 2-letter ISO country code.'; return; }
+  out.style.display = 'block'; out.textContent = 'Fetching…';
+  try{
+    const apiKey = ls.get('vigilo_api_key','');
+    const headers = apiKey ? {'X-Api-Key': apiKey} : {};
+    const r = await fetch(`/api/v1/risk?country=${iso}&history_days=7`, { headers });
+    const d = await r.json();
+    out.textContent = JSON.stringify(d, null, 2).slice(0, 2000);
+  }catch(e){ out.textContent = 'Error: ' + e; }
+};
+
+window._createWh = async () => {
+  const country = (document.getElementById('whCountry')?.value||'').toUpperCase();
+  const threshold = parseFloat(document.getElementById('whThreshold')?.value||'2');
+  const url = document.getElementById('whUrl')?.value||'';
+  const email = document.getElementById('whEmail')?.value||'';
+  const msg = document.getElementById('whMsg');
+
+  if(!/^[A-Z]{2}$/.test(country)){ msg.innerHTML='<div class="msg msg-err">Enter a valid 2-letter country code.</div>'; return; }
+  if(!url.startsWith('https://')){ msg.innerHTML='<div class="msg msg-err">Callback URL must be HTTPS.</div>'; return; }
+
+  msg.innerHTML='<div class="msg" style="color:var(--ink500)">Registering…</div>';
+  try{
+    const r = await fetch('/api/v1/risk/webhooks', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ country, threshold, callback_url: url, email: email||undefined }),
+    });
+    const d = await r.json();
+    if(!r.ok){ msg.innerHTML=`<div class="msg msg-err">${esc(d.error||'Error')}</div>`; return; }
+    WEBHOOKS.unshift({ id: d.id, manage_token: d.manage_token, secret: d.secret, country, threshold, callback_url: url, created_at: new Date().toISOString() });
+    ls.set('vigilo_webhooks', WEBHOOKS);
+    msg.innerHTML=`<div class="msg msg-ok">Webhook registered! ID: ${esc(d.id)} · Secret saved locally.</div>`;
+    document.getElementById('whCountry').value='';
+    document.getElementById('whUrl').value='';
+  }catch(e){ msg.innerHTML=`<div class="msg msg-err">Network error: ${esc(String(e))}</div>`; }
+};
+
+window._deleteWh = async (idx) => {
+  const wh = WEBHOOKS[idx];
+  if(!wh) return;
+  if(!confirm(`Delete webhook ${wh.id}?`)) return;
+  try{
+    await fetch(`/api/v1/risk/webhooks?id=${encodeURIComponent(wh.id)}&manage_token=${encodeURIComponent(wh.manage_token)}`, { method:'DELETE' });
+  }catch{}
+  WEBHOOKS.splice(idx, 1);
+  ls.set('vigilo_webhooks', WEBHOOKS);
+  renderMain();
+};
+
+window._generateReport = () => {
+  const iso = (document.getElementById('repCountry')?.value||REP_COUNTRY).trim().toUpperCase();
+  const msg = document.getElementById('repMsg');
+  if(!/^[A-Z]{2}$/.test(iso)){ if(msg) msg.textContent = 'Enter a valid country code.'; return; }
+  const reports = ls.get('vigilo_reports', []);
+  reports.push({ type: REP_TYPE, country: iso, date: new Date().toISOString() });
+  ls.set('vigilo_reports', reports.slice(-50));
+  window.open(`/report?country=${iso}`, '_blank');
+  if(msg) msg.textContent = `Opening ${countryName(iso)} report…`;
+};
+
+window._sendLink = async () => {
+  const email = document.getElementById('authEmail')?.value?.trim();
+  const btn = document.getElementById('authBtn');
+  const msg = document.getElementById('authMsg');
+  if(!email?.includes('@')){ if(msg) msg.textContent='Enter a valid email.'; return; }
+  btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Sending…';
+  try{
+    await fetch('/api/magic-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,lang:'en'})});
+    if(msg){ msg.textContent='✓ Check your email for the login link.'; msg.style.color='var(--green)'; }
+    btn.style.display='none';
+  }catch{
+    btn.disabled=false; btn.style.opacity='1'; btn.textContent='Send login link';
+    if(msg) msg.textContent='Error. Please try again.';
+  }
+};
+
+window._invite = async () => {
+  const email = document.getElementById('inviteEmail')?.value?.trim();
+  const msg = document.getElementById('inviteMsg');
+  if(!email?.includes('@')){ msg.innerHTML='<div class="msg msg-err">Enter a valid email.</div>'; return; }
+  msg.innerHTML='<div class="msg" style="color:var(--ink500)">Sending invite…</div>';
+  try{
+    await fetch('/api/magic-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,role:'b2b_employee',lang:'en'})});
+    msg.innerHTML='<div class="msg msg-ok">Invite sent to '+esc(email)+'</div>';
+    document.getElementById('inviteEmail').value='';
+  }catch{
+    msg.innerHTML='<div class="msg msg-err">Could not send invite. Try again.</div>';
+  }
+};
+
+// ── Boot ───────────────────────────────────────────────────
+function boot(){
+  const sess = session();
+  if(!sess) renderAuth();
+  else renderDashboard(sess);
+}
+boot();
+
+})();
 </script>
 </body>
 </html>
