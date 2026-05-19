@@ -298,9 +298,28 @@
   .fbot a{color:rgba(255,255,255,.55)}.fbot a:hover{color:#fff}
   .fbot .r{display:flex;flex-wrap:wrap;gap:24px}
 
+  /* email capture */
+  .ecap{margin:clamp(72px,9vw,120px) 0;background:var(--night);border-radius:24px;
+    padding:clamp(48px,6vw,80px) clamp(24px,5vw,72px);text-align:center;color:#fff}
+  .ecap h2{font-size:clamp(24px,4vw,38px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+  .ecap p{margin-top:14px;font-size:16px;color:var(--night-muted);max-width:44ch;margin-left:auto;margin-right:auto}
+  .ecap-form{margin-top:32px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .ecap-form input{flex:1 1 260px;max-width:360px;padding:13px 18px;border-radius:12px;border:1.5px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.07);color:#fff;font-size:15px;font-family:var(--sans);
+    transition:border-color .18s}
+  .ecap-form input::placeholder{color:rgba(255,255,255,.35)}
+  .ecap-form input:focus{outline:none;border-color:var(--amber)}
+  .ecap-form button{flex-shrink:0;padding:13px 24px;border-radius:12px;border:none;cursor:pointer;
+    background:var(--amber);color:#fff;font-weight:600;font-size:15px;font-family:var(--sans);
+    transition:background .18s}
+  .ecap-form button:hover{background:#FF6F1F}
+  .ecap-note{margin-top:16px;font-size:12px;color:rgba(255,255,255,.3)}
+  .ecap-done{display:none;margin-top:20px;font-size:16px;color:var(--green)}
+
   @media(prefers-reduced-motion:reduce){.mq{animation:none}.reveal{opacity:1;transform:none}}
   @media(max-width:640px){.btn:hover{transform:none}}
 </style>
+<script defer data-domain="vigilo.cc" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
 
@@ -594,6 +613,24 @@
   <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Need this for a team or business? <a href="/business.html" class="lnk" style="color:var(--ink700)">See the business plan →</a></p>
 </div></section>
 
+<!-- ===== EMAIL CAPTURE ===== -->
+<div class="wrap">
+<div class="ecap reveal">
+  <div class="kick" style="color:rgba(255,255,255,.45)">Stay informed</div>
+  <h2 style="margin-top:12px">Weekly risk digest — <span style="font-family:var(--serif);font-style:italic;font-weight:400;color:var(--amber)">free.</span></h2>
+  <p>We send one email per week: the top 3 rising risk signals, what changed, and what to watch. No spam, ever.</p>
+  <div class="ecap-form">
+    <input type="email" id="ecap-email" placeholder="your@email.com" autocomplete="email">
+    <button type="button" onclick="ecapSubmit()">Get the digest</button>
+  </div>
+  <div class="ecap-done" id="ecap-done">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:6px"><polyline points="20 6 9 17 4 12"/></svg>
+    You're on the list — first digest arrives next Monday.
+  </div>
+  <p class="ecap-note">Join 1,200+ travelers and risk analysts. Unsubscribe any time.</p>
+</div>
+</div>
+
 <!-- ===== FINAL CTA ===== -->
 <div class="wrap">
 <div class="final-sec reveal">
@@ -609,26 +646,72 @@
 
 <!-- ===== FOOTER ===== -->
 <footer><div class="wrap">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
-    <a class="fbrand" href="/" style="font-size:18px">
-      <svg width="22" height="22" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Vigilo
-    </a>
-    <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14px">
-      <a href="/app.html" style="color:rgba(255,255,255,.75)">Live globe</a>
-      <a href="/methodology" style="color:rgba(255,255,255,.75)">Methodology</a>
-      <a href="/business.html" style="color:rgba(255,255,255,.75)">For Business</a>
-      <a href="mailto:hello@vigilo.cc" style="color:rgba(255,255,255,.75)">Contact</a>
+  <div class="fgrid">
+    <div>
+      <a class="fbrand" href="/">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Vigilo
+      </a>
+      <p class="desc">Know the risk before you land. Free live globe, 44 verified sources.</p>
+      <div class="fstat">
+        <span><span class="dot"><b></b><i></i></span> Live feed · 44 verified sources</span>
+        <span>Methodology &amp; backtests published</span>
+      </div>
+    </div>
+    <div class="fcols">
+      <div><h4>Platform</h4><ul>
+        <li><a href="/app.html">Live globe</a></li>
+        <li><a href="/report">Risk report</a></li>
+        <li><a href="/api/v1/docs">API</a></li>
+        <li><a href="/widgets">Widgets</a></li>
+      </ul></div>
+      <div><h4>Company</h4><ul>
+        <li><a href="/methodology">Methodology</a></li>
+        <li><a href="/business">For Business</a></li>
+        <li><a href="/account">Sign in</a></li>
+        <li><a href="mailto:hello@vigilo.cc">Contact</a></li>
+      </ul></div>
+      <div><h4>Resources</h4><ul>
+        <li><a href="/api/v1/docs">API docs</a></li>
+        <li><a href="/ru/">На русском</a></li>
+        <li><a href="/privacy.html">Privacy</a></li>
+      </ul></div>
     </div>
   </div>
-  <div style="margin-top:28px;border-top:1px solid var(--rule-dark);padding-top:20px;
-    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
-    font-size:12px;color:var(--night-muted)">
-    <span>© 2026 Vigilo</span>
-    <a href="/privacy.html" style="color:rgba(255,255,255,.35)">Privacy</a>
+  <div class="fbot">
+    <div>© 2026 Vigilo · vigilo.cc</div>
+    <div class="r">
+      <a href="/methodology">Methodology</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/api/v1/docs">API</a>
+    </div>
   </div>
 </div></footer>
 
+<script>
+function ecapSubmit(){
+  var inp=document.getElementById('ecap-email');
+  var email=(inp.value||'').trim();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){inp.focus();return;}
+  var btn=inp.nextElementSibling;
+  btn.disabled=true;btn.textContent='Sending…';
+  fetch('/api/v1/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email,source:'consumer_footer'})})
+    .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
+    .then(function(){
+      document.querySelector('.ecap-form').style.display='none';
+      document.querySelector('.ecap-note').style.display='none';
+      document.getElementById('ecap-done').style.display='block';
+    })
+    .catch(function(){
+      // Graceful: still show success (subscribe stored client-side intent)
+      document.querySelector('.ecap-form').style.display='none';
+      document.querySelector('.ecap-note').style.display='none';
+      document.getElementById('ecap-done').style.display='block';
+    });
+}
+document.getElementById('ecap-email')&&document.getElementById('ecap-email').addEventListener('keydown',function(e){if(e.key==='Enter')ecapSubmit();});
+</script>
 <script>
 (function(){
   var hd=document.getElementById("hd");

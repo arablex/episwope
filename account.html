@@ -207,6 +207,7 @@
     .mobile-nav{display:none}
   }
 </style>
+<script defer data-domain="vigilo.cc" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
 
@@ -829,6 +830,176 @@ function boot(){
 }
 boot();
 
+})();
+</script>
+
+<!-- ─────────────── ONBOARDING TOUR ─────────────── -->
+<script>
+(function(){
+  var DONE_KEY = 'vigilo_onboarding_done';
+  if(localStorage.getItem(DONE_KEY)) return;
+
+  var STEPS = [
+    {
+      title: 'Welcome to Vigilo',
+      desc: "You're all set. Here's a 30-second tour of your dashboard.",
+      icon: '👋',
+      target: null
+    },
+    {
+      title: 'Your overview',
+      desc: 'Check watched countries, remaining risk assessments, and your recent report history.',
+      icon: '📊',
+      sel: function(){ return document.querySelectorAll('.sb-nav .sb-item')[0]; }
+    },
+    {
+      title: 'API access',
+      desc: 'Copy your API key and run live test requests to the risk endpoint directly here.',
+      icon: '🔑',
+      sel: function(){ return document.querySelectorAll('.sb-nav .sb-item')[1]; }
+    },
+    {
+      title: 'Webhooks',
+      desc: 'Get notified the moment risk rises in a country. Set threshold, paste your URL — done.',
+      icon: '🔔',
+      sel: function(){ return document.querySelectorAll('.sb-nav .sb-item')[2]; }
+    },
+    {
+      title: 'PDF reports',
+      desc: 'Generate a print-ready risk briefing for any country in one click.',
+      icon: '📄',
+      sel: function(){ return document.querySelectorAll('.sb-nav .sb-item')[3]; }
+    }
+  ];
+
+  var step = 0;
+  var ring, tip, backdrop;
+
+  function mkEl(tag, css){
+    var e = document.createElement(tag);
+    e.style.cssText = css;
+    return e;
+  }
+
+  function init(){
+    backdrop = mkEl('div',
+      'position:fixed;inset:0;z-index:9980;background:rgba(13,16,21,0);pointer-events:all;transition:background .25s');
+    backdrop.addEventListener('click', function(ev){ ev.stopPropagation(); });
+    document.body.appendChild(backdrop);
+
+    ring = mkEl('div',
+      'position:fixed;z-index:9992;box-sizing:border-box;border-radius:12px;pointer-events:none;' +
+      'border:2px solid #E8590C;opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1)');
+    document.body.appendChild(ring);
+
+    tip = mkEl('div',
+      'position:fixed;z-index:10000;width:288px;background:#fff;border-radius:18px;' +
+      'padding:24px 22px 18px;' +
+      'box-shadow:0 20px 60px rgba(13,16,21,.28),0 0 0 1px rgba(13,16,21,.07);' +
+      "font-family:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;" +
+      '-webkit-font-smoothing:antialiased;opacity:0;transition:opacity .2s,top .25s,left .25s,transform .25s');
+    document.body.appendChild(tip);
+
+    show(0);
+  }
+
+  function dots(){
+    return STEPS.map(function(_,i){
+      return '<span style="display:inline-block;width:' + (i===step?'16':'6') + 'px;height:6px;border-radius:3px;' +
+        'background:' + (i===step?'#E8590C':'rgba(20,17,12,.15)') + ';transition:all .2s"></span>';
+    }).join('');
+  }
+
+  function show(idx){
+    step = idx;
+    var s = STEPS[idx];
+    var isLast = idx === STEPS.length - 1;
+    var el = s.sel ? s.sel() : null;
+    var PAD = 7;
+
+    tip.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">' +
+        '<div style="display:flex;gap:5px;align-items:center">' + dots() + '</div>' +
+        '<button onclick="window._onbSkip()" style="background:none;border:none;cursor:pointer;' +
+          'color:#9F9685;font-size:22px;line-height:1;padding:0 2px;font-family:inherit" title="Skip tour">×</button>' +
+      '</div>' +
+      '<div style="font-size:24px;margin-bottom:10px">' + s.icon + '</div>' +
+      '<div style="font-size:16px;font-weight:700;letter-spacing:-.025em;color:#14110C;line-height:1.25;margin-bottom:8px">' + s.title + '</div>' +
+      '<p style="font-size:13.5px;color:#544D42;line-height:1.65;margin:0 0 20px">' + s.desc + '</p>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between">' +
+        '<span style="font-size:12px;color:#9F9685">' + (idx+1) + ' / ' + STEPS.length + '</span>' +
+        '<div style="display:flex;gap:8px">' +
+          (idx > 0 ? '<button onclick="window._onbPrev()" style="background:none;border:1.5px solid rgba(20,17,12,.14);border-radius:9px;padding:8px 15px;cursor:pointer;font-size:13px;color:#7A7263;font-family:inherit;font-weight:600">← Back</button>' : '') +
+          '<button onclick="window._onbNext()" style="background:#E8590C;border:none;border-radius:9px;padding:8px 20px;cursor:pointer;font-size:13px;color:#fff;font-family:inherit;font-weight:700">' +
+            (isLast ? 'Done ✓' : 'Next →') +
+          '</button>' +
+        '</div>' +
+      '</div>';
+
+    if(!el){
+      // centered welcome card
+      backdrop.style.background = 'rgba(13,16,21,0.55)';
+      ring.style.opacity = '0';
+      ring.style.boxShadow = '';
+
+      tip.style.top = '50%';
+      tip.style.left = '50%';
+      tip.style.transform = 'translate(-50%,-50%)';
+      tip.style.opacity = '1';
+    } else {
+      backdrop.style.background = 'rgba(13,16,21,0)';
+
+      var r = el.getBoundingClientRect();
+      ring.style.top    = (r.top  - PAD) + 'px';
+      ring.style.left   = (r.left - PAD) + 'px';
+      ring.style.width  = (r.width  + PAD*2) + 'px';
+      ring.style.height = (r.height + PAD*2) + 'px';
+      ring.style.boxShadow = '0 0 0 4000px rgba(13,16,21,0.6)';
+      ring.style.opacity = '1';
+
+      // position tooltip
+      var tipW = 288, tipH = 220, gap = 18;
+      var top, left;
+
+      // try right of element
+      left = r.right + PAD + gap;
+      top  = r.top + (r.height/2) - (tipH/2);
+      if(left + tipW > window.innerWidth - 12){
+        left = r.left - PAD - gap - tipW;
+      }
+      top  = Math.max(12, Math.min(top, window.innerHeight - tipH - 12));
+      left = Math.max(12, Math.min(left, window.innerWidth  - tipW - 12));
+
+      tip.style.transform = '';
+      tip.style.top  = top  + 'px';
+      tip.style.left = left + 'px';
+      tip.style.opacity = '1';
+    }
+  }
+
+  window._onbNext = function(){
+    if(step >= STEPS.length - 1){ window._onbSkip(); return; }
+    show(step + 1);
+  };
+  window._onbPrev = function(){
+    if(step > 0) show(step - 1);
+  };
+  window._onbSkip = function(){
+    localStorage.setItem(DONE_KEY, '1');
+    [ring, tip, backdrop].forEach(function(e){ if(e && e.parentNode) e.parentNode.removeChild(e); });
+    delete window._onbNext; delete window._onbPrev; delete window._onbSkip;
+  };
+
+  // Wait until dashboard renders (boot() is synchronous but renders via innerHTML)
+  var wait = 0;
+  var check = setInterval(function(){
+    wait += 50;
+    if(document.querySelector('.sb-nav') || wait > 3000){
+      clearInterval(check);
+      // Give user a moment to see the UI before tour starts
+      setTimeout(init, 500);
+    }
+  }, 50);
 })();
 </script>
 </body>
