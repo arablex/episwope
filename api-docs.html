@@ -154,6 +154,24 @@
   .tryit pre{margin-top:8px;max-height:280px}
   .ti-toggle{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;
     user-select:none}
+
+  /* ── canonical nav (consistency across site) ─────────────── */
+  .nav{padding:20px 0;border-bottom:1px solid rgba(20,17,12,.10);background:transparent}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em;color:#14110C}
+  .badge{width:28px;height:28px;border-radius:7px;background:#E8590C;display:grid;place-items:center}
+  .nav-mid{display:flex;align-items:center;gap:28px;flex-wrap:nowrap}
+  .nav-links{display:flex;gap:22px;font-size:14px;color:#544D42}
+  .nav-links a{color:#544D42;text-decoration:none}
+  .nav-links a:hover{color:#14110C}
+  .nav-actions{display:flex;align-items:center;gap:14px}
+  .nav-lang{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A7263;text-decoration:none}
+  .nav-lang:hover{color:#14110C}
+  .nav-login{font-size:13.5px;color:#544D42;padding:6px 12px;border-radius:8px;border:1px solid rgba(20,17,12,.18);font-weight:500;text-decoration:none}
+  .nav-login:hover{background:rgba(20,17,12,.04);color:#14110C}
+  .nav-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;background:#E8590C;color:#fff;font-weight:600;font-size:13.5px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 18px -8px rgba(232,89,12,.4);color:#fff}
+  @media(max-width:880px){.nav-links{display:none}.nav-login{display:none}.nav-lang{display:none}}
 </style>
 <!-- Privacy-friendly analytics by Plausible -->
 <script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
@@ -164,27 +182,28 @@
 </head>
 <body>
 
-<header id="hd"><div class="wrap nav">
-  <div class="nleft">
-    <a class="brand" href="/">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand">
+      <span class="badge"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Vigilo
     </a>
-    <nav class="nlinks">
-      <a href="/how-it-works">How it works</a>
-      <a href="/for-ngos">For NGOs</a>
-      <a href="/pricing">Pricing</a>
-      <a href="/business">For Business</a>
-      <a href="/trust">Trust →</a>
-    </nav>
+    <div class="nav-mid">
+      <div class="nav-links">
+        <a href="/how-it-works">How it works</a>
+        <a href="/for-ngos">For NGOs</a>
+        <a href="/business">For Business</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/trust">Trust →</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/ru/" class="nav-lang">RU</a>
+        <a href="/account" class="nav-login">Log in</a>
+        <a href="/" class="nav-cta">Open the globe →</a>
+      </div>
+    </div>
   </div>
-  <div class="nright">
-    <a class="lang" href="/ru/business.html">RU</a>
-    <a class="nlogin" href="/account">Log in</a>
-    <a class="btn-hdr" href="/api/v1/docs">Get an API key
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-  </div>
-</div></header>
+</nav>
 
 <div class="wrap" style="max-width:960px">
 
