@@ -82,34 +82,52 @@
   .nav-cta{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;background:var(--amber);color:#fff;font-weight:600;font-size:13px;letter-spacing:-.005em;transition:transform .15s,box-shadow .15s}
   .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 18px -8px rgba(232,89,12,.4);text-decoration:none;color:#fff}
   @media(max-width:880px){.nav-links{display:none}.nav-login{display:none}.nav-lang{display:none}}
+
+  /* ── canonical site nav ─── */
+  .site-nav{padding:18px 0;border-bottom:1px solid rgba(20,17,12,.10);background:rgba(244,242,238,.96);backdrop-filter:saturate(180%) blur(10px);position:relative;z-index:50}
+  .site-nav-inner{display:flex !important;align-items:center !important;justify-content:space-between !important;gap:24px;height:auto !important;max-width:1100px;margin:0 auto;padding:0 24px}
+  .site-nav .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em;color:#14110C;text-decoration:none;flex-shrink:0}
+  .site-nav .badge{width:28px;height:28px;border-radius:7px;background:#E8590C;display:grid;place-items:center;flex-shrink:0}
+  .site-nav-mid{display:flex;align-items:center;gap:28px;flex-wrap:nowrap}
+  .site-nav-links{display:flex;gap:22px;font-size:14px;color:#544D42}
+  .site-nav-links a{color:#544D42;text-decoration:none}
+  .site-nav-links a:hover{color:#14110C}
+  .site-nav-actions{display:flex;align-items:center;gap:12px}
+  .site-nav-lang{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A7263;text-decoration:none}
+  .site-nav-lang:hover{color:#14110C}
+  .site-nav-login{font-size:13.5px;color:#544D42;padding:6px 12px;border-radius:8px;border:1px solid rgba(20,17,12,.18);font-weight:500;text-decoration:none}
+  .site-nav-login:hover{background:rgba(20,17,12,.04);color:#14110C}
+  .site-nav-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;background:#E8590C;color:#fff !important;font-weight:600;font-size:13.5px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+  .site-nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 18px -8px rgba(232,89,12,.4);color:#fff !important}
+  @media(max-width:880px){.site-nav-links{display:none}.site-nav-login{display:none}.site-nav-lang{display:none}}
 </style>
 <script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
 <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
 </head>
 <body>
 
-<nav class="nav no-print">
-  <div class="nav-inner" style="max-width:1100px;margin:0 auto;padding:0 24px">
+<header id="hd" class="site-nav">
+  <div class="wrap site-nav-inner">
     <a href="/" class="brand">
-      <span class="badge"><svg width="15" height="15" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="badge"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Vigilo
     </a>
-    <div class="nav-mid">
-      <div class="nav-links">
+    <div class="site-nav-mid">
+      <div class="site-nav-links">
         <a href="/how-it-works">How it works</a>
         <a href="/for-ngos">For NGOs</a>
         <a href="/business">For Business</a>
         <a href="/pricing">Pricing</a>
         <a href="/trust">Trust →</a>
       </div>
-      <div class="nav-actions">
-        <a href="/ru/" class="nav-lang">RU</a>
-        <a href="/account" class="nav-login">Log in</a>
-        <a href="/" class="nav-cta">Open the globe →</a>
+      <div class="site-nav-actions">
+        <a href="/ru/" class="site-nav-lang">RU</a>
+        <a href="/account" class="site-nav-login">Log in</a>
+        <a href="/" class="site-nav-cta">Open the globe →</a>
       </div>
     </div>
   </div>
-</nav>
+</header>
 
 <div class="banner no-print">
   <b>Working draft v0.1.</b> Standard B2B SaaS Master Subscription Agreement.
