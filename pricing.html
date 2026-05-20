@@ -52,24 +52,46 @@
   .lede{font-size:18px;color:var(--ink600);line-height:1.55;max-width:620px;margin:0 auto}
   @media(min-width:768px){.lede{font-size:20px}}
 
-  /* pricing grid */
-  .tiers-wrap{padding:32px 0 24px}
-  .tiers{display:grid;gap:18px;grid-template-columns:1fr}
-  @media(min-width:768px){.tiers{grid-template-columns:repeat(2,1fr)}}
-  @media(min-width:1100px){.tiers{grid-template-columns:repeat(5,1fr);gap:14px}}
-  .tier{background:#fff;border:1px solid var(--rule);border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;
-    transition:transform .15s,box-shadow .15s}
-  .tier:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(20,17,12,.04),0 24px 50px -28px rgba(20,17,12,.22)}
-  .tier.featured{border:2px solid var(--ink);transform:translateY(-4px)}
+  /* pricing grid — 3 main on top, 2 bookend tiers below */
+  .tiers-wrap{padding:32px 0 24px;max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px}
+  .tiers-top, .tiers-bot{display:grid;gap:20px;grid-template-columns:1fr}
+  .tiers-bot{margin-top:20px}
+  @media(min-width:768px){
+    .tiers-top{grid-template-columns:repeat(3,1fr)}
+    .tiers-bot{grid-template-columns:repeat(2,1fr)}
+  }
+  .tier{background:#fff;border:1px solid var(--rule);border-radius:18px;padding:32px 28px;display:flex;flex-direction:column;
+    transition:transform .15s,box-shadow .15s;position:relative}
+  .tier:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(20,17,12,.04),0 30px 60px -30px rgba(20,17,12,.22)}
+  .tier.featured{border:2px solid var(--ink);transform:translateY(-6px);box-shadow:0 1px 0 rgba(20,17,12,.04),0 30px 60px -28px rgba(20,17,12,.30)}
   .tier.featured .name{color:var(--ink)}
-  .tier-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;
-    background:var(--ink);padding:3px 9px;border-radius:99px;align-self:flex-start;margin-bottom:10px}
-  .tier .name{font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--ink500);text-transform:uppercase;margin-bottom:14px}
-  .tier .price{font-size:32px;font-weight:700;letter-spacing:-.025em;line-height:1;margin-bottom:4px}
-  .tier .price .sub{font-size:13px;color:var(--ink500);font-weight:400;letter-spacing:0}
-  .tier .price.free{font-family:var(--serif);font-style:italic;color:var(--amber);font-size:36px;font-weight:400}
-  .tier .price.custom{font-size:22px;font-weight:600}
-  .tier .desc{font-size:13.5px;color:var(--ink600);line-height:1.55;margin:14px 0 18px;min-height:42px}
+  .tier-tag{position:absolute;top:-12px;left:24px;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;
+    background:var(--ink);padding:5px 11px;border-radius:99px}
+  .tier .name{font-size:13px;font-weight:700;letter-spacing:.10em;color:var(--ink500);text-transform:uppercase;margin-bottom:18px}
+  .tier .price{font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
+  .tier .price .sub{font-size:14px;color:var(--ink500);font-weight:400;letter-spacing:0}
+  .tier .price.free{font-family:var(--serif);font-style:italic;color:var(--amber);font-size:46px;font-weight:400}
+  .tier .price.custom{font-size:26px;font-weight:600}
+  .tier .seats{font-size:13.5px;color:var(--ink500);margin-top:2px}
+  .tier .desc{font-size:14px;color:var(--ink600);line-height:1.55;margin:18px 0 22px;min-height:40px}
+
+  /* Bottom-row "bookend" tiers — wider, hint of horizontal layout on big screens */
+  .tier-wide{background:#FBF9F4;border:1px solid var(--rule)}
+  @media(min-width:960px){
+    .tier-wide{display:grid;grid-template-columns:1fr 1.05fr;gap:36px;align-items:start;padding:36px 36px}
+    .tier-wide .col-left{display:flex;flex-direction:column}
+    .tier-wide .col-right{display:flex;flex-direction:column;border-left:1px solid var(--rule);padding-left:36px}
+    .tier-wide ul{flex:1}
+    .tier-wide .desc{min-height:0;margin-bottom:16px}
+  }
+  .tier-wide.tier-enterprise{background:#0D1015;color:#fff;border-color:transparent}
+  .tier-wide.tier-enterprise .name{color:#9CA3B0}
+  .tier-wide.tier-enterprise .price{color:#fff}
+  .tier-wide.tier-enterprise .seats,.tier-wide.tier-enterprise .desc{color:#9CA3B0}
+  .tier-wide.tier-enterprise ul li{color:#D1D5DB}
+  .tier-wide.tier-enterprise ul li::before{background:var(--amber)}
+  @media(min-width:960px){.tier-wide.tier-enterprise .col-right{border-left-color:rgba(255,255,255,.08)}}
+  .tier-wide.tier-enterprise .cta-foot{color:#6B7280}
   .tier ul{list-style:none;padding:0;margin-bottom:22px;flex:1}
   .tier ul li{font-size:13.5px;line-height:1.5;color:var(--ink700);padding-left:20px;position:relative;margin-bottom:10px}
   .tier ul li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--amber)}
@@ -144,31 +166,15 @@
 </header>
 
 <div class="tiers-wrap">
-  <div class="wrap">
-    <div class="tiers">
 
-      <!-- NGO Free -->
-      <div class="tier">
-        <span class="name">NGO Free</span>
-        <div class="price free">Free</div>
-        <div style="font-size:13px;color:var(--ink500)">by application</div>
-        <p class="desc">Small frontline NGOs whose budget doesn't stretch to Crisis24/INSO. Eligibility wall — protects the price anchor.</p>
-        <ul>
-          <li>Real-time monitoring · all 7 domains</li>
-          <li>Country &amp; event-level alerts</li>
-          <li>Email alerts to your focal point</li>
-          <li>Transparent, source-traceable scoring</li>
-          <li>Quarterly call · partnership</li>
-        </ul>
-        <a class="cta cta-ghost" href="/for-ngos">Learn more →</a>
-        <div class="cta-foot">Apply via /for-ngos</div>
-      </div>
+    <!-- TOP ROW — 3 main subscription tiers -->
+    <div class="tiers-top">
 
       <!-- Pro -->
       <div class="tier">
         <span class="name">Pro</span>
         <div class="price">$49<span class="sub"> /month</span></div>
-        <div style="font-size:13px;color:var(--ink500)">single user</div>
+        <div class="seats">single user</div>
         <p class="desc">Journalists, researchers, consultants, solo travel-risk professionals.</p>
         <ul>
           <li>Everything in NGO Free</li>
@@ -181,12 +187,12 @@
         <div class="cta-foot">No card required</div>
       </div>
 
-      <!-- Team -->
+      <!-- Team — FEATURED -->
       <div class="tier featured">
         <span class="tier-tag">Most popular</span>
         <span class="name">Team</span>
         <div class="price">$199<span class="sub"> /month</span></div>
-        <div style="font-size:13px;color:var(--ink500)">up to 10 seats</div>
+        <div class="seats">up to 10 seats</div>
         <p class="desc">Small NGOs above eligibility, SMB duty-of-care, expedition operators, study-abroad offices.</p>
         <ul>
           <li>Everything in Pro</li>
@@ -204,7 +210,7 @@
       <div class="tier">
         <span class="name">Org</span>
         <div class="price">$499<span class="sub"> /month</span></div>
-        <div style="font-size:13px;color:var(--ink500)">up to 50 seats</div>
+        <div class="seats">up to 50 seats</div>
         <p class="desc">Mid-sized NGOs, travel operators, regional duty-of-care programmes, mid-market B2B.</p>
         <ul>
           <li>Everything in Team</li>
@@ -218,22 +224,52 @@
         <div class="cta-foot">14-day free trial · invoice based</div>
       </div>
 
+    </div>
+
+    <!-- BOTTOM ROW — bookend tiers: NGO Free + Enterprise (wider, more breathing room) -->
+    <div class="tiers-bot">
+
+      <!-- NGO Free -->
+      <div class="tier tier-wide">
+        <div class="col-left">
+          <span class="name">NGO Free</span>
+          <div class="price free">Free</div>
+          <div class="seats">by application</div>
+          <p class="desc">Small frontline NGOs whose budget doesn't stretch to Crisis24/INSO. Eligibility wall — protects the price anchor.</p>
+          <a class="cta cta-ghost" href="/for-ngos">Learn more →</a>
+          <div class="cta-foot">Apply via /for-ngos</div>
+        </div>
+        <div class="col-right">
+          <ul>
+            <li>Real-time monitoring · all 7 domains</li>
+            <li>Country &amp; event-level alerts</li>
+            <li>Email alerts to your focal point</li>
+            <li>Transparent, source-traceable scoring</li>
+            <li>Quarterly call · partnership</li>
+          </ul>
+        </div>
+      </div>
+
       <!-- Enterprise -->
-      <div class="tier">
-        <span class="name">Enterprise</span>
-        <div class="price custom">from $1,500<span class="sub"> /mo</span></div>
-        <div style="font-size:13px;color:var(--ink500)">custom</div>
-        <p class="desc">Large NGOs, international travel-risk firms, insurance, government, embeddable APIs.</p>
-        <ul>
-          <li>Everything in Org</li>
-          <li>Unlimited seats</li>
-          <li>Custom SLA · 4h support</li>
-          <li>Dedicated webhooks &amp; rate limits</li>
-          <li>Custom integrations · onboarding</li>
-          <li>Custom DPA &amp; contract terms</li>
-        </ul>
-        <a class="cta cta-amber" href="mailto:alex@vigilo.cc?subject=Vigilo%20Enterprise%20%E2%80%94%20intro&amp;body=Org%20name%3A%0AUse%20case%3A%0AEstimated%20number%20of%20users%3A%0ARegions%2Fdomains%3A%0AProcurement%20timeline%3A%0A">Talk to us →</a>
-        <div class="cta-foot">Reply within 24 hours</div>
+      <div class="tier tier-wide tier-enterprise">
+        <div class="col-left">
+          <span class="name">Enterprise</span>
+          <div class="price custom">from $1,500<span class="sub"> /mo</span></div>
+          <div class="seats">custom</div>
+          <p class="desc">Large NGOs, international travel-risk firms, insurance, government, embeddable APIs.</p>
+          <a class="cta cta-amber" href="mailto:alex@vigilo.cc?subject=Vigilo%20Enterprise%20%E2%80%94%20intro&amp;body=Org%20name%3A%0AUse%20case%3A%0AEstimated%20number%20of%20users%3A%0ARegions%2Fdomains%3A%0AProcurement%20timeline%3A%0A">Talk to us →</a>
+          <div class="cta-foot">Reply within 24 hours</div>
+        </div>
+        <div class="col-right">
+          <ul>
+            <li>Everything in Org</li>
+            <li>Unlimited seats</li>
+            <li>Custom SLA · 4h support</li>
+            <li>Dedicated webhooks &amp; rate limits</li>
+            <li>Custom integrations · onboarding</li>
+            <li>Custom DPA &amp; contract terms</li>
+          </ul>
+        </div>
       </div>
 
     </div>
@@ -243,7 +279,6 @@
       Self-serve card checkout coming once payment infrastructure is finalised — no hidden tier, no surprise auto-charges,
       no contract you didn't sign. Cancel by email, prorated refund if requested in the first 30 days.
     </p>
-  </div>
 </div>
 
 <section>
