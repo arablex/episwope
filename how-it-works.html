@@ -103,7 +103,8 @@
   @media(min-width:640px){.dom-grid{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:1024px){.dom-grid{grid-template-columns:repeat(4,1fr)}}
   .dom-card{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:20px}
-  .dom-card .ico{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#fff;margin-bottom:12px;font-weight:700;font-size:14px}
+  .dom-card .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;margin-bottom:14px;background:var(--ink)}
+  .dom-card .ico svg{width:22px;height:22px;stroke:#fff;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .dom-card .h{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
   .dom-card .s{font-size:13px;color:var(--ink600);line-height:1.55}
 
@@ -343,49 +344,49 @@
     <div class="dom-grid">
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">H</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
         <div class="h">Health</div>
         <div class="s">Outbreaks, epidemics, food safety recalls, wastewater anomalies, vaccine campaigns.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">C</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><circle cx="12" cy="12" r="2"/></svg></div>
         <div class="h">Conflict</div>
         <div class="s">Armed clashes, kinetic strikes, military operations. ACLED + GDELT sourced.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">U</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-3 18-5-7-2 5-3-3z"/></svg></div>
         <div class="h">Civil unrest</div>
         <div class="s">Protests, demonstrations, riots, clusters of localized social pressure.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">D</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M6 17h12"/><path d="M19 14a3.5 3.5 0 0 0-2.5-6 5 5 0 0 0-9.5 1A4 4 0 0 0 5 17"/><polyline points="13 12 11 15 14 15 12 18"/></svg></div>
         <div class="h">Disasters &amp; climate</div>
         <div class="s">Earthquakes, floods, cyclones, wildfires, drought, climate anomalies.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">B</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>
         <div class="h">Blackout</div>
         <div class="s">Internet shutdowns, telecom outages, power grid failures, cable cuts.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">★</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
         <div class="h">Border &amp; transport</div>
         <div class="s">Entry restrictions, airspace closures, port disruptions, evacuation routes.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">F</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/></svg></div>
         <div class="h">Food security</div>
         <div class="s">Acute insecurity, price shocks, FAO indices, supply-chain stress.</div>
       </div>
 
       <div class="dom-card">
-        <div class="ico" style="background:var(--ink)">M</div>
+        <div class="ico"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg></div>
         <div class="h">Macro</div>
         <div class="s">GDP, debt, unemployment, central-bank rates — lagging context, explainability primary.</div>
       </div>
