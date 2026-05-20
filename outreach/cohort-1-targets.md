@@ -92,6 +92,51 @@ These orgs protect activists/journalists — duty-of-care is core to mission.
 
 ---
 
+## Resolved contacts (verified from public org pages, 2026-05-20)
+
+Sourced from each org's own About/Team page — public info only. Verify the
+spelling before sending. Email addresses are NOT directly published —
+guess pattern `firstname.lastname@org.org` and verify via Hunter.io or
+LinkedIn DM before sending real outreach.
+
+### SAPA (Sudanese American Physicians Assn) — sapa-usa.org
+- **Anmar Homeida, MD** — Executive Director ← **primary target**
+- **Faisal Ahmed** — Country Director, Sudan ← **operations-side target**
+- **Osama Ahmed Elkhidir, MD** — Regional Director
+- **Mahamat Ibrahim** — Chad Office Director
+- General: `sapa@sapa-usa.org`
+- Pattern likely: `firstname.lastname@sapa-usa.org` (unverified)
+
+### Hope for Haiti — hopeforhaiti.com
+- **Skyler Badenoch** — CEO ← **primary target**
+- **Meg Jean Louis** — COO ← **operations-side target**
+- **Jeannine Saint Preux** — Deputy Country Manager, Haiti ← **field target**
+- General: `Info@hopeforhaiti.com`, Press: `Press@hopeforhaiti.com`
+- Pattern likely: `firstname@hopeforhaiti.com` (unverified)
+
+### Mona Relief Yemen — monarelief.org
+- **Fatik Abudullah Al-Rodaini** — Founder, based in Sana'a ← **primary target**
+- **Dr. R.S. Karim** — Co-Founder, London
+- Pattern unknown — try `info@monarelief.org` or LinkedIn DM Fatik first
+- LinkedIn: search "Fatik Al-Rodaini Mona Relief" — he's public-facing
+
+### White Helmets (Syria Civil Defence) — whitehelmets.org
+- **Fetch failed** (page 404). Find manually:
+- LinkedIn: `site:linkedin.com/in "Syria Civil Defence" "head"` or
+  `site:linkedin.com/in "white helmets" "operations"`
+- Their head of operations Raed Al-Saleh has been public-facing — verify
+  current role before using
+- Alternative: their press contact (publicly listed in many media articles)
+
+### East SOS / Vostok-SOS — vostok-sos.org
+- **Fetch failed** (Cloudflare 522, server down at time of check)
+- Retry tomorrow: `vostok-sos.org/en/about-us/`
+- LinkedIn search: `site:linkedin.com/in "Vostok SOS"` or `"East SOS"`
+- Org is Kyiv-based; co-founders Oleksandra Dvoretska and Kostiantyn
+  Reutskyi have been publicly named in journalism
+
+---
+
 ## Send order (week 1: 5 emails)
 
 Pick 5 from Tier A. Diversify by geography (don't send 5 Syria orgs in one day).
