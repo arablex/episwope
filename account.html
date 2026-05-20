@@ -255,6 +255,13 @@ function isB2B(s){ return s && (s.b2b_role === 'b2b_admin' || s.b2b_role === 'b2
 function fmtDate(d){ try{ return new Date(d).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}); }catch{ return '—'; } }
 function esc(s){ return String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
 function countryName(iso){ return COUNTRY_NAMES[iso] || iso; }
+// Render a country chip — show the ISO badge only when iso != name
+// (fixes "United States United States" when watched list stores full names)
+function countryChip(iso){
+  const name = countryName(iso);
+  const showIso = String(iso).length <= 3 && iso !== name;
+  return `<span class="chip">${esc(name)}${showIso?` <span style="font-size:10px;opacity:.6">${esc(iso)}</span>`:''}</span>`;
+}
 
 // ── Icons ──────────────────────────────────────────────────
 const IC = {
@@ -263,6 +270,8 @@ const IC = {
   webhooks: '<path d="M13 10V3L4 14h7v7l9-11h-7z"/>',
   reports: '<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>',
   team: '<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>',
+  billing: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  usage: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
   globe: '<path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
   logout: '<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>',
   copy: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>',
@@ -286,6 +295,7 @@ function renderSidebar(sess){
     { id:'api', label:'API Key' },
     { id:'webhooks', label:'Webhooks' },
     { id:'reports', label:'Reports' },
+    { id:'billing', label:'Billing' },
   ];
   if(isB2B(sess)) tabs.push({ id:'team', label:'Team' });
 
@@ -328,7 +338,7 @@ function renderOverview(sess){
   const watchPct = Math.round((watched.length / FREE_COUNTRIES) * 100);
 
   const watchedChips = watched.length
-    ? watched.map(iso => `<span class="chip">${countryName(iso)} <span style="font-size:10px;opacity:.6">${iso}</span></span>`).join('')
+    ? watched.map(iso => countryChip(iso)).join('')
     : '<span style="color:var(--ink500);font-size:13px">No countries watched yet</span>';
 
   const recentReports = ls.get('vigilo_reports', []).slice(-5).reverse();
@@ -465,7 +475,7 @@ function renderWebhooks(){
     ? WEBHOOKS.map((wh, i) => `
         <tr>
           <td><code style="font-family:var(--mono);font-size:12px">${esc(wh.id)}</code></td>
-          <td><span class="chip">${countryName(wh.country)} ${wh.country}</span></td>
+          <td>${countryChip(wh.country)}</td>
           <td><span style="font-family:var(--mono);font-size:12px">≥ ${wh.threshold}</span></td>
           <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${esc(wh.callback_url)}</td>
           <td><span class="pill pill-green">Active</span></td>
@@ -537,7 +547,7 @@ function renderReports(){
     ? `<table class="tbl"><thead><tr><th>Type</th><th>Country</th><th>Date</th><th></th></tr></thead><tbody>
         ${history.map(r=>`<tr>
           <td>${esc(r.type)}</td>
-          <td><span class="chip">${countryName(r.country)} ${r.country}</span></td>
+          <td>${countryChip(r.country)}</td>
           <td style="font-size:12px;color:var(--ink500)">${fmtDate(r.date)}</td>
           <td><a class="btn btn-ghost btn-sm" href="/report?country=${esc(r.country)}" target="_blank">Open →</a></td>
         </tr>`).join('')}
@@ -648,7 +658,7 @@ function renderTeam(sess){
 }
 
 // ── Main area ──────────────────────────────────────────────
-const TAB_TITLES = { overview:'Overview', api:'API Key', webhooks:'Webhooks', reports:'Reports', team:'Team' };
+const TAB_TITLES = { overview:'Overview', api:'API Key', webhooks:'Webhooks', reports:'Reports', billing:'Billing & usage', team:'Team' };
 
 function renderMain(){
   const sess = session();
@@ -667,8 +677,123 @@ function renderMain(){
   else if(TAB === 'api') content = renderApi(sess);
   else if(TAB === 'webhooks') content = renderWebhooks();
   else if(TAB === 'reports') content = renderReports();
+  else if(TAB === 'billing') content = renderBilling(sess);
   else if(TAB === 'team') content = renderTeam(sess);
   main.innerHTML = content;
+}
+
+// ── BILLING & USAGE TAB ────────────────────────────────────
+function renderBilling(sess){
+  const plan = sess?.plan || 'free';
+  const isB = isB2B(sess);
+  const planLabel = {
+    free: 'Free', pro: 'Pro · $49/mo', team: 'Team · $199/mo',
+    org: 'Org · $499/mo', enterprise: 'Enterprise',
+  }[plan] || 'Free';
+  const apiKey = ls.get('vigilo_api_key', '');
+  // Mocked usage shape — same numbers shape the real API logs would feed
+  const usage = ls.get('vigilo_usage', { api_today:0, api_month:0, webhooks_month:0, alerts_month:0 });
+  const invoices = ls.get('vigilo_invoices', []);
+
+  return `
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val" style="font-size:22px">${planLabel}</div>
+        <div class="stat-lbl">Current plan</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${usage.api_month}</div>
+        <div class="stat-lbl">API calls this month</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${usage.webhooks_month}</div>
+        <div class="stat-lbl">Webhook deliveries</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${usage.alerts_month}</div>
+        <div class="stat-lbl">Alerts sent</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Plan &amp; billing</span>
+        <a class="btn btn-ghost btn-sm" href="/pricing">See all plans</a>
+      </div>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="color:var(--ink500)">Plan</td><td style="font-weight:600">${planLabel}</td></tr>
+          <tr><td style="color:var(--ink500)">Billing model</td><td>Invoice-based (bank transfer / Wise / crypto)</td></tr>
+          <tr><td style="color:var(--ink500)">Billing email</td><td>${esc(sess?.email||'—')}</td></tr>
+          <tr><td style="color:var(--ink500)">Next invoice</td><td>${invoices.length ? fmtDate(invoices[0].due_date) : '<span style="color:var(--ink500)">—</span>'}</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <a class="btn btn-amber" href="mailto:alex@vigilo.cc?subject=Vigilo%20%E2%80%94%20change%20plan&amp;body=Account%3A%20${encodeURIComponent(sess?.email||'')}%0ACurrent%20plan%3A%20${encodeURIComponent(planLabel)}%0ARequested%20change%3A%20">Change plan</a>
+        <a class="btn btn-ghost" href="mailto:alex@vigilo.cc?subject=Vigilo%20%E2%80%94%20billing%20question&amp;body=Account%3A%20${encodeURIComponent(sess?.email||'')}%0AQuestion%3A%20">Billing question</a>
+        <a class="btn btn-ghost" href="mailto:alex@vigilo.cc?subject=Vigilo%20%E2%80%94%20cancel%20subscription&amp;body=Account%3A%20${encodeURIComponent(sess?.email||'')}%0AReason%20(optional)%3A%20">Cancel</a>
+      </div>
+      <p style="font-size:12.5px;color:var(--ink500);margin-top:14px;line-height:1.55">
+        Card checkout coming once payment infrastructure is finalised. Currently invoice-based —
+        no auto-charge, no contract you didn't sign. See <a href="/pricing" style="color:var(--amber)">/pricing</a> · <a href="/terms" style="color:var(--amber)">/terms</a>.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Invoice history</span>
+        ${invoices.length ? `<span style="font-size:12px;color:var(--ink500)">${invoices.length} on record</span>` : ''}
+      </div>
+      ${invoices.length ? `
+        <table class="tbl">
+          <thead><tr><th>Date</th><th>Number</th><th>Plan</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+          <tbody>${invoices.map(inv => `
+            <tr>
+              <td>${fmtDate(inv.date)}</td>
+              <td style="font-family:monospace;font-size:12.5px">${esc(inv.number)}</td>
+              <td>${esc(inv.plan)}</td>
+              <td style="font-weight:600">$${inv.amount}</td>
+              <td><span class="pill ${inv.status==='paid'?'pill-pro':inv.status==='pending'?'pill-amber':'pill-free'}">${esc(inv.status)}</span></td>
+              <td>${inv.pdf_url ? `<a class="btn btn-ghost btn-sm" href="${esc(inv.pdf_url)}">PDF</a>` : ''}</td>
+            </tr>`).join('')}</tbody>
+        </table>` : `
+        <div class="empty" style="padding:24px;text-align:center">
+          <div style="font-size:14px;color:var(--ink600);margin-bottom:8px">No invoices yet</div>
+          <div style="font-size:13px;color:var(--ink500)">First invoice arrives when you start a paid plan. You'll get it by email and it appears here.</div>
+        </div>`}
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Usage limits — current plan</span>
+        <a class="btn btn-ghost btn-sm" href="/pricing">Compare plans</a>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Resource</th><th>This month</th><th>Limit</th></tr></thead>
+        <tbody>
+          ${(() => {
+            const limits = { free:{api:0,webhooks:0,seats:1}, pro:{api:30000,webhooks:0,seats:1},
+                             team:{api:300000,webhooks:'unlimited',seats:10},
+                             org:{api:3000000,webhooks:'unlimited',seats:50},
+                             enterprise:{api:'custom',webhooks:'custom',seats:'unlimited'} }[plan] || {api:0,webhooks:0,seats:1};
+            const usage_api = usage.api_month;
+            const apiPct = typeof limits.api === 'number' && limits.api > 0 ? Math.min(100, Math.round(usage_api/limits.api*100)) : 0;
+            const apiBar = typeof limits.api === 'number'
+              ? `<div style="height:6px;background:var(--paper100);border-radius:3px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${apiPct}%;background:${apiPct>80?'var(--red)':apiPct>60?'var(--amber)':'var(--ink)'};border-radius:3px"></div></div>`
+              : '';
+            return `
+              <tr><td>API requests / month</td><td style="font-weight:600">${usage_api.toLocaleString()}${apiBar}</td><td>${limits.api === 0 ? 'not in plan' : (limits.api === 'custom' ? 'custom' : limits.api.toLocaleString())}</td></tr>
+              <tr><td>Webhook deliveries</td><td style="font-weight:600">${usage.webhooks_month}</td><td>${limits.webhooks}</td></tr>
+              <tr><td>Team seats</td><td style="font-weight:600">${isB ? (ls.get('vigilo_company',{members:[]}).members?.length || 1) : 1}</td><td>${limits.seats}</td></tr>
+            `;
+          })()}
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--ink500);margin-top:14px;line-height:1.55">
+        Approaching your limit? <a href="mailto:alex@vigilo.cc?subject=Vigilo%20%E2%80%94%20upgrade%20request" style="color:var(--amber)">Email us</a> for an upgrade — no friction, no auto-charge.
+      </p>
+    </div>
+  `;
 }
 
 // ── Auth view ──────────────────────────────────────────────
