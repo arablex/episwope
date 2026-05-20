@@ -323,8 +323,7 @@
   .nav{padding:20px 0;border-bottom:1px solid rgba(20,17,12,.10);background:transparent}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 24px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em;color:#14110C}
-  .badge{width:28px;height:28px;border-radius:7px;background:#E8590C;display:grid;place-items:center}
-  .nav-mid{display:flex;align-items:center;gap:28px;flex-wrap:nowrap}
+.nav-mid{display:flex;align-items:center;gap:28px;flex-wrap:nowrap}
   .nav-links{display:flex;gap:22px;font-size:14px;color:#544D42}
   .nav-links a{color:#544D42;text-decoration:none}
   .nav-links a:hover{color:#14110C}
@@ -655,16 +654,37 @@
       <a class="btn btn-ghost" href="/app.html" style="justify-content:center;width:100%;margin-top:4px">Open the globe</a>
     </div>
 
-    <div style="background:var(--ink);color:#fff;border-radius:18px;padding:28px 26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 0 rgba(20,17,12,.03),0 20px 40px -28px rgba(20,17,12,.18)">
+    <div style="background:var(--ink);color:#fff;border-radius:18px;padding:28px 26px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 0 rgba(20,17,12,.03),0 20px 40px -28px rgba(20,17,12,.18)">
       <div style="font-size:11.5px;font-weight:700;letter-spacing:.14em;color:var(--amber);text-transform:uppercase">Paid plans</div>
-      <div style="font-size:32px;font-weight:700;letter-spacing:-.025em;line-height:1.1;color:#fff">Pro $49 · Team $199 · Org $499 · Enterprise from $1,500</div>
-      <p style="font-size:14.5px;color:#D1D5DB;line-height:1.55;margin:0">For journalists, NGOs, duty-of-care teams, travel operators, and B2B integrations. 14-day free trial · invoice-based · no auto-charge.</p>
-      <ul style="list-style:none;padding:0;margin:0;font-size:14px;line-height:1.7;color:#D1D5DB">
-        <li>✓ Watched countries · custom alerts</li>
-        <li>✓ Team seats · role assignment</li>
-        <li>✓ API · HMAC-signed webhooks</li>
-        <li>✓ Daily &amp; weekly digests (Pro+)</li>
-        <li>✓ Priority support &amp; SLA</li>
+      <p style="font-size:14.5px;color:#D1D5DB;line-height:1.55;margin:0">For journalists, NGOs, duty-of-care teams, travel operators, B2B integrations.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:10px;padding:14px 16px">
+          <div style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:#9CA3B0;font-weight:600;margin-bottom:4px">Pro</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em">$49<span style="font-size:12px;color:#9CA3B0;font-weight:400">/mo</span></div>
+          <div style="font-size:12px;color:#9CA3B0;margin-top:2px">single user</div>
+        </div>
+        <div style="background:rgba(232,89,12,.08);border:1px solid rgba(232,89,12,.30);border-radius:10px;padding:14px 16px">
+          <div style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:4px">Team · popular</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em">$199<span style="font-size:12px;color:#9CA3B0;font-weight:400">/mo</span></div>
+          <div style="font-size:12px;color:#9CA3B0;margin-top:2px">up to 10 seats</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:10px;padding:14px 16px">
+          <div style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:#9CA3B0;font-weight:600;margin-bottom:4px">Org</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em">$499<span style="font-size:12px;color:#9CA3B0;font-weight:400">/mo</span></div>
+          <div style="font-size:12px;color:#9CA3B0;margin-top:2px">up to 50 seats</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:10px;padding:14px 16px">
+          <div style="font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:#9CA3B0;font-weight:600;margin-bottom:4px">Enterprise</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em">from $1,500<span style="font-size:12px;color:#9CA3B0;font-weight:400">/mo</span></div>
+          <div style="font-size:12px;color:#9CA3B0;margin-top:2px">custom</div>
+        </div>
+      </div>
+
+      <ul style="list-style:none;padding:0;margin:6px 0 0;font-size:13.5px;line-height:1.7;color:#D1D5DB">
+        <li>✓ All paid plans: 14-day free trial · invoice-based · no auto-charge</li>
+        <li>✓ Webhooks · API · team seats · custom alerts</li>
+        <li>✓ Priority support &amp; SLA from Org</li>
       </ul>
       <a class="btn btn-amber" href="/pricing" style="justify-content:center;width:100%;margin-top:4px">See full pricing →</a>
     </div>
