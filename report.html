@@ -3,100 +3,139 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vigilo — Country Risk Report</title>
+<title>Vigilo — Country Risk Dossier</title>
 <meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#F4F2EE;--card:#FFF;--ink:#0F0E0C;--muted:#807E76;--line:#ECEAE2;
-    --line2:#F3F1EA;--accent:#E8590C;--code:#1A1916;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --mono:"SF Mono",SFMono-Regular,ui-monospace,Menlo,Consolas,monospace}
-  [data-theme=dark]{--bg:#0d0c0a;--card:#16140F;--ink:#F4F2EE;--muted:#9a948a;
-    --line:#2a2722;--line2:#1e1c18}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;
-    line-height:1.55;-webkit-font-smoothing:antialiased}
-  .sheet{max-width:780px;margin:26px auto;background:var(--card);
-    border:1px solid var(--line);border-radius:16px;overflow:hidden;
-    box-shadow:0 30px 70px -32px rgba(15,14,12,.4)}
-  .pad{padding:30px 40px}
-  .rep-hd{display:flex;align-items:center;gap:12px;padding:26px 40px;
-    border-bottom:1px solid var(--line)}
-  .mk{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px}
-  .rep-hd b{font-size:16px;font-weight:850;letter-spacing:-.02em;display:block}
-  .rep-hd .sub{font-size:11px;color:var(--muted)}
-  .rep-hd .right{margin-left:auto;text-align:right}
-  .stamp{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--accent);border:1px solid var(--accent);padding:3px 8px;border-radius:5px}
-  .rep-hd .gen{font-size:10px;color:var(--muted);margin-top:5px}
-  .sec{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted);margin:0 0 14px}
-  .exec{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
-  .exec .num{font-size:58px;font-weight:850;letter-spacing:-.05em;line-height:.85;
-    font-variant-numeric:tabular-nums}
-  .exec .of{font-size:15px;color:var(--muted);font-weight:700;padding-bottom:8px}
-  .exec .band{align-self:center;font-size:11px;font-weight:800;letter-spacing:.07em;
-    text-transform:uppercase;color:#fff;padding:6px 11px;border-radius:7px}
-  .kpis{display:flex;gap:26px;margin-top:18px;flex-wrap:wrap}
-  .kpi b{display:block;font-size:18px;font-weight:800}
-  .kpi span{font-size:11px;color:var(--muted)}
-  .exsum{font-size:13.5px;color:var(--ink);opacity:.86;margin-top:18px;line-height:1.6}
-  .proj{margin-top:18px;border:1px solid var(--line);border-radius:12px;
-    padding:14px 16px;background:var(--line2)}
-  .proj-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .proj-h b{font-size:10px;font-weight:800;letter-spacing:.09em;
-    text-transform:uppercase;color:var(--muted)}
-  .proj-v{font-size:20px;font-weight:850;font-variant-numeric:tabular-nums}
-  .proj-d{font-size:12px;font-weight:800;padding:3px 9px;border-radius:6px;color:#fff}
-  .proj-c{margin-left:auto;font-size:10px;color:var(--muted);font-weight:700;
-    text-transform:uppercase;letter-spacing:.05em}
-  .proj-dr{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.5}
-  .proj-dr b{color:var(--ink);font-weight:700}
-  .proj-m{font-size:10px;color:var(--muted);opacity:.75;margin-top:8px}
-  .divide{border-top:1px solid var(--line)}
-  .matrix{display:flex;flex-direction:column;gap:1px}
-  .mrow{display:flex;align-items:center;gap:13px;padding:12px 0;
-    border-top:1px solid var(--line)}
-  .mrow:first-child{border-top:0}
-  .mi{width:30px;height:30px;border-radius:8px;background:var(--line2);
-    display:flex;align-items:center;justify-content:center;color:var(--muted)}
-  .mi svg{width:16px;height:16px}
-  .mn{flex:1;min-width:0}
-  .mn b{font-size:13.5px;font-weight:700}
-  .mn .ev{font-size:11px;color:var(--muted)}
-  .mbarw{width:160px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-  .mbar{height:100%;border-radius:3px}
-  .mb{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
-    color:#fff;padding:4px 8px;border-radius:5px;min-width:88px;text-align:center}
-  .feed{display:flex;flex-direction:column;gap:10px}
-  .ev{border:1px solid var(--line);border-radius:11px;padding:13px 15px}
-  .ev-top{display:flex;align-items:center;gap:9px;margin-bottom:6px;flex-wrap:wrap}
-  .ev-cat{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
-    color:var(--muted)}
-  .sev{font-size:10px;font-weight:800;color:#fff;padding:3px 7px;border-radius:5px}
-  .vt{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
-    padding:3px 7px;border-radius:5px}
-  .vt.off{background:#5b9d6b;color:#fff}.vt.ai{background:#e2820f;color:#fff}
-  .ev h4{font-size:13.5px;font-weight:600;line-height:1.45;margin:2px 0 6px}
-  .ev-src{font-size:11px;color:var(--muted);font-family:var(--mono)}
-  .meth{font-size:11.5px;color:var(--muted);line-height:1.6;background:var(--line2);
-    border-radius:11px;padding:14px 16px}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-  .btn{font:inherit;font-size:13px;font-weight:700;padding:11px 18px;border-radius:10px;
-    border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;
-    text-decoration:none;display:inline-flex;align-items:center;gap:7px}
-  .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .btn:hover{opacity:.92}
-  .foot{font-size:11px;color:var(--muted);text-align:center;padding:20px 40px;
-    border-top:1px solid var(--line)}
-  .loading{padding:60px;text-align:center;color:var(--muted)}
-  @media print{
-    body{background:#fff}.sheet{box-shadow:none;border:0;margin:0;max-width:100%}
-    .actions,.toolbar{display:none!important}
-    .ev,.mrow{break-inside:avoid}
+  :root{
+    --paper:#F4F2EE;--paper50:#FBF9F4;--paper100:#EBE6D9;
+    --ink:#14110C;--ink800:#221E18;--ink700:#332E26;--ink600:#544D42;
+    --ink500:#7A7263;--ink400:#9F9685;--ink300:#C2BAA9;
+    --green:#00A56F;--amber:#E8590C;--red:#C92A2A;--yellow:#E4B514;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --serif:'Instrument Serif',Georgia,serif;
+    --plate:0 1px 0 rgba(20,17,12,.05),0 30px 70px -25px rgba(20,17,12,.22);
   }
-  @media(max-width:640px){.pad,.rep-hd,.foot{padding-left:20px;padding-right:20px}
-    .exec .num{font-size:46px}.mbarw{width:90px}}
+  [data-theme=dark]{--paper:#0d0c0a;--paper50:#13110d;--ink:#F4F2EE;--ink600:#9f9685;--ink500:#807e76;--rule:rgba(255,255,255,.10);--rule-strong:rgba(255,255,255,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper)}
+  body{color:var(--ink);font:400 15px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding:32px 24px 80px}
+
+  /* ─── Sheet ─── */
+  .sheet{max-width:1120px;margin:0 auto;background:#fff;border:1px solid var(--rule);border-radius:24px;overflow:hidden;box-shadow:var(--plate)}
+  [data-theme=dark] .sheet{background:#16140F}
+
+  /* ─── Header ─── */
+  .rep-hd{display:flex;align-items:center;gap:18px;padding:34px 44px;border-bottom:1px solid var(--rule)}
+  .mk{width:46px;height:46px;border-radius:12px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;letter-spacing:-.02em;font-family:var(--serif)}
+  .hd-name{font-size:21px;font-weight:700;letter-spacing:-.022em;line-height:1.1;display:block}
+  .hd-sub{font-size:12.5px;color:var(--ink500);font-weight:500;margin-top:3px;letter-spacing:.02em}
+  .rep-hd .right{margin-left:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .stamp{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);border:1.5px solid var(--amber);padding:5px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:6px}
+  .stamp::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .gen{font-size:11.5px;color:var(--ink500);font-family:var(--mono)}
+
+  /* ─── Sections ─── */
+  .pad{padding:36px 44px}
+  .pad.tight{padding:28px 44px}
+  .divide{border-top:1px solid var(--rule)}
+  .sec{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);margin:0 0 20px;display:flex;align-items:center;gap:10px}
+  .sec::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+  /* ─── Executive score ─── */
+  .exec{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .exec .col-num{display:flex;align-items:baseline;gap:12px}
+  .exec .num{font-size:88px;font-weight:800;letter-spacing:-.045em;line-height:.85;font-variant-numeric:tabular-nums}
+  .exec .of{font-size:18px;color:var(--ink500);font-weight:600;font-family:var(--mono)}
+  .exec .band{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;padding:8px 14px;border-radius:8px}
+  .exec .country{font-family:var(--serif);font-size:54px;letter-spacing:-.02em;line-height:1;margin-left:auto;font-weight:500;font-style:italic;color:var(--ink)}
+  @media(max-width:780px){.exec .country{margin-left:0;font-size:40px}.exec .num{font-size:64px}}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px}
+  @media(max-width:780px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--paper50);border:1px solid var(--rule);border-radius:14px;padding:18px 18px}
+  .kpi b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:6px}
+  .kpi span{font-size:11px;color:var(--ink500);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+
+  .exsum{margin-top:24px;padding:22px 24px;background:var(--paper50);border-left:3px solid var(--ink);border-radius:0 12px 12px 0;font-size:15.5px;line-height:1.65;color:var(--ink700);font-family:var(--serif);font-style:italic}
+  .exsum strong{font-family:var(--sans);font-style:normal;font-weight:600;color:var(--ink)}
+
+  /* ─── Projection ─── */
+  .proj{margin-top:24px;border:1px solid var(--rule);border-radius:16px;padding:22px 24px;background:#fff}
+  .proj-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  .proj-h b{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500)}
+  .proj-v{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
+  .proj-arrow{color:var(--ink500);font-size:20px}
+  .proj-d{font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:7px;color:#fff;letter-spacing:.06em;text-transform:uppercase}
+  .proj-c{margin-left:auto;font-size:11px;color:var(--ink500);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+  .proj-dr{font-size:13.5px;color:var(--ink700);margin-top:12px;line-height:1.6}
+  .proj-dr b{color:var(--ink);font-weight:700}
+  .proj-m{font-size:11px;color:var(--ink400);margin-top:10px;font-family:var(--mono)}
+
+  /* ─── Domain matrix ─── */
+  .matrix{display:flex;flex-direction:column;gap:0}
+  .mrow{display:flex;align-items:center;gap:18px;padding:18px 0;border-top:1px solid var(--rule)}
+  .mrow:first-child{border-top:0;padding-top:6px}
+  .mrow:last-child{padding-bottom:6px}
+  .mi{width:42px;height:42px;border-radius:11px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+  .mi svg{width:20px;height:20px;stroke:#fff;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .mn{flex:1;min-width:0}
+  .mn b{font-size:16px;font-weight:600;letter-spacing:-.01em;display:block;margin-bottom:3px}
+  .mn .meta{font-size:12.5px;color:var(--ink500);font-family:var(--mono)}
+  .mbarw{width:220px;height:8px;background:var(--paper100);border-radius:99px;overflow:hidden;flex-shrink:0}
+  .mbar{height:100%;border-radius:99px;transition:width .3s}
+  .mb{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#fff;padding:6px 10px;border-radius:6px;min-width:104px;text-align:center;flex-shrink:0}
+  @media(max-width:780px){.mbarw{width:80px}.mrow{gap:12px}}
+
+  /* ─── Events feed ─── */
+  .feed{display:flex;flex-direction:column;gap:12px}
+  .ev{border:1px solid var(--rule);border-radius:14px;padding:18px 20px;background:#fff;transition:border-color .15s}
+  .ev:hover{border-color:var(--rule-strong)}
+  .ev-top{display:flex;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap}
+  .ev-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink500)}
+  .sev{font-size:10.5px;font-weight:800;color:#fff;padding:4px 8px;border-radius:5px;letter-spacing:.05em}
+  .vt{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:5px}
+  .vt.off{background:rgba(0,165,111,.12);color:var(--green);border:1px solid rgba(0,165,111,.30)}
+  .vt.ai{background:rgba(232,89,12,.10);color:var(--amber);border:1px solid rgba(232,89,12,.30)}
+  .ev h4{font-size:15.5px;font-weight:600;line-height:1.5;margin:4px 0 8px;letter-spacing:-.01em}
+  .ev-src{font-size:11.5px;color:var(--ink500);font-family:var(--mono)}
+
+  /* ─── Methodology ─── */
+  .meth{font-size:14px;color:var(--ink700);line-height:1.7;background:var(--paper50);border-radius:14px;padding:22px 24px;border:1px solid var(--rule)}
+
+  /* ─── Actions ─── */
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .btn{font:inherit;font-size:14px;font-weight:600;padding:12px 20px;border-radius:11px;border:1px solid var(--rule-strong);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+  .btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -8px rgba(20,17,12,.25)}
+
+  /* ─── Footer ─── */
+  .foot{font-size:12px;color:var(--ink500);text-align:center;padding:24px 44px;border-top:1px solid var(--rule);background:var(--paper50);line-height:1.6}
+  .foot a{color:var(--ink700);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+  .loading{padding:80px;text-align:center;color:var(--ink500);font-family:var(--serif);font-style:italic;font-size:18px}
+
+  /* ─── Print ─── */
+  @media print{
+    body{background:#fff;padding:0}
+    .sheet{box-shadow:none;border:0;margin:0;max-width:100%;border-radius:0}
+    .actions{display:none!important}
+    .ev,.mrow,.kpi,.proj{break-inside:avoid}
+    .rep-hd{padding:24px 32px}.pad{padding:24px 32px}
+  }
+  @media(max-width:780px){
+    body{padding:16px 12px 60px}
+    .rep-hd{padding:24px 22px;gap:12px}
+    .pad{padding:26px 22px}
+    .foot{padding:18px 22px}
+    .sheet{border-radius:18px}
+    .exec{gap:14px}
+  }
 </style>
 <!-- Privacy-friendly analytics by Plausible -->
 <script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
@@ -107,62 +146,85 @@
 </head>
 <body>
 <div class="sheet" id="sheet">
-  <div class="loading" id="loading">Loading…</div>
+  <div class="loading" id="loading">Loading dossier…</div>
 </div>
 <script>
 (function(){
   var Q=new URLSearchParams(location.search);
   var ISO=(Q.get('country')||Q.get('dest')||'TR').toUpperCase().slice(0,2);
-  var L=(Q.get('lang')==='en')?'en':'ru';
+  // English by default; ?lang=ru switches
+  var L=(Q.get('lang')==='ru')?'ru':'en';
   if((Q.get('theme')||'')==='dark') document.documentElement.setAttribute('data-theme','dark');
 
-  var BC={minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',elevated:'#d8531e',
-    severe:'#c0392b',critical:'#7d1a12'};
+  var BC={minimal:'#00A56F',low:'#E4B514',moderate:'#E8590C',elevated:'#d8531e',
+    severe:'#C92A2A',critical:'#7d1a12'};
   var BL={ru:{minimal:'Минимальный',low:'Низкий',moderate:'Умеренный',elevated:'Повышенный',
     severe:'Высокий',critical:'Критический'},en:{minimal:'Minimal',low:'Low',
     moderate:'Moderate',elevated:'Elevated',severe:'Severe',critical:'Critical'}};
   var CAT={ru:{health:'Здоровье / эпидемии',conflict:'Вооружённые конфликты',
     civil_unrest:'Беспорядки / протесты',transport:'Транспорт',border:'Границы и въезд',
     infrastructure:'Инфраструктура',climate:'Стихия / климат'},
-    en:{health:'Health / outbreaks',conflict:'Armed conflict',civil_unrest:'Civil unrest',
-    transport:'Transport',border:'Border & entry',infrastructure:'Infrastructure',
-    climate:'Climate / disaster'}};
-  var CN={ru:{TR:'Турция',TH:'Таиланд',UA:'Украина',FR:'Франция',NG:'Нигерия',RU:'Россия',
+    en:{health:'Health & outbreaks',conflict:'Armed conflict',civil_unrest:'Civil unrest',
+    transport:'Transport & aviation',border:'Border & entry',
+    infrastructure:'Infrastructure',climate:'Climate & disasters'}};
+  // ISO → country name (English by default; Russian fallback)
+  var CN_EN={TR:'Türkiye',TH:'Thailand',UA:'Ukraine',FR:'France',NG:'Nigeria',RU:'Russia',
+    IR:'Iran',IL:'Israel',IN:'India',CN:'China',US:'United States',AE:'UAE',DE:'Germany',
+    PK:'Pakistan',EG:'Egypt',ES:'Spain',IT:'Italy',GB:'United Kingdom',CA:'Canada',
+    MX:'Mexico',BR:'Brazil',AR:'Argentina',CO:'Colombia',VE:'Venezuela',CL:'Chile',
+    PE:'Peru',SD:'Sudan',ET:'Ethiopia',KE:'Kenya',ZA:'South Africa',MA:'Morocco',
+    DZ:'Algeria',TN:'Tunisia',LY:'Libya',SO:'Somalia',YE:'Yemen',SY:'Syria',IQ:'Iraq',
+    SA:'Saudi Arabia',JO:'Jordan',LB:'Lebanon',AF:'Afghanistan',BD:'Bangladesh',
+    MM:'Myanmar',VN:'Vietnam',ID:'Indonesia',PH:'Philippines',MY:'Malaysia',SG:'Singapore',
+    KR:'South Korea',JP:'Japan',TW:'Taiwan',CU:'Cuba',HT:'Haiti',NI:'Nicaragua',
+    GT:'Guatemala',HN:'Honduras',SV:'El Salvador',PL:'Poland',CZ:'Czechia',HU:'Hungary',
+    RO:'Romania',BG:'Bulgaria',GR:'Greece',PT:'Portugal',NL:'Netherlands',BE:'Belgium',
+    SE:'Sweden',NO:'Norway',FI:'Finland',DK:'Denmark',CH:'Switzerland',AT:'Austria',
+    IE:'Ireland',AU:'Australia',NZ:'New Zealand'};
+  var CN_RU={TR:'Турция',TH:'Таиланд',UA:'Украина',FR:'Франция',NG:'Нигерия',RU:'Россия',
     IR:'Иран',IL:'Израиль',IN:'Индия',CN:'Китай',US:'США',AE:'ОАЭ',DE:'Германия',
-    PK:'Пакистан',EG:'Египет',ES:'Испания',IT:'Италия'},en:{}};
-  function cn(i){return (CN[L]&&CN[L][i])||(CN.ru[i])||i;}
+    PK:'Пакистан',EG:'Египет',ES:'Испания',IT:'Италия'};
+  function cn(i){
+    if(L==='ru') return CN_RU[i] || CN_EN[i] || i;
+    return CN_EN[i] || i;
+  }
+
   var T={ru:{title:'Паспорт безопасности страны',sub:'Vigilo Country Risk Dossier · v4.2',
     live:'LIVE',exec:'Композитная оценка',dom:'Риск по доменам',
     feed:'Подтверждённые сигналы',meth:'Методология',
     methtxt:'Композит официальных лент ВОЗ/ECDC/CDC + ИИ-классифицированные сигналы GDELT и новостей. Шкала 0–5 по операционному воздействию с затуханием по свежести; max-доминанта + взвешенный хвост. Каждое событие помечено: официальное ведомство либо ИИ-сигнал из медиа.',
     off:'Официальный',ai:'ИИ-сигнал',src:'источников',ev:'событий',
-    ahead:'опережение ВОЗ',fresh:'свежесть',print:'Скачать PDF',api:'API-документация',
+    ahead:'опережение ВОЗ',fresh:'свежесть данных',print:'Скачать PDF',api:'API-документация',live2:'Живая карта',
     none:'Активных событий в этом домене нет — фон спокойный.',
-    proj:'Прогноз на 7 дней',pnow:'сейчас',pdrv:'Драйверы',
+    proj:'Прогноз на 7 дней',pdrv:'Драйверы',
     tr:{accelerating:'ускоряется',rising:'растёт',stable:'стабильно',
         declining:'снижается',easing:'спадает'},
-    discl:'Образец живого отчёт. Не является фин./мед. советом.'},
-    en:{title:'Country Risk Dossier',sub:'Vigilo Country Risk Dossier · v4.2',
+    discl:'Образец живого отчёта. Не является финансовым или медицинским советом.'},
+    en:{title:'Country Risk Dossier',sub:'Vigilo Risk Intelligence · v4.2',
     live:'LIVE',exec:'Composite assessment',dom:'Risk by domain',
     feed:'Verified signals',meth:'Methodology',
-    methtxt:'Composite of WHO/ECDC/CDC official feeds + AI-classified GDELT/news signals. 0–5 operational-impact scale with recency decay; max-dominant + weighted tail. Every event tagged official-agency or media AI-signal.',
-    off:'Official',ai:'AI signal',src:'sources',ev:'events',
-    ahead:'ahead of WHO',fresh:'freshness',print:'Download PDF',api:'API docs',
+    methtxt:'Composite of WHO / ECDC / CDC official feeds combined with AI-classified GDELT and news signals. 0–5 operational-impact scale with recency decay; max-dominant rule with weighted tail. Every event is tagged as either an official-agency source or an AI-derived media signal — never blended without provenance.',
+    off:'Official source',ai:'AI signal',src:'sources',ev:'events',
+    ahead:'ahead of WHO',fresh:'data freshness',print:'Download PDF',api:'API documentation',live2:'Live map',
     none:'No active events in this domain — baseline calm.',
-    proj:'7-day projection',pnow:'now',pdrv:'Drivers',
+    proj:'7-day projection',pdrv:'Drivers',
     tr:{accelerating:'accelerating',rising:'rising',stable:'stable',
         declining:'declining',easing:'easing'},
     discl:'Live report sample. Not financial or medical advice.'}}[L];
-  function svg(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
-  var IC={health:svg('<path d="M3 12h3l2 5 4-12 2 7h7"/>'),
-    conflict:svg('<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
-    civil_unrest:svg('<path d="M3 21h18M6 21V9M10 21V6M14 21V9M18 21V4"/>'),
-    transport:svg('<path d="M3 17h18M6 17V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"/>'),
+
+  function svg(p){return '<svg viewBox="0 0 24 24">'+p+'</svg>';}
+  var IC={
+    health:svg('<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>'),
+    conflict:svg('<circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><circle cx="12" cy="12" r="2"/>'),
+    civil_unrest:svg('<path d="M3 11l18-8-3 18-5-7-2 5-3-3z"/>'),
+    transport:svg('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
     border:svg('<path d="M12 2v20M5 6l7-3 7 3M5 6v6a7 7 0 0 0 14 0V6"/>'),
-    infrastructure:svg('<path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/>'),
-    climate:svg('<path d="M12 2v3M5 12H2M22 12h-3M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>')};
+    infrastructure:svg('<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>'),
+    climate:svg('<path d="M6 17h12"/><path d="M19 14a3.5 3.5 0 0 0-2.5-6 5 5 0 0 0-9.5 1A4 4 0 0 0 5 17"/><polyline points="13 12 11 15 14 15 12 18"/>')
+  };
   var ORDER=['conflict','civil_unrest','health','transport','border','infrastructure','climate'];
   function esc(s){return String(s||'').replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});}
+  function fmt(n,p){return (n==null||isNaN(n))?'—':Number(n).toFixed(p==null?1:p);}
 
   fetch('https://vigilo.cc/api/v1/risk?country='+ISO+'&include_events=true&history_days=30')
    .then(function(r){return r.json();}).then(function(d){
@@ -170,79 +232,112 @@
     var band=cr.band||'minimal', bc=BC[band]||'#888';
     var lead=0; ev.forEach(function(e){ if((e.lead_time_hours||0)>lead) lead=e.lead_time_hours; });
     var fresh=Math.round((mt.data_freshness_seconds||0)/60);
-    // exec summary line (deterministic, honest)
+    var freshUnit = L==='ru' ? 'м' : 'm';
+    var leadUnit  = L==='ru' ? 'ч' : 'h';
+
+    // Exec summary — deterministic, honest
     var dom=cr.dominant_category, domTxt=dom?(CAT[L][dom]||dom):'—';
-    var sum = (cr.score>=3? (L==='ru'?'Высокий композитный риск — доминирует «'+domTxt+'». Требуется усиленная подготовка и Duty of Care.'
-                : 'Elevated composite risk — driven by '+domTxt+'. Heightened preparation & duty of care required.')
-             : cr.score>=1.5? (L==='ru'?'Умеренный фон с локальными факторами. Контроль обязателен перед поездкой.'
-                : 'Moderate backdrop with local factors. Pre-trip checks advised.')
-             : (L==='ru'?'Композитный риск низкий. Базовая подготовка и проверка правил въезда.'
-                : 'Low composite risk. Routine preparation and entry-rule checks.'));
+    var sum;
+    if(cr.score>=3){
+      sum = L==='ru'
+        ? 'Высокий композитный риск — доминирует «<strong>'+domTxt+'</strong>». Требуется усиленная подготовка и Duty of Care.'
+        : 'Elevated composite risk — driven by <strong>'+domTxt+'</strong>. Heightened preparation and duty-of-care procedures required.';
+    } else if(cr.score>=1.5){
+      sum = L==='ru'
+        ? 'Умеренный фон с локальными факторами. Контроль обязателен перед поездкой.'
+        : 'Moderate backdrop with localised factors. Pre-trip checks advised.';
+    } else {
+      sum = L==='ru'
+        ? 'Композитный риск низкий. Базовая подготовка и проверка правил въезда.'
+        : 'Composite risk is low. Routine preparation and entry-rule checks recommended.';
+    }
 
     var rows=ORDER.map(function(k){
       var c=cb[k]||{score:0,band:'minimal',active_events:0};
       var b=c.band||'minimal', w=Math.round((c.score||0)/5*100);
+      var evWord = c.active_events===1 ? (L==='ru'?'событие':'event') : T.ev;
       return '<div class="mrow"><div class="mi">'+(IC[k]||'')+'</div>'+
-        '<div class="mn"><b>'+CAT[L][k]+'</b><div class="ev">'+(c.active_events||0)+' '+T.ev+
-        ' · '+(c.score||0).toFixed(1)+'/5</div></div>'+
+        '<div class="mn"><b>'+CAT[L][k]+'</b><div class="meta">'+(c.active_events||0)+' '+evWord+
+        ' · '+fmt(c.score,1)+' / 5</div></div>'+
         '<div class="mbarw"><div class="mbar" style="width:'+w+'%;background:'+(BC[b]||'#888')+'"></div></div>'+
         '<div class="mb" style="background:'+(BC[b]||'#888')+'">'+(BL[L][b]||b)+'</div></div>';
     }).join('');
 
     var feed = ev.length ? ev.slice(0,12).map(function(e){
       var off=e.source_verification==='official_agency';
-      var sb=BC[['minimal','low','warning','warning','alert','critical'][Math.max(0,Math.min(5,Math.round(e.severity||0)))]]||'#888';
+      var sb=BC[['minimal','low','moderate','elevated','severe','critical'][Math.max(0,Math.min(5,Math.round(e.severity||0)))]]||'#888';
       return '<div class="ev"><div class="ev-top">'+
         '<span class="ev-cat">'+(CAT[L][e.category]||e.category)+'</span>'+
         '<span class="sev" style="background:'+sb+'">SEV '+(e.severity||0)+'</span>'+
         '<span class="vt '+(off?'off':'ai')+'">'+(off?T.off:T.ai)+'</span>'+
         (e.source_count?'<span class="ev-cat">· '+e.source_count+' '+T.src+'</span>':'')+'</div>'+
         '<h4>'+esc(e.headline||e.type||'')+'</h4>'+
-        '<div class="ev-src">'+esc((e.sources||[]).slice(0,6).join(', '))+'</div></div>';
+        '<div class="ev-src">'+esc((e.sources||[]).slice(0,6).join(' · '))+'</div></div>';
     }).join('') : '<div class="meth">'+T.none+'</div>';
+
+    var locale = L==='ru' ? 'ru-RU' : 'en-GB';
+    var genStr = new Date(mt.generated_at||Date.now()).toLocaleString(locale, {
+      year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit'
+    });
 
     document.getElementById('loading').remove();
     document.getElementById('sheet').innerHTML =
-      '<div class="rep-hd"><span class="mk">V</span><div><b>'+T.title+' · '+cn(ISO)+'</b>'+
-        '<span class="sub">'+T.sub+'</span></div><div class="right">'+
-        '<span class="stamp">'+T.live+'</span><div class="gen">'+
-        new Date(mt.generated_at||Date.now()).toLocaleString(L==='ru'?'ru-RU':'en-GB')+'</div></div></div>'+
+      '<div class="rep-hd">'+
+        '<span class="mk">V</span>'+
+        '<div><span class="hd-name">'+T.title+'</span>'+
+          '<span class="hd-sub">'+T.sub+'</span></div>'+
+        '<div class="right">'+
+          '<span class="stamp">'+T.live+'</span>'+
+          '<span class="gen">'+genStr+'</span>'+
+        '</div>'+
+      '</div>'+
       '<div class="pad"><div class="sec">'+T.exec+'</div>'+
-        '<div class="exec"><div class="num">'+(cr.score||0).toFixed(1)+'</div>'+
-        '<div class="of">/ 5</div><div class="band" style="background:'+bc+'">'+(BL[L][band]||band)+'</div></div>'+
+        '<div class="exec">'+
+          '<div class="col-num">'+
+            '<span class="num" style="color:'+bc+'">'+fmt(cr.score,1)+'</span>'+
+            '<span class="of">/ 5.0</span>'+
+            '<span class="band" style="background:'+bc+'">'+(BL[L][band]||band)+'</span>'+
+          '</div>'+
+          '<span class="country">'+cn(ISO)+'</span>'+
+        '</div>'+
         '<div class="kpis">'+
           '<div class="kpi"><b>'+(mt.sources_checked||'—')+'</b><span>'+T.src+'</span></div>'+
           '<div class="kpi"><b>'+(mt.events_total||ev.length)+'</b><span>'+T.ev+'</span></div>'+
-          (lead>0?'<div class="kpi"><b>'+lead+'ч</b><span>'+T.ahead+'</span></div>':'')+
-          '<div class="kpi"><b>'+fresh+'м</b><span>'+T.fresh+'</span></div></div>'+
+          '<div class="kpi"><b>'+(lead>0?(lead+leadUnit):'—')+'</b><span>'+T.ahead+'</span></div>'+
+          '<div class="kpi"><b>'+(fresh>0?(fresh+freshUnit):'—')+'</b><span>'+T.fresh+'</span></div>'+
+        '</div>'+
         '<div class="exsum">'+sum+'</div>'+
         (function(){
           var p=d.projection; if(!p) return '';
           var pc=BC[p.band_7d]||'#888';
           var dl=(p.drivers||[]).map(function(x){
-            return '<b>'+esc(x.factor)+'</b> '+esc(x.detail)+' ('+
+            return '<b>'+esc(x.factor)+'</b> — '+esc(x.detail)+' ('+
               (x.impact>=0?'+':'')+x.impact+')';}).join(' · ');
           return '<div class="proj"><div class="proj-h">'+
             '<b>'+T.proj+'</b>'+
-            '<span class="proj-v">'+p.composite_now.toFixed(1)+' → '+p.proj_7d.toFixed(1)+'</span>'+
+            '<span class="proj-v">'+fmt(p.composite_now,1)+'</span>'+
+            '<span class="proj-arrow">→</span>'+
+            '<span class="proj-v" style="color:'+pc+'">'+fmt(p.proj_7d,1)+'</span>'+
             '<span class="proj-d" style="background:'+pc+'">'+
               (p.delta>=0?'+':'')+p.delta+' · '+(T.tr[p.trend]||p.trend)+'</span>'+
-            '<span class="proj-c">'+esc(p.confidence)+
-              (p.regime_shift?' · regime shift':'')+'</span></div>'+
+            '<span class="proj-c">'+esc(p.confidence||'')+
+              (p.regime_shift?(' · '+(L==='ru'?'смена режима':'regime shift')):'')+'</span></div>'+
             (dl?'<div class="proj-dr">'+T.pdrv+': '+dl+'</div>':'')+
-            '<div class="proj-m">'+esc(p.model||'')+'</div></div>';
+            (p.model?'<div class="proj-m">'+esc(p.model)+'</div>':'')+'</div>';
         })()+
-        '</div>'+
+      '</div>'+
       '<div class="pad divide"><div class="sec">'+T.dom+'</div><div class="matrix">'+rows+'</div></div>'+
       '<div class="pad divide"><div class="sec">'+T.feed+'</div><div class="feed">'+feed+'</div></div>'+
       '<div class="pad divide"><div class="sec">'+T.meth+'</div><div class="meth">'+T.methtxt+'</div>'+
-        '<div class="actions"><button class="btn pri" onclick="window.print()">'+T.print+'</button>'+
-        '<a class="btn" href="https://vigilo.cc/api/v1/docs">'+T.api+'</a>'+
-        '<a class="btn" href="https://vigilo.cc/app?country='+ISO+'">'+(L==='ru'?'Живая карта':'Live map')+'</a></div></div>'+
-      '<div class="foot">Vigilo Risk Intelligence · vigilo.cc · '+T.discl+'</div>';
+        '<div class="actions">'+
+          '<button class="btn pri" onclick="window.print()">'+T.print+'</button>'+
+          '<a class="btn" href="https://vigilo.cc/api-docs">'+T.api+'</a>'+
+          '<a class="btn" href="https://vigilo.cc/app?country='+ISO+'">'+T.live2+'</a>'+
+        '</div></div>'+
+      '<div class="foot"><a href="https://vigilo.cc">Vigilo Risk Intelligence</a> · vigilo.cc · '+T.discl+'</div>';
   }).catch(function(){
     document.getElementById('sheet').innerHTML='<div class="loading">'+
-      (L==='ru'?'Не удалось загрузить отчёт. Повторите позже.':'Failed to load. Try later.')+'</div>';
+      (L==='ru'?'Не удалось загрузить отчёт. Повторите позже.':'Could not load dossier. Please try again later.')+'</div>';
   });
 })();
 </script>
