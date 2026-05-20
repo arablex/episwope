@@ -73,6 +73,11 @@
     </div>
 
     <div class="sec">
+      <h2>Точность во времени <span class="tag">learning curve · fills daily</span></h2>
+      <div id="learning"></div>
+    </div>
+
+    <div class="sec">
       <h2>OSINT predictions <span class="tag" id="predTag"></span></h2>
       <div id="preds"></div>
     </div>
@@ -125,6 +130,7 @@ async function load(){
   const d=await r.json();
   renderScore(d.scorecard||{}, d.total||0);
   renderOurGlobal(d.globalHistory||[]);
+  renderLearning(d.globalHistory||[]);
   renderPreds(d.rows||[]);
   renderMissed(d.missed||[]);
   document.getElementById('stamp').textContent='loaded '+new Date().toLocaleTimeString();
@@ -174,6 +180,42 @@ function renderMissed(m){
   el.innerHTML='<table><tr><th>Day</th><th>ISO</th><th>Composite</th><th>Band</th></tr>'+
     m.slice(-30).reverse().map(x=>`<tr><td>${x.day}</td><td><b>${x.iso2}</b></td>
       <td>${x.composite}</td><td style="color:${band(x.band)}">${x.band||'—'}</td></tr>`).join('')+'</table>';
+}
+
+function renderLearning(gh){
+  const el=document.getElementById('learning');
+  if(!gh.length){
+    el.innerHTML='<div class="empty">Таблица будет заполняться по дню — по строке за каждый прогон воркера. Первые ~7 дней колонка precision будет пустой (окно подтверждения 7 дней). Это правильное поведение.</div>';
+    return;
+  }
+  const rows=[...gh].reverse(); // newest first
+  const fmtPct=p=>p==null?'<span class="muted">—</span>':`<b style="color:${p>=0.6?'var(--grn)':p>=0.4?'var(--amb)':'var(--red)'}">${(p*100).toFixed(0)}%</b>`;
+  el.innerHTML=
+    `<table>
+      <tr>
+        <th>Day</th><th>Total<br>journal</th><th>Today's<br>flags</th>
+        <th>Confirmed</th><th>Not conf.</th><th>Opacity</th><th>Pending</th>
+        <th>Precision</th><th>Avg lead</th><th>Missed<br>new</th>
+      </tr>` +
+    rows.map(r=>{
+      const o=r.osint||{};
+      return `<tr>
+        <td>${r.day}</td>
+        <td>${r.journalTotal??'—'}</td>
+        <td>${o.predictions??0}</td>
+        <td style="color:var(--grn)">${r.confirmed??0}</td>
+        <td style="color:var(--red)">${r.notConfirmed??0}</td>
+        <td style="color:var(--vio)">${r.opacityUnverifiable??0}</td>
+        <td class="muted">${r.pending??0}</td>
+        <td>${fmtPct(r.precision)}</td>
+        <td>${r.avgLeadDays!=null?r.avgLeadDays+'d':'<span class="muted">—</span>'}</td>
+        <td>${o.missedNew??0}</td>
+      </tr>`;
+    }).join('') +
+    `</table>
+     <div class="muted" style="margin-top:10px;font-size:11px">
+       Каждая строка = снимок за день. Precision и lead — кумулятивные (по всему журналу на момент строки). Сначала пусто; цифры появятся как только окно подтверждения первых предсказаний выйдет (~неделя).
+     </div>`;
 }
 
 function renderOurGlobal(gh){

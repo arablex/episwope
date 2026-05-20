@@ -191,7 +191,14 @@ export default async () => {
           avgDivergence: todays.length ? +(divSum/todays.length).toFixed(2) : 0,
           missedNew: missedNow.length,
         },
-        precision: score.precision, avgLeadDays: score.avgLeadDays,
+        // Learning curve fields (cumulative across the whole journal as of this run)
+        precision: score.precision,
+        avgLeadDays: score.avgLeadDays,
+        confirmed: score.confirmed,
+        notConfirmed: score.notConfirmed,
+        opacityUnverifiable: score.opacityUnverifiable,
+        pending: score.pending,
+        journalTotal: journal.length,
       };
       const gh = (await s.get(GLOBAL_KEY, { type:'json' })) || [];
       if(!gh.some(x => x.day === day)){
