@@ -289,7 +289,13 @@ EXTRACTION_PROMPT = """Extract disease outbreak information from this text. Retu
 Text: {text}
 
 JSON structure:
-{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"ISO alpha-2 or null","cases":integer_or_null,"deaths":integer_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence plain English summary of the outbreak","summary_ru":"Russian translation of summary","lat":number_or_null,"lng":number_or_null}}
+{{"disease":string_or_null,"country":string_or_null,"region":"AFRO|AMRO|EMRO|EURO|SEARO|WPRO|null","iso":"ISO alpha-2 or null","city":string_or_null,"admin1":string_or_null,"cases":integer_or_null,"deaths":integer_or_null,"severity":"low|medium|high|critical","summary":"1-2 sentence plain English summary of the outbreak","summary_ru":"Russian translation of summary","lat":number_or_null,"lng":number_or_null}}
+
+LOCATION PRECISION (important):
+- If the text names a specific city or province (e.g. "Mariupol", "Lagos", "Khartoum", "Punjab"), set lat/lng to that PLACE, not the country centroid.
+- Set city = the specific city if mentioned, else null.
+- Set admin1 = the province/state/region if mentioned, else null.
+- Use country centroid lat/lng ONLY if no city or admin1 is named.
 
 Severity guide: critical=Ebola/Marburg/Plague/Nipah, high=cholera/dengue outbreak/avian flu, medium=measles/polio/yellow fever, low=endemic monitoring.
 If not a disease outbreak or disaster with health impact, return {{"disease":null}}"""
@@ -430,6 +436,7 @@ def extract_free(title: str, description: str) -> dict:
     return {
         "disease": disease_name, "country": country_name,
         "iso": iso, "region": region, "lat": lat, "lng": lng,
+        "city": None, "admin1": None,  # regex fallback can't extract — AI path does
         "cases": cases, "deaths": deaths, "severity": severity,
         "summary": summary, "summary_ru": "",
     }
@@ -2083,6 +2090,8 @@ def main():
                 "region":     extracted.get("region"),
                 "lat":        extracted.get("lat"),
                 "lng":        extracted.get("lng"),
+                "city":       extracted.get("city"),
+                "admin1":     extracted.get("admin1"),
                 "cases":      extracted.get("cases"),
                 "deaths":     extracted.get("deaths"),
                 "severity":   sev,
@@ -2144,6 +2153,8 @@ def main():
             "region":     extracted.get("region"),
             "lat":        extracted.get("lat"),
             "lng":        extracted.get("lng"),
+            "city":       extracted.get("city"),
+            "admin1":     extracted.get("admin1"),
             "cases":      extracted.get("cases"),
             "deaths":     extracted.get("deaths"),
             "severity":   sev,
@@ -2176,6 +2187,7 @@ def main():
                 "disease": extracted.get("disease"), "country": extracted.get("country") or country_hint,
                 "iso": extracted.get("iso"), "region": extracted.get("region"),
                 "lat": extracted.get("lat"), "lng": extracted.get("lng"),
+                "city": extracted.get("city"), "admin1": extracted.get("admin1"),
                 "cases": extracted.get("cases"), "deaths": extracted.get("deaths"),
                 "severity": sev,
                 "summary": extracted.get("summary", raw["title"])[:300],

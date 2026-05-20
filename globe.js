@@ -3227,7 +3227,7 @@ function refreshCountryRiskFill(){
     'source-layer': 'country_boundaries',
     paint: {
       'fill-color': matchExpr,
-      'fill-opacity': 0.20,        // gentle so map labels stay readable
+      'fill-opacity': 0.10,        // soft tint — labels and dots stay primary
       'fill-antialias': true,
     },
   }, beforeId);
