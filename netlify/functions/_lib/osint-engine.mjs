@@ -75,15 +75,22 @@ export function computeCovertRisk(iso2, ri, cs, struct){
   const silenceInformative = officialActivity <= 1.0 ? T : 1;
   const adjDivergence = +(divergence * silenceInformative).toFixed(2);
 
+  // Tiering thresholds — recalibrated 2026-05-20 after 8 days of silence.
+  // Original 3.0 floor was too tight: a country with conflict=3, unrest=3,
+  // infra=3, currency=2, border=2 only yields behavioralRaw=2.72. We were
+  // never firing. Lowered floor to 2.0 (matches «moderate-across-domains»
+  // intuition); covert_elevated keeps 3.5 (still strict, low-FP).
   let tier;
-  if(behavioral >= 3.5 && officialActivity <= 1.0 && adjDivergence >= 2.5)
+  if(behavioral >= 3.5 && officialActivity <= 1.0 && adjDivergence >= 2.0)
        tier = 'covert_elevated';
-  else if(behavioral >= 3.0)
+  else if(behavioral >= 2.5)
        tier = 'elevated_watch';
+  else if(behavioral >= 2.0)
+       tier = 'watch';
   else tier = 'nominal';
 
   const opacitySuppressed =
-    behavioral >= 3.5 && officialActivity <= 1.0 && divergence >= 2.5
+    behavioral >= 3.5 && officialActivity <= 1.0 && divergence >= 2.0
     && tier !== 'covert_elevated';
 
   const reasons = [];

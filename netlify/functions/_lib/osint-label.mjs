@@ -91,19 +91,43 @@ export function labelJournal(journal, RISK_INDEX, transparencyOf){
            precision, avgLeadDays: avgLead, scored };
 }
 
-/* Recall side: official escalations we did NOT flag in the window before.
-   Returns lightweight `missed` records (false-negative visibility). */
-export function detectMissed(journal, RISK_INDEX, day){
+/* Recall side: official escalations we did NOT flag.
+   Only counts SURPRISE escalations — countries that JUMPED into severe
+   recently. A country that's been severe for months (like IR — chronic
+   sanctions) is not «our» miss; we never claimed to predict known states.
+   The covert-engine's job is catching hidden / new escalations.
+
+   Surprise = composite rose ≥ CONFIRM_DELTA vs the snapshot we have from
+   ≥7d ago in journal, OR (if no journal baseline) just-now-severe band
+   transition. Stable-severe countries are excluded as «expected». */
+export function detectMissed(journal, RISK_INDEX, day, baselineSnaps){
   const recentlyFlagged = new Set(
     journal.filter(e => ageDays(e) <= MAX_WINDOW_D).map(e => e.iso2));
+
+  // Build a per-iso baseline from any prediction journal entry ≥7d old.
+  // (Side-effect free, just a lookup.)
+  const baselineByIso = baselineSnaps || {};
+  for(const e of journal){
+    if(ageDays(e) >= MIN_WINDOW_D && e.officialSnapshot && !baselineByIso[e.iso2]){
+      baselineByIso[e.iso2] = e.officialSnapshot.composite || 0;
+    }
+  }
+
   const missed = [];
   for(const [iso2, ri] of Object.entries(RISK_INDEX || {})){
     const comp = ri?.composite_risk?.score || 0;
     const band = ri?.composite_risk?.band || '';
-    if((comp >= 3.5 || band === 'severe' || band === 'critical')
-        && !recentlyFlagged.has(iso2)){
-      missed.push({ day, iso2, composite:+comp.toFixed(2), band, type:'missed' });
+    const isSevere = comp >= 3.5 || band === 'severe' || band === 'critical';
+    if(!isSevere) continue;
+    if(recentlyFlagged.has(iso2)) continue;
+
+    // Only count as «missed» if this severity is a SURPRISE.
+    const baseline = baselineByIso[iso2];
+    if(baseline != null && (comp - baseline) < CONFIRM_DELTA){
+      continue; // chronic / already-severe — not our recall target
     }
+    missed.push({ day, iso2, composite:+comp.toFixed(2), band, type:'missed',
+                  baseline: baseline != null ? +baseline.toFixed(2) : null });
   }
   return missed;
 }
