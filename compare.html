@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigilo vs Crisis24 / International SOS / INSO — honest comparison</title>
+<meta name="description" content="Honest side-by-side comparison of Vigilo with Crisis24, International SOS, and INSO. What each does well, where each falls short, and which one fits your team.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://vigilo.cc/compare">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vigilo.cc/compare">
+<meta property="og:title" content="Vigilo vs Crisis24 / IntSOS / INSO">
+<meta property="og:description" content="Honest comparison — what each does well, where each falls short. We name our limits.">
+<meta property="og:image" content="https://vigilo.cc/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F2EE;--paper50:#FBF9F4;--paper100:#EBE6D9;
+    --ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
+    --night:#0D1015;--amber:#E8590C;--red:#C92A2A;--green:#00A56F;--yellow:#E4B514;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --serif:'Instrument Serif',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font:400 16px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  @media(min-width:1024px){.wrap{padding:0 40px}}
+  .h-it{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--amber)}
+
+  /* nav */
+  .nav{padding:20px 0;border-bottom:1px solid var(--rule)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em}
+  .badge{width:28px;height:28px;border-radius:7px;background:var(--amber);display:grid;place-items:center}
+  .nav-links{display:flex;gap:22px;font-size:14px;color:var(--ink600)}
+  .nav-links a:hover{color:var(--ink)}
+
+  /* hero */
+  header{padding:64px 0 32px;text-align:center}
+  @media(min-width:768px){header{padding:88px 0 48px}}
+  .eyebrow{display:inline-block;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);background:rgba(232,89,12,.08);padding:6px 12px;border-radius:99px;margin-bottom:24px}
+  h1{font-size:42px;font-weight:700;letter-spacing:-.035em;line-height:1.05;margin-bottom:16px;max-width:820px;margin-left:auto;margin-right:auto}
+  @media(min-width:768px){h1{font-size:54px}}
+  .lede{font-size:18px;color:var(--ink600);line-height:1.55;max-width:680px;margin:0 auto}
+  @media(min-width:768px){.lede{font-size:20px}}
+
+  /* honest disclaimer card */
+  .disclaimer{background:#FFF6E5;border:1px solid #F4D38A;border-radius:14px;padding:20px 24px;margin:36px auto 0;max-width:780px;font-size:14px;color:#7A5A0F;line-height:1.55}
+  .disclaimer b{color:#5E430A}
+
+  /* the big comparison table */
+  section{padding:60px 0;border-top:1px solid var(--rule)}
+  h2{font-size:32px;font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-bottom:14px}
+  @media(min-width:768px){h2{font-size:40px}}
+  .sub-h{font-size:16px;color:var(--ink600);max-width:560px;margin-bottom:36px;line-height:1.55}
+
+  .ctable-wrap{overflow-x:auto;margin-top:18px}
+  .ctable{width:100%;min-width:760px;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--rule);border-radius:14px;overflow:hidden;font-size:14px}
+  .ctable th,.ctable td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+  .ctable th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink500);font-weight:600;background:var(--paper50)}
+  .ctable th.col-us{background:var(--ink);color:#fff}
+  .ctable td.col-us{background:rgba(232,89,12,.05);font-weight:500}
+  .ctable .grp td{background:var(--paper100);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink600);font-weight:600}
+  .ctable tr:last-child td{border-bottom:0}
+  .ck{color:var(--green);font-weight:700}
+  .x{color:#B5AFA4;font-weight:700}
+  .pp{color:var(--amber);font-weight:700}
+
+  /* "who is each one for" cards */
+  .who-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:36px}
+  @media(min-width:768px){.who-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1024px){.who-grid{grid-template-columns:repeat(4,1fr)}}
+  .who{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:24px 22px}
+  .who.us{background:var(--ink);color:#fff;border-color:transparent}
+  .who h3{font-size:17px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+  .who .price{font-size:12px;color:var(--ink500);font-family:var(--sans);margin-bottom:14px}
+  .who.us .price{color:#9CA3B0}
+  .who p{font-size:13.5px;line-height:1.55;color:var(--ink700)}
+  .who.us p{color:#D1D5DB}
+  .who ul{list-style:none;padding:0;margin-top:12px}
+  .who ul li{font-size:13px;line-height:1.5;padding-left:20px;position:relative;margin-bottom:8px;color:var(--ink700)}
+  .who.us ul li{color:#D1D5DB}
+  .who ul li::before{content:'•';position:absolute;left:0;color:var(--amber);font-weight:700}
+
+  /* honest position section */
+  .honest-card{background:var(--night);color:#fff;border-radius:18px;padding:36px;margin-top:32px}
+  @media(min-width:768px){.honest-card{padding:48px 52px}}
+  .honest-card h3{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px}
+  .honest-card p{font-size:15.5px;line-height:1.7;color:#D1D5DB;margin-bottom:14px}
+  .honest-card strong{color:#fff;font-weight:600}
+  .honest-card .lbl{display:inline-block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;font-weight:600}
+
+  /* CTA */
+  section.cta-big{padding:80px 0;text-align:center;border-top:1px solid var(--rule)}
+  section.cta-big h2{font-size:32px;font-weight:700;letter-spacing:-.025em;margin-bottom:14px}
+  section.cta-big p{font-size:17px;color:var(--ink600);max-width:560px;margin:0 auto 30px;line-height:1.55}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:11px;font-weight:600;font-size:15px;padding:13px 22px;cursor:pointer;font-family:inherit;border:none;transition:transform .15s,box-shadow .15s}
+  .btn-primary{background:var(--ink);color:#fff}.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px rgba(20,17,12,.4)}
+  .btn-amber{background:var(--amber);color:#fff}.btn-amber:hover{transform:translateY(-1px);box-shadow:0 10px 24px -10px rgba(232,89,12,.4)}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--rule-strong)}.btn-ghost:hover{background:rgba(20,17,12,.04)}
+
+  footer{background:var(--night);color:#9CA3B0;padding:48px 0 32px;font-size:14px}
+  footer a{color:#D1D5DB}footer a:hover{color:#fff}
+  .foot-bot{border-top:1px solid rgba(255,255,255,.08);margin-top:28px;padding-top:18px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12.5px;color:#6B7280}
+</style>
+<script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand">
+      <span class="badge"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Vigilo
+    </a>
+    <div class="nav-links">
+      <a href="/how-it-works">How it works</a>
+      <a href="/for-ngos">For NGOs</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/trust">Trust</a>
+      <a href="/">Live globe →</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">Honest comparison</span>
+    <h1>Vigilo <span class="h-it">vs</span> Crisis24, International SOS, INSO.</h1>
+    <p class="lede">We won't tell you we're better at everything. We're not. Here's what each one
+      genuinely does well, where each falls short, and which fits your team.</p>
+    <div class="disclaimer">
+      <b>Honest framing.</b> This page reflects publicly observable posture — self-serve access,
+      published pricing, openness of methodology, target customer. It is <b>not</b> a capability
+      ranking, and we will not pretend to know things about competitors that we don't. Anything
+      questionable is sourced or clearly labelled "publicly observable."
+    </div>
+  </div>
+</header>
+
+<!-- Big table -->
+<section>
+  <div class="wrap">
+    <h2>Side by side, no hand-waving.</h2>
+    <p class="sub-h">For travel-risk and duty-of-care — the segments where most teams choose between these vendors.</p>
+
+    <div class="ctable-wrap">
+    <table class="ctable">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-us">Vigilo</th>
+          <th>Crisis24<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(GardaWorld)</span></th>
+          <th>International SOS</th>
+          <th>INSO</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="grp"><td colspan="5">Access &amp; pricing</td></tr>
+        <tr>
+          <td><b>Self-serve sign-up</b></td>
+          <td class="col-us ck">Yes — magic-link in 60s</td>
+          <td class="x">Sales call required</td>
+          <td class="x">Sales call required</td>
+          <td class="pp">Membership application</td>
+        </tr>
+        <tr>
+          <td><b>Pricing published?</b></td>
+          <td class="col-us ck">Yes — at /pricing</td>
+          <td class="x">No — bespoke</td>
+          <td class="x">No — bespoke</td>
+          <td class="pp">Tiered, on application</td>
+        </tr>
+        <tr>
+          <td><b>Entry price (smallest team)</b></td>
+          <td class="col-us"><b style="color:var(--green)">$49/mo</b> · Pro single user<br><span style="color:var(--ink500);font-size:12px">Team $199/mo · 10 seats</span></td>
+          <td>$$$$ enterprise<br><span style="color:var(--ink500);font-size:12px">commonly $50k+ /yr</span></td>
+          <td>$$$$ enterprise<br><span style="color:var(--ink500);font-size:12px">commonly $50–500k /yr</span></td>
+          <td>Membership fee<br><span style="color:var(--ink500);font-size:12px">graduated by org size</span></td>
+        </tr>
+        <tr>
+          <td><b>Free tier for small NGOs</b></td>
+          <td class="col-us ck">Yes — frontline NGO programme</td>
+          <td class="x">No</td>
+          <td class="x">No</td>
+          <td class="pp">Limited free access for some HNCs</td>
+        </tr>
+
+        <tr class="grp"><td colspan="5">Coverage &amp; data</td></tr>
+        <tr>
+          <td><b>Risk domains covered</b></td>
+          <td class="col-us"><b>7+ (health, conflict, civil unrest, climate, infrastructure, border, food)</b></td>
+          <td>All major domains</td>
+          <td>All major domains</td>
+          <td>Conflict / security focus (humanitarian context)</td>
+        </tr>
+        <tr>
+          <td><b>Geographic coverage</b></td>
+          <td class="col-us">~191 countries</td>
+          <td>Global</td>
+          <td>Global</td>
+          <td>~17 humanitarian operating environments</td>
+        </tr>
+        <tr>
+          <td><b>Sources named publicly</b></td>
+          <td class="col-us ck"><b>Yes — all 44 listed</b></td>
+          <td class="x">Aggregated / proprietary</td>
+          <td class="x">Aggregated / proprietary</td>
+          <td class="pp">Partner-network sources</td>
+        </tr>
+
+        <tr class="grp"><td colspan="5">Methodology &amp; transparency</td></tr>
+        <tr>
+          <td><b>Scoring methodology published?</b></td>
+          <td class="col-us ck">Yes — /methodology</td>
+          <td class="x">Proprietary</td>
+          <td class="x">Proprietary</td>
+          <td class="x">Internal</td>
+        </tr>
+        <tr>
+          <td><b>Every score links to source?</b></td>
+          <td class="col-us ck">Yes — ingestion-batch traceable</td>
+          <td class="x">No</td>
+          <td class="x">No</td>
+          <td class="x">No</td>
+        </tr>
+        <tr>
+          <td><b>Honest "we don't know"</b></td>
+          <td class="col-us ck">Opacity-suppressed flag exists</td>
+          <td class="x">Not standard</td>
+          <td class="x">Not standard</td>
+          <td class="ck">Yes — culture-level</td>
+        </tr>
+
+        <tr class="grp"><td colspan="5">Delivery</td></tr>
+        <tr>
+          <td><b>REST API</b></td>
+          <td class="col-us ck">Yes — public docs</td>
+          <td class="ck">Yes — enterprise</td>
+          <td class="ck">Yes — enterprise</td>
+          <td class="x">No public API</td>
+        </tr>
+        <tr>
+          <td><b>Webhooks (HMAC-signed)</b></td>
+          <td class="col-us ck">Yes — from Team plan</td>
+          <td class="ck">Yes — enterprise</td>
+          <td class="ck">Yes — enterprise</td>
+          <td class="x">No</td>
+        </tr>
+        <tr>
+          <td><b>24/7 human operations centre</b></td>
+          <td class="col-us x">No — engine + email/Telegram alerts</td>
+          <td class="ck">Yes — global GOC</td>
+          <td class="ck">Yes — Assistance Centres</td>
+          <td class="ck">Yes — analyst staff in country</td>
+        </tr>
+        <tr>
+          <td><b>Physical evacuation / medical evac</b></td>
+          <td class="col-us x"><b>No — software only</b></td>
+          <td class="ck">Yes — contracted</td>
+          <td class="ck">Yes — flagship service</td>
+          <td class="x">No (advisory only)</td>
+        </tr>
+        <tr>
+          <td><b>In-country analyst network</b></td>
+          <td class="col-us x">No</td>
+          <td class="ck">Yes</td>
+          <td class="ck">Yes</td>
+          <td class="ck">Yes — local field staff</td>
+        </tr>
+
+        <tr class="grp"><td colspan="5">Contracts &amp; trust</td></tr>
+        <tr>
+          <td><b>DPA available immediately</b></td>
+          <td class="col-us ck">Yes — at /dpa</td>
+          <td class="ck">Yes — on contract</td>
+          <td class="ck">Yes — on contract</td>
+          <td class="ck">Yes — on contract</td>
+        </tr>
+        <tr>
+          <td><b>SOC 2 / ISO 27001</b></td>
+          <td class="col-us x">No — planned 2027</td>
+          <td class="ck">Yes</td>
+          <td class="ck">Yes</td>
+          <td class="x">Not publicly</td>
+        </tr>
+        <tr>
+          <td><b>Operates as</b></td>
+          <td class="col-us">Solo founder + AI ops</td>
+          <td>Large security firm</td>
+          <td>Multinational corporate</td>
+          <td>NGO membership platform</td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- Who is each one for -->
+<section>
+  <div class="wrap">
+    <h2>Who each one is genuinely for.</h2>
+    <p class="sub-h">Pick the one that matches the shape of your org — not the brand you've heard of most.</p>
+
+    <div class="who-grid">
+      <div class="who us">
+        <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:700">Vigilo</span>
+        <h3>Mid-market &amp; prosumer</h3>
+        <p class="price">$0 – $1,500/mo · self-serve</p>
+        <p>Small/mid NGOs with field staff. Remote-first companies with duty-of-care obligations. Journalists, researchers, expedition operators. Travel agencies under enterprise budgets.</p>
+        <ul>
+          <li>Transparent scoring · every flag explained</li>
+          <li>Free tier for frontline NGOs by application</li>
+          <li>Pay invoice — no auto-charge</li>
+          <li>Cross-domain in one pane</li>
+        </ul>
+      </div>
+
+      <div class="who">
+        <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);font-weight:700">Crisis24</span>
+        <h3>Enterprise risk programmes</h3>
+        <p class="price">~$50k+ /year</p>
+        <p>F500 corporates with global mobility teams and physical-evacuation needs. Insurers, oil &amp; gas, mining, large humanitarian INGOs.</p>
+        <ul>
+          <li>24/7 GOC + ground assets</li>
+          <li>Physical evacuation</li>
+          <li>Full liability cover</li>
+          <li>Bespoke service</li>
+        </ul>
+      </div>
+
+      <div class="who">
+        <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);font-weight:700">Int. SOS</span>
+        <h3>Multinationals · medical-led</h3>
+        <p class="price">~$50–500k /year</p>
+        <p>Multinationals where medical assistance abroad is the lead need (executive travel, expatriates, healthcare in remote sites). Strong medical evac.</p>
+        <ul>
+          <li>Medical Assistance Centres</li>
+          <li>Telehealth + in-country clinics</li>
+          <li>Travel-tracker + alerts</li>
+          <li>Insurance partnership</li>
+        </ul>
+      </div>
+
+      <div class="who">
+        <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);font-weight:700">INSO</span>
+        <h3>Conflict-zone NGOs · field-led</h3>
+        <p class="price">Membership-based</p>
+        <p>NGOs operating in active conflict environments where the partner network of security focal points and in-country analysts is the lead value.</p>
+        <ul>
+          <li>Local analyst network</li>
+          <li>Real-time incident reporting</li>
+          <li>HNCs-only model (NGOs vetting NGOs)</li>
+          <li>Trusted in humanitarian community</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Honest position -->
+<section>
+  <div class="wrap">
+    <div class="honest-card">
+      <span class="lbl">Honest position</span>
+      <h3>Where Vigilo does not pretend to compete.</h3>
+      <p><strong>We are not a 24/7 operations centre.</strong> If a kidnapping happens, Vigilo will not put a helicopter in
+        the air. Crisis24 and International SOS will. If that's what you need, buy that.</p>
+      <p><strong>We are software, not a services firm.</strong> No in-country analysts, no on-the-ground evacuation, no
+        liability indemnity beyond a software contract. We won't sell you a value that requires people we don't have.</p>
+      <p><strong>We are not SOC 2 today.</strong> Targeted for 2027. If your procurement requires SOC 2 already, we're
+        not the right fit yet — say so and we'll explain when we expect to be.</p>
+      <p>Where we are competitive: <strong>transparency, cross-domain breadth, affordability for the mid-market and
+        prosumer segment</strong>. That's the whole thesis. If those things matter to you more than 24/7 GOC, we're worth your
+        15 minutes. If you need an evacuation contract — go to the people who sell that.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-big">
+  <div class="wrap">
+    <h2>15 minutes is all it takes.</h2>
+    <p>See real cases on real data, no signup, then decide if we fit. The page tells you everything in 30 seconds.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/demo">See real cases →</a>
+      <a class="btn btn-amber" href="/pricing">See pricing</a>
+      <a class="btn btn-ghost" href="/for-ngos">For NGOs</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;letter-spacing:-.02em;margin-bottom:8px">
+      <span class="badge"><svg width="16" height="16" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Vigilo
+    </div>
+    <p style="max-width:520px;line-height:1.55;font-size:13.5px">Real-time multi-domain risk intelligence. Transparent. Cross-source.</p>
+    <div class="foot-bot">
+      <span>© 2026 Vigilo · Independent. No VC.</span>
+      <span><a href="/trust">Trust</a> · <a href="/security">Security</a> · <a href="/pricing">Pricing</a> · <a href="/methodology">Methodology</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
