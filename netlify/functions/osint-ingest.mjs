@@ -129,8 +129,17 @@ export default async () => {
     const journal = (await s.get(JOURNAL_KEY, { type:'json' })) || [];
     const day = new Date().toISOString().slice(0,10);
 
-    for(const iso2 of Object.keys(signals)){
-      const v = computeCovertRisk(iso2, RISK_INDEX[iso2], signals[iso2], STRUCT[iso2]);
+    // Evaluate the UNION of all known countries — was only iterating the
+    // country-signals seed (~17), so countries in RISK_INDEX/INFORM but
+    // not in our seed were never evaluated. Validation loop caught this
+    // immediately: predictions=0 while missed=8 in /admin.
+    const allKeys = new Set([
+      ...Object.keys(signals),
+      ...Object.keys(RISK_INDEX),
+      ...Object.keys(STRUCT),
+    ]);
+    for(const iso2 of allKeys){
+      const v = computeCovertRisk(iso2, RISK_INDEX[iso2], signals[iso2] || {}, STRUCT[iso2]);
       if(v.tier === 'nominal') continue;                       // only signal-bearing
       if(journal.some(e => e.day === day && e.iso2 === iso2)) continue; // dedup
       journal.push({
