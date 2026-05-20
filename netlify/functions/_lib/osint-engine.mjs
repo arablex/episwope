@@ -57,8 +57,17 @@ export function computeCovertRisk(iso2, ri, cs, struct){
   let currencyIdx = fxFlow >= 20 ? 5 : fxFlow >= 12 ? 3.5 : fxFlow >= 6 ? 2 : fxFlow >= 3 ? 1 : 0;
   if(cs?.currency?.accelerating && currencyIdx > 0) currencyIdx = Math.min(5, currencyIdx + 0.5);
 
-  const behavioralRaw = Math.min(5,
-    0.30*conflict + 0.20*unrest + 0.22*infra + 0.16*currencyIdx + 0.12*border);
+  // Hybrid scoring — was pure weighted-sum, which underweighted CONCENTRATED
+  // signals (e.g. UA: conflict=3.8 alone → only 1.14, misses every threshold).
+  // Take stronger of:
+  //   • weighted-sum (spread signal across many domains)
+  //   • concentrated (top-2 categories carry the signal alone)
+  // For UA-style single-domain hot countries, concentrated = 0.65×(3.8+0)=2.47
+  // For multi-domain hot countries, weighted-sum dominates and matters more.
+  const cats = [conflict, unrest, infra, currencyIdx, border].sort((a,b)=>b-a);
+  const weighted = 0.30*conflict + 0.20*unrest + 0.22*infra + 0.16*currencyIdx + 0.12*border;
+  const concentrated = 0.65 * (cats[0] + cats[1] * 0.5);
+  const behavioralRaw = Math.min(5, Math.max(weighted, concentrated));
 
   // INFORM structural damping/amplification (fragile ↑, resilient ↓)
   const M = informModifier(struct);
