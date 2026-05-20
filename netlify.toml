@@ -58,15 +58,37 @@
   to = "/consumer.html"
   status = 200
 
+# RU landing surface retired — only /ru/app.html and a few legacy
+# in-app pages (account/auth/privacy) remain. Everything else 301 → EN.
 [[redirects]]
   from = "/ru"
-  to = "/ru/consumer.html"
-  status = 200
+  to = "/"
+  status = 301
 
 [[redirects]]
   from = "/ru/"
-  to = "/ru/consumer.html"
-  status = 200
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/ru/consumer.html"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/ru/business.html"
+  to = "/business"
+  status = 301
+
+[[redirects]]
+  from = "/ru/methodology.html"
+  to = "/methodology"
+  status = 301
+
+[[redirects]]
+  from = "/ru/index.html"
+  to = "/"
+  status = 301
 
 [[redirects]]
   from = "/api/v1/docs"
