@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": "1.0",
+    "methodology": "Macroeconomic risk indicators with FLOW discipline — we track rate-of-change, not stock levels (Meadows). Chronic weakness is background; recent moves are signal.",
+    "use": "Small additive component to Risk Score + explainability layer in country card. NOT a predictive boost: macro indicators are LAGGING (they confirm crisis, they don't lead it). Value: explainability ('why this score') over forecasting power.",
+    "source": "Curated seed (2024–2025 approx, from IMF/World Bank/central banks). Replaceable by scripts/macro_signals.py once wired to GitHub Actions (monthly refresh).",
+    "fields": {
+      "gdp_yoy_pct":       "latest year-over-year GDP growth (negative = contraction, signal)",
+      "gdp_3yr_avg_pct":   "rolling 3-year average — baseline",
+      "unemp_pct":         "current unemployment rate",
+      "unemp_2yr_delta_pp": "change in unemployment over 2 years in percentage points",
+      "debt_to_gdp_pct":   "general government debt / GDP",
+      "debt_5yr_delta_pp": "change in debt/GDP over 5 years in percentage points (rapid rise = fiscal stress)",
+      "policy_rate_pct":   "central bank key rate (high or rapidly rising = monetary stress)"
+    }
+  },
+  "macro": {
+    "SD": { "gdp_yoy_pct": -15.0, "gdp_3yr_avg_pct": -8.0, "unemp_pct": 32, "unemp_2yr_delta_pp": 18, "debt_to_gdp_pct": 280, "debt_5yr_delta_pp": 100, "policy_rate_pct": 27.3 },
+    "IR": { "gdp_yoy_pct": 1.7,   "gdp_3yr_avg_pct": 2.5,  "unemp_pct": 9,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 30,  "debt_5yr_delta_pp": 8,   "policy_rate_pct": 23 },
+    "CU": { "gdp_yoy_pct": -2.0,  "gdp_3yr_avg_pct": -1.5, "unemp_pct": 4,  "unemp_2yr_delta_pp": 1,  "debt_to_gdp_pct": 150, "debt_5yr_delta_pp": 40,  "policy_rate_pct": null },
+    "VE": { "gdp_yoy_pct": -2.0,  "gdp_3yr_avg_pct": 1.0,  "unemp_pct": 7,  "unemp_2yr_delta_pp": -2, "debt_to_gdp_pct": 240, "debt_5yr_delta_pp": 30,  "policy_rate_pct": 58.7 },
+    "MM": { "gdp_yoy_pct": -1.0,  "gdp_3yr_avg_pct": -2.0, "unemp_pct": 4,  "unemp_2yr_delta_pp": 2,  "debt_to_gdp_pct": 60,  "debt_5yr_delta_pp": 25,  "policy_rate_pct": 7.0 },
+    "ET": { "gdp_yoy_pct": 6.1,   "gdp_3yr_avg_pct": 5.5,  "unemp_pct": 18, "unemp_2yr_delta_pp": 1,  "debt_to_gdp_pct": 38,  "debt_5yr_delta_pp": -3,  "policy_rate_pct": 15 },
+    "AF": { "gdp_yoy_pct": -2.4,  "gdp_3yr_avg_pct": -10,  "unemp_pct": 14, "unemp_2yr_delta_pp": 3,  "debt_to_gdp_pct": 8,   "debt_5yr_delta_pp": 2,   "policy_rate_pct": null },
+    "NG": { "gdp_yoy_pct": 3.4,   "gdp_3yr_avg_pct": 2.9,  "unemp_pct": 5,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 50,  "debt_5yr_delta_pp": 18,  "policy_rate_pct": 27.5 },
+    "PK": { "gdp_yoy_pct": 2.5,   "gdp_3yr_avg_pct": 1.8,  "unemp_pct": 6,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 72,  "debt_5yr_delta_pp": 5,   "policy_rate_pct": 12 },
+    "UA": { "gdp_yoy_pct": 3.0,   "gdp_3yr_avg_pct": -8.0, "unemp_pct": 12, "unemp_2yr_delta_pp": 3,  "debt_to_gdp_pct": 92,  "debt_5yr_delta_pp": 45,  "policy_rate_pct": 13.5 },
+    "RU": { "gdp_yoy_pct": 3.6,   "gdp_3yr_avg_pct": 1.5,  "unemp_pct": 2.5,"unemp_2yr_delta_pp": -1, "debt_to_gdp_pct": 20,  "debt_5yr_delta_pp": 3,   "policy_rate_pct": 21 },
+    "IN": { "gdp_yoy_pct": 6.8,   "gdp_3yr_avg_pct": 7.0,  "unemp_pct": 4.2,"unemp_2yr_delta_pp": -1, "debt_to_gdp_pct": 83,  "debt_5yr_delta_pp": 8,   "policy_rate_pct": 6.5 },
+    "TH": { "gdp_yoy_pct": 2.7,   "gdp_3yr_avg_pct": 2.4,  "unemp_pct": 1,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 60,  "debt_5yr_delta_pp": 18,  "policy_rate_pct": 2.25 },
+    "US": { "gdp_yoy_pct": 2.5,   "gdp_3yr_avg_pct": 2.3,  "unemp_pct": 4,  "unemp_2yr_delta_pp": 0.4,"debt_to_gdp_pct": 122, "debt_5yr_delta_pp": 14,  "policy_rate_pct": 4.5 },
+    "DE": { "gdp_yoy_pct": -0.2,  "gdp_3yr_avg_pct": 0.4,  "unemp_pct": 6,  "unemp_2yr_delta_pp": 0.8,"debt_to_gdp_pct": 64,  "debt_5yr_delta_pp": 6,   "policy_rate_pct": 3 },
+    "GB": { "gdp_yoy_pct": 0.9,   "gdp_3yr_avg_pct": 1.0,  "unemp_pct": 4.4,"unemp_2yr_delta_pp": 0.7,"debt_to_gdp_pct": 100, "debt_5yr_delta_pp": 12,  "policy_rate_pct": 4.5 },
+    "TR": { "gdp_yoy_pct": 3.2,   "gdp_3yr_avg_pct": 4.5,  "unemp_pct": 9,  "unemp_2yr_delta_pp": -1, "debt_to_gdp_pct": 30,  "debt_5yr_delta_pp": 3,   "policy_rate_pct": 42.5 },
+    "EG": { "gdp_yoy_pct": 2.4,   "gdp_3yr_avg_pct": 4.0,  "unemp_pct": 7,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 96,  "debt_5yr_delta_pp": 10,  "policy_rate_pct": 24 },
+    "ZA": { "gdp_yoy_pct": 1.0,   "gdp_3yr_avg_pct": 0.8,  "unemp_pct": 33, "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 75,  "debt_5yr_delta_pp": 12,  "policy_rate_pct": 7.5 },
+    "BR": { "gdp_yoy_pct": 3.4,   "gdp_3yr_avg_pct": 2.5,  "unemp_pct": 6.5,"unemp_2yr_delta_pp": -2, "debt_to_gdp_pct": 86,  "debt_5yr_delta_pp": 4,   "policy_rate_pct": 14.25 },
+    "AR": { "gdp_yoy_pct": -1.5,  "gdp_3yr_avg_pct": 0.5,  "unemp_pct": 7,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 90,  "debt_5yr_delta_pp": 10,  "policy_rate_pct": 32 },
+    "MX": { "gdp_yoy_pct": 1.5,   "gdp_3yr_avg_pct": 2.4,  "unemp_pct": 3,  "unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 52,  "debt_5yr_delta_pp": 2,   "policy_rate_pct": 9 },
+    "JP": { "gdp_yoy_pct": 0.1,   "gdp_3yr_avg_pct": 1.0,  "unemp_pct": 2.5,"unemp_2yr_delta_pp": -0.1,"debt_to_gdp_pct": 250, "debt_5yr_delta_pp": 10,  "policy_rate_pct": 0.5 },
+    "KR": { "gdp_yoy_pct": 2.0,   "gdp_3yr_avg_pct": 2.2,  "unemp_pct": 2.8,"unemp_2yr_delta_pp": 0,  "debt_to_gdp_pct": 50,  "debt_5yr_delta_pp": 8,   "policy_rate_pct": 3 },
+    "CN": { "gdp_yoy_pct": 5.0,   "gdp_3yr_avg_pct": 4.7,  "unemp_pct": 5.1,"unemp_2yr_delta_pp": -0.3,"debt_to_gdp_pct": 84, "debt_5yr_delta_pp": 23,  "policy_rate_pct": 3.1 }
+  }
+}

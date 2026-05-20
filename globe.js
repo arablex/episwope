@@ -548,6 +548,7 @@ function countryRiskTier(country){
 let RISK_INDEX = {};          /* keyed by ISO-2, from public/risk_index.json */
 let COUNTRY_SIGNALS = {};    /* indirect signals: connectivity, wastewater, currency — from public/country-signals.json */
 let COUNTRY_STRUCTURAL = {}; /* INFORM structural indices — from public/country-structural.json */
+let COUNTRY_MACRO = {};      /* macro indicators (GDP/debt/unemp/rate) — from public/macro.json. LAGGING signals: explainability primary */
 
 /* ── Food Safety Recalls ─────────────────────────── */
 let FOOD_RECALLS = [];
@@ -1153,9 +1154,31 @@ function _riskScore({ obs, country, air, recalls, hs }){
   let currencyBoost = fxFlow >= 20 ? 4 : fxFlow >= 12 ? 3 : fxFlow >= 6 ? 1.5 : fxFlow >= 3 ? 0.5 : 0;
   if(cs?.currency?.accelerating && currencyBoost > 0) currencyBoost = Math.min(4, currencyBoost + 1);
 
+  // ── Macro layer (lagging, explainability primary, small score weight) ──
+  // Flow-discipline: rate-of-change matters more than levels.
+  const cm = iso2 ? COUNTRY_MACRO[iso2] : null;
+  let macroPts = 0;
+  const macroBits = [];
+  if(cm){
+    if(cm.gdp_yoy_pct != null && cm.gdp_yoy_pct < 0){
+      const m = cm.gdp_yoy_pct <= -5 ? 2.5 : cm.gdp_yoy_pct <= -2 ? 1.5 : 0.8;
+      macroPts += m; macroBits.push((ru?'ВВП ':'GDP ')+cm.gdp_yoy_pct+'%');
+    }
+    if(cm.unemp_2yr_delta_pp != null && cm.unemp_2yr_delta_pp >= 2){
+      macroPts += 0.8; macroBits.push((ru?'безработ. +':'unemp +')+cm.unemp_2yr_delta_pp+'pp');
+    }
+    if(cm.debt_5yr_delta_pp != null && cm.debt_5yr_delta_pp >= 25){
+      macroPts += 0.7; macroBits.push((ru?'долг +':'debt +')+cm.debt_5yr_delta_pp+'pp/5y');
+    }
+    if(cm.policy_rate_pct != null && cm.policy_rate_pct >= 20){
+      macroPts += 0.5; macroBits.push((ru?'ставка ':'rate ')+cm.policy_rate_pct+'%');
+    }
+  }
+  macroPts = Math.min(4, +macroPts.toFixed(1));
+
   const raw = sevPts + advPts + advBump + aqiPts + foodPts + trendPts
             + conflictPts + unrestPts + blackoutPts + borderPts
-            + wastewaterBoost + currencyBoost;
+            + wastewaterBoost + currencyBoost + macroPts;
   const score = Math.max(0, Math.min(100, Math.round(raw)));
 
   const band = score>=75 ? {k:'severe',  c:'#C92A2A', en:'Severe',   ru:'Серьёзный'}
@@ -1189,6 +1212,10 @@ function _riskScore({ obs, country, air, recalls, hs }){
       note: (cs?.currency?.accelerating ? '↑' : ''),
       desc: ru ? `Валюта −${fxFlow}% за 30 дней${cs?.currency?.accelerating?' (ускоряется)':''} — скорость падения, а не накопленный фон`
                : `Currency −${fxFlow}% in 30 days${cs?.currency?.accelerating?' (accelerating)':''} — rate of decline, not cumulative background` }] : []),
+    ...(macroPts > 0 ? [{ l: ru?'Макро':'Macro', v: macroPts, max:4, c:'#7C2D12',
+      desc: ru
+        ? `Макро (запаздывающее, для объяснимости): ${macroBits.join(' · ')}`
+        : `Macro (lagging, explainability): ${macroBits.join(' · ')}` }] : []),
   ];
   return { score, band, parts };
 }
@@ -2345,11 +2372,33 @@ function renderCountryPanel(country){
         </div>`;
       }).join('') + `</div></div>` : '';
 
+  // Macro explainability panel (shown when we have any macro data for this ISO)
+  const _cm = iso2 ? COUNTRY_MACRO[iso2] : null;
+  const macroPanel = _cm ? (() => {
+    const cell = (lbl, val, suffix, hot) =>
+      val == null ? '' :
+      `<div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0">
+         <span style="color:#807E76">${lbl}</span>
+         <b style="color:${hot?'#C92A2A':'#14110C'}">${val}${suffix||''}</b>
+       </div>`;
+    return `
+      <div class="cp-section">
+        <div class="cp-section-title">${ru?'Макроэкономика':'Macro'} <span style="font-size:10.5px;color:#B5AFA4;font-weight:500;letter-spacing:.04em">${ru?'· запаздывающее, объяснимость':'· lagging, explainability'}</span></div>
+        ${cell(ru?'ВВП г/г':'GDP YoY', _cm.gdp_yoy_pct, '%', _cm.gdp_yoy_pct!=null && _cm.gdp_yoy_pct<0)}
+        ${cell(ru?'Безработица':'Unemployment', _cm.unemp_pct, '%', _cm.unemp_2yr_delta_pp>=2)}
+        ${_cm.unemp_2yr_delta_pp!=null ? cell(ru?'  Δ за 2 года':'  Δ 2yr', (_cm.unemp_2yr_delta_pp>0?'+':'')+_cm.unemp_2yr_delta_pp, 'pp', _cm.unemp_2yr_delta_pp>=2) : ''}
+        ${cell(ru?'Долг / ВВП':'Debt / GDP', _cm.debt_to_gdp_pct, '%', _cm.debt_5yr_delta_pp>=25)}
+        ${_cm.debt_5yr_delta_pp!=null ? cell(ru?'  Δ за 5 лет':'  Δ 5yr', (_cm.debt_5yr_delta_pp>0?'+':'')+_cm.debt_5yr_delta_pp, 'pp', _cm.debt_5yr_delta_pp>=25) : ''}
+        ${cell(ru?'Ставка ЦБ':'Policy rate', _cm.policy_rate_pct, '%', _cm.policy_rate_pct>=20)}
+      </div>`;
+  })() : '';
+
   const riskTabHtml = `
     <div class="cp-section">
       <div class="cp-section-title">${ru?'Индекс риска по доменам':'Risk index by domain'}</div>
       ${riskCatsHtml}
     </div>
+    ${macroPanel}
     ${osintObserverPanel(country)}
     ${secEventsHtml}
     <div class="cp-section" style="border-bottom:0">
@@ -4288,6 +4337,11 @@ async function loadLiveData(){
       const st = await fetch(base + 'public/country-structural.json?_=' + Date.now());
       if(st.ok){ const sj = await st.json(); COUNTRY_STRUCTURAL = sj.structural || {}; }
     } catch(_e){ /* graceful — INFORM modifier defaults to neutral 1.0 */ }
+
+    try {
+      const mc = await fetch(base + 'public/macro.json?_=' + Date.now());
+      if(mc.ok){ const mj = await mc.json(); COUNTRY_MACRO = mj.macro || {}; }
+    } catch(_e){ /* graceful — macro is additive, never blocks */ }
 
     if(injected > 0){
       console.log(`[Vigilo] Injected ${injected} live events`);
