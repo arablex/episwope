@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Processing Agreement · Vigilo</title>
+<meta name="description" content="Vigilo Data Processing Agreement (GDPR Article 28). Standard defensible template — customer-ready draft.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://vigilo.cc/dpa">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F2EE;--paper50:#FBF9F4;--ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
+    --night:#0D1015;--amber:#E8590C;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font:400 15px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--amber);text-decoration:none}a:hover{text-decoration:underline}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+  @media print{body{background:#fff}.no-print{display:none}.wrap{max-width:100%;padding:0}}
+
+  /* nav */
+  .nav{padding:18px 0;border-bottom:1px solid var(--rule)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-.02em;color:var(--ink)}
+  .badge{width:26px;height:26px;border-radius:7px;background:var(--amber);display:grid;place-items:center}
+  .nav-links{display:flex;gap:20px;font-size:13.5px;color:var(--ink600)}
+  .nav-links a{color:var(--ink600)}.nav-links a:hover{color:var(--ink);text-decoration:none}
+
+  /* draft banner */
+  .banner{background:#FFF6E5;border-bottom:1px solid #F4D38A;padding:14px 24px;text-align:center;font-size:13.5px;color:#7A5A0F}
+  .banner b{color:#5E430A}
+
+  /* hero */
+  header{padding:48px 0 24px}
+  .kicker{font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink500);margin-bottom:12px}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin-bottom:12px}
+  .stamp{font-family:var(--mono);font-size:12.5px;color:var(--ink500);margin-top:14px}
+  .stamp .ver{color:var(--amber);font-weight:600}
+  .actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:9px;font-weight:600;font-size:13.5px;padding:9px 14px;
+    cursor:pointer;font-family:inherit;border:1px solid var(--rule-strong);background:transparent;color:var(--ink);transition:background .15s}
+  .btn:hover{background:rgba(20,17,12,.04)}
+  .btn-print{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn-print:hover{background:#332E26;opacity:.95}
+
+  /* TOC */
+  .toc{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:18px 22px;margin:24px 0 32px;font-size:13.5px}
+  .toc-h{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);margin-bottom:10px}
+  .toc ol{padding-left:18px;color:var(--ink700);line-height:1.85}
+  .toc ol a{color:var(--ink700)}
+  .toc ol a:hover{color:var(--amber);text-decoration:none}
+
+  /* body content */
+  section{padding:24px 0;border-top:1px solid var(--rule)}
+  h2{font-size:18px;font-weight:700;letter-spacing:-.015em;margin-bottom:12px;color:var(--ink)}
+  h2 .num{color:var(--amber);font-family:var(--mono);font-weight:500;margin-right:8px}
+  h3{font-size:14.5px;font-weight:600;margin-top:14px;margin-bottom:6px;color:var(--ink)}
+  p{margin-bottom:12px;color:var(--ink700)}
+  ul,ol{padding-left:22px;margin-bottom:12px}
+  li{margin-bottom:6px;color:var(--ink700);line-height:1.65}
+  strong{font-weight:600;color:var(--ink)}
+  em{font-style:italic}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--rule)}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink500);font-weight:600;background:var(--paper50)}
+  tr:last-child td{border-bottom:0}
+  .def{background:var(--paper50);border-left:3px solid var(--amber);padding:10px 14px;margin:10px 0;font-size:13.5px;color:var(--ink700)}
+
+  /* sig block */
+  .sig{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:24px;margin:36px 0 12px;
+    display:grid;gap:24px;grid-template-columns:1fr}
+  @media(min-width:640px){.sig{grid-template-columns:1fr 1fr}}
+  .sig-col h4{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink500);margin-bottom:10px}
+  .sig-line{font-family:var(--mono);font-size:13px;color:var(--ink700);border-bottom:1px solid var(--rule);padding:8px 0;margin-bottom:4px}
+  .sig-lbl{font-size:11px;color:var(--ink500);margin-top:2px}
+
+  footer{background:var(--night);color:#9CA3B0;padding:32px 0;margin-top:64px;font-size:13px}
+  footer .wrap{max-width:1100px}
+  footer a{color:#D1D5DB}footer a:hover{color:#fff}
+  .foot-bot{border-top:1px solid rgba(255,255,255,.08);margin-top:18px;padding-top:14px;
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#6B7280}
+</style>
+<script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+</head>
+<body>
+
+<nav class="nav no-print">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <span class="badge"><svg width="15" height="15" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Vigilo
+    </a>
+    <div class="nav-links">
+      <a href="/trust">Trust</a>
+      <a href="/security">Security</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</nav>
+
+<div class="banner no-print">
+  <b>Working draft v0.1.</b> Standard defensible GDPR Art. 28 template — customer-ready for review.
+  Final binding version is issued and signed at contract execution. Independent legal review recommended.
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">Data Processing Agreement (DPA)</div>
+    <h1>Vigilo · Data Processing Agreement</h1>
+    <p style="color:var(--ink600);font-size:14.5px">Pursuant to Article 28 of the EU General Data Protection Regulation (Regulation (EU) 2016/679) and equivalent provisions in the UK GDPR.</p>
+    <div class="stamp">Version <span class="ver">0.1 · DRAFT</span> · Last updated: 20 May 2026</div>
+    <div class="actions">
+      <button class="btn btn-print" onclick="window.print()">Print / Save as PDF</button>
+      <a class="btn" href="mailto:alex@vigilo.cc?subject=Vigilo%20DPA%20%E2%80%94%20execution%20request&amp;body=Customer%20legal%20name%3A%0AContact%20person%20%26%20email%3A%0ABilling%20address%3A%0AAnnex%20customisation%20needs%3A%0A">Request signed copy →</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="toc">
+    <div class="toc-h">Contents</div>
+    <ol>
+      <li><a href="#s1">Definitions</a></li>
+      <li><a href="#s2">Subject matter &amp; duration</a></li>
+      <li><a href="#s3">Nature &amp; purpose of processing</a></li>
+      <li><a href="#s4">Types of personal data &amp; data subjects</a></li>
+      <li><a href="#s5">Processor obligations</a></li>
+      <li><a href="#s6">Security measures</a></li>
+      <li><a href="#s7">Subprocessors</a></li>
+      <li><a href="#s8">International transfers</a></li>
+      <li><a href="#s9">Data subject rights &amp; controller assistance</a></li>
+      <li><a href="#s10">Personal data breach notification</a></li>
+      <li><a href="#s11">Audits &amp; inspections</a></li>
+      <li><a href="#s12">Return &amp; deletion</a></li>
+      <li><a href="#s13">Liability</a></li>
+      <li><a href="#s14">General provisions</a></li>
+      <li><a href="#annex-a">Annex A — Subprocessors</a></li>
+      <li><a href="#annex-b">Annex B — Technical &amp; organisational measures</a></li>
+    </ol>
+  </div>
+
+  <p>This Data Processing Agreement (the <strong>"DPA"</strong>) forms part of the Master Subscription Agreement
+    (the <strong>"Agreement"</strong>) between <strong>Vigilo</strong> (the <strong>"Processor"</strong>) and the
+    customer entity that has entered into the Agreement (the <strong>"Controller"</strong>). It applies to the
+    extent that Vigilo processes Personal Data on behalf of the Controller in connection with the Services.
+    Capitalised terms not defined here have the meanings given in the Agreement.</p>
+
+  <section id="s1">
+    <h2><span class="num">1.</span> Definitions</h2>
+    <div class="def"><strong>"Personal Data"</strong>, <strong>"Processing"</strong>, <strong>"Controller"</strong>,
+      <strong>"Processor"</strong>, <strong>"Data Subject"</strong>, <strong>"Supervisory Authority"</strong>, and
+      <strong>"Personal Data Breach"</strong> have the meanings set out in the GDPR.</div>
+    <p><strong>"GDPR"</strong> means Regulation (EU) 2016/679 and, where applicable, the UK GDPR as defined in the
+      UK Data Protection Act 2018.</p>
+    <p><strong>"Services"</strong> means the Vigilo risk-monitoring service provided to the Controller under the
+      Agreement.</p>
+    <p><strong>"Subprocessor"</strong> means any third party engaged by the Processor to process Personal Data on
+      behalf of the Controller in connection with the Services.</p>
+  </section>
+
+  <section id="s2">
+    <h2><span class="num">2.</span> Subject matter &amp; duration</h2>
+    <p>The subject matter of this DPA is the Processing of Personal Data by the Processor on behalf of the
+      Controller for the purpose of delivering the Services.</p>
+    <p>This DPA enters into force on the effective date of the Agreement and remains in force for the duration of
+      the Agreement plus any period during which the Processor continues to hold Personal Data, after which
+      Section 12 applies.</p>
+  </section>
+
+  <section id="s3">
+    <h2><span class="num">3.</span> Nature &amp; purpose of processing</h2>
+    <p>The Processor will process Personal Data solely for the purposes of:</p>
+    <ul>
+      <li>providing risk-monitoring alerts to the Controller's authorised users;</li>
+      <li>maintaining and securing the Controller's account, authentication, and billing records;</li>
+      <li>responding to Data Subject requests and complying with legal obligations;</li>
+      <li>improving and operating the Services, subject to the restrictions in Section 5.</li>
+    </ul>
+  </section>
+
+  <section id="s4">
+    <h2><span class="num">4.</span> Types of personal data &amp; data subjects</h2>
+    <table>
+      <tr><th>Category</th><th>Personal Data</th></tr>
+      <tr><td>Account users</td><td>Email address, name (if voluntarily provided), authentication tokens, role assignment within the Controller's account</td></tr>
+      <tr><td>Watchlist data</td><td>Country / region preferences set by users (not Personal Data of third parties)</td></tr>
+      <tr><td>Billing contact</td><td>Name, email, billing address, organisation name (no payment card details — handled by the payment processor directly)</td></tr>
+      <tr><td>Communication logs</td><td>Timestamps and delivery status of transactional emails sent to the user</td></tr>
+      <tr><td>API usage logs</td><td>API key identifier, endpoint, timestamp, response status (no payload content)</td></tr>
+    </table>
+    <p><strong>Data subjects</strong>: the Controller's employees, contractors, and end users authorised to access the Services.</p>
+    <p>The Processor does not request, and asks that the Controller does not submit through the Services, any special categories of Personal Data under Article 9 GDPR.</p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="num">5.</span> Processor obligations</h2>
+    <p>The Processor shall:</p>
+    <ol>
+      <li>process Personal Data only on documented instructions from the Controller, including the instructions reflected in this DPA and the Agreement;</li>
+      <li>ensure that persons authorised to process Personal Data have committed to confidentiality or are under appropriate statutory obligations of confidentiality;</li>
+      <li>implement and maintain appropriate technical and organisational measures (Annex B);</li>
+      <li>respect the conditions for engaging Subprocessors (Section 7);</li>
+      <li>taking into account the nature of the Processing, assist the Controller by appropriate technical and organisational measures, insofar as possible, in fulfilling its obligations to respond to Data Subject requests;</li>
+      <li>assist the Controller in ensuring compliance with Articles 32–36 GDPR (security, breach notification, impact assessments, prior consultation);</li>
+      <li>at the choice of the Controller, return or delete all Personal Data after the end of the provision of the Services, except where retention is required by law (Section 12);</li>
+      <li>make available to the Controller all information necessary to demonstrate compliance with this DPA and allow for and contribute to audits (Section 11).</li>
+    </ol>
+    <p>The Processor will <strong>not</strong>:</p>
+    <ul>
+      <li>sell or rent Personal Data to third parties;</li>
+      <li>use Personal Data for advertising, profiling, or training of third-party AI models;</li>
+      <li>combine Controller's Personal Data with data from other controllers other than as necessary to operate the Services in aggregate, anonymised form.</li>
+    </ul>
+  </section>
+
+  <section id="s6">
+    <h2><span class="num">6.</span> Security measures</h2>
+    <p>The Processor will implement and maintain the technical and organisational measures set out in
+      <strong>Annex B</strong>, including (without limitation) encryption in transit and at rest, access control,
+      logging, and incident response procedures.</p>
+    <p>The Processor will not materially reduce the security measures during the term of the Agreement.</p>
+  </section>
+
+  <section id="s7">
+    <h2><span class="num">7.</span> Subprocessors</h2>
+    <p>The Controller provides general written authorisation for the Processor to engage Subprocessors. A current list
+      of Subprocessors is maintained in <strong>Annex A</strong> and on the public Subprocessors page at
+      <a href="/security#s4">vigilo.cc/security</a>.</p>
+    <p>The Processor will:</p>
+    <ul>
+      <li>notify the Controller of any intended addition or replacement of a Subprocessor at least 30 days before that change takes effect (for paid plans Team and above);</li>
+      <li>impose data protection obligations on the Subprocessor that are no less onerous than those set out in this DPA;</li>
+      <li>remain liable for the acts and omissions of its Subprocessors as if they were its own.</li>
+    </ul>
+    <p>The Controller may object in writing to a new Subprocessor on reasonable grounds within 14 days of notification.
+      If the parties cannot resolve the objection in good faith, the Controller may terminate the affected Services
+      and receive a prorated refund of prepaid fees.</p>
+  </section>
+
+  <section id="s8">
+    <h2><span class="num">8.</span> International transfers</h2>
+    <p>The Processor primarily processes Personal Data on infrastructure located in the United States and, for
+      certain Subprocessors, the European Union. Where Personal Data is transferred outside the EEA / UK, the
+      Processor will ensure an appropriate transfer mechanism is in place, including (as applicable):</p>
+    <ul>
+      <li>Standard Contractual Clauses (Commission Implementing Decision (EU) 2021/914);</li>
+      <li>UK International Data Transfer Agreement or Addendum;</li>
+      <li>recognised adequacy decisions.</li>
+    </ul>
+    <p>Where the Processor relies on SCCs, the parties incorporate the SCCs by reference. Module Two (Controller-to-Processor)
+      applies between the Controller and the Processor; Module Three (Processor-to-Processor) applies between the
+      Processor and onward Subprocessors. Annex I, II, and III of the SCCs are populated by reference to this DPA's
+      schedules and Annexes.</p>
+  </section>
+
+  <section id="s9">
+    <h2><span class="num">9.</span> Data subject rights &amp; controller assistance</h2>
+    <p>The Processor will, taking into account the nature of the Processing, assist the Controller by appropriate
+      technical and organisational measures in responding to Data Subject requests under Chapter III GDPR (access,
+      rectification, erasure, restriction, portability, objection, automated decision-making).</p>
+    <p>If a Data Subject contacts the Processor directly with a request relating to the Controller's Personal Data,
+      the Processor will forward the request to the Controller without undue delay and will not respond to the
+      request except on the Controller's documented instructions.</p>
+    <p>The Controller may request assistance by writing to <a href="mailto:alex@vigilo.cc">alex@vigilo.cc</a>.
+      The Processor responds within 7 days and substantively assists within 30 days of receipt.</p>
+  </section>
+
+  <section id="s10">
+    <h2><span class="num">10.</span> Personal data breach notification</h2>
+    <p>The Processor will notify the Controller of any confirmed Personal Data Breach affecting Controller's
+      Personal Data <strong>without undue delay and within 72 hours</strong> of becoming aware. The notification
+      will, to the extent known at the time, include:</p>
+    <ul>
+      <li>the nature of the breach, including categories and approximate number of Data Subjects and records affected;</li>
+      <li>the name and contact details of the Processor's contact;</li>
+      <li>likely consequences;</li>
+      <li>measures taken or proposed to address the breach and mitigate its possible adverse effects.</li>
+    </ul>
+    <p>The Processor will provide updated information as it becomes available and will not require the Controller
+      to assess severity or notifiability — that determination is the Controller's responsibility.</p>
+  </section>
+
+  <section id="s11">
+    <h2><span class="num">11.</span> Audits &amp; inspections</h2>
+    <p>The Processor will make available to the Controller, on reasonable request and at intervals no greater than
+      once per calendar year (or more frequently if required by a supervisory authority or following a Personal
+      Data Breach):</p>
+    <ul>
+      <li>documentation of its technical and organisational measures (current version of Annex B);</li>
+      <li>responses to a security questionnaire of reasonable scope;</li>
+      <li>copies of relevant third-party audit reports (when available) or attestations.</li>
+    </ul>
+    <p>On-site audits may be conducted only where the above is insufficient and after 30 days' written notice,
+      during business hours, with reasonable scope, and subject to confidentiality undertakings. Costs of on-site
+      audits are borne by the Controller.</p>
+  </section>
+
+  <section id="s12">
+    <h2><span class="num">12.</span> Return &amp; deletion</h2>
+    <p>On termination of the Agreement, the Processor will, at the Controller's choice and within 30 days:</p>
+    <ul>
+      <li>return all Personal Data to the Controller in a structured, commonly used, machine-readable format; <strong>or</strong></li>
+      <li>delete all Personal Data, including from backups (within 60 days for backups), and certify deletion to the Controller.</li>
+    </ul>
+    <p>The Processor may retain Personal Data only where required by EU, Member State, or other applicable law,
+      and only for the period required.</p>
+  </section>
+
+  <section id="s13">
+    <h2><span class="num">13.</span> Liability</h2>
+    <p>Each party's liability arising out of or in connection with this DPA shall be subject to the limitations
+      and exclusions of liability set out in the Agreement. Nothing in this DPA limits or excludes liability that
+      cannot lawfully be limited or excluded under applicable law.</p>
+  </section>
+
+  <section id="s14">
+    <h2><span class="num">14.</span> General provisions</h2>
+    <p><strong>Conflict.</strong> In the event of any conflict between this DPA and the Agreement, this DPA prevails
+      in respect of data protection matters.</p>
+    <p><strong>Amendment.</strong> The Processor may update this DPA from time to time to reflect changes in
+      applicable law or best practice. The Processor will notify the Controller of material changes at least 30 days
+      in advance. Changes that materially diminish the Processor's obligations are not effective without the
+      Controller's written agreement.</p>
+    <p><strong>Governing law.</strong> This DPA is governed by the laws specified in the Agreement.</p>
+  </section>
+
+  <!-- Annex A -->
+  <section id="annex-a">
+    <h2><span class="num">A.</span> Annex A — Current Subprocessors</h2>
+    <p>The list below is current as of the date of this DPA. The live list is at
+      <a href="/security#s4">vigilo.cc/security</a>.</p>
+    <table>
+      <tr><th>Subprocessor</th><th>Purpose</th><th>Region</th><th>Transfer mechanism</th></tr>
+      <tr><td>Netlify, Inc.</td><td>Hosting, CDN, edge functions, blob storage</td><td>US</td><td>SCCs (Module 3)</td></tr>
+      <tr><td>Resend</td><td>Transactional email delivery</td><td>US / EU</td><td>SCCs (Module 3)</td></tr>
+      <tr><td>Stripe</td><td>Payment processing (when active)</td><td>US / EU / IE</td><td>SCCs / IE adequacy</td></tr>
+      <tr><td>Mapbox</td><td>Map tiles, geocoding (no PII transmitted)</td><td>US</td><td>SCCs (Module 3)</td></tr>
+      <tr><td>Plausible Insights OÜ</td><td>Cookie-less, anonymous web analytics</td><td>EU (DE)</td><td>EU — no transfer</td></tr>
+      <tr><td>GitHub, Inc.</td><td>Source code &amp; scheduled data pipeline</td><td>US</td><td>SCCs (Module 3)</td></tr>
+    </table>
+  </section>
+
+  <!-- Annex B -->
+  <section id="annex-b">
+    <h2><span class="num">B.</span> Annex B — Technical &amp; organisational measures</h2>
+
+    <h3>1. Confidentiality</h3>
+    <ul>
+      <li>All personnel with access to Personal Data are bound by written confidentiality undertakings.</li>
+      <li>Access to production systems is limited to the minimum number of authorised personnel necessary to operate the Services. Currently: founder only.</li>
+      <li>Multi-factor authentication enforced for all administrative interfaces.</li>
+    </ul>
+
+    <h3>2. Integrity</h3>
+    <ul>
+      <li>TLS 1.2+ enforced for all data in transit.</li>
+      <li>Data at rest in Netlify Blobs encrypted using AES-256 by the underlying infrastructure.</li>
+      <li>Secret material (API keys, JWT signing secrets, Bearer tokens) stored exclusively in Netlify environment variables; never in source code or logs.</li>
+      <li>Webhook payloads to customer endpoints are signed with HMAC-SHA256; customers can verify integrity using a shared secret.</li>
+    </ul>
+
+    <h3>3. Availability &amp; resilience</h3>
+    <ul>
+      <li>Hosting on Netlify global CDN with automated failover.</li>
+      <li>Daily encrypted backups of subscriber and account data; 30-day retention.</li>
+      <li>Source code, infrastructure-as-code, and configuration version-controlled in GitHub.</li>
+    </ul>
+
+    <h3>4. Pseudonymisation &amp; data minimisation</h3>
+    <ul>
+      <li>Email addresses for subscribers are stored hashed where the application logic does not require the plaintext.</li>
+      <li>No analytics tracking of individual users across sessions or sites (Plausible is cookie-less).</li>
+      <li>API logs do not capture request payloads.</li>
+    </ul>
+
+    <h3>5. Testing &amp; review</h3>
+    <ul>
+      <li>Critical authentication and security code is unit-tested.</li>
+      <li>Dependency vulnerabilities monitored via GitHub Dependabot.</li>
+      <li>Annual review of technical and organisational measures; documented update of this Annex.</li>
+    </ul>
+
+    <h3>6. Incident response</h3>
+    <ul>
+      <li>Single-point incident contact: <a href="mailto:security@vigilo.cc">security@vigilo.cc</a>.</li>
+      <li>Personal Data Breach notification within 72 hours of confirmation (Section 10).</li>
+      <li>Post-incident review documented and shared with affected Controllers on request.</li>
+    </ul>
+  </section>
+
+  <div class="sig">
+    <div class="sig-col">
+      <h4>For the Controller</h4>
+      <div class="sig-line">&nbsp;</div><div class="sig-lbl">Name &amp; title</div>
+      <div class="sig-line" style="margin-top:14px">&nbsp;</div><div class="sig-lbl">Signature &amp; date</div>
+    </div>
+    <div class="sig-col">
+      <h4>For the Processor — Vigilo</h4>
+      <div class="sig-line">Aleksey Stepikin · Founder</div><div class="sig-lbl">Name &amp; title</div>
+      <div class="sig-line" style="margin-top:14px">&nbsp;</div><div class="sig-lbl">Signature &amp; date</div>
+    </div>
+  </div>
+
+  <p style="font-size:12.5px;color:var(--ink500);margin-bottom:40px">
+    Working draft v0.1. This document is provided as a customer-ready starting point and represents Vigilo's
+    standard processing terms. Final binding text will be re-issued with customer details at execution. Both parties
+    are advised to obtain independent legal review.
+  </p>
+</div>
+
+<footer class="no-print">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;letter-spacing:-.02em;margin-bottom:6px">
+      <span class="badge"><svg width="15" height="15" viewBox="0 0 28 28" fill="none"><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Vigilo
+    </div>
+    <p style="line-height:1.55;max-width:520px;font-size:13px">Real-time multi-domain risk intelligence. Transparent. Cross-source.</p>
+    <div class="foot-bot">
+      <span>© 2026 Vigilo · Independent. No VC.</span>
+      <span><a href="/trust">Trust</a> · <a href="/security">Security</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
