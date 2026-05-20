@@ -361,7 +361,7 @@
 <section id="overview"><div class="wrap">
   <div class="hero">
     <div>
-      <span class="badge"><span class="new">Live</span> 44 verified feeds · updated every 15 min</span>
+      <span class="badge"><span class="new">Live</span> 44 verified feeds · refreshed hourly</span>
       <h1 class="display">Know before <span class="h-it">you go.</span></h1>
       <p class="hlead">Vigilo pulls from <b>WHO, CDC, ReliefWeb, ACLED, NOAA</b> and 39 more official sources — and puts everything on one globe. Free, no account needed.</p>
       <div class="cta">
@@ -517,7 +517,7 @@
   <div class="pintro">
     <div class="num"><b>01</b><span class="kick">Live globe</span></div>
     <h3>Every outbreak. <span class="h-it">Right now.</span></h3>
-    <p class="pl">The Vigilo globe updates every 15 minutes. Each dot is a confirmed or suspected event with its original source URL. Zoom into any region to filter by domain or threat level.</p>
+    <p class="pl">The Vigilo globe refreshes hourly across 44 verified feeds. Each dot is a confirmed or reported event with its original source URL — click any to read the raw line. Zoom into any region to filter by domain or threat level.</p>
     <ul>
       <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Click any dot</b> <span>· see the source publication behind it</span></span></li>
       <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span><b>Filter by domain</b> <span>· disease / conflict / disaster / food safety</span></span></li>
@@ -603,41 +603,43 @@
 <section id="pricing" class="band100"><div class="wrap">
   <div style="text-align:center">
     <div class="kick">Pricing</div>
-    <h2 style="margin-top:18px">Free to <span class="h-it">explore.</span> Upgrade when you need more.</h2>
-    <p style="margin-top:16px;font-size:17px;color:var(--ink600);max-width:48ch;margin-left:auto;margin-right:auto">The globe and risk scores are free — no account, no card. Upgrade for alerts and history.</p>
+    <h2 style="margin-top:18px">Free to <span class="h-it">explore.</span> Transparent paid tiers when you need more.</h2>
+    <p style="margin-top:16px;font-size:17px;color:var(--ink600);max-width:54ch;margin-left:auto;margin-right:auto">The live globe, country risk scores, and event sources are free — no account, no card. For alerts, watchlists, team seats, API or webhooks, see the full pricing.</p>
   </div>
-  <div class="price-grid">
-    <div class="plan">
-      <div class="pn">Free</div>
-      <div class="pp">$0 <small>/ forever</small></div>
-      <p class="pdesc">Everything you need to stay informed.</p>
-      <ul>
-        <li><span class="chk">✓</span> Live globe — all events</li>
-        <li><span class="chk">✓</span> Risk scores for any country</li>
-        <li><span class="chk">✓</span> 7 domains, full breakdown</li>
-        <li><span class="chk">✓</span> Source links for every event</li>
-        <li><span class="chk">✓</span> No account required</li>
+
+  <div style="display:grid;gap:18px;grid-template-columns:1fr;max-width:780px;margin:36px auto 0" class="cons-price-grid">
+    <div style="background:#fff;border:1px solid var(--rule);border-radius:18px;padding:28px 26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 0 rgba(20,17,12,.03),0 20px 40px -28px rgba(20,17,12,.18)">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.14em;color:var(--ink500);text-transform:uppercase">Free · forever</div>
+      <div style="font-size:38px;font-weight:700;letter-spacing:-.025em;line-height:1">$0</div>
+      <p style="font-size:14.5px;color:var(--ink600);line-height:1.55;margin:0">The public live globe + country risk scores + source links. No account, no card.</p>
+      <ul style="list-style:none;padding:0;margin:0;font-size:14px;line-height:1.7;color:var(--ink700)">
+        <li>✓ Live globe — all events</li>
+        <li>✓ Risk scores for any country</li>
+        <li>✓ 7 domains, full breakdown</li>
+        <li>✓ Source links for every event</li>
+        <li>✓ Critical-event email alerts</li>
       </ul>
-      <a class="btn btn-ghost" href="/app.html" style="justify-content:center;width:100%">Open the globe</a>
+      <a class="btn btn-ghost" href="/app.html" style="justify-content:center;width:100%;margin-top:4px">Open the globe</a>
     </div>
-    <div class="plan pro">
-      <div class="pro-tag">PRO</div>
-      <div class="pn">Pro</div>
-      <div class="pp">$9 <small>/ month</small></div>
-      <p class="pdesc">For travelers, expats and teams tracking multiple zones.</p>
-      <ul>
-        <li><span class="chk">✓</span> Everything in Free</li>
-        <li><span class="chk">✓</span> Location alerts (up to 10 zones)</li>
-        <li><span class="chk">✓</span> Email alert notifications</li>
-        <li><span class="chk">✓</span> 12-month risk history per country</li>
-        <li><span class="chk">✓</span> Export reports as PDF</li>
-        <li><span class="chk">✓</span> Priority support</li>
+
+    <div style="background:var(--ink);color:#fff;border-radius:18px;padding:28px 26px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 0 rgba(20,17,12,.03),0 20px 40px -28px rgba(20,17,12,.18)">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.14em;color:var(--amber);text-transform:uppercase">Paid plans</div>
+      <div style="font-size:32px;font-weight:700;letter-spacing:-.025em;line-height:1.1;color:#fff">Pro $49 · Team $199 · Org $499 · Enterprise from $1,500</div>
+      <p style="font-size:14.5px;color:#D1D5DB;line-height:1.55;margin:0">For journalists, NGOs, duty-of-care teams, travel operators, and B2B integrations. 14-day free trial · invoice-based · no auto-charge.</p>
+      <ul style="list-style:none;padding:0;margin:0;font-size:14px;line-height:1.7;color:#D1D5DB">
+        <li>✓ Watched countries · custom alerts</li>
+        <li>✓ Team seats · role assignment</li>
+        <li>✓ API · HMAC-signed webhooks</li>
+        <li>✓ Daily &amp; weekly digests (Pro+)</li>
+        <li>✓ Priority support &amp; SLA</li>
       </ul>
-      <a class="btn btn-amber" href="/app.html" style="justify-content:center;width:100%">Start free trial</a>
+      <a class="btn btn-amber" href="/pricing" style="justify-content:center;width:100%;margin-top:4px">See full pricing →</a>
     </div>
   </div>
-  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Need this for a team or business? <a href="/business.html" class="lnk" style="color:var(--ink700)">See the business plan →</a></p>
+
+  <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--ink500)">Frontline NGO with field staff? <a href="/for-ngos" class="lnk" style="color:var(--amber)">Free programme by application →</a></p>
 </div></section>
+<style>@media(min-width:760px){.cons-price-grid{grid-template-columns:1fr 1fr !important}}</style>
 
 <!-- ===== EMAIL CAPTURE ===== -->
 <div class="wrap">
