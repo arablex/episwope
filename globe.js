@@ -3161,6 +3161,7 @@ function initMap(){
 
   map.on('load', () => {
     addGLMarkers();
+    refreshCountryRiskFill();           // country-level choropleth (if RI loaded)
     map.on('move', positionPopup);
     map.on('zoom', () => { positionPopup(); updateClock(); });
     map.on('resize', positionPopup);
@@ -3179,6 +3180,57 @@ function initMap(){
     e.stopPropagation();
     deselect();
   });
+}
+
+/* Country-level risk choropleth — fixes the "huge country, one dot" problem
+   (e.g. Russia). Fills each country polygon by composite risk band from
+   RISK_INDEX. Defensive: silently no-ops if RISK_INDEX empty or style not
+   ready. Insert BELOW the marker layers so dots render on top. */
+function refreshCountryRiskFill(){
+  if(!map) return;
+  if(!map.isStyleLoaded()){ map.once('idle', refreshCountryRiskFill); return; }
+  if(!Object.keys(RISK_INDEX || {}).length) return;
+
+  if(!map.getSource('country-boundaries')){
+    map.addSource('country-boundaries', {
+      type: 'vector',
+      url: 'mapbox://mapbox.country-boundaries-v1',
+    });
+  }
+
+  const matchExpr = ['match', ['get', 'iso_3166_1']];
+  let added = 0;
+  for(const [iso, ri] of Object.entries(RISK_INDEX)){
+    const band = ri?.composite_risk?.band;
+    let color = null;
+    if(band === 'critical' || band === 'severe')      color = '#C92A2A';
+    else if(band === 'high' || band === 'elevated')   color = '#E8590C';
+    else if(band === 'moderate')                       color = '#E4B514';
+    else if(band === 'low' || band === 'minimal')     color = '#19A463';
+    if(color){ matchExpr.push(iso, color); added++; }
+  }
+  if(!added) return;
+  matchExpr.push('rgba(0,0,0,0)'); // unranked → transparent
+
+  if(map.getLayer('country-risk-fill')){
+    map.setPaintProperty('country-risk-fill', 'fill-color', matchExpr);
+    return;
+  }
+  // Place fill BELOW marker layers so dots render on top
+  const layers = map.getStyle().layers || [];
+  const firstMarker = layers.find(l => l.id && l.id.startsWith('outbreaks-'));
+  const beforeId = firstMarker ? firstMarker.id : undefined;
+  map.addLayer({
+    id: 'country-risk-fill',
+    type: 'fill',
+    source: 'country-boundaries',
+    'source-layer': 'country_boundaries',
+    paint: {
+      'fill-color': matchExpr,
+      'fill-opacity': 0.20,        // gentle so map labels stay readable
+      'fill-antialias': true,
+    },
+  }, beforeId);
 }
 
 function buildGeoJSON(){
@@ -4207,7 +4259,11 @@ async function loadLiveData(){
     // ── Risk index (7-domain breakdown per ISO-2) ──
     try {
       const ri = await fetch(base + 'public/risk_index.json?_=' + Date.now());
-      if(ri.ok){ const rj = await ri.json(); RISK_INDEX = rj.index || {}; }
+      if(ri.ok){
+        const rj = await ri.json();
+        RISK_INDEX = rj.index || {};
+        try { refreshCountryRiskFill(); } catch(_){}
+      }
     } catch(_e){ /* graceful — country panel shows "no data" */ }
 
     try {
