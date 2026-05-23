@@ -107,9 +107,16 @@ jobs:
           json.dump({'events': out}, open('/tmp/alert_payload.json','w'))
           print('payload events:', len(out))
           "
-          curl -sf -X POST \
+          # Capture HTTP status + body so failures are diagnosable (auth vs 500
+          # vs payload). Do NOT use -f (it hides the body on error). Never fail
+          # the job on a bad alert-check — it is non-critical to data freshness.
+          CODE=$(curl -s -o /tmp/alert_resp.json -w "%{http_code}" -X POST \
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
             -H "Content-Type: application/json" \
             --data @/tmp/alert_payload.json \
-            https://vigilo.cc/api/alert-check \
-          || echo "⚠ alert-check failed (non-critical)"
+            https://vigilo.cc/api/alert-check)
+          echo "alert-check HTTP $CODE"
+          echo "alert-check response: $(cat /tmp/alert_resp.json)"
+          if [ "$CODE" != "200" ]; then
+            echo "⚠ alert-check non-200 (non-critical) — continuing"
+          fi
