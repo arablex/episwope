@@ -784,6 +784,9 @@
   .feed-cf-chip.active{ background:var(--accent); color:#fff; }
   .feed-cf-chip:hover:not(.active){ background:var(--line-2); }
   .feed-empty{ font-size:12px; color:var(--muted); padding:6px 0 2px; line-height:1.5; }
+  .sig-note{ font-size:11.5px; color:var(--muted); padding:2px 0 8px; line-height:1.5; }
+  .sig-watch-h{ font-size:9.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted-2); margin:10px 0 4px; padding-top:8px; border-top:1px solid var(--line); }
   .feed-empty a{ color:var(--accent); text-decoration:none; cursor:pointer; }
   .feed-item{ display:flex; gap:9px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line-2); }
   .feed-item:last-child{ border-bottom:0; }
@@ -3625,40 +3628,53 @@ function _renderSignals(sigs, meta) {
   if (titleEl) titleEl.textContent = TR('Early signals','Ранние сигналы');
   if (liveEl)  liveEl.textContent  = TR('LIVE','В ЭФИРЕ');
 
-  // Urgent + alert signals (max 8), ranked by Threat Index
+  // Rank by Threat Index, then confidence. Urgent/alert are headline signals;
+  // watch-level are early indicators below the alert threshold — shown muted so
+  // the widget proves the engine is working instead of looking dead at "0".
   const _ti = s => (typeof s.threat_index === 'number' ? s.threat_index : s.confidence*60);
-  const show = sigs
-    .filter(s => s.level !== 'watch')
-    .sort((a,b) => _ti(b) - _ti(a) || b.confidence - a.confidence)
-    .slice(0, 8);
+  const rank = arr => arr.sort((a,b) => _ti(b) - _ti(a) || b.confidence - a.confidence);
+  const urgent = rank(sigs.filter(s => s.level !== 'watch')).slice(0, 8);
+  const watch  = rank(sigs.filter(s => s.level === 'watch')).slice(0, 5);
 
+  // Headline count = urgent/alert only (stays honest).
   if (countEl) {
-    countEl.textContent = show.length;
-    countEl.classList.toggle('zero', show.length === 0);
+    countEl.textContent = urgent.length;
+    countEl.classList.toggle('zero', urgent.length === 0);
   }
 
-  if (show.length === 0) {
-    list.innerHTML = `<div class="feed-empty">${TR('No active urgent signals.','Нет активных срочных сигналов.')}</div>`;
+  const renderItem = s => {
+    const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
+    const srcs     = (s.sources || []).length;
+    const country  = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
+    const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
+    const aiBadge  = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
+    const tiBadge  = (typeof s.threat_index === 'number')
+      ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
+    const srcLbl   = TR(`${srcs} src`, `${srcs} ист.`);
+    return `
+      <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+        <div class="sig-pulse ${s.level}"></div>
+        <div class="sig-body">
+          <div class="sig-title">${_esc(locDisease(s.disease))} · ${_esc(country)}</div>
+          <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${spike} ${aiBadge}</div>
+        </div>
+        <span class="sig-badge ${s.level}">${locLevel(s.level)}</span>
+      </div>`;
+  };
+
+  if (urgent.length > 0) {
+    // Headline urgent/alert signals, plus any watch-level ones under a divider.
+    list.innerHTML = urgent.map(renderItem).join('')
+      + (watch.length
+          ? `<div class="sig-watch-h">${TR('Also monitoring','Под наблюдением')}</div>` + watch.map(renderItem).join('')
+          : '');
+  } else if (watch.length > 0) {
+    // No urgent signals — surface the early indicators the engine is tracking.
+    list.innerHTML =
+      `<div class="sig-note">${TR('No urgent signals right now. The engine is tracking these early indicators, below the alert threshold:','Срочных сигналов нет. Движок отслеживает ранние индикаторы — пока ниже порога тревоги:')}</div>`
+      + watch.map(renderItem).join('');
   } else {
-    list.innerHTML = show.map(s => {
-      const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
-      const srcs     = (s.sources || []).length;
-      const country  = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
-      const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
-      const aiBadge  = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
-      const tiBadge  = (typeof s.threat_index === 'number')
-        ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
-      const srcLbl   = TR(`${srcs} src`, `${srcs} ист.`);
-      return `
-        <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
-          <div class="sig-pulse ${s.level}"></div>
-          <div class="sig-body">
-            <div class="sig-title">${_esc(locDisease(s.disease))} · ${_esc(country)}</div>
-            <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${spike} ${aiBadge}</div>
-          </div>
-          <span class="sig-badge ${s.level}">${locLevel(s.level)}</span>
-        </div>`;
-    }).join('');
+    list.innerHTML = `<div class="feed-empty">${TR('All clear — no early signals above noise. The engine keeps scanning 50+ sources.','Спокойно — ранних сигналов выше шума нет. Движок продолжает сканировать 50+ источников.')}</div>`;
   }
 
   // Updated time
