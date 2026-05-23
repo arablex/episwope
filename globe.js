@@ -3695,6 +3695,17 @@ function _eventTs(o){
   const m = String(o.code || '').match(/\d{4}-\d{2}-\d{2}/);
   return m ? Date.parse(m[0]) : 0;
 }
+function _eventWhen(o){
+  const ts = _eventTs(o);
+  if(!ts) return '';
+  const h = (Date.now() - ts) / 3.6e6;
+  if(h < 1)  return LANG==='ru' ? 'только что' : 'just now';
+  if(h < 24) return Math.round(h) + (LANG==='ru' ? ' ч' : 'h');
+  const d = Math.round(h / 24);
+  if(d <= 30) return d + (LANG==='ru' ? ' дн' : 'd');
+  return new Date(ts).toLocaleDateString(LANG==='ru' ? 'ru-RU' : 'en-GB',
+                                          { day:'2-digit', month:'short' });
+}
 function _sortItems(arr){
   const a = arr.slice();
   if(state.listSort === 'az')
@@ -3812,12 +3823,21 @@ function renderList(){
       const label = listGroupLabel(g), n = g.items.length;
       const isOpen = _listExpanded.has(g.key);
       const sevC = (SEV[worst.sev]||SEV.warning).color;
-      const rows = g.items.map(o => `
+      const rows = g.items.map(o => {
+        const title = o._risk ? (fullHeadline(o) || shortTitle(o)) : diseaseName(o);
+        const when  = _eventWhen(o);
+        const ctry  = countryName(o.country) || o.country || '';
+        const meta  = [ctry, when].filter(Boolean).join(' · ');
+        return `
         <button class="lrow ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
           <span class="lrow-sev" style="background:${(SEV[o.sev]||SEV.warning).color}"></span>
-          <span class="lrow-title">${escapeAttr(o._risk ? (fullHeadline(o)||shortTitle(o)) : diseaseName(o))}</span>
+          <span class="lrow-main">
+            <span class="lrow-title">${escapeAttr(title)}</span>
+            ${meta ? `<span class="lrow-meta">${escapeAttr(meta)}</span>` : ''}
+          </span>
           <span class="lrow-sub">${escapeAttr(sevLbl(o.sev))}</span>
-        </button>`).join('');
+        </button>`;
+      }).join('');
       return `
       <div class="lgrp ${isOpen?'open':''}" data-group="${escapeAttr(g.key)}">
         <div class="lgrp-head">
