@@ -31,8 +31,18 @@ sys.path.insert(0, str(SCRIPT_DIR))
 # Reuse battle-tested helpers from the health engine
 from fast_signals import (  # noqa: E402
     fetch_url, detect_country, log, Article, _strip_html,
+    COUNTRY_DB, LANDMARK_DB,
 )
 from risk_scoring import score_geo, CATEGORIES  # noqa: E402
+
+# ISO-2 → (lat, lng) centroid lookup, built from the name-keyed COUNTRY_DB
+# (+ landmark coords). Used to backfill geolocation for events that have a
+# country but null coordinates, so the lat/lng radius API mode stops
+# silently dropping them.
+ISO_CENTROID: dict[str, tuple[float, float]] = {}
+for _name, _t in {**COUNTRY_DB, **LANDMARK_DB}.items():
+    _iso, _lat, _lng = _t[0], _t[1], _t[2]
+    ISO_CENTROID.setdefault(_iso, (_lat, _lng))
 
 OUTPUT_DIR  = SCRIPT_DIR.parent / "public"
 EVENTS_OUT  = OUTPUT_DIR / "risk_events.json"
@@ -348,7 +358,7 @@ def import_health_events() -> list[dict]:
                 if any(x in (s.get("sources") or []) for x in ("who_don", "who_ihr"))
                 else "tier3_pro",
             "source_name": (s.get("sources") or ["vigilo"])[0],
-            "geo": {"lat": s.get("lat"), "lng": s.get("lng"),
+            "geo": {**_geo_with_centroid(s.get("lat"), s.get("lng"), iso),
                     "place": s.get("country"), "country": iso, "admin1": None},
             "country": iso,
             "first_seen": s.get("detected_at", _now().isoformat()),
@@ -404,8 +414,8 @@ def import_climate_leads() -> list[dict]:
                 "source_verification": "model",
                 "source_class": "tier3_pro",
                 "source_name": "Vigilo climate model",
-                "geo": {"lat": None, "lng": None, "place": iso,
-                        "country": iso, "admin1": None},
+                "geo": {**_geo_with_centroid(None, None, iso),
+                        "place": iso, "country": iso, "admin1": None},
                 "country": iso,
                 "first_seen": _now().isoformat(),
                 "last_updated": _now().isoformat(),
@@ -417,6 +427,19 @@ def import_climate_leads() -> list[dict]:
                 "predictive": True,
             })
     return out
+
+
+def _geo_with_centroid(lat, lng, iso: str) -> dict:
+    """Return {lat, lng}, backfilling the country centroid when coords are
+    null. Health & climate events arrived with lat=None and were silently
+    dropped by the lat/lng radius API mode — a Tokyo query missed a Japan
+    health signal. Centroid is a coarse but honest fallback."""
+    if lat is None or lng is None:
+        c = ISO_CENTROID.get(iso)
+        if c:
+            return {"lat": c[0], "lng": c[1], "geo_precision": "country_centroid"}
+        return {"lat": None, "lng": None}
+    return {"lat": lat, "lng": lng}
 
 
 def _age_days_local(ts: str, now: datetime) -> float:
@@ -481,6 +504,32 @@ def build_index(events: list[dict]) -> dict:
             "event_count": len(evs),
             "event_ids": [e["id"] for e in evs],
         }
+
+    # Baseline seeding — every known country gets an entry even with no
+    # events this window. Was: only countries surfaced by news existed
+    # (~40), so a quiet country was ABSENT and the API fabricated an
+    # all-zero record with no honesty marker. Now they carry baseline:true
+    # → the API/UI can say "no active signals detected" rather than implying
+    # we assessed it as calm. Marked distinctly from a real minimal score.
+    empty_breakdown = {
+        c: {"score": 0.0, "band": "minimal", "active_events": 0,
+            "top_threat": None}
+        for c in CATEGORIES
+    }
+    seeded = 0
+    for iso in ISO_CENTROID:
+        if iso in index:
+            continue
+        index[iso] = {
+            "composite_risk": {"score": 0.0, "band": "minimal",
+                               "dominant_category": None},
+            "category_breakdown": empty_breakdown,
+            "event_count": 0,
+            "event_ids": [],
+            "baseline": True,   # no active signals this window (≠ assessed-calm)
+        }
+        seeded += 1
+    log(f"[risk] baseline-seeded {seeded} countries (total index {len(index)})")
     return index
 
 
