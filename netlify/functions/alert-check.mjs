@@ -34,7 +34,14 @@ const DEFAULT_ALERTS = {
              infrastructure:true, transport:true, border:true },
   recipients: [],
 };
-function rank(s){ return SEV_RANK[String(s||'').toLowerCase()] ?? 0; }
+function rank(s){
+  // Risk events carry a numeric severity (0–5) already on the rank scale;
+  // health events use string labels. Handle both.
+  if (typeof s === 'number') return s;
+  const n = Number(s);
+  if (String(s ?? '').trim() !== '' && !Number.isNaN(n)) return n;
+  return SEV_RANK[String(s || '').toLowerCase()] ?? 0;
+}
 
 export default async (req) => {
   if (req.method !== 'POST') {
