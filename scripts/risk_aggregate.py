@@ -210,9 +210,34 @@ def _classify(text: str, rules: list) -> tuple[str | None, int]:
     return None, 0
 
 
+_STOPWORDS = {"the", "a", "an", "of", "in", "on", "at", "to", "and", "or",
+              "as", "by", "for", "with", "from", "amid", "after", "over",
+              "into", "near", "say", "says", "said", "new", "more"}
+
+
+def _norm_key(headline: str) -> str:
+    """Normalised token-set key for dedup. Collides the SAME headline picked
+    up by different sources with word-order / punctuation / case / source-
+    suffix differences ('X shelled - Reuters' vs 'x shelled | AP') — the
+    common GDELT-vs-GoogleNews duplicate. Does NOT catch synonym rewrites
+    ('shells'≠'shelled'); true semantic dedup needs embeddings (out of scope).
+    Better than the old headline[:80] which broke on any reorder. No cap, to
+    keep genuinely-distinct events (different key nouns) separate."""
+    # Strip trailing " - Publisher" / " | Publisher" (Google News appends it)
+    h = re.sub(r"\s+[-|]\s+[^-|]{1,40}$", "", headline)
+    toks = re.findall(r"[a-z0-9]+", h.lower())
+    sig = sorted({t for t in toks if len(t) >= 4 and t not in _STOPWORDS})
+    return " ".join(sig) or h.lower()[:40]
+
+
 def _event_id(category: str, iso: str, headline: str) -> str:
-    raw = f"{category}:{iso}:{headline[:80]}"
+    raw = f"{category}:{iso}:{_norm_key(headline)}"
     return "evt_" + hashlib.sha1(raw.encode()).hexdigest()[:12]
+
+
+# Per-run fetch health — surfaced in meta so a GDELT-wide 429 no longer
+# produces a silently-thin "successful" feed with no flag.
+_FETCH_STATS = {"ok": 0, "fail": 0}
 
 
 def _fetch_gdelt(query: str, maxrec: int = 75) -> list[Article]:
@@ -220,11 +245,13 @@ def _fetch_gdelt(query: str, maxrec: int = 75) -> list[Article]:
     url = (
         "https://api.gdeltproject.org/api/v2/doc/doc"
         f"?query={quote(query)}&mode=artlist&maxrecords={maxrec}"
-        "&format=json&timespan=2880min"  # 48h
+        "&format=json&timespan=10080min"  # 7d (was 48h; safe now persistence exists)
     )
     raw = fetch_url(url, retries=1)
     if not raw:
+        _FETCH_STATS["fail"] += 1
         return []
+    _FETCH_STATS["ok"] += 1
     try:
         data = json.loads(raw)
     except Exception:
@@ -240,11 +267,13 @@ def _fetch_gdelt(query: str, maxrec: int = 75) -> list[Article]:
 
 def _fetch_gnews(query: str) -> list[Article]:
     from urllib.parse import quote
-    url = (f"https://news.google.com/rss/search?q={quote(query)}+when:2d"
+    url = (f"https://news.google.com/rss/search?q={quote(query)}+when:7d"  # was 2d
            "&hl=en-US&gl=US&ceid=US:en")
     raw = fetch_url(url, retries=1)
     if not raw:
+        _FETCH_STATS["fail"] += 1
         return []
+    _FETCH_STATS["ok"] += 1
     out = []
     for m in re.finditer(r"<item>(.*?)</item>", raw.decode("utf-8", "ignore"), re.S):
         block = m.group(1)
@@ -551,12 +580,25 @@ def main() -> int:
     log(f"[risk] countries scored: {len(index)}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    _total_fetch = _FETCH_STATS["ok"] + _FETCH_STATS["fail"]
+    _fail_rate = round(_FETCH_STATS["fail"] / _total_fetch, 3) if _total_fetch else 0.0
+    if _fail_rate > 0.3:
+        log(f"[risk] ⚠️ HIGH fetch failure rate {_fail_rate:.0%} "
+            f"({_FETCH_STATS['fail']}/{_total_fetch}) — feed may be thin")
     meta = {
         "generated_at": _now().isoformat(),
         "events_total": len(events),
         "countries": len(index),
         "categories": list(CATEGORIES),
         "schema": "1.0",
+        # Fetch health — a GDELT-wide 429 used to yield a silently-thin
+        # "successful" run; now the partial-failure is visible to consumers.
+        "fetch_health": {
+            "ok": _FETCH_STATS["ok"],
+            "failed": _FETCH_STATS["fail"],
+            "fail_rate": _fail_rate,
+            "degraded": _fail_rate > 0.3,
+        },
     }
     EVENTS_OUT.write_text(json.dumps(
         {"meta": meta, "events": events}, ensure_ascii=False, indent=2),
