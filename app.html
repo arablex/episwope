@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Theme: apply saved/OS preference before paint to avoid a flash of light. -->
+<script>
+  (function(){
+    try{
+      var saved = localStorage.getItem('vigilo-theme');
+      var dark = saved ? saved === 'dark'
+                       : matchMedia('(prefers-color-scheme: dark)').matches;
+      if(dark) document.documentElement.setAttribute('data-theme','dark');
+    }catch(e){}
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vigilo — Live Disease Outbreak Map &amp; Global Health Surveillance</title>
 <meta name="description" content="Track active disease outbreaks, epidemics and food safety alerts worldwide. Real-time WHO, ECDC and CDC data on an interactive globe. Free public health monitoring tool.">
@@ -105,6 +116,44 @@
     --display: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --online: #19A463;
     --online-bg: rgba(25,164,99,0.10);
+
+    /* semantic surface/overlay tokens — flip in dark theme below */
+    --surface-2:#FFFFFF;            /* raised control on a card (segmented "on") */
+    --chip-bg: rgba(20,18,14,0.06); /* neutral pill / count chip */
+    --hover-bg:#FBF9F4;             /* row / card hover wash */
+    --scrim: rgba(8,7,6,0.62);      /* modal backdrop */
+    --paper50:#FBF9F4;              /* faint inset (grouped card, row hover) */
+    --paper100:#EBE6D9;             /* segmented-control track */
+  }
+
+  /* ── Dark theme ─────────────────────────────────────────────────────────
+     Toggled via <html data-theme="dark"> (set by the no-FOUC init script in
+     <head> and the topbar toggle). Only token values change — components that
+     use var(--…) flip automatically. Remaining hardcoded literals are mapped
+     to these tokens in the CSS below. */
+  html[data-theme="dark"]{
+    --bg:#141310;
+    --bg-card:#1E1C16;
+    --surface-2:#2A2820;
+    --ink:#F2F0E8;
+    --ink-2:#C7C4B9;
+    --muted:#928F85;
+    --muted-2:#6A6860;
+    --line:#2E2B23;
+    --line-2:#262319;
+    --chip-bg: rgba(255,255,255,0.07);
+    --hover-bg: rgba(255,255,255,0.04);
+    --scrim: rgba(0,0,0,0.66);
+    --glass-bg: linear-gradient(180deg, rgba(42,40,32,0.74) 0%, rgba(30,28,22,0.56) 100%);
+    --glass-bd: rgba(255,255,255,0.10);
+    --glass-shadow:
+      0 22px 52px -22px rgba(0,0,0,0.55),
+      0 6px 18px -8px rgba(0,0,0,0.40),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    --online-bg: rgba(25,164,99,0.16);
+    --paper50: rgba(255,255,255,0.035);
+    --paper100: rgba(255,255,255,0.07);
+    color-scheme: dark;
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -116,7 +165,7 @@
     letter-spacing:-0.005em;
   }
   body{
-    background:#F4F2EE;
+    background:var(--bg);
   }
   button{ font-family:inherit; cursor:pointer; border:0; background:none; color:inherit; }
   ::selection{ background:#E8590C33; }
@@ -179,7 +228,7 @@
     border:none; background:transparent; padding:5px 11px; border-radius:7px; cursor:pointer;
     transition:background .12s,color .12s; }
   .lc-grp button:hover{ color:var(--ink); }
-  .lc-grp button.on{ background:#fff; color:var(--ink); box-shadow:0 1px 2px rgba(20,18,14,0.08); }
+  .lc-grp button.on{ background:var(--bg-card); color:var(--ink); box-shadow:0 1px 2px rgba(20,18,14,0.08); }
   .events-row{
     display:flex; gap:10px; overflow-x:auto; overflow-y:hidden;
     scrollbar-width:thin; scrollbar-color:#d6d3c8 transparent;
@@ -192,7 +241,7 @@
   .events-row::-webkit-scrollbar-thumb:hover{ background:#a8a59a; }
   .ev-card{
     flex:0 0 222px;
-    background:#fff;
+    background:var(--bg-card);
     border:1px solid var(--line);
     border-radius:14px;
     padding:13px 14px;
@@ -300,7 +349,7 @@
     display:flex; align-items:center; gap:10px;
     height:40px; min-width:420px; max-width:520px; flex:1 1 420px;
     padding:0 16px;
-    background:#fff;
+    background:var(--bg-card);
     border:1px solid var(--line);
     border-radius:var(--r-pill);
     transition:border-color .15s;
@@ -320,7 +369,7 @@
 
   .top-tabs{
     display:flex; gap:2px; padding:3px;
-    background:rgba(232,228,217,0.7); border-radius:var(--r-pill);
+    background:var(--paper100); border-radius:var(--r-pill);
     border:1px solid rgba(229,227,220,0.6);
   }
   .top-tab{
@@ -331,7 +380,7 @@
   }
   .top-tab:hover{ color:var(--ink); }
   .top-tab.is-active{
-    background:#fff; color:var(--ink);
+    background:var(--bg-card); color:var(--ink);
     box-shadow:0 2px 6px -2px rgba(20,18,14,0.18), inset 0 0 0 1px rgba(229,227,220,0.6);
   }
   .top-meta{ margin-left:auto; display:flex; align-items:center; gap:18px; font-size:11px; color:var(--muted);}
@@ -347,13 +396,17 @@
   .top-actions{ display:flex; align-items:center; gap:6px; margin-left:auto; }
   .icon-btn{
     width:38px; height:38px; border-radius:50%;
-    background:rgba(255,255,255,0.7);
-    border:1px solid rgba(229,227,220,0.7);
+    background:var(--glass-bg);
+    border:1px solid var(--line);
     display:grid; place-items:center;
     color:var(--ink-2);
     transition:all .15s;
   }
-  .icon-btn:hover{ background:#fff; transform:translateY(-1px); }
+  .icon-btn:hover{ background:var(--bg-card); color:var(--ink); transform:translateY(-1px); }
+  /* theme toggle: sun in light, moon in dark (swapped via data-theme) */
+  #themeToggle .moon{ display:none; }
+  html[data-theme="dark"] #themeToggle .sun{ display:none; }
+  html[data-theme="dark"] #themeToggle .moon{ display:block; }
   .pill-btn{
     height:40px; padding:0 16px; font-size:12.5px; font-weight:700; letter-spacing:-0.005em;
     background:linear-gradient(180deg, #1e1c18, #111009);
@@ -371,7 +424,7 @@
     border:1px solid var(--line); text-decoration:none;
     display:flex; align-items:center; transition:all .15s;
   }
-  .lang-btn:hover{ background:#fff; color:var(--ink); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
+  .lang-btn:hover{ background:var(--bg-card); color:var(--ink); box-shadow:0 1px 4px rgba(22,21,19,0.10); }
   .pro-pill{
     height:32px; padding:0 13px; border-radius:var(--r-pill);
     font-size:12px; font-weight:800; letter-spacing:0.01em;
@@ -445,7 +498,7 @@
     display:inline-flex; align-items:center; gap:6px;
     transition:all .15s;
   }
-  .chip:hover{ background:#fff; }
+  .chip:hover{ background:var(--bg-card); }
   .chip .dot{ width:7px; height:7px; border-radius:50%; }
   .chip.is-active{
     background:#161513; color:#fff; border-color:#161513;
@@ -838,7 +891,7 @@
     color:var(--ink-2); font-size:16px; font-weight:600;
     transition:all .15s;
   }
-  .control-stack button:hover{ background:#fff; color:var(--ink); }
+  .control-stack button:hover{ background:var(--bg-card); color:var(--ink); }
   .control-stack button.is-on{ background:var(--ink); color:#fff; }
 
   .stage-bottom{
@@ -886,7 +939,7 @@
   .popup{
     position:absolute;
     width:228px;
-    background:#fff;
+    background:var(--bg-card);
     border:1px solid var(--line);
     border-radius:14px;
     box-shadow:0 12px 32px -12px rgba(20,18,14,0.22);
@@ -904,7 +957,7 @@
   /* Tail arrow pointing to the marker */
   .popup::after{
     content:''; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%) rotate(45deg);
-    width:12px; height:12px; background:#fff; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+    width:12px; height:12px; background:var(--bg-card); border-right:1px solid var(--line); border-bottom:1px solid var(--line);
   }
   /* Hide verbose sections — right panel handles full detail */
   .popup .popup-id,
@@ -997,7 +1050,7 @@
     border:1px solid var(--line);
     transition:all .15s;
   }
-  .panel-eyebrow .x:hover{ background:#fff; }
+  .panel-eyebrow .x:hover{ background:var(--bg-card); }
   .panel-name{
     font-size:34px; font-weight:900; letter-spacing:-0.04em; line-height:0.98;
     font-family:var(--display);
@@ -1306,7 +1359,7 @@
     content:''; position:absolute;
     top:2px; left:2px;
     width:16px; height:16px; border-radius:50%;
-    background:#fff;
+    background:#ffffff; /* knob stays light on both themes */
     box-shadow:0 1px 3px rgba(0,0,0,0.22);
     transition:transform .2s;
   }
@@ -1377,7 +1430,7 @@
   /* ── Global search dropdown (header) ── */
   .g-drop{
     display:none; position:absolute; top:calc(100% + 6px); left:0; right:0;
-    background:#fff; border:1px solid var(--line); border-radius:14px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:14px;
     box-shadow:0 12px 32px -12px rgba(20,18,14,0.18);
     z-index:50; max-height:420px; overflow-y:auto;
   }
@@ -1416,11 +1469,11 @@
     border-radius:var(--r-sm); font:inherit; font-size:12px; color:var(--ink);
     outline:none; transition:border-color .15s;
   }
-  #countrySearch:focus{ border-color:var(--accent); background:#fff; }
+  #countrySearch:focus{ border-color:var(--accent); background:var(--bg-card); }
   #countrySearch::placeholder{ color:var(--muted); }
   #countryDropdown{
     display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:50;
-    background:#fff; border:1px solid var(--line); border-radius:var(--r-md);
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--r-md);
     box-shadow:0 8px 24px -8px rgba(22,21,19,0.18); overflow:hidden;
     max-height:340px; overflow-y:auto;
   }
@@ -1456,7 +1509,7 @@
   .sub-input{
     flex:1; height:36px; padding:0 12px;
     font:inherit; font-size:12.5px; color:var(--ink);
-    background:#fff; border:1px solid var(--line);
+    background:var(--bg-card); border:1px solid var(--line);
     border-radius:var(--r-pill); outline:none;
     transition:border-color .15s;
   }
@@ -2127,7 +2180,7 @@
     flex:1; height:34px; padding:0 11px;
     border:1px solid var(--line); border-radius:9px;
     font:inherit; font-size:13px; color:var(--ink);
-    background:#fff; outline:none; transition:border-color .15s;
+    background:var(--bg-card); outline:none; transition:border-color .15s;
   }
   .cp-sub-input:focus { border-color:var(--accent); }
   .cp-sub-btn {
@@ -2173,11 +2226,11 @@
   .alert-modal-sub{ font-size:12px; color:var(--muted); margin-top:3px; }
   .alert-modal-x{
     width:30px; height:30px; border-radius:50%; flex:none;
-    background:rgba(232,228,217,0.7); border:1px solid var(--line);
+    background:var(--paper100); border:1px solid var(--line);
     display:grid; place-items:center; color:var(--ink-2);
     transition:background .15s;
   }
-  .alert-modal-x:hover{ background:#fff; }
+  .alert-modal-x:hover{ background:var(--bg-card); }
 
   .alert-tiers{ display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
   .alert-tier{
@@ -2215,14 +2268,14 @@
   }
   .alert-tier.is-selected .alert-tier-check::after{
     content:''; display:block; width:6px; height:6px;
-    background:#fff; border-radius:50%; margin:4px auto 0;
+    background:#ffffff; border-radius:50%; margin:4px auto 0;
   }
 
   .alert-modal-form{ display:flex; gap:8px; margin-bottom:12px; }
   .alert-modal-email{
     flex:1; height:42px; padding:0 14px;
     border:1.5px solid var(--line); border-radius:var(--r-pill);
-    font:inherit; font-size:13px; background:#fff; color:var(--ink);
+    font:inherit; font-size:13px; background:var(--bg-card); color:var(--ink);
     transition:border-color .15s; outline:none;
   }
   .alert-modal-email:focus{ border-color:var(--accent); }
@@ -2310,6 +2363,10 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
     <div class="top-actions">
       <button class="pro-pill" onclick="openProWaitlist('header')" title="Vigilo Pro"><span class="spark">✦</span> Pro</button>
       <a href="/ru/app.html" class="lang-btn" title="Русская версия">RU</a>
+      <button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" onclick="toggleTheme()">
+        <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <button class="icon-btn" id="tourBtn" title="Restart tour" onclick="localStorage.removeItem('vigilo_app_onboarding_done');location.reload();" style="opacity:.55;font-size:13px;font-weight:700;letter-spacing:-.01em">?</button>
       <button class="icon-btn" id="userBtn" title="Sign in" onclick="toggleAuthPopover()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -3296,13 +3353,13 @@ document.addEventListener('DOMContentLoaded', function(){
         const exp = !!_fExp[k];
         const evs = (OB||[]).filter(o => (o.type||'epidemic') === k)
                             .sort((a,b)=>(SV?.[b.sev]?.idx??0)-(SV?.[a.sev]?.idx??0));
-        html += `<div class="mf-cat" style="background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden">
+        html += `<div class="mf-cat" style="background:var(--bg-card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden">
           <div class="mf-head" data-cat="${k}" style="display:flex;align-items:center;gap:11px;padding:16px 14px;cursor:pointer">
             <span style="color:${CM[k].color};display:flex;flex-shrink:0">${CM[k].icon}</span>
             <span style="flex:1;font-size:16px;font-weight:700;color:var(--ink)">${ru?CM[k].ru:CM[k].en}</span>
             <span style="font-size:13px;font-weight:700;color:var(--muted);min-width:22px;text-align:right">${evs.length}</span>
             <span style="font-size:12px;color:var(--muted-2);transition:transform .2s;transform:rotate(${exp?180:0}deg)">▾</span>
-            <button class="mf-tg" data-tg="${k}" style="width:46px;height:27px;border:0;border-radius:999px;background:${on?'var(--accent)':'#D9D6CE'};position:relative;flex-shrink:0;cursor:pointer;padding:0"><span style="position:absolute;top:3px;${on?'left:22px':'left:3px'};width:21px;height:21px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></button>
+            <button class="mf-tg" data-tg="${k}" style="width:46px;height:27px;border:0;border-radius:999px;background:${on?'var(--accent)':'#D9D6CE'};position:relative;flex-shrink:0;cursor:pointer;padding:0"><span style="position:absolute;top:3px;${on?'left:22px':'left:3px'};width:21px;height:21px;border-radius:50%;background:#ffffff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></button>
           </div>
           ${exp ? `<div style="border-top:1px solid var(--line-2);max-height:46vh;overflow-y:auto">${
             evs.length ? evs.map(o=>{
@@ -3378,7 +3435,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <div style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:24px">${T('Subscribe to weekly digests and critical outbreak alerts for the countries you follow.','Подписывайтесь на еженедельные дайджесты и критические алерты по нужным странам.')}</div>
         <form id="mobSubForm" style="display:flex;flex-direction:column;gap:10px">
           <input type="email" id="mobSubEmail" placeholder="${T('your@email.com','your@email.com')}"
-            style="height:48px;padding:0 16px;border:1.5px solid var(--line);border-radius:var(--r-pill);font:inherit;font-size:15px;color:var(--ink);background:#fff;outline:none">
+            style="height:48px;padding:0 16px;border:1.5px solid var(--line);border-radius:var(--r-pill);font:inherit;font-size:15px;color:var(--ink);background:var(--bg-card);outline:none">
           <button type="submit" id="mobSubBtn"
             style="height:48px;background:linear-gradient(180deg,#C92A2A,#8B1A1A);color:#fff;border:none;border-radius:var(--r-pill);font:inherit;font-size:15px;font-weight:700;cursor:pointer">
             ${T('Subscribe','Подписаться')}
@@ -4063,9 +4120,9 @@ function _urlB64ToUint8Array(base64String) {
     tip = document.createElement('div');
     tip.style.cssText = [
       'position:fixed;z-index:10000;width:296px',
-      'background:#FAFAF8;border-radius:20px',
+      'background:var(--bg-card);border-radius:20px',
       'padding:22px 22px 18px',
-      'box-shadow:0 24px 64px rgba(13,16,21,.28),0 0 0 1px rgba(13,16,21,.08)',
+      'box-shadow:0 24px 64px rgba(13,16,21,.28),0 0 0 1px var(--line)',
       "font-family:'Geist',system-ui,-apple-system,sans-serif",
       '-webkit-font-smoothing:antialiased',
       'opacity:0;transition:opacity .2s,top .25s,left .25s,transform .25s'
@@ -4078,7 +4135,7 @@ function _urlB64ToUint8Array(base64String) {
   function dots(){
     return STEPS.map(function(_,i){
       return '<span style="display:inline-block;width:'+(i===step?'18':'6')+'px;height:6px;border-radius:3px;'+
-        'background:'+(i===step?'#E8590C':'rgba(20,17,12,.13)')+';transition:all .22s"></span>';
+        'background:'+(i===step?'#E8590C':'var(--chip-bg)')+';transition:all .22s"></span>';
     }).join('');
   }
 
@@ -4127,7 +4184,7 @@ function _urlB64ToUint8Array(base64String) {
     if(s.onEnter) s.onEnter();
 
     var btnBack = idx > 0
-      ? '<button onclick="window._appOnbPrev()" style="background:none;border:1.5px solid rgba(20,17,12,.14);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:#7A7263;font-weight:600;font-family:inherit">'+
+      ? '<button onclick="window._appOnbPrev()" style="background:none;border:1.5px solid var(--line);border-radius:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:var(--muted);font-weight:600;font-family:inherit">'+
           t('← Back','← Назад')+'</button>'
       : '';
     var btnNext =
@@ -4137,13 +4194,13 @@ function _urlB64ToUint8Array(base64String) {
     tip.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">'+
         '<div style="display:flex;gap:5px;align-items:center">'+dots()+'</div>'+
-        '<button onclick="window._appOnbSkip()" style="background:none;border:none;cursor:pointer;color:#B5AFA4;font-size:22px;line-height:1;padding:2px 4px;border-radius:6px" title="'+t('Skip','Пропустить')+'">×</button>'+
+        '<button onclick="window._appOnbSkip()" style="background:none;border:none;cursor:pointer;color:var(--muted-2);font-size:22px;line-height:1;padding:2px 4px;border-radius:6px" title="'+t('Skip','Пропустить')+'">×</button>'+
       '</div>'+
       '<div style="width:40px;height:40px;border-radius:11px;background:rgba(232,89,12,.10);display:flex;align-items:center;justify-content:center;color:#E8590C;margin-bottom:14px">'+svg(s.icon)+'</div>'+
-      '<div style="font-size:15.5px;font-weight:700;letter-spacing:-.025em;color:#14110C;line-height:1.25;margin-bottom:7px">'+s.title+'</div>'+
-      '<p style="font-size:13px;color:#6B6560;line-height:1.65;margin:0 0 20px">'+s.desc+'</p>'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(20,17,12,.07);padding-top:14px">'+
-        '<span style="font-size:11.5px;color:#B5AFA4;font-weight:500">'+(idx+1)+' '+t('of','из')+' '+STEPS.length+'</span>'+
+      '<div style="font-size:15.5px;font-weight:700;letter-spacing:-.025em;color:var(--ink);line-height:1.25;margin-bottom:7px">'+s.title+'</div>'+
+      '<p style="font-size:13px;color:var(--muted);line-height:1.65;margin:0 0 20px">'+s.desc+'</p>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px">'+
+        '<span style="font-size:11.5px;color:var(--muted-2);font-weight:500">'+(idx+1)+' '+t('of','из')+' '+STEPS.length+'</span>'+
         '<div style="display:flex;gap:8px">'+btnBack+btnNext+'</div>'+
       '</div>';
 

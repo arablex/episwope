@@ -984,25 +984,25 @@ function openProWaitlist(source) {
   ov.id = '_proWaitOv';
   ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(8,7,6,.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s';
   ov.innerHTML = `
-    <div id="_proWaitCard" style="background:#fff;max-width:420px;width:100%;border-radius:20px;padding:30px 28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);transform:translateY(8px);transition:transform .22s">
+    <div id="_proWaitCard" style="background:var(--bg-card);max-width:420px;width:100%;border-radius:20px;padding:30px 28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);transform:translateY(8px);transition:transform .22s">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${L.eyebrow}</span>
-        <button id="_proWaitX" aria-label="close" style="border:0;background:none;cursor:pointer;color:#807E76;font-size:20px;line-height:1;padding:2px 6px">×</button>
+        <button id="_proWaitX" aria-label="close" style="border:0;background:none;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px">×</button>
       </div>
-      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25;color:#0F0E0C;margin-bottom:6px">${L.title}</div>
-      <div style="font-size:13.5px;color:#3B3A36;line-height:1.5;margin-bottom:16px"><b style="color:#0F0E0C">${L.price}</b> · ${L.sub}</div>
+      <div style="font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25;color:var(--ink);margin-bottom:6px">${L.title}</div>
+      <div style="font-size:13.5px;color:var(--ink-2);line-height:1.5;margin-bottom:16px"><b style="color:var(--ink)">${L.price}</b> · ${L.sub}</div>
       <ul style="list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:7px">
-        ${L.feats.map(f => `<li style="font-size:12.5px;color:#3B3A36;display:flex;gap:8px;align-items:flex-start"><span style="color:#19A463;font-weight:800;flex-shrink:0">✓</span>${f}</li>`).join('')}
+        ${L.feats.map(f => `<li style="font-size:12.5px;color:var(--ink-2);display:flex;gap:8px;align-items:flex-start"><span style="color:#19A463;font-weight:800;flex-shrink:0">✓</span>${f}</li>`).join('')}
       </ul>
       <form id="_proWaitForm" style="display:flex;flex-direction:column;gap:9px">
         <input id="_proWaitEmail" type="email" required placeholder="${L.ph}" autocomplete="email"
-          style="height:46px;padding:0 15px;border:1.5px solid #ECEAE2;border-radius:12px;font:inherit;font-size:14.5px;color:#0F0E0C;background:#FAFAF8;outline:none">
+          style="height:46px;padding:0 15px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:14.5px;color:var(--ink);background:var(--bg-card);outline:none">
         <button type="submit" id="_proWaitBtn"
           style="height:46px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border:0;border-radius:12px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer">${L.cta}</button>
       </form>
       <div id="_proWaitOk" style="display:none;text-align:center;padding:10px 0 2px">
         <div style="font-size:15px;font-weight:800;color:#19A463;margin-bottom:4px">${L.okT}</div>
-        <div style="font-size:12.5px;color:#807E76;line-height:1.5">${L.okS}</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.5">${L.okS}</div>
       </div>
     </div>`;
   document.body.appendChild(ov);
@@ -1094,8 +1094,8 @@ function emergencyFor(iso2){
 function _sec(label, svgPath){
   return `<div style="display:flex;align-items:center;gap:7px;margin:20px 0 9px">
     <span style="color:#E8590C;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></span>
-    <span style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#807E76">${label}</span>
-    <span style="flex:1;height:1px;background:#ECEAE2"></span>
+    <span style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">${label}</span>
+    <span style="flex:1;height:1px;background:var(--line)"></span>
   </div>`;
 }
 
@@ -1403,7 +1403,7 @@ function osintObserverPanel(country){
     ? v.reasons.map(r =>
         `<span style="display:inline-block;font-size:10.5px;background:rgba(180,83,9,.10);color:#B45309;border:1px solid rgba(180,83,9,.22);border-radius:6px;padding:2px 7px;margin:2px 4px 2px 0">${r.k} · ${r.v}</span>`
       ).join('')
-    : `<span style="font-size:11px;color:#807E76">${ru?'нет активных косвенных сигналов':'no active indirect signals'}</span>`;
+    : `<span style="font-size:11px;color:var(--muted)">${ru?'нет активных косвенных сигналов':'no active indirect signals'}</span>`;
 
   return `
     <div class="cp-section" style="border:1px dashed rgba(180,83,9,.4);border-radius:12px;background:rgba(180,83,9,.04);margin-top:10px">
@@ -1412,13 +1412,13 @@ function osintObserverPanel(country){
         ${ru?'OSINT · приватное наблюдение':'OSINT · private observation'}
       </div>
       <div style="font-size:13px;font-weight:700;color:${t.c};margin:4px 0 8px">${ru?t.ru:t.en}</div>
-      <div style="display:flex;gap:14px;font-size:11px;color:#807E76;margin-bottom:6px;flex-wrap:wrap">
-        <span title="${ru?'сырой сигнал → после INFORM-модификатора':'raw signal → after INFORM modifier'}">${ru?'Поведенч.':'Behavioral'}: <b style="color:#14110C">${v.behavioral}</b>/5${v.informM!==1?` <span style="color:#807E76">(${v.behavioralRaw}×${v.informM})</span>`:''}</span>
+      <div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap">
+        <span title="${ru?'сырой сигнал → после INFORM-модификатора':'raw signal → after INFORM modifier'}">${ru?'Поведенч.':'Behavioral'}: <b style="color:#14110C">${v.behavioral}</b>/5${v.informM!==1?` <span style="color:var(--muted)">(${v.behavioralRaw}×${v.informM})</span>`:''}</span>
         <span>${ru?'Официально':'Official'}: <b style="color:#14110C">${v.officialActivity}</b>/5</span>
         <span title="${ru?'надёжность раскрытия данных страной':'how reliably the country surfaces signal'}">${ru?'Прозрачность':'Transparency'}: <b style="color:#14110C">${v.transparency}</b></span>
       </div>
-      <div style="display:flex;gap:14px;font-size:11px;color:#807E76;margin-bottom:8px;flex-wrap:wrap">
-        <span>${ru?'Расхожд. сырое':'Divergence raw'}: <b style="color:#807E76">${v.divergence>0?'+':''}${v.divergence}</b></span>
+      <div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap">
+        <span>${ru?'Расхожд. сырое':'Divergence raw'}: <b style="color:var(--muted)">${v.divergence>0?'+':''}${v.divergence}</b></span>
         <span title="${ru?'после байесовской поправки на прозрачность':'after Bayesian transparency discount'}">${ru?'скорр.':'adjusted'}: <b style="color:${v.adjDivergence>=2.5?'#B45309':'#14110C'}">${v.adjDivergence>0?'+':''}${v.adjDivergence}</b></span>
         ${v.opacitySuppressed ? `<span style="color:#9333EA;font-weight:600">${ru?'подавлено непрозрачностью':'opacity-suppressed'}</span>` : ''}
       </div>
@@ -1437,7 +1437,7 @@ function _riskGauge(score, color, label){
   const deg = score/100*180;
   const [nx,ny] = pol(deg);
   return `<svg viewBox="0 0 ${W} ${H}" style="width:200px;max-width:100%;display:block;margin:2px auto 0">
-    <path d="${arc(0,180)}" fill="none" stroke="#ECEAE2" stroke-width="${sw}" stroke-linecap="round"/>
+    <path d="${arc(0,180)}" fill="none" stroke="var(--line)" stroke-width="${sw}" stroke-linecap="round"/>
     <path d="${arc(0,Math.max(0.5,deg))}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round"/>
     <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#0F0E0C" stroke-width="3" stroke-linecap="round"/>
     <circle cx="${cx}" cy="${cy}" r="6" fill="#0F0E0C"/>
@@ -1555,15 +1555,15 @@ function openRiskReport(country){
   ov = document.createElement('div');
   ov.id = '_riskOv';
   ov.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(8,7,6,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto';
-  ov.innerHTML = `<div id="_riskCard" style="background:#fff;max-width:560px;width:100%;border-radius:20px;padding:26px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);max-height:92vh;overflow:auto">
+  ov.innerHTML = `<div id="_riskCard" style="background:var(--bg-card);max-width:560px;width:100%;border-radius:20px;padding:26px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);max-height:92vh;overflow:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${ru?'Оценка рисков':'Risk assessment'}</span>
-      <button id="_riskX" style="border:0;background:none;cursor:pointer;color:#807E76;font-size:22px;line-height:1">×</button>
+      <button id="_riskX" style="border:0;background:none;cursor:pointer;color:var(--muted);font-size:22px;line-height:1">×</button>
     </div>
     <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">${countryName(country)}</div>
-    <div style="font-size:13px;color:#807E76;margin-bottom:18px">${ru?'Выберите цель — соберём детальный отчёт':'Pick a purpose — we’ll build a detailed report'}</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px">${ru?'Выберите цель — соберём детальный отчёт':'Pick a purpose — we’ll build a detailed report'}</div>
     <div id="_riskPick" style="display:flex;flex-direction:column;gap:9px">
-      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;border:1.5px solid #ECEAE2;border-radius:14px;background:#FAFAF8;cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;color:#0F0E0C;text-align:left;width:100%"><span style="color:#E8590C;display:flex;flex-shrink:0">${p.icon}</span>${ru?p.ru:p.en}</button>`).join('')}
+      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg-card);cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);text-align:left;width:100%"><span style="color:#E8590C;display:flex;flex-shrink:0">${p.icon}</span>${ru?p.ru:p.en}</button>`).join('')}
     </div>
     <div id="_riskBody"></div>
   </div>`;
@@ -1578,7 +1578,7 @@ function openRiskReport(country){
       if(window.ym) ym(109240834,'reachGoal','risk_report',{purpose});
       ov.querySelector('#_riskPick').style.display='none';
       const body=ov.querySelector('#_riskBody');
-      body.innerHTML=`<div style="padding:30px 0;text-align:center;color:#807E76;font-size:13px">${ru?'Собираем отчёт…':'Building report…'}</div>`;
+      body.innerHTML=`<div style="padding:30px 0;text-align:center;color:var(--muted);font-size:13px">${ru?'Собираем отчёт…':'Building report…'}</div>`;
       body.innerHTML = await buildRiskReport(country, purpose);
       const pr=document.getElementById('_riskPrint');
       if(pr) pr.onclick=()=>window.print();
@@ -1611,15 +1611,15 @@ async function buildRiskReport(country, purpose){
         const s=SEV[o.sev]; const sum=(LANG==='ru'&&o.blurb_ru)?o.blurb_ru:(o.blurb||o.summary||'');
         return `<div style="padding:10px 0;border-bottom:1px solid #F2F0E8">
           <div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${disRu(diseaseName(o))}</b><span style="font-size:11px;font-weight:700;color:${s.color}">${s.label}</span></div>
-          ${sum?`<div style="font-size:12px;color:#3B3A36;line-height:1.5;margin-top:3px">${sum}</div>`:''}
+          ${sum?`<div style="font-size:12px;color:var(--ink-2);line-height:1.5;margin-top:3px">${sum}</div>`:''}
         </div>`;}).join('')
-    : `<div style="font-size:12.5px;color:#807E76;padding:8px 0">${ru?'Активных вспышек по официальным источникам нет.':'No active outbreaks per official sources.'}</div>`;
+    : `<div style="font-size:12.5px;color:var(--muted);padding:8px 0">${ru?'Активных вспышек по официальным источникам нет.':'No active outbreaks per official sources.'}</div>`;
   const guidance = _purposeGuidance(purpose, country, obs)
-    .map(g=>`<li style="font-size:12.5px;color:#3B3A36;line-height:1.55;margin:5px 0">${g}</li>`).join('');
+    .map(g=>`<li style="font-size:12.5px;color:var(--ink-2);line-height:1.55;margin:5px 0">${g}</li>`).join('');
   const vaxHtml = _vaccineList(obs).map(v=>
     `<div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #F2F0E8">
        <span style="color:#19A463;display:flex;flex-shrink:0"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-       <span style="font-size:13px;color:#0F0E0C;font-weight:600">${ru?v.ru:v.en}</span>
+       <span style="font-size:13px;color:var(--ink);font-weight:600">${ru?v.ru:v.en}</span>
      </div>`).join('');
   const airTxt = air==null ? (ru?'нет данных':'no data')
     : air<=50?(ru?`хорошее (${air})`:`good (${air})`)
@@ -1632,10 +1632,10 @@ async function buildRiskReport(country, purpose){
   const _cc   = findCountry ? findCountry(country) : null;
   const iso2  = _cc?.iso2;
   const em    = emergencyFor(iso2);
-  const callBtn = (label, num, svg) => `<a href="tel:${num}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:#FAFAF8;border:1px solid #ECEAE2;border-radius:12px;text-decoration:none">
+  const callBtn = (label, num, svg) => `<a href="tel:${num}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;text-decoration:none">
       <span style="color:#C92A2A;display:flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span>
-      <span style="font-size:18px;font-weight:800;color:#0F0E0C;letter-spacing:-.02em">${num}</span>
-      <span style="font-size:10px;color:#807E76">${label}</span></a>`;
+      <span style="font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.02em">${num}</span>
+      <span style="font-size:10px;color:var(--muted)">${label}</span></a>`;
   const emHtml = em.g
     ? `<a href="tel:${em.g}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:#C92A2A;border-radius:14px;text-decoration:none">
          <span style="color:#fff;display:flex"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.74a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/></svg></span>
@@ -1657,9 +1657,9 @@ async function buildRiskReport(country, purpose){
     { t: ru?'Найти своё посольство':'Find your embassy',
       u: `https://www.google.com/search?q=${encodeURIComponent('embassy in '+country)}` },
   ];
-  const linksHtml = links.map(l=>`<a href="${l.u}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;background:#FAFAF8;border:1px solid #ECEAE2;border-radius:11px;text-decoration:none;margin-bottom:6px">
-      <span style="font-size:12.5px;font-weight:600;color:#0F0E0C">${l.t}</span>
-      <span style="color:#807E76;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>`).join('');
+  const linksHtml = links.map(l=>`<a href="${l.u}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;background:var(--bg-card);border:1px solid var(--line);border-radius:11px;text-decoration:none;margin-bottom:6px">
+      <span style="font-size:12.5px;font-weight:600;color:var(--ink)">${l.t}</span>
+      <span style="color:var(--muted);display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>`).join('');
 
   const chip = (label, val, color) => `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}14;color:${color};font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px">${label}: ${val}</span>`;
 
@@ -1675,7 +1675,7 @@ async function buildRiskReport(country, purpose){
         </span>
         <div>
           <div style="font-size:18px;font-weight:900;color:${v.color};letter-spacing:-.02em">${v.label}</div>
-          <div style="font-size:12px;color:#3B3A36;margin-top:1px">${ru?pObj.ru:pObj.en} · ${cn} · ${new Date().toLocaleDateString(LANG)}</div>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:1px">${ru?pObj.ru:pObj.en} · ${cn} · ${new Date().toLocaleDateString(LANG)}</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:14px">
@@ -1687,15 +1687,15 @@ async function buildRiskReport(country, purpose){
     </div>
 
     ${_sec(ru?'Индекс риска':'Risk index','<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>')}
-    <div style="background:#fff;border:1px solid #ECEAE2;border-radius:16px;padding:16px 16px 18px">
+    <div style="background:var(--bg-card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 18px">
       ${_riskGauge(rs.score, rs.band.c, ru?rs.band.ru:rs.band.en)}
-      <div style="text-align:center;font-size:11.5px;color:#807E76;margin:2px 0 12px">${ru?'Композитный индекс 0–100 — сводная оценка по всем сигналам':'Composite index 0–100 — overall score from all signals'}</div>
+      <div style="text-align:center;font-size:11.5px;color:var(--muted);margin:2px 0 12px">${ru?'Композитный индекс 0–100 — сводная оценка по всем сигналам':'Composite index 0–100 — overall score from all signals'}</div>
 
       <!-- Gradation scale -->
       <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;margin-bottom:6px">
         <span style="flex:25;background:#19A463"></span><span style="flex:25;background:#E4B514"></span><span style="flex:25;background:#E8590C"></span><span style="flex:25;background:#C92A2A"></span>
       </div>
-      <div style="display:flex;font-size:10px;color:#807E76;margin-bottom:16px">
+      <div style="display:flex;font-size:10px;color:var(--muted);margin-bottom:16px">
         <span style="flex:25">${ru?'0–24 Низкий':'0–24 Low'}</span>
         <span style="flex:25">${ru?'25–49 Умер.':'25–49 Mod.'}</span>
         <span style="flex:25">${ru?'50–74 Высокий':'50–74 High'}</span>
@@ -1706,21 +1706,21 @@ async function buildRiskReport(country, purpose){
         const pct = Math.max(0, Math.min(100, (p.v/p.max)*100));
         return `<div style="margin:9px 0">
           <div style="display:flex;align-items:center;gap:10px">
-            <span style="width:118px;font-size:12px;font-weight:600;color:#0F0E0C;flex-shrink:0">${p.l}${p.note?` <span style="color:#807E76;font-weight:400">· ${p.note}</span>`:''}</span>
-            <span style="flex:1;height:7px;background:#F2F0E8;border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
+            <span style="width:118px;font-size:12px;font-weight:600;color:var(--ink);flex-shrink:0">${p.l}${p.note?` <span style="color:var(--muted);font-weight:400">· ${p.note}</span>`:''}</span>
+            <span style="flex:1;height:7px;background:var(--line-2);border-radius:99px;overflow:hidden"><span style="display:block;height:100%;width:${pct.toFixed(0)}%;background:${p.c};border-radius:99px"></span></span>
             <span style="width:42px;text-align:right;font-size:12.5px;font-weight:800;color:${p.c};font-variant-numeric:tabular-nums">${Math.round(pct)}%</span>
           </div>
-          <div style="font-size:10.5px;color:#807E76;margin:3px 0 0 0;line-height:1.4">${p.desc||''}</div>
+          <div style="font-size:10.5px;color:var(--muted);margin:3px 0 0 0;line-height:1.4">${p.desc||''}</div>
         </div>`;
       }).join('')}
-      <div style="font-size:10px;color:#B6B3AA;margin-top:14px;line-height:1.5;border-top:1px dashed #ECEAE2;padding-top:10px">
+      <div style="font-size:10px;color:var(--muted-2);margin-top:14px;line-height:1.5;border-top:1px dashed var(--line);padding-top:10px">
         ${ru?'Чем выше индекс — тем больше совокупный риск. Покрытие источников по ряду стран ограничено.':'Higher index = higher overall risk. Source coverage is limited for some countries.'}
       </div>
     </div>
 
     ${_sec(ru?'Экстренные службы':'Emergency services','<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.74a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/>')}
     ${emHtml}
-    <div style="font-size:10.5px;color:#B6B3AA;margin-top:7px">${ru?'Не дозвонились — наберите 112 (международный, работает в большинстве стран).':'No answer — dial 112 (international, works in most countries).'}</div>
+    <div style="font-size:10.5px;color:var(--muted-2);margin-top:7px">${ru?'Не дозвонились — наберите 112 (международный, работает в большинстве стран).':'No answer — dial 112 (international, works in most countries).'}</div>
 
     ${_sec(ru?'Активные угрозы':'Active threats','<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>')}
     ${threats}
@@ -1729,19 +1729,19 @@ async function buildRiskReport(country, purpose){
     <ul style="margin:0;padding-left:18px">${guidance}</ul>
 
     ${_sec(ru?'Рекомендуемые прививки':'Recommended vaccines','<path d="m18 2 4 4-8 8-4-4z"/><path d="m9 7-5 5a3 3 0 0 0 4 4l5-5"/><path d="M3 21l3-3"/>')}
-    <div style="background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:6px 14px 12px">
+    <div style="background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:6px 14px 12px">
       ${vaxHtml}
-      <div style="font-size:10.5px;color:#B6B3AA;margin-top:10px;line-height:1.5">${ru?'Список ориентировочный (по активным болезням + базовый набор для поездок). Точную схему уточните у врача-инфекциониста.':'Indicative list (active diseases + travel baseline). Confirm the exact schedule with a travel-medicine doctor.'}</div>
+      <div style="font-size:10.5px;color:var(--muted-2);margin-top:10px;line-height:1.5">${ru?'Список ориентировочный (по активным болезням + базовый набор для поездок). Точную схему уточните у врача-инфекциониста.':'Indicative list (active diseases + travel baseline). Confirm the exact schedule with a travel-medicine doctor.'}</div>
     </div>
 
     ${_sec(ru?'Полезные ссылки':'Useful links','<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>')}
     ${linksHtml}
 
-    <div style="font-size:10px;color:#B6B3AA;margin-top:18px;line-height:1.5">
+    <div style="font-size:10px;color:var(--muted-2);margin-top:18px;line-height:1.5">
       ${ru?'Отчёт сформирован по данным WHO/CDC/ECDC/GDACS/Open-Meteo. Не является медицинской консультацией. Источники могут быть неполными по ряду стран. Номера служб уточняйте на месте.':'Generated from WHO/CDC/ECDC/GDACS/Open-Meteo data. Not medical advice. Source coverage is limited for some countries; verify emergency numbers locally.'}
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button id="_riskPrint" style="flex:1;height:46px;border:0;border-radius:13px;background:#0F0E0C;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer">${ru?'Скачать / Печать (PDF)':'Download / Print (PDF)'}</button>
+      <button id="_riskPrint" style="flex:1;height:46px;border:0;border-radius:13px;background:var(--ink);color:var(--bg-card);font:inherit;font-size:14px;font-weight:800;cursor:pointer">${ru?'Скачать / Печать (PDF)':'Download / Print (PDF)'}</button>
     </div>
   </div>`;
 }
@@ -1783,7 +1783,7 @@ function toggleAuthPopover() {
   if (!pop) {
     pop = document.createElement('div');
     pop.id = '_authPop';
-    pop.style.cssText = 'position:absolute;top:52px;right:0;background:#fff;border:1px solid #ECEAE2;border-radius:12px;padding:16px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:1000;font-size:13px;';
+    pop.style.cssText = 'position:absolute;top:52px;right:0;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:16px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:1000;font-size:13px;';
     document.querySelector('.top-actions').style.position = 'relative';
     document.querySelector('.top-actions').appendChild(pop);
   }
@@ -1793,19 +1793,19 @@ function toggleAuthPopover() {
     pop.innerHTML = `
       <div style="font-weight:700;margin-bottom:4px">${s.email}</div>
       <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? '✦ Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
-      <a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:#0F0E0C;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px">${LANG==='ru'?'Мой профиль':'My profile'}</a>
+      <a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:var(--ink);color:var(--bg-card);border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px">${LANG==='ru'?'Мой профиль':'My profile'}</a>
       ${isPro ? '' : `<a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:8px">${LANG==='ru'?'✦ Перейти на Pro':'✦ Upgrade to Pro'}</a>`}
-      <button onclick="localStorage.removeItem('vigilo_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid #ECEAE2;border-radius:8px;background:#fff;cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
+      <button onclick="localStorage.removeItem('vigilo_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg-card);cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
   } else {
     const hint = LANG === 'ru' ? 'Введи email — пришлём ссылку для входа.' : 'Enter your email — we\'ll send a login link.';
     const placeholder = LANG === 'ru' ? 'твой@email.com' : 'your@email.com';
     const btnTxt = LANG === 'ru' ? 'Отправить ссылку' : 'Send login link';
     const sentTxt = LANG === 'ru' ? 'Проверь почту ✓' : 'Check your email ✓';
     pop.innerHTML = `
-      <p style="margin:0 0 10px;color:#3B3A36">${hint}</p>
-      <input id="_authEmail" type="email" placeholder="${placeholder}" style="width:100%;padding:8px 10px;border:1px solid #ECEAE2;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:8px">
-      <button id="_authSend" onclick="sendMagicLink()" style="width:100%;padding:8px;background:#0F0E0C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">${btnTxt}</button>
-      <div id="_authMsg" style="margin-top:8px;font-size:12px;color:#807E76;min-height:16px"></div>`;
+      <p style="margin:0 0 10px;color:var(--ink-2)">${hint}</p>
+      <input id="_authEmail" type="email" placeholder="${placeholder}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:8px">
+      <button id="_authSend" onclick="sendMagicLink()" style="width:100%;padding:8px;background:var(--ink);color:var(--bg-card);border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">${btnTxt}</button>
+      <div id="_authMsg" style="margin-top:8px;font-size:12px;color:var(--muted);min-height:16px"></div>`;
     pop._sentTxt = sentTxt;
   }
   pop.style.display = 'block';
@@ -2407,7 +2407,7 @@ function renderCountryPanel(country){
     const cell = (lbl, val, suffix, hot) =>
       val == null ? '' :
       `<div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0">
-         <span style="color:#807E76">${lbl}</span>
+         <span style="color:var(--muted)">${lbl}</span>
          <b style="color:${hot?'#C92A2A':'#14110C'}">${val}${suffix||''}</b>
        </div>`;
     return `
@@ -2796,6 +2796,7 @@ const state = {
 let map = null;
 let _markerClicked = false;
 let _countryClickBound = false;
+let _mapLoadedOnce = false;   // true after first 'load' — gates layer re-add on setStyle
 
 /* ── AQI Layer (WAQI real-time air quality) ───────────────────── */
 let _aqiActive  = false;
@@ -3210,10 +3211,63 @@ const SEV_COLOR_EXPR = ['match', ['get','sev'],
   '#888'
 ];
 
+/* Theme-aware Mapbox styling. The interface theme lives on
+   <html data-theme>; the globe must follow it. setStyle() wipes all custom
+   sources/layers, so on every style load we re-apply fog and (after the
+   initial load) re-add the markers + choropleth. */
+function isDarkTheme(){
+  return document.documentElement.getAttribute('data-theme') === 'dark';
+}
+function mapStyleUrl(){
+  return isDarkTheme()
+    ? 'mapbox://styles/mapbox/dark-v11'
+    : 'mapbox://styles/mapbox/light-v11';
+}
+function applyFog(){
+  if(!map) return;
+  if(isDarkTheme()){
+    map.setFog({
+      color:           'rgb(20, 22, 27)',
+      'high-color':    'rgb(36, 40, 52)',
+      'horizon-blend': 0.08,
+      'space-color':   'rgb(11, 12, 15)',
+      'star-intensity': 0.18,
+    });
+  } else {
+    map.setFog({
+      color:           'rgb(244, 242, 238)',
+      'high-color':    'rgb(220, 220, 220)',
+      'horizon-blend': 0.06,
+      'space-color':   'rgb(244, 242, 238)',
+      'star-intensity': 0,
+    });
+  }
+}
+/* Switch the globe between light/dark. Called by toggleTheme(). */
+function setMapTheme(){
+  if(!map) return;
+  map.setStyle(mapStyleUrl());   // 'style.load' re-applies fog + layers
+}
+
+/* Topbar toggle: flip interface theme, persist the choice, follow on the globe.
+   Exposed globally (onclick="toggleTheme()"). */
+function toggleTheme(){
+  const root = document.documentElement;
+  const dark = root.getAttribute('data-theme') !== 'dark';
+  if(dark) root.setAttribute('data-theme','dark');
+  else     root.removeAttribute('data-theme');
+  try{ localStorage.setItem('vigilo-theme', dark ? 'dark' : 'light'); }catch(e){}
+  // Keep the mobile browser chrome colour in sync.
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', dark ? '#141310' : '#E8590C');
+  setMapTheme();
+}
+window.toggleTheme = toggleTheme;
+
 function initMap(){
   map = new mapboxgl.Map({
     container: 'globe',
-    style: 'mapbox://styles/mapbox/light-v11',
+    style: mapStyleUrl(),
     projection: 'globe',
     center: [22, 8],
     zoom: 1.4,
@@ -3230,17 +3284,20 @@ function initMap(){
   });
 
   map.on('style.load', () => {
-    // Light atmosphere — pale sky, no stars (matches site background)
-    map.setFog({
-      color:           'rgb(244, 242, 238)',
-      'high-color':    'rgb(220, 220, 220)',
-      'horizon-blend': 0.06,
-      'space-color':   'rgb(244, 242, 238)',
-      'star-intensity': 0,
-    });
+    // Atmosphere matches the active theme (pale in light, deep space in dark).
+    applyFog();
+    // On a style SWITCH (theme toggle) the 'load' event does not fire again,
+    // so re-add our custom sources/layers here. On the initial load these are
+    // skipped (guarded by _mapLoadedOnce) because 'load' below handles them.
+    if(_mapLoadedOnce){
+      addGLMarkers();
+      refreshCountryRiskFill();
+      if(state.cats.air) showAQILayer(true);
+    }
   });
 
   map.on('load', () => {
+    _mapLoadedOnce = true;
     addGLMarkers();
     refreshCountryRiskFill();           // country-level choropleth (if RI loaded)
     map.on('move', positionPopup);
@@ -3327,12 +3384,14 @@ function refreshCountryRiskFill(){
   // Hover highlight — soft fill bump + thin outline on the country under the
   // cursor. Filtered to the hovered ISO; mousemove updates it. Placed just
   // above the risk fill, still below markers.
+  // Hover ink follows the theme: dark ink on a light globe, light on a dark one.
+  const hoverInk = isDarkTheme() ? '#FFFFFF' : '#14110C';
   if(!map.getLayer('country-hover-fill')){
     map.addLayer({
       id: 'country-hover-fill', type: 'fill',
       source: 'country-boundaries', 'source-layer': 'country_boundaries',
       filter: ['==', ['get','iso_3166_1'], '__none__'],
-      paint: { 'fill-color': '#14110C', 'fill-opacity': 0.07 },
+      paint: { 'fill-color': hoverInk, 'fill-opacity': isDarkTheme() ? 0.12 : 0.07 },
     }, beforeId);
   }
   if(!map.getLayer('country-hover-line')){
@@ -3340,7 +3399,7 @@ function refreshCountryRiskFill(){
       id: 'country-hover-line', type: 'line',
       source: 'country-boundaries', 'source-layer': 'country_boundaries',
       filter: ['==', ['get','iso_3166_1'], '__none__'],
-      paint: { 'line-color': '#14110C', 'line-width': 1.2, 'line-opacity': 0.35 },
+      paint: { 'line-color': hoverInk, 'line-width': 1.2, 'line-opacity': isDarkTheme() ? 0.45 : 0.35 },
     }, beforeId);
   }
 
