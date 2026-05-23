@@ -133,14 +133,18 @@ jobs:
               print(f'Push error: {e}')
           PYEOF
 
-      # Trigger Netlify rebuild so signals.json is served fresh
+      # Trigger Netlify rebuild so the fresh data is served
       - name: Trigger Netlify deploy
-        if: success()
+        if: always()   # deploy even if an earlier non-critical step failed
         env:
           NETLIFY_DEPLOY_HOOK: ${{ secrets.NETLIFY_DEPLOY_HOOK }}
         run: |
           if [ -n "$NETLIFY_DEPLOY_HOOK" ]; then
-            curl -s -X POST "$NETLIFY_DEPLOY_HOOK" | python3 -c "import json,sys; d=json.load(sys.stdin); print('deploy triggered:', d.get('id','?'))"
+            # Build hooks return an EMPTY body — do NOT pipe to json.load (that
+            # crashed the step and failed the whole job even though the deploy
+            # fired fine). Just POST and report the HTTP status; never fail here.
+            code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$NETLIFY_DEPLOY_HOOK" || echo "000")
+            echo "Netlify deploy hook → HTTP $code"
           else
             echo "No deploy hook configured — skipping"
           fi
