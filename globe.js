@@ -3282,6 +3282,26 @@ function refreshCountryRiskFill(){
     },
   }, beforeId);
 
+  // Hover highlight — soft fill bump + thin outline on the country under the
+  // cursor. Filtered to the hovered ISO; mousemove updates it. Placed just
+  // above the risk fill, still below markers.
+  if(!map.getLayer('country-hover-fill')){
+    map.addLayer({
+      id: 'country-hover-fill', type: 'fill',
+      source: 'country-boundaries', 'source-layer': 'country_boundaries',
+      filter: ['==', ['get','iso_3166_1'], '__none__'],
+      paint: { 'fill-color': '#14110C', 'fill-opacity': 0.07 },
+    }, beforeId);
+  }
+  if(!map.getLayer('country-hover-line')){
+    map.addLayer({
+      id: 'country-hover-line', type: 'line',
+      source: 'country-boundaries', 'source-layer': 'country_boundaries',
+      filter: ['==', ['get','iso_3166_1'], '__none__'],
+      paint: { 'line-color': '#14110C', 'line-width': 1.2, 'line-opacity': 0.35 },
+    }, beforeId);
+  }
+
   // Click anywhere on a country polygon → open that country's panel.
   // Markers (events) take precedence: if a dot is under the cursor we let
   // its handler win. Bound once (this fn re-runs on every data refresh).
@@ -3301,8 +3321,20 @@ function refreshCountryRiskFill(){
       _markerClicked = true;                      // suppress generic deselect
       selectCountry(name);
     });
-    map.on('mouseenter', 'country-risk-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'country-risk-fill', () => { map.getCanvas().style.cursor = ''; });
+    const setHover = (iso) => {
+      const filt = ['==', ['get','iso_3166_1'], iso || '__none__'];
+      if(map.getLayer('country-hover-fill')) map.setFilter('country-hover-fill', filt);
+      if(map.getLayer('country-hover-line')) map.setFilter('country-hover-line', filt);
+    };
+    map.on('mousemove', 'country-risk-fill', (e) => {
+      map.getCanvas().style.cursor = 'pointer';
+      const f = e.features && e.features[0];
+      setHover(f && f.properties && f.properties.iso_3166_1);
+    });
+    map.on('mouseleave', 'country-risk-fill', () => {
+      map.getCanvas().style.cursor = '';
+      setHover(null);
+    });
   }
 }
 
