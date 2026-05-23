@@ -381,6 +381,7 @@ function renderSidebar(sess){
       <button class="btn-out" onclick="window._logout()">
         ${ico('logout',13)} Sign out
       </button>
+      <a href="#" onclick="window._feedback();return false;" style="display:inline-block;margin-top:10px;font-size:11.5px;color:var(--night-muted);text-decoration:none">Send feedback</a>
     </div>
   </aside>`;
 }
@@ -1134,10 +1135,10 @@ function renderAuth(){
           <svg width="32" height="32" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#E8590C"/><path d="M7.5 8 L14 20 L20.5 8" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Vigilo
         </div>
-        <h2>Sign in to your account</h2>
-        <p>Enter your email — we'll send a one-time login link. No password needed.</p>
+        <h2>Open your workspace</h2>
+        <p>Enter your email — we'll send a one-time link. No password to remember, nothing to install.</p>
         <input class="auth-input" id="authEmail" type="email" placeholder="you@email.com" autocomplete="email">
-        <button class="auth-btn" id="authBtn" onclick="window._sendLink()">Send login link</button>
+        <button class="auth-btn" id="authBtn" onclick="window._sendLink()">Email me a link →</button>
         <div class="auth-msg" id="authMsg"></div>
         <div class="auth-back"><a href="/app.html">← Back to the globe</a></div>
       </div>
@@ -1163,6 +1164,41 @@ function renderDashboard(sess){
 // ── Global handlers ────────────────────────────────────────
 window._tab = (t) => { TAB = t; renderMain(); };
 window._logout = () => { ls.rm('vigilo_jwt'); location.reload(); };
+
+window._feedback = () => {
+  const sess = session();
+  const ov = document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(13,14,18,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.onclick = e => { if(e.target===ov) ov.remove(); };
+  ov.innerHTML = `<div style="background:var(--paper,#F4F2EE);width:100%;max-width:420px;border-radius:16px;padding:24px;font-family:var(--sans);box-shadow:0 30px 80px -20px rgba(13,14,18,.5)">
+    <h2 style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px">Send feedback</h2>
+    <p style="font-size:13px;color:var(--ink600);margin:0 0 14px">Bugs, ideas, what's missing — goes straight to the team.</p>
+    <textarea id="fbText" rows="4" placeholder="What's on your mind?" style="width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:14px;resize:vertical;outline:none"></textarea>
+    <div id="fbMsg" style="font-size:12.5px;margin-top:8px;min-height:16px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+      <button id="fbCancel" style="background:none;border:none;color:var(--ink500);font:inherit;font-size:13px;cursor:pointer">Cancel</button>
+      <button id="fbSend" style="background:var(--amber);color:#fff;border:none;border-radius:10px;padding:10px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">Send</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const txt = ov.querySelector('#fbText'); txt.focus();
+  ov.querySelector('#fbCancel').onclick = () => ov.remove();
+  ov.querySelector('#fbSend').onclick = async () => {
+    const message = txt.value.trim();
+    const msg = ov.querySelector('#fbMsg');
+    if(message.length < 3){ msg.style.color='var(--red)'; msg.textContent='Add a little more.'; return; }
+    const btn = ov.querySelector('#fbSend'); btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Sending…';
+    try{
+      await fetch('/api/feedback', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message, email: sess?.email || '', page: 'cabinet' }) });
+      ov.querySelector('div').innerHTML = `<div style="text-align:center;padding:8px 0"><div style="font-size:17px;font-weight:800;color:var(--green);margin-bottom:6px">Thank you</div><div style="font-size:13.5px;color:var(--ink600)">We read every message.</div></div>`;
+      setTimeout(()=>ov.remove(), 1400);
+    }catch{
+      btn.disabled=false; btn.style.opacity='1'; btn.textContent='Send';
+      msg.style.color='var(--red)'; msg.textContent='Could not send. Try again.';
+    }
+  };
+};
 window._repType = (t) => {
   REP_TYPE = t;
   document.querySelectorAll('.rep-card').forEach(c => c.classList.toggle('selected', c.querySelector('input').value === t));
@@ -1255,16 +1291,35 @@ window._sendLink = async () => {
   const email = document.getElementById('authEmail')?.value?.trim();
   const btn = document.getElementById('authBtn');
   const msg = document.getElementById('authMsg');
-  if(!email?.includes('@')){ if(msg) msg.textContent='Enter a valid email.'; return; }
+  if(!email?.includes('@')){ if(msg){ msg.textContent='Enter a valid email.'; msg.style.color='var(--red)'; } return; }
   btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Sending…';
   try{
     await fetch('/api/magic-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,lang:'en'})});
-    if(msg){ msg.textContent='✓ Check your email for the login link.'; msg.style.color='var(--green)'; }
+    // Replace the form with a clear "check your inbox" confirmation + resend.
+    const input = document.getElementById('authEmail');
+    if(input) input.style.display='none';
     btn.style.display='none';
+    if(msg){
+      msg.style.color='var(--ink600)';
+      msg.innerHTML =
+        `<div style="font-weight:600;color:var(--ink);margin-bottom:4px">Check your email</div>`+
+        `We sent a one-time link to <b>${esc(email)}</b>. It's valid for ~15 minutes — `+
+        `if it's not in your inbox, check spam.`+
+        `<div style="margin-top:10px"><a href="#" onclick="window._resendLink('${esc(email)}');return false;" style="color:var(--amber);font-weight:600">Resend link</a>`+
+        ` · <a href="#" onclick="location.reload();return false;" style="color:var(--ink500)">Use a different email</a></div>`;
+    }
   }catch{
-    btn.disabled=false; btn.style.opacity='1'; btn.textContent='Send login link';
-    if(msg) msg.textContent='Error. Please try again.';
+    btn.disabled=false; btn.style.opacity='1'; btn.textContent='Email me a link →';
+    if(msg){ msg.textContent='Error. Please try again.'; msg.style.color='var(--red)'; }
   }
+};
+
+window._resendLink = async (email) => {
+  const msg = document.getElementById('authMsg');
+  try{
+    await fetch('/api/magic-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,lang:'en'})});
+    if(msg){ const note=document.createElement('div'); note.style.cssText='margin-top:8px;color:var(--green);font-size:12px'; note.textContent='✓ Sent again.'; msg.appendChild(note); }
+  }catch{}
 };
 
 window._invite = async () => {
@@ -1281,11 +1336,104 @@ window._invite = async () => {
   }
 };
 
+// ── First-login setup wizard ───────────────────────────────
+// 3 quick steps that configure the cabinet (countries + alerts + org type),
+// so the user never faces a blank slate. Skippable. Persists server-side.
+function renderSetupWizard(sess){
+  const ORG = [['travel','Travel operator'],['insurer','Insurer / assistance'],
+               ['ngo','NGO / nonprofit'],['consultant','Consultant / analyst'],['other','Other']];
+  let step=1, sel=[], org=null, thr='elevated', news=false, q='';
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(13,14,18,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+
+  async function finish(){
+    ls.set('vigilo_onboarding_done', true);
+    if(sel.length) ls.set('vigilo_watched', sel);
+    const jwt=localStorage.getItem('vigilo_jwt');
+    if(jwt){
+      try{ await fetch('/api/my-countries',{method:'PATCH',
+        headers:{'Content-Type':'application/json',Authorization:`Bearer ${jwt}`},
+        body:JSON.stringify({ countries:sel, org_type:org, newsletter:news,
+          alerts:{ threshold:thr, email:true, digest:'daily' } })}); }catch(e){}
+    }
+    close(); location.reload();
+  }
+  const skip=()=>{ ls.set('vigilo_onboarding_done', true); close(); };
+
+  function render(){
+    let body='';
+    if(step===1){
+      const isos=Object.keys(COUNTRY_NAMES)
+        .filter(c=>!q || COUNTRY_NAMES[c].toLowerCase().includes(q.toLowerCase()));
+      const chips=isos.map(c=>{
+        const on=sel.includes(c);
+        return `<button data-iso="${c}" class="sw-chip" style="border:1.5px solid ${on?'var(--amber)':'var(--line)'};background:${on?'rgba(232,89,12,.08)':'#fff'};color:${on?'var(--amber)':'var(--ink)'};border-radius:9px;padding:8px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer">${esc(COUNTRY_NAMES[c])}</button>`;
+      }).join('');
+      body=`
+        <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)">Step 1 of 3</div>
+        <h2 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 4px">Which countries matter to you?</h2>
+        <p style="font-size:14px;color:var(--ink600);margin-bottom:14px">Pick up to 3 — we'll put them on your watchlist right away. (More on paid plans.)</p>
+        <input id="swSearch" placeholder="Search countries…" value="${esc(q)}" style="width:100%;height:42px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:14px;margin-bottom:12px;outline:none">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow:auto">${chips}</div>
+        <div style="font-size:12px;color:var(--ink500);margin-top:10px">${sel.length}/3 selected</div>`;
+    } else if(step===2){
+      const cards=ORG.map(([v,l])=>`<button data-org="${v}" style="text-align:left;border:1.5px solid ${org===v?'var(--amber)':'var(--line)'};background:${org===v?'rgba(232,89,12,.06)':'#fff'};border-radius:11px;padding:14px 16px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;width:100%">${esc(l)}</button>`).join('');
+      body=`
+        <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)">Step 2 of 3</div>
+        <h2 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 4px">What best describes you?</h2>
+        <p style="font-size:14px;color:var(--ink600);margin-bottom:14px">So we tune defaults to your use case.</p>
+        <div style="display:flex;flex-direction:column;gap:9px">${cards}</div>`;
+    } else {
+      const opt=(v,t,d)=>`<button data-thr="${v}" style="text-align:left;border:1.5px solid ${thr===v?'var(--amber)':'var(--line)'};background:${thr===v?'rgba(232,89,12,.06)':'#fff'};border-radius:11px;padding:13px 16px;font:inherit;cursor:pointer;width:100%"><div style="font-size:14px;font-weight:700;color:var(--ink)">${t}</div><div style="font-size:12.5px;color:var(--ink600)">${d}</div></button>`;
+      body=`
+        <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)">Step 3 of 3</div>
+        <h2 style="font-size:23px;font-weight:800;letter-spacing:-.02em;margin:8px 0 4px">When should we alert you?</h2>
+        <p style="font-size:14px;color:var(--ink600);margin-bottom:14px">You can fine-tune this anytime in Alerts.</p>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          ${opt('critical','Only critical','The highest-severity events only — minimal noise.')}
+          ${opt('elevated','Elevated and up','Recommended — meaningful risk without the noise.')}
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;margin-top:16px;cursor:pointer;font-size:13.5px;color:var(--ink700)">
+          <input type="checkbox" id="swNews" ${news?'checked':''} style="width:18px;height:18px;accent-color:var(--amber)">
+          Email me the weekly Global Risk Brief
+        </label>`;
+    }
+    const nextLbl = step<3 ? 'Next →' : 'Finish — open my workspace';
+    ov.innerHTML=`<div style="background:var(--paper,#F4F2EE);width:100%;max-width:460px;border-radius:18px;padding:28px 28px 22px;box-shadow:0 30px 80px -20px rgba(13,14,18,.5);font-family:var(--sans)">
+      ${body}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;gap:12px">
+        <button id="swSkip" style="background:none;border:none;color:var(--ink500);font:inherit;font-size:13px;cursor:pointer">Skip for now</button>
+        <button id="swNext" style="background:var(--amber);color:#fff;border:none;border-radius:10px;padding:11px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">${nextLbl}</button>
+      </div>
+    </div>`;
+    ov.querySelector('#swSkip').onclick=skip;
+    ov.querySelector('#swNext').onclick=()=>{ if(step<3){ step++; render(); } else finish(); };
+    if(step===1){
+      const s=ov.querySelector('#swSearch');
+      s.oninput=()=>{ q=s.value; const p=s.selectionStart; render(); const ns=ov.querySelector('#swSearch'); if(ns){ns.focus();try{ns.setSelectionRange(p,p);}catch(e){}} };
+      ov.querySelectorAll('.sw-chip').forEach(b=>b.onclick=()=>{ const iso=b.dataset.iso;
+        if(sel.includes(iso)) sel=sel.filter(x=>x!==iso); else if(sel.length<3) sel.push(iso); render(); });
+    } else if(step===2){
+      ov.querySelectorAll('[data-org]').forEach(b=>b.onclick=()=>{ org=b.dataset.org; render(); });
+    } else {
+      ov.querySelectorAll('[data-thr]').forEach(b=>b.onclick=()=>{ thr=b.dataset.thr; render(); });
+      ov.querySelector('#swNews').onchange=e=>{ news=e.target.checked; };
+    }
+  }
+  render();
+}
+
 // ── Boot ───────────────────────────────────────────────────
 function boot(){
   const sess = session();
-  if(!sess) renderAuth();
-  else renderDashboard(sess);
+  if(!sess){ renderAuth(); return; }
+  renderDashboard(sess);
+  // First-login only: no completed setup AND no countries yet (don't nag existing users).
+  if(!ls.get('vigilo_onboarding_done', false) && (ls.get('vigilo_watched', []).length === 0)){
+    renderSetupWizard(sess);
+  }
 }
 boot();
 
@@ -1295,6 +1443,7 @@ boot();
 <!-- ─────────────── ONBOARDING TOUR ─────────────── -->
 <script>
 (function(){
+  return; // Replaced by the first-login setup wizard (renderSetupWizard).
   var DONE_KEY = 'vigilo_onboarding_done';
   if(localStorage.getItem(DONE_KEY)) return;
 

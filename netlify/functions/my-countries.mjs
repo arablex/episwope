@@ -104,11 +104,14 @@ export default async (req) => {
       return new Response(JSON.stringify({ error: 'invalid_json' }), { status: 400, headers: CORS });
     }
 
-    // Both fields optional — the cabinet may PATCH just countries OR just alerts.
+    // All fields optional — the cabinet may PATCH any subset (countries, alerts,
+    // or the onboarding fields org_type / newsletter).
     const hasCountries = Array.isArray(body.countries);
     const hasAlerts    = body.alerts && typeof body.alerts === 'object';
-    if (!hasCountries && !hasAlerts) {
-      return new Response(JSON.stringify({ error: 'countries[] or alerts{} required' }), { status: 400, headers: CORS });
+    const hasOrgType   = typeof body.org_type === 'string';
+    const hasNewsletter= typeof body.newsletter === 'boolean';
+    if (!hasCountries && !hasAlerts && !hasOrgType && !hasNewsletter) {
+      return new Response(JSON.stringify({ error: 'nothing to update' }), { status: 400, headers: CORS });
     }
 
     const existing = await getSubscriber(hash) ?? {
@@ -128,6 +131,13 @@ export default async (req) => {
     }
     if (hasAlerts) {
       next.alerts = sanitizeAlerts(body.alerts);
+    }
+    if (hasOrgType) {
+      const ORG_TYPES = ['travel','insurer','ngo','consultant','other'];
+      next.org_type = ORG_TYPES.includes(body.org_type) ? body.org_type : 'other';
+    }
+    if (hasNewsletter) {
+      next.newsletter = body.newsletter;            // weekly Global Risk Brief opt-in
     }
 
     await putSubscriber(hash, next);
