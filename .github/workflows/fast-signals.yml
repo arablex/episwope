@@ -75,7 +75,16 @@ jobs:
             echo "No signal changes — skipping commit"
           else
             git commit -m "chore: update early warning signals"
-            git push
+            # Remote may have advanced during the ~10-min run (a human push or
+            # another scheduled run). A bare push then fails and the fresh data
+            # is lost. Rebase onto the latest main and retry. Bot only touches
+            # data JSONs, humans touch code, so rebase replays cleanly.
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main \
+                && git push && { echo "pushed (attempt $attempt)"; break; }
+              echo "push attempt $attempt failed — refetching and retrying"
+              sleep 5
+            done
           fi
 
       # Push urgent/alert signals to all subscribed devices via Netlify function
