@@ -1511,6 +1511,18 @@
   /* List: sidebar stays, stage hidden, events fills center, panel stays */
   .app.v-list .stage{ display:none; }
   .app.v-list .panel{ display:none; }
+  /* In list view, selecting an event opens the detail as a right-side drawer
+     over the list — instead of jumping to the globe. */
+  .app.v-list.detail-open .panel{
+    display:flex !important; position:fixed; top:64px; right:16px; bottom:16px;
+    width:min(440px,94vw); z-index:240; border-radius:16px;
+    box-shadow:0 30px 80px -28px rgba(20,18,14,0.5);
+  }
+  .list-detail-back{ display:none; }
+  .app.v-list.detail-open .list-detail-back{
+    display:block; position:fixed; inset:0; z-index:230;
+    background:rgba(20,18,14,0.28); backdrop-filter:blur(1px);
+  }
   .app.v-list .events-bar{ grid-row:2 / 4; grid-column:2 / -1; overflow-y:auto; }
   .app.v-list .events-row{ flex-wrap:wrap; align-content:flex-start; overflow-y:visible; }
   .app.v-list .ev-card{ flex:0 0 calc(33.33% - 8px); }
@@ -2595,6 +2607,9 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
   </main>
 
   <div class="hmap-tooltip" id="hmapTooltip"></div>
+
+  <!-- Backdrop for the list-view detail drawer (click to close) -->
+  <div class="list-detail-back" id="listDetailBack"></div>
 
   <!-- ============ RIGHT PANEL ============ -->
   <aside class="panel" id="panel">

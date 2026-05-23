@@ -3261,6 +3261,17 @@ function initMap(){
     e.stopPropagation();
     deselect();
   });
+
+  // List-view detail drawer: close on backdrop click, panel ×, or Esc.
+  // Delegated on #panel because panel-scroll (which contains the × button)
+  // is re-rendered, so a direct handler would be lost.
+  document.getElementById('listDetailBack')?.addEventListener('click', deselect);
+  document.getElementById('panel')?.addEventListener('click', (e) => {
+    if(e.target.closest('.panel-eyebrow .x')){ e.stopPropagation(); deselect(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && typeof APP !== 'undefined' && APP.classList.contains('detail-open')) deselect();
+  });
 }
 
 /* Country-level risk choropleth — fixes the "huge country, one dot" problem
@@ -3603,8 +3614,10 @@ function deselect(){
   state.selectedId = null;
   state.selectedCountry = null;
   if(popup) popup.classList.remove('is-on');
+  if(typeof APP !== 'undefined' && APP) APP.classList.remove('detail-open');
   applyGLFilters();
   renderCatLists();
+  renderList();
   document.getElementById('crumbsBar')?.style.setProperty('display','none');
 }
 
@@ -3620,6 +3633,9 @@ function selectOutbreak(id){
   renderCatLists();
   positionPopup();
   document.getElementById('crumbsBar')?.style.setProperty('display','flex');
+  // In list view, show the detail as a drawer over the list instead of
+  // forcing a jump to the globe.
+  if(currentView === 'list' && typeof APP !== 'undefined' && APP) APP.classList.add('detail-open');
   if(window.innerWidth <= 768 && typeof window.mobOpenDetail === 'function') window.mobOpenDetail(false);
 }
 
