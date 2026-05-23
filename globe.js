@@ -4202,18 +4202,41 @@ function renderPopup(){
   document.getElementById('popId').textContent = `${o.code} · WHO/${o.region}`;
   document.getElementById('popName').textContent = o._risk ? shortTitle(o) : diseaseName(o);
   document.getElementById('popLoc').textContent  = o._risk ? fullHeadline(o) : o.place;
+
+  // Risk/news events have no case/death counts — showing "Confirmed 0 /
+  // Deaths 0" is misleading. Relabel the two metric cells to the signals we
+  // actually have (Confidence · Detected) and hide the epidemic survey strip.
+  const _setText = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const survey = document.getElementById('popSurvey');
+  if(o._risk){
+    const conf = Math.round((o._riskConf != null ? o._riskConf : 0.5) * 100);
+    _setText('popConfK', LANG==='ru' ? 'Доверие' : 'Confidence');
+    _setText('popConf', conf + '%');
+    _setText('popDeathK', LANG==='ru' ? 'Обнаружено' : 'Detected');
+    _setText('popDeath', _eventWhen(o) || '—');
+    document.getElementById('popDeath').style.color = '';
+    if(survey) survey.style.display = 'none';
+  } else {
+    _setText('popConfK', LANG==='ru' ? 'Подтверждено' : 'Confirmed');
+    _setText('popDeathK', LANG==='ru' ? 'Смертей' : 'Deaths');
+    if(survey) survey.style.display = '';
+  }
   document.getElementById('popPin').style.background = sev.color;
   document.getElementById('popSev').textContent  = sev.label;
   const tag = document.querySelector('.popup-tags .tag .dot');
   tag.className = 'dot fill-' + sevClass(o.sev);
-  document.getElementById('popConf').textContent = fmtNum(o.cases);
-  const pd = document.getElementById('popDeath');
-  pd.textContent = fmtNum(o.deaths);
-  pd.style.color = sev.color;
-  const surv = document.getElementById('popSurvey');
-  surv.style.background = grad;
-  document.getElementById('popDelta').textContent = `+${fmtNum(o.new24)} ${T('newCases')}`;
-  document.getElementById('popSub').textContent = T('last24hSurv', {region: regionName(o.region)});
+  // Epidemic metrics only for health events — risk events were relabelled
+  // (Confidence · Detected) above and their survey strip hidden.
+  if(!o._risk){
+    document.getElementById('popConf').textContent = fmtNum(o.cases);
+    const pd = document.getElementById('popDeath');
+    pd.textContent = fmtNum(o.deaths);
+    pd.style.color = sev.color;
+    const surv = document.getElementById('popSurvey');
+    surv.style.background = grad;
+    document.getElementById('popDelta').textContent = `+${fmtNum(o.new24)} ${T('newCases')}`;
+    document.getElementById('popSub').textContent = T('last24hSurv', {region: regionName(o.region)});
+  }
   const goCountry = document.getElementById('popGoCountry');
   if(goCountry && o.country){
     goCountry.textContent = LANG==='ru' ? `Профиль: ${countryName(o.country)} →` : `${countryName(o.country)} country profile →`;
