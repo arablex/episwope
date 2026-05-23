@@ -151,6 +151,39 @@ TAXONOMY = {
     },
 }
 
+# Crisis-zone targeted queries — generic global queries ('armed clash...')
+# don't reliably surface every active hotspot (the global mix is dominated by
+# the biggest stories), so a war like Sudan scored conflict=0. These name the
+# country/landmarks explicitly so it's always queried; the existing classifier
+# rules + landmark detect_country still gate and geolocate the results.
+# Keyed by category. Refresh the list as conflicts evolve.
+CRISIS_WATCH = {
+    "conflict": [
+        "Sudan RSF OR El Fasher OR Khartoum fighting OR shelling OR airstrike",
+        "Gaza OR Rafah airstrike OR shelling OR offensive",
+        "Myanmar military OR Rakhine clashes OR junta offensive",
+        "DR Congo OR Goma OR M23 clashes OR offensive",
+        "Yemen Houthi OR Marib OR Hodeidah strike OR clashes",
+        "Sahel Mali OR Burkina Faso militant attack OR jihadist",
+        "Somalia al-Shabaab attack OR Mogadishu blast",
+        "Syria Idlib OR Aleppo airstrike OR shelling",
+    ],
+    "civil_unrest": [
+        "Sudan protest OR unrest OR civilians killed Darfur",
+        "Haiti gang violence OR Port-au-Prince unrest",
+        "Sahel coup OR junta protest unrest",
+        "Venezuela protest OR crackdown OR unrest",
+    ],
+    "infrastructure": [
+        "Sudan OR Yemen OR Gaza power OR water OR telecom outage collapse",
+        "Cuba blackout OR grid collapse nationwide",
+    ],
+    "border": [
+        "Sudan OR Chad OR South Sudan border crossing closed refugees",
+        "Gaza Rafah crossing closed OR border shut",
+    ],
+}
+
 # Source-class inference from domain / feed origin → trust tier
 TIER1 = ("who.int", "reliefweb.int", "europa.eu", "un.org", "icrc.org",
          "acleddata.com", "gov", "reuters.com", "apnews.com")
@@ -302,6 +335,13 @@ def collect_events() -> list[dict]:
             arts += _fetch_gnews(q)
         for q in cfg["gdelt"]:                      # best-effort enrichment
             arts += _fetch_gdelt(q)
+        # Targeted crisis-zone queries: generic global queries don't reliably
+        # surface every active hotspot (Sudan war scored conflict=0 because
+        # 'armed clash...' returned a Ukraine/Gaza-heavy global mix). For
+        # conflict & civil_unrest we also query each known crisis zone BY NAME
+        # so it's always checked — landmark detection then geolocates it.
+        for q in CRISIS_WATCH.get(cat, []):
+            arts += _fetch_gnews(q)
         log(f"[risk]   {cat}: {len(arts)} raw articles")
 
         for a in arts:
