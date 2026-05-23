@@ -21,8 +21,20 @@ import { renderAlertEmail }               from './_lib/templates.mjs';
 
 const CORS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
 
-/** Severities that trigger email notifications */
-const ALERT_SEVERITIES = new Set(['critical', 'alert']);
+/** Unified severity rank — handles both the health vocabulary
+ *  (monitoring/low/warning/alert/critical) and the risk bands
+ *  (minimal/low/moderate/elevated/severe/critical). */
+const SEV_RANK = {
+  minimal: 0, monitoring: 0, low: 1, moderate: 2, warning: 2,
+  elevated: 3, alert: 3, severe: 4, critical: 5, catastrophic: 6,
+};
+const DEFAULT_ALERTS = {
+  threshold: 'elevated', email: true, digest: 'daily',
+  domains: { health:true, conflict:true, civil_unrest:true, climate:true,
+             infrastructure:true, transport:true, border:true },
+  recipients: [],
+};
+function rank(s){ return SEV_RANK[String(s||'').toLowerCase()] ?? 0; }
 
 export default async (req) => {
   if (req.method !== 'POST') {
@@ -44,13 +56,19 @@ export default async (req) => {
 
   const events = Array.isArray(body.events) ? body.events : [];
 
-  /* Build country index keyed by lowercase country name */
+  /* Index ALL events by country (also by ISO) — per-subscriber threshold &
+     domain filters are applied below, not here. */
   const byCountry = new Map();
+  const add = (key, ev) => {
+    if (!key) return;
+    const k = String(key).toLowerCase();
+    if (!byCountry.has(k)) byCountry.set(k, []);
+    byCountry.get(k).push(ev);
+  };
   for (const ev of events) {
-    if (!ev.country || !ALERT_SEVERITIES.has(ev.severity)) continue;
-    const key = ev.country.toLowerCase();
-    if (!byCountry.has(key)) byCountry.set(key, []);
-    byCountry.get(key).push(ev);
+    if (!ev.country) continue;
+    add(ev.country, ev);
+    if (ev.geo?.country) add(ev.geo.country, ev);   // ISO key too
   }
 
   /* ── process subscribers ────────────────────────────────────────────── */
@@ -60,13 +78,23 @@ export default async (req) => {
   for (const sub of subscribers) {
     if (!sub.countries || sub.countries.length === 0) continue;
 
-    const alerted = sub.alerted_events ?? {};   // { [event_id]: true }
+    const cfg = { ...DEFAULT_ALERTS, ...(sub.alerts || {}) };
+    cfg.domains = { ...DEFAULT_ALERTS.domains, ...((sub.alerts || {}).domains || {}) };
+    if (cfg.email === false) continue;           // email channel off
+    if (cfg.digest === 'off') continue;          // per-event sending disabled (digest only)
+    const minRank = rank(cfg.threshold);
+
+    const alerted = sub.alerted_events ?? {};     // { [event_id]: true }
     const newEvs  = [];
 
     for (const country of sub.countries) {
-      const hits = byCountry.get(country.toLowerCase()) || [];
+      const hits = byCountry.get(String(country).toLowerCase()) || [];
       for (const ev of hits) {
-        if (!alerted[ev.id]) newEvs.push(ev);
+        if (alerted[ev.id]) continue;
+        if (rank(ev.severity) < minRank) continue;            // below their threshold
+        const cat = ev.category || 'health';
+        if (cfg.domains[cat] === false) continue;             // domain muted
+        newEvs.push(ev);
       }
     }
 
@@ -80,7 +108,10 @@ export default async (req) => {
       const listUnsubscribeUrl = sub.unsubToken
         ? `${origin}/api/unsubscribe?t=${sub.unsubToken}`
         : undefined;
-      await sendEmail({ to: sub.email, subject, html, text, listUnsubscribeUrl });
+      // Account holder + any extra recipients they configured (security@, ops@…)
+      const to = [sub.email, ...(Array.isArray(cfg.recipients) ? cfg.recipients : [])]
+        .filter((v, i, a) => v && a.indexOf(v) === i);
+      await sendEmail({ to, subject, html, text, listUnsubscribeUrl });
       notified++;
 
       /* Mark events as alerted so we don't re-notify */
