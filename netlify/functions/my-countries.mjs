@@ -17,6 +17,33 @@ import { isPaidActive }                 from './_lib/paid.mjs';
 const FREE_LIMIT = 3;
 const PRO_LIMIT  = 50;
 
+const SEV_LEVELS = ['low', 'moderate', 'elevated', 'severe', 'critical'];
+const DOMAIN_KEYS = ['health', 'conflict', 'civil_unrest', 'climate',
+                     'infrastructure', 'transport', 'border'];
+const DIGEST_OPTS = ['daily', 'weekly', 'off'];
+
+/** Sanitise the per-user alert config coming from the cabinet. */
+function sanitizeAlerts(a) {
+  if (!a || typeof a !== 'object') return null;
+  const domains = {};
+  for (const k of DOMAIN_KEYS) domains[k] = a.domains?.[k] !== false; // default on
+  // recipients: comma/space-separated emails, validated, capped
+  const recipients = String(a.recipients || '')
+    .split(/[,\s;]+/)
+    .map(s => s.trim().toLowerCase())
+    .filter(s => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s))
+    .slice(0, 10);
+  return {
+    threshold:  SEV_LEVELS.includes(a.threshold) ? a.threshold : 'elevated',
+    email:      a.email !== false,
+    webhook:    a.webhook === true,
+    digest:     DIGEST_OPTS.includes(a.digest) ? a.digest : 'daily',
+    quiet:      a.quiet === true,
+    domains,
+    recipients,
+  };
+}
+
 const CORS = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -63,6 +90,7 @@ export default async (req) => {
     return new Response(JSON.stringify({
       ok:       true,
       countries: rec?.countries ?? [],
+      alerts:   rec?.alerts ?? null,
       plan:     payload.plan ?? 'free',
       isPro,
       limit,
@@ -76,16 +104,12 @@ export default async (req) => {
       return new Response(JSON.stringify({ error: 'invalid_json' }), { status: 400, headers: CORS });
     }
 
-    if (!Array.isArray(body.countries)) {
-      return new Response(JSON.stringify({ error: 'countries must be an array' }), { status: 400, headers: CORS });
+    // Both fields optional — the cabinet may PATCH just countries OR just alerts.
+    const hasCountries = Array.isArray(body.countries);
+    const hasAlerts    = body.alerts && typeof body.alerts === 'object';
+    if (!hasCountries && !hasAlerts) {
+      return new Response(JSON.stringify({ error: 'countries[] or alerts{} required' }), { status: 400, headers: CORS });
     }
-
-    // Sanitise: trim, dedupe, cap
-    const countries = [...new Set(
-      body.countries
-        .map(c => String(c).trim())
-        .filter(c => c.length > 0 && c.length < 120),
-    )].slice(0, limit);
 
     const existing = await getSubscriber(hash) ?? {
       email:     email.toLowerCase(),
@@ -94,16 +118,25 @@ export default async (req) => {
       createdAt: new Date().toISOString(),
     };
 
-    await putSubscriber(hash, {
-      ...existing,
-      countries,
-      updatedAt: new Date().toISOString(),
-    });
+    const next = { ...existing, updatedAt: new Date().toISOString() };
 
-    return new Response(JSON.stringify({ ok: true, countries, plan: payload.plan ?? 'free', isPro, limit }), {
-      status: 200,
-      headers: CORS,
-    });
+    if (hasCountries) {
+      next.countries = [...new Set(
+        body.countries.map(c => String(c).trim())
+          .filter(c => c.length > 0 && c.length < 120),
+      )].slice(0, limit);
+    }
+    if (hasAlerts) {
+      next.alerts = sanitizeAlerts(body.alerts);
+    }
+
+    await putSubscriber(hash, next);
+
+    return new Response(JSON.stringify({
+      ok: true, countries: next.countries ?? existing.countries ?? [],
+      alerts: next.alerts ?? existing.alerts ?? null,
+      plan: payload.plan ?? 'free', isPro, limit,
+    }), { status: 200, headers: CORS });
   }
 
   return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: CORS });

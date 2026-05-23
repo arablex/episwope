@@ -797,7 +797,24 @@ const ALERT_DEFAULTS = { threshold:'elevated', email:true, webhook:false,
             infrastructure:true, transport:true, border:true } };
 const DOMAIN_LABELS = { health:'Health', conflict:'Conflict', civil_unrest:'Civil unrest',
   climate:'Climate', infrastructure:'Infrastructure', transport:'Transport', border:'Border' };
-function alertCfg(){ return Object.assign({}, ALERT_DEFAULTS, ls.get('vigilo_alert_cfg', {})); }
+// Server-loaded alert config (per account, survives across devices). Falls
+// back to localStorage until the GET resolves.
+let _alertsServer = null, _alertsLoaded = false;
+function alertCfg(){
+  const base = _alertsServer || ls.get('vigilo_alert_cfg', {});
+  const cfg = Object.assign({}, ALERT_DEFAULTS, base);
+  cfg.domains = Object.assign({}, ALERT_DEFAULTS.domains, base.domains || {});
+  return cfg;
+}
+async function loadAlertsFromServer(){
+  const jwt = localStorage.getItem('vigilo_jwt');
+  if(!jwt){ _alertsLoaded = true; return; }
+  try{
+    const r = await fetch('/api/my-countries', { headers:{ Authorization:`Bearer ${jwt}` } });
+    if(r.ok){ const d = await r.json(); if(d.alerts) _alertsServer = d.alerts; }
+  }catch{}
+  _alertsLoaded = true;
+}
 function renderAlerts(sess){
   const cfg = alertCfg();
   const sel = (v,cur)=>v===cur?'selected':'';
@@ -932,7 +949,8 @@ function renderMain(){
   if(TAB === 'overview') content = renderOverview(sess);
   else if(TAB === 'destinations'){ content = renderDestinations(sess);
     if(!_RISK_INDEX){ loadRiskIndex().then(()=>{ if(TAB==='destinations') renderMain(); }); } }
-  else if(TAB === 'alerts') content = renderAlerts(sess);
+  else if(TAB === 'alerts'){ content = renderAlerts(sess);
+    if(!_alertsLoaded){ loadAlertsFromServer().then(()=>{ if(TAB==='alerts') renderMain(); }); } }
   else if(TAB === 'api') content = renderApi(sess);
   else if(TAB === 'webhooks') content = renderWebhooks();
   else if(TAB === 'reports') content = renderReports();
@@ -966,8 +984,18 @@ window._saveAlerts = function(){
   cfg.digest    = document.getElementById('alDigest').value;
   cfg.quiet     = document.getElementById('alQuiet').checked;
   cfg.recipients= document.getElementById('alRecipients').value.trim();
-  ls.set('vigilo_alert_cfg', cfg);
-  const s = document.getElementById('alSaved'); if(s){ s.textContent='Saved ✓'; setTimeout(()=>s.textContent='',2000); }
+  ls.set('vigilo_alert_cfg', cfg);          // local cache
+  _alertsServer = cfg;
+  const s = document.getElementById('alSaved');
+  const jwt = localStorage.getItem('vigilo_jwt');
+  if(jwt){
+    if(s) s.textContent = 'Saving…';
+    fetch('/api/my-countries', { method:'PATCH',
+      headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${jwt}` },
+      body: JSON.stringify({ alerts: cfg }) })
+      .then(r => { if(s){ s.textContent = r.ok ? 'Saved ✓ (synced)' : 'Saved locally'; setTimeout(()=>s.textContent='',2500); } })
+      .catch(()=>{ if(s){ s.textContent='Saved locally'; setTimeout(()=>s.textContent='',2500); } });
+  } else if(s){ s.textContent='Saved ✓'; setTimeout(()=>s.textContent='',2000); }
 };
 // ── Handlers: settings ──
 window._saveOrg = function(){
