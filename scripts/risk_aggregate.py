@@ -550,7 +550,11 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
             continue                                  # re-seen → fresh wins
         if eid.startswith("evt_h_") or eid.startswith("evt_clim_"):
             continue                                  # source owns retention
-        if _age_days_local(e.get("first_seen", ""), now) <= HISTORY_DAYS:
+        # Carry forward only if the date is parseable AND within the window.
+        # An unparseable first_seen would otherwise count as age 0 (fresh) and
+        # never age out — a dateless orphan would persist forever.
+        fs = e.get("first_seen", "")
+        if _to_iso(fs) and _age_days_local(fs, now) <= HISTORY_DAYS:
             e["is_new"] = False
             new_events.append(e)
             carried += 1
@@ -580,11 +584,13 @@ def build_index(events: list[dict]) -> dict:
     # all-zero record with no honesty marker. Now they carry baseline:true
     # → the API/UI can say "no active signals detected" rather than implying
     # we assessed it as calm. Marked distinctly from a real minimal score.
-    empty_breakdown = {
-        c: {"score": 0.0, "band": "minimal", "active_events": 0,
-            "top_threat": None}
-        for c in CATEGORIES
-    }
+    def _empty_breakdown():
+        # Fresh dict per country — must NOT share one object across all
+        # baseline entries, or any later in-place mutation of one country's
+        # breakdown would silently corrupt every other baseline country.
+        return {c: {"score": 0.0, "band": "minimal", "active_events": 0,
+                    "top_threat": None}
+                for c in CATEGORIES}
     seeded = 0
     for iso in ISO_CENTROID:
         if iso in index:
@@ -592,7 +598,7 @@ def build_index(events: list[dict]) -> dict:
         index[iso] = {
             "composite_risk": {"score": 0.0, "band": "minimal",
                                "dominant_category": None},
-            "category_breakdown": empty_breakdown,
+            "category_breakdown": _empty_breakdown(),
             "event_count": 0,
             "event_ids": [],
             "baseline": True,   # no active signals this window (≠ assessed-calm)

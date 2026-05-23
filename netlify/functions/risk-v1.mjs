@@ -175,6 +175,10 @@ export default async (req) => {
       : scoreGeo(scoped, now);
     if (!pre && scoped.length === 0) coverage = 'not_covered';
     else if (pre && pre.baseline) coverage = 'baseline_no_signal';
+    // Country has real events but the caller's filters (min_confidence /
+    // severity / history_days) narrowed them to zero → the score is an
+    // all-zero scoreGeo([]), NOT an assessment. Don't label it 'scored'.
+    else if (pre && !pre.baseline && scoped.length === 0) coverage = 'baseline_no_signal';
     queryEcho = { mode, country };
   } else {
     mode = 'radius';
