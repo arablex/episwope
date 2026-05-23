@@ -549,7 +549,7 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         if eid in new_by_id:
             continue                                  # re-seen → fresh wins
         if eid.startswith("evt_h_") or eid.startswith("evt_clim_") \
-           or eid.startswith("evt_ioda_"):
+           or eid.startswith("evt_ioda_") or eid.startswith("evt_gdacs_"):
             continue                                  # source owns retention
         # Carry forward only if the date is parseable AND within the window.
         # An unparseable first_seen would otherwise count as age 0 (fresh) and
@@ -561,6 +561,76 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
             carried += 1
     log(f"[risk] carried forward {carried} prior news events (≤{HISTORY_DAYS}d)")
     return new_events
+
+
+# GDACS event-type → our (category, type) + label. GDACS is the authoritative
+# disaster monitor (free, no key) and ships precise coordinates + ISO, so it
+# also sidesteps the headline-geocoding errors of news-derived climate events.
+_GDACS_TYPE = {
+    "EQ": ("climate", "earthquake"),
+    "TC": ("climate", "tropical_cyclone"),
+    "FL": ("climate", "flooding"),
+    "TS": ("climate", "tsunami"),
+    "DR": ("climate", "drought"),
+    "WF": ("climate", "wildfire"),
+    "VO": ("climate", "volcano"),
+}
+_GDACS_SEV = {"green": 2, "orange": 3, "red": 4}
+
+
+def fetch_gdacs_climate() -> list[dict]:
+    """GDACS recent natural-disaster events → climate-domain events.
+    Authoritative (UN/EC), free, no key, precise coords + ISO — supplements
+    the noisy news-derived climate signal and fixes its mis-geocoding."""
+    out = []
+    try:
+        raw = fetch_url("https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP",
+                        retries=1)
+        if not raw:
+            return []
+        data = json.loads(raw)
+    except Exception:
+        return []
+    for f in (data.get("features") or []):
+        p = f.get("properties") or {}
+        et = str(p.get("eventtype") or "").upper()
+        cat_type = _GDACS_TYPE.get(et)
+        if not cat_type:
+            continue
+        cat, typ = cat_type
+        sev = _GDACS_SEV.get(str(p.get("alertlevel") or "").lower(), 2)
+        # resolve ISO-2 from country name (GDACS gives a name / iso3)
+        cname = p.get("country") or ""
+        _, iso, lat, lng = detect_country(cname) if cname else (None, None, None, None)
+        geom = (f.get("geometry") or {}).get("coordinates") or []
+        if len(geom) >= 2:
+            lng, lat = geom[0], geom[1]   # GDACS coords are authoritative
+        if not iso:
+            continue
+        eid = f"evt_gdacs_{p.get('eventid', '')}_{et}"
+        out.append({
+            "id": eid,
+            "category": cat,
+            "type": typ,
+            "headline": (p.get("htmldescription") or p.get("name")
+                         or f"{typ} — GDACS {p.get('alertlevel','')} alert"),
+            "severity": sev,
+            "confidence": 0.9,
+            "source_verification": "official_agency",
+            "source_class": "tier1_official",
+            "source_name": "GDACS",
+            "geo": {"lat": lat, "lng": lng, "place": cname, "country": iso,
+                    "admin1": None},
+            "country": iso,
+            "first_seen": p.get("fromdate") or _now().isoformat(),
+            "last_updated": p.get("todate") or _now().isoformat(),
+            "lead_time_hours": 0,
+            "source_count": 1,
+            "sources": ["GDACS"],
+            "url": p.get("url", {}).get("report", "") if isinstance(p.get("url"), dict) else "",
+            "is_new": False,
+        })
+    return out
 
 
 def build_index(events: list[dict]) -> dict:
@@ -678,7 +748,10 @@ def main() -> int:
     ioda = fetch_ioda_infra()
     events += ioda
     log(f"[risk] IODA internet-outage infra events: {len(ioda)}")
-    log(f"[risk] total events (incl. health+climate+infra): {len(events)}")
+    gdacs = fetch_gdacs_climate()
+    events += gdacs
+    log(f"[risk] GDACS disaster (climate) events: {len(gdacs)}")
+    log(f"[risk] total events (incl. health+climate+infra+gdacs): {len(events)}")
 
     # Persist prior news events within the retention window (real history)
     events = merge_persist(events)
