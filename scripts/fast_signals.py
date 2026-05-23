@@ -206,6 +206,90 @@ COUNTRY_DB = {
     "austria":          ("AT", 47.5,  14.6,  "EURO"),
 }
 
+# ── Landmark / city / actor → country ───────────────────────────────────
+# Conflict & crisis headlines rarely name the country ("RSF shells El Fasher",
+# "Goma falls to M23", "Houthi strike on Hodeidah"). detect_country() only
+# matched literal country names, so these whole events were dropped — the
+# Sudan war scored conflict=0 despite daily coverage. This table maps cities,
+# regions and unambiguous armed actors to their ISO + precise coordinates
+# (also tightens geolocation vs country-centroid fallback).
+# Coords point at the landmark itself for better map precision.
+LANDMARK_DB = {
+    # Sudan (was the smoking gun — conflict pipeline returned nothing)
+    "khartoum":      ("SD", 15.5, 32.5, "EMRO"),
+    "omdurman":      ("SD", 15.6, 32.5, "EMRO"),
+    "el fasher":     ("SD", 13.6, 25.3, "EMRO"),
+    "al fashir":     ("SD", 13.6, 25.3, "EMRO"),
+    "nyala":         ("SD", 12.0, 24.9, "EMRO"),
+    "port sudan":    ("SD", 19.6, 37.2, "EMRO"),
+    "darfur":        ("SD", 13.0, 24.0, "EMRO"),
+    "kordofan":      ("SD", 13.2, 30.2, "EMRO"),
+    "rsf":           ("SD", 15.5, 32.5, "EMRO"),  # Rapid Support Forces
+    "rapid support forces": ("SD", 15.5, 32.5, "EMRO"),
+    # Ukraine
+    "kyiv":          ("UA", 50.4, 30.5, "EURO"),
+    "kharkiv":       ("UA", 50.0, 36.2, "EURO"),
+    "kherson":       ("UA", 46.6, 32.6, "EURO"),
+    "donetsk":       ("UA", 48.0, 37.8, "EURO"),
+    "luhansk":       ("UA", 48.6, 39.3, "EURO"),
+    "mariupol":      ("UA", 47.1, 37.5, "EURO"),
+    "bakhmut":       ("UA", 48.6, 38.0, "EURO"),
+    "zaporizhzhia":  ("UA", 47.8, 35.2, "EURO"),
+    "odesa":         ("UA", 46.5, 30.7, "EURO"),
+    "odessa":        ("UA", 46.5, 30.7, "EURO"),
+    # Gaza / Palestine
+    "gaza":          ("PS", 31.5, 34.5, "EMRO"),
+    "rafah":         ("PS", 31.3, 34.2, "EMRO"),
+    "khan younis":   ("PS", 31.3, 34.3, "EMRO"),
+    "west bank":     ("PS", 32.0, 35.3, "EMRO"),
+    # Yemen
+    "sanaa":         ("YE", 15.4, 44.2, "EMRO"),
+    "sana'a":        ("YE", 15.4, 44.2, "EMRO"),
+    "aden":          ("YE", 12.8, 45.0, "EMRO"),
+    "hodeidah":      ("YE", 14.8, 42.9, "EMRO"),
+    "taiz":          ("YE", 13.6, 44.0, "EMRO"),
+    "marib":         ("YE", 15.4, 45.3, "EMRO"),
+    "houthi":        ("YE", 15.4, 44.2, "EMRO"),
+    # DR Congo
+    "goma":          ("CD", -1.7, 29.2, "AFRO"),
+    "bukavu":        ("CD", -2.5, 28.8, "AFRO"),
+    "kinshasa":      ("CD", -4.3, 15.3, "AFRO"),
+    "north kivu":    ("CD", -0.8, 29.2, "AFRO"),
+    "south kivu":    ("CD", -2.8, 28.0, "AFRO"),
+    "m23":           ("CD", -1.7, 29.2, "AFRO"),
+    # Myanmar
+    "yangon":        ("MM", 16.8, 96.2, "SEARO"),
+    "naypyidaw":     ("MM", 19.8, 96.1, "SEARO"),
+    "rakhine":       ("MM", 20.1, 93.8, "SEARO"),
+    "tatmadaw":      ("MM", 19.8, 96.1, "SEARO"),
+    # Ethiopia
+    "tigray":        ("ET", 14.0, 38.3, "AFRO"),
+    "mekelle":       ("ET", 13.5, 39.5, "AFRO"),
+    "amhara":        ("ET", 11.4, 37.7, "AFRO"),
+    "addis ababa":   ("ET",  9.0, 38.7, "AFRO"),
+    # Haiti
+    "port-au-prince":("HT", 18.5, -72.3, "AMRO"),
+    "port au prince":("HT", 18.5, -72.3, "AMRO"),
+    # Syria
+    "damascus":      ("SY", 33.5, 36.3, "EMRO"),
+    "aleppo":        ("SY", 36.2, 37.2, "EMRO"),
+    "idlib":         ("SY", 35.9, 36.6, "EMRO"),
+    # Lebanon
+    "beirut":        ("LB", 33.9, 35.5, "EMRO"),
+    "hezbollah":     ("LB", 33.9, 35.5, "EMRO"),
+    # Somalia
+    "mogadishu":     ("SO",  2.0, 45.3, "EMRO"),
+    "al-shabaab":    ("SO",  2.0, 45.3, "EMRO"),
+    "al shabaab":    ("SO",  2.0, 45.3, "EMRO"),
+    # Sahel
+    "bamako":        ("ML", 12.6, -8.0, "AFRO"),
+    "ouagadougou":   ("BF", 12.4, -1.5, "AFRO"),
+    # Afghanistan
+    "kabul":         ("AF", 34.5, 69.2, "EMRO"),
+    "kandahar":      ("AF", 31.6, 65.7, "EMRO"),
+    "taliban":       ("AF", 34.5, 69.2, "EMRO"),
+}
+
 # Russian-language disease keywords (for RU news sources)
 DISEASE_PATTERNS_RU = [
     (r"эбола|эболавирус",                          "Ebola virus disease",  "critical"),
@@ -604,6 +688,12 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
         else:
             if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
                 return cname.title(), iso, lat, lng
+    # Fallback: landmark / city / actor names (e.g. "El Fasher" → SD).
+    # Checked AFTER country names so an explicit country always wins.
+    for cname in sorted(LANDMARK_DB, key=len, reverse=True):
+        iso, lat, lng, _ = LANDMARK_DB[cname]
+        if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
+            return cname.title(), iso, lat, lng
     return None, None, None, None
 
 
