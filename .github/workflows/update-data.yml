@@ -72,10 +72,23 @@ jobs:
             # the deploy, freezing prod data. This workflow is cron/dispatch
             # only (no push trigger), so there is no self-trigger loop.
             git commit -m "chore: update epidemiology data"
-            git push
+            # A concurrent push (e.g. fast-signals.yml) may move main forward
+            # between our checkout and push. Rebase-and-retry instead of failing
+            # the whole job — otherwise the alert-check step below is skipped.
+            for i in 1 2 3; do
+              if git push; then
+                echo "push ok"
+                break
+              fi
+              echo "push rejected — rebasing onto origin/main (attempt $i)"
+              git pull --rebase --autostash origin main || true
+            done
           fi
 
       - name: Trigger alert check
+        # Run even if the commit/push step failed — the alert payload is built
+        # from local files that exist regardless of whether the data committed.
+        if: always()
         env:
           EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
         run: |
