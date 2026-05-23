@@ -82,18 +82,21 @@ jobs:
           # Merge health events (events.json) + risk events (risk_events.json,
           # written by the Fast Signals workflow) so alerts cover all 7 domains,
           # not just health. Either file may be absent — be defensive.
-          EVENTS=$(python3 -c "
+          # Write payload to a file — the merged feed (~250+ events) is too big
+          # to pass inline via -d ("Argument list too long"). Use --data @file.
+          python3 -c "
           import json, os
           out = []
           for f in ('public/events.json', 'public/risk_events.json'):
               if os.path.exists(f):
                   try: out += (json.load(open(f)).get('events') or [])
                   except Exception: pass
-          print(json.dumps(out))
-          ")
+          json.dump({'events': out}, open('/tmp/alert_payload.json','w'))
+          print('payload events:', len(out))
+          "
           curl -sf -X POST \
             -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
             -H "Content-Type: application/json" \
-            -d "{\"events\": ${EVENTS}}" \
+            --data @/tmp/alert_payload.json \
             https://vigilo.cc/api/alert-check \
           || echo "⚠ alert-check failed (non-critical)"
