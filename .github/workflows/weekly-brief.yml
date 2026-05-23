@@ -1,0 +1,61 @@
+name: Weekly Risk Brief (draft)
+
+# Generates a DRAFT of the weekly Global Risk Brief (HTML + LinkedIn post) from
+# the live risk_index.json, every Monday morning. The draft is committed to
+# intel/_drafts/ (noindex, unlinked) — publishing stays a manual, reviewed step:
+#   1. open  https://vigilo.cc/intel/_drafts/weekly-brief-YYYY-MM-DD.html
+#   2. add editorial analysis, verify any flagged thin-event rows
+#   3. move to intel/global-risk-brief-YYYY-MM-DD.html, add sitemap + listing card
+#   4. post the LinkedIn draft manually
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:       # manual trigger from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate brief draft
+        run: python3 scripts/gen_weekly_brief.py
+
+      - name: Commit draft if changed
+        run: |
+          git config user.name  "Vigilo Bot"
+          git config user.email "bot@vigilo.noreply"
+          git add intel/_drafts/
+          if git diff --cached --quiet; then
+            echo "No new draft — skipping commit"
+          else
+            git commit -m "chore(intel): weekly brief draft (auto-generated, needs review)"
+            for i in 1 2 3; do
+              if git push; then echo "push ok"; break; fi
+              echo "push rejected — rebasing (attempt $i)"
+              git pull --rebase --autostash origin main || true
+            done
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          DATE=$(date -u +%F)
+          echo "### Weekly brief draft ready :memo:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review → https://vigilo.cc/intel/_drafts/weekly-brief-${DATE}.html" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "LinkedIn draft → \`intel/_drafts/linkedin-${DATE}.md\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "To publish: add analysis, verify flagged rows, move to \`intel/global-risk-brief-${DATE}.html\`, update sitemap + listing." >> "$GITHUB_STEP_SUMMARY"
