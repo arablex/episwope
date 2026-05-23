@@ -548,7 +548,8 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         eid = e.get("id", "")
         if eid in new_by_id:
             continue                                  # re-seen → fresh wins
-        if eid.startswith("evt_h_") or eid.startswith("evt_clim_"):
+        if eid.startswith("evt_h_") or eid.startswith("evt_clim_") \
+           or eid.startswith("evt_ioda_"):
             continue                                  # source owns retention
         # Carry forward only if the date is parseable AND within the window.
         # An unparseable first_seen would otherwise count as age 0 (fresh) and
@@ -608,6 +609,64 @@ def build_index(events: list[dict]) -> dict:
     return index
 
 
+# Countries worth polling IODA for internet-outage signals (crisis zones,
+# authoritarian states prone to shutdowns, large/contested countries). Bounded
+# list so the per-country IODA calls don't balloon the run.
+IODA_WATCH = [
+    "SD","YE","IR","MM","CU","SY","AF","ET","PK","RU","UA","IQ","LY","SO","SS",
+    "VE","BD","IN","CN","KP","TM","BY","NG","CD","HT","PS","LB","TD","ML","BF",
+    "NE","EG","KE","TZ","UG","ZW","MZ","GN","TR","KZ",
+]
+
+def fetch_ioda_infra() -> list[dict]:
+    """IODA internet-outage alerts → infrastructure events (free, no key).
+    Already powers the OSINT shadow engine; wiring it into the main risk_index
+    gives the infrastructure domain real connectivity-loss signal instead of
+    relying only on news of blackouts."""
+    import time as _t
+    until = int(_t.time()); frm = until - 3 * 86400      # last 72h
+    out = []
+    for iso in IODA_WATCH:
+        try:
+            u = ("https://api.ioda.inetintel.cc.gatech.edu/v2/outages/alerts"
+                 f"?from={frm}&until={until}&entityType=country&entityCode={iso}")
+            raw = fetch_url(u, retries=1)
+            if not raw:
+                continue
+            d = json.loads(raw)
+            alerts = d.get("data") or d.get("alerts") or []
+            n = len(alerts) if isinstance(alerts, list) else 0
+            if n <= 0:
+                continue
+            sev = 4 if n >= 6 else 3 if n >= 3 else 2
+            lat, lng = ISO_CENTROID.get(iso, (None, None))
+            out.append({
+                "id": f"evt_ioda_{iso}",
+                "category": "infrastructure",
+                "type": "internet_outage",
+                "headline": f"IODA detected {n} internet-outage alert(s) in last 72h",
+                "severity": sev,
+                "confidence": 0.7,
+                "source_verification": "media_ai_signal",
+                "source_class": "tier3_pro",
+                "source_name": "IODA (Georgia Tech)",
+                "geo": {"lat": lat, "lng": lng, "place": iso, "country": iso,
+                        "admin1": None,
+                        "geo_precision": "country_centroid" if lat is not None else None},
+                "country": iso,
+                "first_seen": _now().isoformat(),
+                "last_updated": _now().isoformat(),
+                "lead_time_hours": 0,
+                "source_count": 1,
+                "sources": ["IODA"],
+                "url": f"https://ioda.inetintel.cc.gatech.edu/country/{iso}",
+                "is_new": False,
+            })
+        except Exception:
+            continue
+    return out
+
+
 def main() -> int:
     log("=== Risk aggregate: start ===")
     events = collect_events()
@@ -616,7 +675,10 @@ def main() -> int:
     clim = import_climate_leads()
     events += clim
     log(f"[risk] climate leading-indicators: {len(clim)}")
-    log(f"[risk] total events (incl. health+climate): {len(events)}")
+    ioda = fetch_ioda_infra()
+    events += ioda
+    log(f"[risk] IODA internet-outage infra events: {len(ioda)}")
+    log(f"[risk] total events (incl. health+climate+infra): {len(events)}")
 
     # Persist prior news events within the retention window (real history)
     events = merge_persist(events)
