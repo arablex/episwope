@@ -216,6 +216,34 @@
   .ev-card .ev-headline{ font-size:11.5px; line-height:1.4; color:var(--muted,#807e76);
     font-weight:500; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
     overflow:hidden; }
+
+  /* ── Grouped (accordion) list view — compact vertical rows, single column ── */
+  .app.v-list .events-row.is-grouped{ display:block; max-width:760px; margin:0 auto; }
+  .lgrp{ border:1px solid var(--line); border-radius:12px; background:var(--bg-card,#fff);
+    margin-bottom:8px; overflow:hidden; }
+  .lgrp-head{ display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer;
+    transition:background .12s; }
+  .lgrp-head:hover{ background:var(--paper50,#FBF9F4); }
+  .lgrp-dot{ width:8px; height:8px; border-radius:50%; flex:0 0 8px; }
+  .lgrp-label{ font-size:13.5px; font-weight:700; letter-spacing:-0.01em; color:var(--ink); flex:1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lgrp-count{ font-size:11px; font-weight:700; color:var(--muted,#807e76);
+    background:rgba(20,18,14,0.06); border-radius:99px; padding:2px 8px; flex:0 0 auto; }
+  .lgrp-sev{ font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; flex:0 0 auto;
+    text-transform:uppercase; letter-spacing:.03em; }
+  .lgrp-chev{ font-size:11px; color:var(--muted,#807e76); transition:transform .15s; flex:0 0 auto; }
+  .lgrp.open .lgrp-chev{ transform:rotate(180deg); }
+  .lgrp-body{ border-top:1px solid var(--line); }
+  .lrow{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    padding:10px 14px 10px 28px; background:none; border:none; border-bottom:1px solid rgba(229,227,220,0.5);
+    cursor:pointer; font:inherit; transition:background .12s; }
+  .lrow:last-child{ border-bottom:none; }
+  .lrow:hover{ background:var(--paper50,#FBF9F4); }
+  .lrow.is-selected{ background:rgba(232,89,12,0.06); }
+  .lrow-title{ flex:1; font-size:12.5px; line-height:1.35; color:var(--ink); font-weight:600;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lrow-sub{ font-size:11px; color:var(--muted,#807e76); font-weight:500; }
+  .lrow-sev{ width:7px; height:7px; border-radius:50%; flex:0 0 7px; }
   .ev-card .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .ev-card .country{ font-size:9.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-2); display:inline-flex; align-items:center; gap:6px; min-width:0; flex:1; }
   .ev-card .country .dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }

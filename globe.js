@@ -3729,12 +3729,18 @@ function renderList(){
   }
 
   const sevLabels = {
+    catastrophic: LANG==='ru'?'Катастр.':'Catastr.',
     critical: LANG==='ru'?'Крит.':'Critical',
+    severe:   LANG==='ru'?'Высок.':'Severe',
     alert:    LANG==='ru'?'Алерт':'Alert',
+    elevated: LANG==='ru'?'Повыш.':'Elevated',
     warning:  LANG==='ru'?'Средн.':'Warning',
+    moderate: LANG==='ru'?'Умер.':'Moderate',
     monitoring: LANG==='ru'?'Низк.':'Monitor',
     low:      LANG==='ru'?'Низк.':'Low',
+    minimal:  LANG==='ru'?'Миним.':'Minimal',
   };
+  const sevLbl = (s) => sevLabels[s] || s;
   const sevTagStyle = (sev) => {
     const c = SEV[sev]?.color || '#888';
     return `background:${hexA(c,0.12)};color:${c};`;
@@ -3773,38 +3779,70 @@ function renderList(){
     </article>`;
   };
 
-  root.innerHTML = groups.map(g => {
-    if(g.items.length === 1) return card(g.items[0]);
-    // Collapsed group header — worst severity wins the tag/colour
-    const worst = g.items.reduce((a,b)=> (SEV[b.sev]?.idx||0)>(SEV[a.sev]?.idx||0)?b:a, g.items[0]);
-    const sev = SEV[worst.sev] || SEV.warning;
-    const cat = worst.type || 'epidemic';
-    const catColor = (CATEGORY_META[cat]?.color) || sev.color;
-    const label = listGroupLabel(g);
-    const n = g.items.length;
-    const isOpen = _listExpanded.has(g.key);
-    const childCards = isOpen ? `<div class="ev-group-children">${g.items.map(card).join('')}</div>` : '';
-    return `
-    <article class="ev-card ev-group ${isOpen?'is-open':''}" data-group="${escapeAttr(g.key)}">
-      <div class="top">
-        <span class="country"><span class="dot" style="background:${catColor}"></span>${escapeAttr(label)}</span>
-        <span class="sev-tag" style="${sevTagStyle(worst.sev)}">${sevLabels[worst.sev]||worst.sev}</span>
-      </div>
-      <div class="name"><span class="ev-count">×${n}</span></div>
-      <div class="ev-group-hint">${isOpen?(LANG==='ru'?'Свернуть ▴':'Collapse ▴'):(LANG==='ru'?`Показать ${n} ▾`:`Show ${n} ▾`)}</div>
-    </article>${childCards}`;
-  }).join('');
+  const grouped = state.listGroup !== 'none';
+  root.classList.toggle('is-grouped', grouped);
 
-  // Solo cards + group children → open the event
-  root.querySelectorAll('.ev-card[data-id]').forEach(el=>{
+  if(!grouped){
+    // ── Flat card grid (with food/allergen auto-collapse) ──
+    root.innerHTML = groups.map(g => {
+      if(g.items.length === 1) return card(g.items[0]);
+      const worst = g.items.reduce((a,b)=> (SEV[b.sev]?.idx||0)>(SEV[a.sev]?.idx||0)?b:a, g.items[0]);
+      const cat = worst.type || 'epidemic';
+      const catColor = (CATEGORY_META[cat]?.color) || (SEV[worst.sev]||SEV.warning).color;
+      const label = listGroupLabel(g), n = g.items.length;
+      const isOpen = _listExpanded.has(g.key);
+      const childCards = isOpen ? `<div class="ev-group-children">${g.items.map(card).join('')}</div>` : '';
+      return `
+      <article class="ev-card ev-group ${isOpen?'is-open':''}" data-group="${escapeAttr(g.key)}">
+        <div class="top">
+          <span class="country"><span class="dot" style="background:${catColor}"></span>${escapeAttr(label)}</span>
+          <span class="sev-tag" style="${sevTagStyle(worst.sev)}">${sevLbl(worst.sev)}</span>
+        </div>
+        <div class="name"><span class="ev-count">×${n}</span></div>
+        <div class="ev-group-hint">${isOpen?(LANG==='ru'?'Свернуть ▴':'Collapse ▴'):(LANG==='ru'?`Показать ${n} ▾`:`Show ${n} ▾`)}</div>
+      </article>${childCards}`;
+    }).join('');
+  } else {
+    // ── Compact accordion (group by country / type) ──
+    const rowSub = (o) => o._risk ? fullHeadline(o)
+                        : (o.cases ? `${fmtNum(o.cases)} ${T('cases')}` : countryName(o.country) || '');
+    root.innerHTML = groups.map(g => {
+      const worst = g.items.reduce((a,b)=> (SEV[b.sev]?.idx||0)>(SEV[a.sev]?.idx||0)?b:a, g.items[0]);
+      const catColor = (CATEGORY_META[worst.type||'epidemic']?.color) || (SEV[worst.sev]||SEV.warning).color;
+      const label = listGroupLabel(g), n = g.items.length;
+      const isOpen = _listExpanded.has(g.key);
+      const sevC = (SEV[worst.sev]||SEV.warning).color;
+      const rows = g.items.map(o => `
+        <button class="lrow ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
+          <span class="lrow-sev" style="background:${(SEV[o.sev]||SEV.warning).color}"></span>
+          <span class="lrow-title">${escapeAttr(o._risk ? (fullHeadline(o)||shortTitle(o)) : diseaseName(o))}</span>
+          <span class="lrow-sub">${escapeAttr(sevLbl(o.sev))}</span>
+        </button>`).join('');
+      return `
+      <div class="lgrp ${isOpen?'open':''}" data-group="${escapeAttr(g.key)}">
+        <div class="lgrp-head">
+          <span class="lgrp-dot" style="background:${catColor}"></span>
+          <span class="lgrp-label">${escapeAttr(label)}</span>
+          <span class="lgrp-count">×${n}</span>
+          <span class="lgrp-sev" style="${sevTagStyle(worst.sev)}">${sevLbl(worst.sev)}</span>
+          <span class="lgrp-chev">▾</span>
+        </div>
+        ${isOpen ? `<div class="lgrp-body">${rows}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Card / row → open event
+  root.querySelectorAll('[data-id]').forEach(el=>{
     el.addEventListener('click', (e)=>{ e.stopPropagation(); selectOutbreak(el.dataset.id); });
     el.addEventListener('mouseenter', ()=>{ state.hoveredId = el.dataset.id; });
     el.addEventListener('mouseleave', ()=>{ state.hoveredId = null; });
   });
-  // Group headers → toggle expand/collapse
-  root.querySelectorAll('.ev-card.ev-group[data-group]').forEach(el=>{
+  // Group headers (grid card OR accordion head) → toggle expand
+  root.querySelectorAll('.ev-card.ev-group[data-group], .lgrp[data-group] .lgrp-head').forEach(el=>{
     el.addEventListener('click', ()=>{
-      const k = el.dataset.group;
+      const host = el.closest('[data-group]');
+      const k = host.dataset.group;
       if(_listExpanded.has(k)) _listExpanded.delete(k); else _listExpanded.add(k);
       renderList();
     });
