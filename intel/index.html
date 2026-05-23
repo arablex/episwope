@@ -194,5 +194,15 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
 <noscript><div><img src="https://mc.yandex.ru/watch/109240834" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
 <!-- /Yandex.Metrika -->
 
+<!-- Funnel: intel → app click (Plausible + Yandex) -->
+<script>
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a[href^="/app"]');
+  if(!a) return;
+  try{ if(window.plausible) plausible('intel_open_app'); }catch(_){}
+  try{ if(window.ym) ym(109240834,'reachGoal','intel_open_app'); }catch(_){}
+});
+</script>
+
 </body>
 </html>

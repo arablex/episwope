@@ -3476,6 +3476,7 @@ document.addEventListener('DOMContentLoaded', function(){
         await fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, country: 'global', lang: LANG_MOB }) });
         document.getElementById('mobSubForm').style.display = 'none';
         document.getElementById('mobSubOk').style.display = 'block';
+        if(window.track) track('alert_subscribe', { country: 'global', src: 'mobile' });
       } catch(_){
         btn.disabled = false; btn.textContent = T('Subscribe','Подписаться');
       }
@@ -3551,7 +3552,7 @@ document.getElementById('eventsToggle')?.addEventListener('click', ()=>{
       const data = new FormData(form);
       await fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(data).toString() });
       form.style.display = 'none'; ok.style.display = 'block';
-      if(typeof window.plausible === 'function') window.plausible('Alert Subscribe', { props: { country: 'global' } });
+      if(window.track) track('alert_subscribe', { country: 'global' });  // → Plausible + Yandex
     } catch(_){
       btn.disabled = false; btn.textContent = 'Subscribe';
       alert('Something went wrong. Please try again.');

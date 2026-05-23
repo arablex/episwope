@@ -2,12 +2,12 @@
    Vigilo v2 — refined globe + 2026 UI bindings
    ========================================================= */
 
-/* ── Analytics helper ────────────────────────────────────── */
+/* ── Analytics helper — fires to BOTH Plausible and Yandex.Metrika ───────── */
 function track(event, props){
-  if(typeof window.plausible === 'function'){
-    window.plausible(event, props ? { props } : undefined);
-  }
+  try{ if(typeof window.plausible === 'function') window.plausible(event, props ? { props } : undefined); }catch(e){}
+  try{ if(typeof window.ym === 'function') window.ym(109240834, 'reachGoal', event, props || undefined); }catch(e){}
 }
+window.track = track;
 
 /* ── i18n ────────────────────────────────────────────────── */
 const LANG = window.EPISWOPE_LANG || 'en';
@@ -887,7 +887,7 @@ function toggleWatch(country){
     return;
   }
   if(WATCHED.has(country)) WATCHED.delete(country);
-  else WATCHED.add(country);
+  else { WATCHED.add(country); track('country_watched', { country }); }  // activation signal
   localStorage.setItem('vigilo_watched', JSON.stringify([...WATCHED]));
   renderMyCountries();
   renderMyFeed();
