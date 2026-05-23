@@ -238,7 +238,7 @@
           <li>API · 10k requests / day</li>
           <li>30-min onboarding call</li>
         </ul>
-        <a class="cta cta-primary" href="mailto:alex@vigilo.cc?subject=Vigilo%20Team%20plan%20%E2%80%94%20invoice%20request&amp;body=Org%20name%3A%0ACountries%20of%20operation%3A%0ANumber%20of%20seats%20needed%3A%0ABilling%20email%3A%0AAnything%20we%20should%20know%3A%0A">Request invoice →</a>
+        <a class="cta cta-primary" href="#" onclick="window._inquire('Team');return false;">Get started →</a>
         <div class="cta-foot">14-day free trial · invoice based</div>
       </div>
 
@@ -256,7 +256,7 @@
           <li>Priority support · 24h SLA</li>
           <li>Quarterly business review</li>
         </ul>
-        <a class="cta cta-primary" href="mailto:alex@vigilo.cc?subject=Vigilo%20Org%20plan%20%E2%80%94%20invoice%20request&amp;body=Org%20name%3A%0ACountries%20of%20operation%3A%0ANumber%20of%20seats%20needed%3A%0ABilling%20email%3A%0ARegions%2Fdomains%20you%20care%20about%3A%0A">Request invoice →</a>
+        <a class="cta cta-primary" href="#" onclick="window._inquire('Org');return false;">Get started →</a>
         <div class="cta-foot">14-day free trial · invoice based</div>
       </div>
 
@@ -293,7 +293,7 @@
           <div class="price custom">from $1,500<span class="sub"> /mo</span></div>
           <div class="seats">custom</div>
           <p class="desc">Large NGOs, international travel-risk firms, insurance, government, embeddable APIs.</p>
-          <a class="cta cta-amber" href="mailto:alex@vigilo.cc?subject=Vigilo%20Enterprise%20%E2%80%94%20intro&amp;body=Org%20name%3A%0AUse%20case%3A%0AEstimated%20number%20of%20users%3A%0ARegions%2Fdomains%3A%0AProcurement%20timeline%3A%0A">Talk to us →</a>
+          <a class="cta cta-amber" href="#" onclick="window._inquire('Enterprise');return false;">Talk to us →</a>
           <div class="cta-foot">Reply within 24 hours</div>
         </div>
         <div class="col-right">
@@ -428,5 +428,61 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/109240834" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
 <!-- /Yandex.Metrika -->
+
+<!-- B2B inquiry modal — replaces mailto: links (works on webmail, captures the lead) -->
+<script>
+window._inquire = function(plan){
+  var isEnt = plan === 'Enterprise';
+  var ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(13,14,18,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto';
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  var L = 'rgba(20,17,12,.14)';
+  function field(label, id, type, ph, req){
+    return '<label style="display:block;font-size:12px;font-weight:700;color:#14110C;margin:12px 0 5px">'+label+(req?' <span style="color:#E8590C">*</span>':'')+'</label>'+
+      (type==='textarea'
+        ? '<textarea id="'+id+'" rows="3" placeholder="'+ph+'" style="width:100%;padding:10px 13px;border:1.5px solid '+L+';border-radius:10px;font:inherit;font-size:14px;resize:vertical;outline:none"></textarea>'
+        : '<input id="'+id+'" type="'+type+'" placeholder="'+ph+'" style="width:100%;height:42px;padding:0 13px;border:1.5px solid '+L+';border-radius:10px;font:inherit;font-size:14px;outline:none">');
+  }
+  ov.innerHTML = '<div style="background:#fff;width:100%;max-width:460px;border-radius:18px;padding:26px 28px 22px;box-shadow:0 30px 80px -20px rgba(13,14,18,.5);font-family:var(--sans),-apple-system,sans-serif">'+
+      '<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#E8590C">'+(isEnt?'Enterprise':plan+' plan')+'</div>'+
+      '<h2 style="font-size:22px;font-weight:800;letter-spacing:-.02em;margin:6px 0 4px;color:#14110C">'+(isEnt?'Tell us what you need':'Get started')+'</h2>'+
+      '<p style="font-size:13.5px;color:#544D42;margin:0 0 6px">'+(isEnt?'We reply within 24 hours.':'14-day free trial, no card. We’ll set you up and email next steps.')+'</p>'+
+      field('Work email','inqEmail','email','you@company.com',true)+
+      field('Organisation','inqOrg','text','Company / org name',false)+
+      (isEnt?'':field('Seats needed','inqSeats','text','e.g. 8',false))+
+      field('Countries / regions you cover','inqRegion','text','e.g. West Africa, SE Asia',false)+
+      field(isEnt?'Use case & timeline':'Anything we should know','inqMsg','textarea',isEnt?'What you need, est. users, procurement timeline…':'Optional',false)+
+      '<div id="inqMsgBox" style="font-size:12.5px;margin-top:8px;min-height:16px"></div>'+
+      '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">'+
+        '<button id="inqCancel" style="background:none;border:none;color:#7A7263;font:inherit;font-size:13px;cursor:pointer">Cancel</button>'+
+        '<button id="inqSend" style="background:#E8590C;color:#fff;border:none;border-radius:10px;padding:11px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">'+(isEnt?'Send':'Request access')+'</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#inqEmail').focus();
+  ov.querySelector('#inqCancel').onclick = function(){ ov.remove(); };
+  ov.querySelector('#inqSend').onclick = async function(){
+    var box = ov.querySelector('#inqMsgBox');
+    var email = ov.querySelector('#inqEmail').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ box.style.color='#C92A2A'; box.textContent='Enter a valid work email.'; return; }
+    var btn = this; btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Sending…';
+    var payload = { plan:plan, email:email,
+      org: (ov.querySelector('#inqOrg')||{}).value||'',
+      seats: (ov.querySelector('#inqSeats')||{}).value||'',
+      region: (ov.querySelector('#inqRegion')||{}).value||'',
+      message: (ov.querySelector('#inqMsg')||{}).value||'' };
+    try{
+      await fetch('/api/sales-inquiry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      try{ if(window.plausible) plausible('sales_inquiry',{props:{plan:plan}}); if(window.ym) ym(109240834,'reachGoal','sales_inquiry',{plan:plan}); }catch(e){}
+      ov.querySelector('div').innerHTML = '<div style="text-align:center;padding:14px 0"><div style="font-size:19px;font-weight:800;color:#00A56F;margin-bottom:6px">Thanks — got it.</div><div style="font-size:14px;color:#544D42">We’ll be in touch within 24 hours at '+email.replace(/[<>&]/g,'')+'.</div></div>';
+      setTimeout(function(){ ov.remove(); }, 2200);
+    }catch(e){
+      btn.disabled=false; btn.style.opacity='1'; btn.textContent=isEnt?'Send':'Request access';
+      box.style.color='#C92A2A'; box.textContent='Could not send. Please try again.';
+    }
+  };
+};
+</script>
+
 </body>
 </html>
