@@ -151,6 +151,36 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _to_iso(date_str: str) -> str | None:
+    """Normalise a date string to ISO-8601. Handles Google News RFC-822
+    ('Wed, 20 May 2026 10:00:00 GMT') and already-ISO inputs. Returns None
+    if unparseable — caller falls back to now(). Without this, gnews dates
+    failed datetime.fromisoformat() downstream and every event aged to the
+    1.0-day default, defeating recency decay."""
+    if not date_str:
+        return None
+    s = date_str.strip()
+    # Already ISO?
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).isoformat()
+    except (ValueError, TypeError):
+        pass
+    # RFC-822 (email/RSS date)
+    try:
+        from email.utils import parsedate_to_datetime
+        dt = parsedate_to_datetime(s)
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).isoformat()
+    except (ValueError, TypeError, IndexError):
+        return None
+
+
 def _source_class(domain: str, source: str) -> tuple[str, str]:
     d = (domain or "").lower()
     if any(t in d for t in TIER1):
@@ -214,9 +244,10 @@ def _fetch_gnews(query: str) -> list[Article]:
         if not tm:
             continue
         title = _strip_html(tm.group(1)).strip()
+        pub_iso = _to_iso(dm.group(1).strip()) if dm else None
         out.append(Article("google_news", title, title,
                             (lm.group(1).strip() if lm else ""),
-                            (dm.group(1).strip() if dm else "")))
+                            (pub_iso or _now().isoformat())))
     return out
 
 
@@ -270,7 +301,10 @@ def collect_events() -> list[dict]:
                         "country": iso, "admin1": None},
                 "country": iso,
                 "first_seen": a.pub_date or now_iso,
-                "last_updated": now_iso,
+                # last_updated drives recency decay (risk_scoring._age_days).
+                # Was hardcoded now_iso → every event aged to ~0 → a 5-day-old
+                # event scored like a fresh one. Use the article's real date.
+                "last_updated": a.pub_date or now_iso,
                 "lead_time_hours": 0,
                 "source_count": 1,
                 "sources": [a.source],
@@ -385,6 +419,53 @@ def import_climate_leads() -> list[dict]:
     return out
 
 
+def _age_days_local(ts: str, now: datetime) -> float:
+    iso = _to_iso(ts)
+    if not iso:
+        return 0.0  # unknown date → treat as fresh, keep it
+    try:
+        dt = datetime.fromisoformat(iso)
+        return max((now - dt).total_seconds() / 86400.0, 0.0)
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def merge_persist(new_events: list[dict]) -> list[dict]:
+    """Carry prior NEWS events forward within HISTORY_DAYS.
+
+    The feed was rebuilt from a ~48h fetch window every run and never read
+    its own prior output — so HISTORY_DAYS=21 was dead code and any country
+    whose news went quiet for >2 days silently dropped to composite 0
+    (Sudan, Yemen, etc). This restores real multi-day memory.
+
+    Health events (id 'evt_h_*', owned by signals.json's own 21d rolling
+    history) and climate-model leads (id 'evt_clim_*', regenerated each run)
+    are NOT carried forward — their sources own retention. Only the
+    news-derived events (conflict/unrest/transport/border/infra/disaster)
+    are persisted, with the fresh version winning on re-sighting."""
+    now = _now()
+    new_by_id = {e["id"]: e for e in new_events}
+    if not EVENTS_OUT.exists():
+        return new_events
+    try:
+        prior = json.loads(EVENTS_OUT.read_text(encoding="utf-8")).get("events", [])
+    except Exception:
+        return new_events
+    carried = 0
+    for e in prior:
+        eid = e.get("id", "")
+        if eid in new_by_id:
+            continue                                  # re-seen → fresh wins
+        if eid.startswith("evt_h_") or eid.startswith("evt_clim_"):
+            continue                                  # source owns retention
+        if _age_days_local(e.get("first_seen", ""), now) <= HISTORY_DAYS:
+            e["is_new"] = False
+            new_events.append(e)
+            carried += 1
+    log(f"[risk] carried forward {carried} prior news events (≤{HISTORY_DAYS}d)")
+    return new_events
+
+
 def build_index(events: list[dict]) -> dict:
     by_country: dict[str, list[dict]] = {}
     for e in events:
@@ -412,6 +493,10 @@ def main() -> int:
     events += clim
     log(f"[risk] climate leading-indicators: {len(clim)}")
     log(f"[risk] total events (incl. health+climate): {len(events)}")
+
+    # Persist prior news events within the retention window (real history)
+    events = merge_persist(events)
+    log(f"[risk] total events after persistence merge: {len(events)}")
 
     index = build_index(events)
     log(f"[risk] countries scored: {len(index)}")
