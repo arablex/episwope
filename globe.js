@@ -128,6 +128,35 @@ function diseaseName(o_or_name){
   return LANG === 'ru' ? (DISEASE_RU[o_or_name] || o_or_name) : o_or_name;
 }
 
+// Localised short label for a risk/news event (so the prominent title isn't a
+// giant raw English article headline, and reads in RU). The full headline is
+// kept separately as small detail text via fullHeadline().
+const RISK_DOMAIN_LABEL = {
+  conflict:       { en:'Armed conflict',       ru:'Вооружённый конфликт' },
+  civil_unrest:   { en:'Civil unrest',         ru:'Гражданские беспорядки' },
+  transport:      { en:'Transport disruption', ru:'Сбой транспорта' },
+  border:         { en:'Border / entry',       ru:'Границы и въезд' },
+  infrastructure: { en:'Infrastructure',       ru:'Инфраструктура' },
+  climate:        { en:'Natural disaster',     ru:'Стихийное бедствие' },
+  food:           { en:'Food security',        ru:'Продовольствие' },
+};
+function shortTitle(o){
+  // Risk/news event → localised domain label + place ("Civil unrest · Gaza").
+  if(o && o._risk){
+    const dl = RISK_DOMAIN_LABEL[o._riskCat] || { en:'Risk event', ru:'Событие риска' };
+    const lbl = LANG === 'ru' ? dl.ru : dl.en;
+    const place = countryName(o.place || o.country) || o.place || o.country || '';
+    return place ? `${lbl} · ${place}` : lbl;
+  }
+  // Everything else (epidemics etc.) already has a short name.
+  return diseaseName(o);
+}
+function fullHeadline(o){
+  // The raw article headline — shown small as detail. English (source text);
+  // we don't machine-translate article bodies.
+  return (o && (o.name || o.blurb)) || '';
+}
+
 /* ── Country & region translations ───────────────────────── */
 const COUNTRY_RU = {
   'Uganda':'Уганда','Brazil':'Бразилия','Sudan':'Судан','South Sudan':'Южный Судан',
@@ -3839,7 +3868,15 @@ function renderPanel(){
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
-  document.getElementById('panName').innerHTML = breakName(diseaseName(o));
+  // Risk/news events: short localised label big + full headline small (was a
+  // giant raw English headline). Epidemics keep their short disease name.
+  if(o._risk){
+    document.getElementById('panName').innerHTML =
+      escapeAttr(shortTitle(o)) +
+      `<div style="font-size:12.5px;font-weight:500;line-height:1.45;color:var(--muted,#807e76);margin-top:8px;letter-spacing:0">${escapeAttr(fullHeadline(o))}</div>`;
+  } else {
+    document.getElementById('panName').innerHTML = breakName(diseaseName(o));
+  }
   document.getElementById('panLoc').textContent = `${countryName(o.place) || o.place} · ${regionName(o.region)}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
@@ -4050,8 +4087,8 @@ function renderPopup(){
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
   document.getElementById('popBar').style.background = sev.color;
   document.getElementById('popId').textContent = `${o.code} · WHO/${o.region}`;
-  document.getElementById('popName').textContent = diseaseName(o);
-  document.getElementById('popLoc').textContent  = o.place;
+  document.getElementById('popName').textContent = o._risk ? shortTitle(o) : diseaseName(o);
+  document.getElementById('popLoc').textContent  = o._risk ? fullHeadline(o) : o.place;
   document.getElementById('popPin').style.background = sev.color;
   document.getElementById('popSev').textContent  = sev.label;
   const tag = document.querySelector('.popup-tags .tag .dot');
