@@ -159,6 +159,11 @@ export default async (req) => {
     Date.parse(e.last_updated || e.first_seen || 0) >= cutoff;
 
   let mode, scoped, scoring, queryEcho;
+  // Coverage honesty (#7): distinguish a real low score from "no active
+  // signals this window" (baseline) and "country not covered". Without this
+  // an off-list country (e.g. FR/BR) returned a fabricated all-zero
+  // 'minimal' record indistinguishable from an assessed-calm verdict.
+  let coverage = 'scored';
 
   if (country) {
     mode = 'country';
@@ -168,6 +173,8 @@ export default async (req) => {
     scoring = (scoped.length === (pre ? pre.event_count : -1))
       ? { composite_risk: pre.composite_risk, category_breakdown: pre.category_breakdown }
       : scoreGeo(scoped, now);
+    if (!pre && scoped.length === 0) coverage = 'not_covered';
+    else if (pre && pre.baseline) coverage = 'baseline_no_signal';
     queryEcho = { mode, country };
   } else {
     mode = 'radius';
@@ -227,6 +234,14 @@ export default async (req) => {
     generated_at: evt.meta?.generated_at || new Date().toISOString(),
     cache_ttl_seconds: 300,
     query: { ...queryEcho, history_days: histDays, min_confidence: minConf, lang },
+    coverage,
+    coverage_note: coverage === 'not_covered'
+      ? 'No monitoring coverage for this country yet — score is not an '
+        + 'assessment. Absence of data is not an all-clear.'
+      : coverage === 'baseline_no_signal'
+        ? 'No active signals detected in this window. Country is monitored '
+          + 'but currently shows no scored events.'
+        : undefined,
     ...scoring,
     projection,
     investigative_leads,
