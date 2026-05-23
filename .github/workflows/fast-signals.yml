@@ -13,7 +13,12 @@ permissions:
 jobs:
   detect:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    # Was 8 min — too short for the full chain (fast_signals + climate +
+    # risk_aggregate + forecast + osint + commit). fast_signals.py alone ate
+    # the whole budget, the job was killed at the limit (every run = "cancelled
+    # @ 8m18s"), and the COMMIT STEP NEVER RAN — so risk_index.json froze for
+    # days while every code fix deployed but never regenerated. Raised to 25.
+    timeout-minutes: 25
 
     steps:
       - name: Checkout repo
@@ -25,6 +30,11 @@ jobs:
           python-version: "3.12"
 
       - name: Run fast signals engine
+        # Per-step cap so a slow/hung source can't starve the downstream risk
+        # aggregator + commit; continue-on-error so the chain always reaches
+        # the commit step even if the health engine degrades.
+        timeout-minutes: 14
+        continue-on-error: true
         env:
           GROQ_API_KEY:              ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY:            ${{ secrets.GEMINI_API_KEY }}
@@ -56,6 +66,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 
       - name: Commit signals if changed
+        if: always()   # commit whatever regenerated, even if a prior step failed
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
