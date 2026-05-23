@@ -2789,6 +2789,8 @@ const state = {
   hoveredId: null,
   countries: [],
   t: 0,
+  listGroup: 'none',   // 'none' | 'country' | 'type'
+  listSort: 'sev',     // 'sev' | 'date' | 'az'
 };
 
 let map = null;
@@ -3644,17 +3646,48 @@ function matchesQuery(o, q){
 // re-renders within a session). Keyed by the group key from listGroupKey().
 const _listExpanded = new Set();
 
-// Group key for list collapsing. Food recalls / allergens spam the list
-// (e.g. 15× "Allergen: milk · <product>" for the US), so we collapse them by
-// (country + allergen/hazard root). Everything else stays individual — food
-// insecurity per country, epidemics etc. are genuinely distinct.
+// Mode-aware group key. state.listGroup:
+//   'none'    → keep only the food/allergen auto-collapse (anti-spam); rest solo
+//   'country' → one group per country
+//   'type'    → one group per domain (risk) / disease / allergen root
 function listGroupKey(o){
-  const cat = o.type || 'epidemic';
-  if(cat === 'food'){
-    const root = String(diseaseName(o)).split('·')[0].trim();
-    return `food|${o.country}|${root}`;
+  const mode = state.listGroup;
+  if(mode === 'country') return 'C|' + (o.country || '?');
+  if(mode === 'type'){
+    if(o._risk) return 'T|' + (o._riskCat || o.type);
+    if((o.type) === 'food') return 'Tf|' + String(diseaseName(o)).split('·')[0].trim();
+    return 'T|' + diseaseName(o);
+  }
+  if((o.type) === 'food'){
+    return `food|${o.country}|${String(diseaseName(o)).split('·')[0].trim()}`;
   }
   return `solo|${o.id}`;
+}
+function listGroupLabel(g){
+  const mode = state.listGroup;
+  const w = g.items[0];
+  if(mode === 'country') return countryName(w.country) || w.country || '—';
+  if(mode === 'type'){
+    if(w._risk){ const dl = RISK_DOMAIN_LABEL[w._riskCat]; if(dl) return LANG==='ru'?dl.ru:dl.en; }
+    return String(diseaseName(w)).split('·')[0].trim();
+  }
+  return String(diseaseName(w)).split('·')[0].trim();
+}
+function _eventTs(o){
+  const t = Date.parse(o.first_seen || o.last_updated || o.detected_at || '');
+  if(!isNaN(t)) return t;
+  const m = String(o.code || '').match(/\d{4}-\d{2}-\d{2}/);
+  return m ? Date.parse(m[0]) : 0;
+}
+function _sortItems(arr){
+  const a = arr.slice();
+  if(state.listSort === 'az')
+    a.sort((x,y)=> (shortTitle(x)||'').localeCompare(shortTitle(y)||''));
+  else if(state.listSort === 'date')
+    a.sort((x,y)=> _eventTs(y) - _eventTs(x));
+  else
+    a.sort((x,y)=> (SEV[y.sev]?.idx ?? 0) - (SEV[x.sev]?.idx ?? 0));  // severity
+  return a;
 }
 
 function renderList(){
@@ -3690,7 +3723,8 @@ function renderList(){
     const c = SEV[sev]?.color || '#888';
     return `background:${hexA(c,0.12)};color:${c};`;
   };
-  // ── Group near-duplicate items (food recalls / allergens) ──
+  // ── Sort, then group per the active mode ──
+  items = _sortItems(items);
   const groups = [];
   const byKey = new Map();
   for(const o of items){
@@ -3704,39 +3738,44 @@ function renderList(){
     const sev = SEV[o.sev] || SEV.warning;
     const cat = o.type || 'epidemic';
     const catColor = (CATEGORY_META[cat]?.color) || sev.color;
+    // Risk events: short localised label + small headline. Epidemics: name + case stats.
+    const body = o._risk
+      ? `<div class="name">${escapeAttr(shortTitle(o))}</div>
+         <div class="ev-headline">${escapeAttr(fullHeadline(o))}</div>`
+      : `<div class="name">${diseaseName(o)}</div>
+         <div class="stats">
+           <div class="stat"><div class="v">${fmtNum(o.cases)}</div><div class="k">${T('cases')}</div></div>
+           <div class="stat"><div class="v ${o.deaths?'red':''}">${o.deaths?fmtNum(o.deaths):'—'}</div><div class="k">${T('deaths')||(LANG==='ru'?'смертей':'deaths')}</div></div>
+         </div>`;
     return `
     <article class="ev-card ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
       <div class="top">
         <span class="country"><span class="dot" style="background:${catColor}"></span>${countryName(o.country)||'—'}</span>
         <span class="sev-tag" style="${sevTagStyle(o.sev)}">${sevLabels[o.sev]||o.sev}</span>
       </div>
-      <div class="name">${diseaseName(o)}</div>
-      <div class="stats">
-        <div class="stat"><div class="v">${fmtNum(o.cases)}</div><div class="k">${T('cases')}</div></div>
-        <div class="stat"><div class="v ${o.deaths?'red':''}">${o.deaths?fmtNum(o.deaths):'—'}</div><div class="k">${T('deaths')||(LANG==='ru'?'смертей':'deaths')}</div></div>
-      </div>
+      ${body}
     </article>`;
   };
 
   root.innerHTML = groups.map(g => {
     if(g.items.length === 1) return card(g.items[0]);
     // Collapsed group header — worst severity wins the tag/colour
-    const worst = g.items.slice().sort((a,b)=>(SEV[b.sev]?.idx||0)-(SEV[a.sev]?.idx||0))[0];
+    const worst = g.items.reduce((a,b)=> (SEV[b.sev]?.idx||0)>(SEV[a.sev]?.idx||0)?b:a, g.items[0]);
     const sev = SEV[worst.sev] || SEV.warning;
     const cat = worst.type || 'epidemic';
     const catColor = (CATEGORY_META[cat]?.color) || sev.color;
-    const root = String(diseaseName(worst)).split('·')[0].trim();
+    const label = listGroupLabel(g);
     const n = g.items.length;
     const isOpen = _listExpanded.has(g.key);
     const childCards = isOpen ? `<div class="ev-group-children">${g.items.map(card).join('')}</div>` : '';
     return `
     <article class="ev-card ev-group ${isOpen?'is-open':''}" data-group="${escapeAttr(g.key)}">
       <div class="top">
-        <span class="country"><span class="dot" style="background:${catColor}"></span>${countryName(worst.country)||'—'}</span>
+        <span class="country"><span class="dot" style="background:${catColor}"></span>${escapeAttr(label)}</span>
         <span class="sev-tag" style="${sevTagStyle(worst.sev)}">${sevLabels[worst.sev]||worst.sev}</span>
       </div>
-      <div class="name">${root} <span class="ev-count">×${n}</span></div>
-      <div class="ev-group-hint">${isOpen?(LANG==='ru'?'Свернуть ▴':'Collapse ▴'):(LANG==='ru'?`Показать ${n} отзывов ▾`:`Show ${n} recalls ▾`)}</div>
+      <div class="name"><span class="ev-count">×${n}</span></div>
+      <div class="ev-group-hint">${isOpen?(LANG==='ru'?'Свернуть ▴':'Collapse ▴'):(LANG==='ru'?`Показать ${n} ▾`:`Show ${n} ▾`)}</div>
     </article>${childCards}`;
   }).join('');
 
@@ -4117,6 +4156,28 @@ document.getElementById('chips').addEventListener('click', e=>{
   renderList();
   applyGLFilters();
 });
+
+/* List group/sort controls — localise labels + wire clicks (once) */
+(function initListControls(){
+  const bar = document.getElementById('listControls');
+  if(!bar) return;
+  // Localise button labels from data-en / data-ru
+  bar.querySelectorAll('button[data-en]').forEach(btn=>{
+    const t = LANG === 'ru' ? btn.getAttribute('data-ru') : btn.getAttribute('data-en');
+    if(t) btn.textContent = t;
+  });
+  bar.addEventListener('click', e=>{
+    const btn = e.target.closest('button[data-v]'); if(!btn) return;
+    const grp = btn.closest('[data-ctl]'); if(!grp) return;
+    const ctl = grp.dataset.ctl;             // 'group' | 'sort'
+    grp.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    if(ctl === 'group') state.listGroup = btn.dataset.v;
+    else if(ctl === 'sort') state.listSort = btn.dataset.v;
+    _listExpanded.clear();                    // reset expansions on regroup
+    renderList();
+  });
+})();
 
 /* Global header search — searches outbreaks AND countries in one dropdown.
    Outbreaks group → selectOutbreak(id). Countries group → selectCountry(en).  */
