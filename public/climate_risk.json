@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-23T20:42:58.542275+00:00",
+    "generated_at": "2026-05-23T21:41:32.019844+00:00",
     "countries": 28,
     "model": "open-meteo climate anomaly → pathogen suitability",
     "note": "Model-derived leading hazard signal, not a case forecast."
@@ -204,6 +204,28 @@
       },
       "asof": "2026-05-23"
     },
+    "PE": {
+      "dengue": {
+        "S": 0.0,
+        "band": "minimal",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.0,
+        "band": "minimal",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 4.8,
+        "zT": -0.15,
+        "p_recent": 2.61,
+        "zP": -0.72,
+        "thermal": 0.0
+      },
+      "asof": "2026-05-23"
+    },
     "NG": {
       "dengue": {
         "S": 0.55,
@@ -245,28 +267,6 @@
         "p_recent": 1.84,
         "zP": -0.3,
         "thermal": 0.8
-      },
-      "asof": "2026-05-23"
-    },
-    "KE": {
-      "dengue": {
-        "S": 0.088,
-        "band": "minimal",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.232,
-        "band": "low",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 19.2,
-        "zT": 0.16,
-        "p_recent": 1.4,
-        "zP": -0.7,
-        "thermal": 0.14
       },
       "asof": "2026-05-23"
     },
