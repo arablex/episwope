@@ -193,6 +193,15 @@
   }
   .ev-card:hover{ border-color:#bcb9ad; box-shadow:0 6px 18px -10px rgba(20,18,14,0.14); transform:translateY(-1px); }
   .ev-card.is-selected{ border-color:var(--ink); box-shadow:0 6px 18px -10px rgba(20,18,14,0.20); }
+  /* Collapsed list group (e.g. repeated allergen recalls) */
+  .ev-card.ev-group{ background:var(--paper50,#FBF9F4); border-style:dashed; }
+  .ev-card.ev-group.is-open{ border-style:solid; }
+  .ev-count{ display:inline-block; margin-left:4px; font-size:11px; font-weight:700;
+    color:var(--muted,#807e76); background:rgba(20,18,14,0.06); border-radius:99px; padding:1px 7px; vertical-align:middle; }
+  .ev-group-hint{ font-size:11px; font-weight:600; color:var(--accent,#E8590C); }
+  .ev-group-children{ display:flex; flex-direction:column; gap:8px; margin:0 0 4px 10px;
+    padding-left:8px; border-left:2px solid var(--line,#ECEAE2); }
+  .ev-group-children .ev-card{ flex:0 0 auto; }
   .ev-card .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .ev-card .country{ font-size:9.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-2); display:inline-flex; align-items:center; gap:6px; min-width:0; flex:1; }
   .ev-card .country .dot{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }

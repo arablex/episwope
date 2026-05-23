@@ -2764,6 +2764,7 @@ const state = {
 
 let map = null;
 let _markerClicked = false;
+let _countryClickBound = false;
 
 /* ── AQI Layer (WAQI real-time air quality) ───────────────────── */
 let _aqiActive  = false;
@@ -3280,6 +3281,29 @@ function refreshCountryRiskFill(){
       'fill-antialias': true,
     },
   }, beforeId);
+
+  // Click anywhere on a country polygon → open that country's panel.
+  // Markers (events) take precedence: if a dot is under the cursor we let
+  // its handler win. Bound once (this fn re-runs on every data refresh).
+  if(!_countryClickBound){
+    _countryClickBound = true;
+    map.on('click', 'country-risk-fill', (e) => {
+      const markerLayers = ['outbreaks-dot','outbreaks-halo','outbreaks-halo-mid']
+        .filter(l => map.getLayer(l));
+      const hitMarker = markerLayers.length
+        && map.queryRenderedFeatures(e.point, { layers: markerLayers }).length;
+      if(hitMarker) return;                       // marker click wins
+      const f = e.features && e.features[0];
+      const iso2 = f && f.properties && f.properties.iso_3166_1;
+      if(!iso2) return;
+      const c = COUNTRY_BY_ISO2[iso2.toUpperCase()];
+      const name = c ? c.en : (f.properties.name_en || iso2);
+      _markerClicked = true;                      // suppress generic deselect
+      selectCountry(name);
+    });
+    map.on('mouseenter', 'country-risk-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'country-risk-fill', () => { map.getCanvas().style.cursor = ''; });
+  }
 }
 
 function buildGeoJSON(){
@@ -3555,6 +3579,23 @@ function matchesQuery(o, q){
   return q.toLowerCase().split(/\s+/).every(word => hay.includes(word));
 }
 
+// Tracks which collapsed list-groups the user has expanded (persists across
+// re-renders within a session). Keyed by the group key from listGroupKey().
+const _listExpanded = new Set();
+
+// Group key for list collapsing. Food recalls / allergens spam the list
+// (e.g. 15× "Allergen: milk · <product>" for the US), so we collapse them by
+// (country + allergen/hazard root). Everything else stays individual — food
+// insecurity per country, epidemics etc. are genuinely distinct.
+function listGroupKey(o){
+  const cat = o.type || 'epidemic';
+  if(cat === 'food'){
+    const root = String(diseaseName(o)).split('·')[0].trim();
+    return `food|${o.country}|${root}`;
+  }
+  return `solo|${o.id}`;
+}
+
 function renderList(){
   const root = document.getElementById('list');
   const f = state.filter;
@@ -3588,10 +3629,18 @@ function renderList(){
     const c = SEV[sev]?.color || '#888';
     return `background:${hexA(c,0.12)};color:${c};`;
   };
-  root.innerHTML = items.map(o => {
+  // ── Group near-duplicate items (food recalls / allergens) ──
+  const groups = [];
+  const byKey = new Map();
+  for(const o of items){
+    const key = listGroupKey(o);
+    let g = byKey.get(key);
+    if(!g){ g = { key, items: [] }; byKey.set(key, g); groups.push(g); }
+    g.items.push(o);
+  }
+
+  const card = (o) => {
     const sev = SEV[o.sev] || SEV.warning;
-    const cases = fmtNum(o.cases);
-    const deaths = fmtNum(o.deaths);
     const cat = o.type || 'epidemic';
     const catColor = (CATEGORY_META[cat]?.color) || sev.color;
     return `
@@ -3602,15 +3651,47 @@ function renderList(){
       </div>
       <div class="name">${diseaseName(o)}</div>
       <div class="stats">
-        <div class="stat"><div class="v">${cases}</div><div class="k">${T('cases')}</div></div>
-        <div class="stat"><div class="v ${o.deaths?'red':''}">${o.deaths?deaths:'—'}</div><div class="k">${T('deaths')||(LANG==='ru'?'смертей':'deaths')}</div></div>
+        <div class="stat"><div class="v">${fmtNum(o.cases)}</div><div class="k">${T('cases')}</div></div>
+        <div class="stat"><div class="v ${o.deaths?'red':''}">${o.deaths?fmtNum(o.deaths):'—'}</div><div class="k">${T('deaths')||(LANG==='ru'?'смертей':'deaths')}</div></div>
       </div>
     </article>`;
+  };
+
+  root.innerHTML = groups.map(g => {
+    if(g.items.length === 1) return card(g.items[0]);
+    // Collapsed group header — worst severity wins the tag/colour
+    const worst = g.items.slice().sort((a,b)=>(SEV[b.sev]?.idx||0)-(SEV[a.sev]?.idx||0))[0];
+    const sev = SEV[worst.sev] || SEV.warning;
+    const cat = worst.type || 'epidemic';
+    const catColor = (CATEGORY_META[cat]?.color) || sev.color;
+    const root = String(diseaseName(worst)).split('·')[0].trim();
+    const n = g.items.length;
+    const isOpen = _listExpanded.has(g.key);
+    const childCards = isOpen ? `<div class="ev-group-children">${g.items.map(card).join('')}</div>` : '';
+    return `
+    <article class="ev-card ev-group ${isOpen?'is-open':''}" data-group="${escapeAttr(g.key)}">
+      <div class="top">
+        <span class="country"><span class="dot" style="background:${catColor}"></span>${countryName(worst.country)||'—'}</span>
+        <span class="sev-tag" style="${sevTagStyle(worst.sev)}">${sevLabels[worst.sev]||worst.sev}</span>
+      </div>
+      <div class="name">${root} <span class="ev-count">×${n}</span></div>
+      <div class="ev-group-hint">${isOpen?(LANG==='ru'?'Свернуть ▴':'Collapse ▴'):(LANG==='ru'?`Показать ${n} отзывов ▾`:`Show ${n} recalls ▾`)}</div>
+    </article>${childCards}`;
   }).join('');
-  root.querySelectorAll('.ev-card').forEach(el=>{
-    el.addEventListener('click', ()=> selectOutbreak(el.dataset.id));
+
+  // Solo cards + group children → open the event
+  root.querySelectorAll('.ev-card[data-id]').forEach(el=>{
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); selectOutbreak(el.dataset.id); });
     el.addEventListener('mouseenter', ()=>{ state.hoveredId = el.dataset.id; });
     el.addEventListener('mouseleave', ()=>{ state.hoveredId = null; });
+  });
+  // Group headers → toggle expand/collapse
+  root.querySelectorAll('.ev-card.ev-group[data-group]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const k = el.dataset.group;
+      if(_listExpanded.has(k)) _listExpanded.delete(k); else _listExpanded.add(k);
+      renderList();
+    });
   });
 }
 
