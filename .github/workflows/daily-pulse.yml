@@ -1,0 +1,61 @@
+name: Daily Pulse (social drafts)
+
+# Generates daily X + LinkedIn post drafts from the live World Pulse and writes
+# them to intel/_drafts/. NOT auto-published — review (10s) and post manually.
+# The live /intel World Pulse widget is the SEO surface; this is distribution fuel.
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # daily 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh pulse + receipts from latest committed data
+        run: |
+          python3 scripts/world_pulse.py || true
+          python3 scripts/receipts.py || true
+
+      - name: Generate daily pulse drafts
+        run: python3 scripts/gen_daily_pulse.py
+
+      - name: Commit drafts if changed
+        run: |
+          git config user.name  "Vigilo Bot"
+          git config user.email "bot@vigilo.noreply"
+          git add intel/_drafts/ public/pulse.json public/pulse_history.json public/receipts.json
+          if git diff --cached --quiet; then
+            echo "No changes — skipping commit"
+          else
+            git commit -m "chore(intel): daily pulse social drafts (auto-generated)"
+            for i in 1 2 3; do
+              if git push; then echo "push ok"; break; fi
+              echo "push rejected — rebasing (attempt $i)"
+              git pull --rebase --autostash origin main || true
+            done
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          DATE=$(date -u +%F)
+          echo "### Daily pulse drafts ready :earth_africa:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "X draft → \`intel/_drafts/pulse-x-${DATE}.md\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "LinkedIn draft → \`intel/_drafts/pulse-linkedin-${DATE}.md\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review and post manually." >> "$GITHUB_STEP_SUMMARY"
