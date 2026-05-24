@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-05-24T14:31:19.200419+00:00",
-    "countries": 27,
+    "generated_at": "2026-05-24T15:45:55.157112+00:00",
+    "countries": 28,
     "model": "open-meteo climate anomaly → pathogen suitability",
     "note": "Model-derived leading hazard signal, not a case forecast."
   },
@@ -380,6 +380,28 @@
       },
       "asof": "2026-05-24"
     },
+    "YE": {
+      "dengue": {
+        "S": 0.656,
+        "band": "severe",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.6,
+        "band": "elevated",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 32.1,
+        "zT": 2.01,
+        "p_recent": 0.0,
+        "zP": -0.23,
+        "thermal": 0.92
+      },
+      "asof": "2026-05-24"
+    },
     "HT": {
       "dengue": {
         "S": 0.33,
@@ -468,28 +490,6 @@
       },
       "asof": "2026-05-24"
     },
-    "LK": {
-      "dengue": {
-        "S": 0.467,
-        "band": "moderate",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.0,
-        "band": "minimal",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 26.7,
-        "zT": -0.29,
-        "p_recent": 2.78,
-        "zP": -0.17,
-        "thermal": 0.85
-      },
-      "asof": "2026-05-24"
-    },
     "AO": {
       "dengue": {
         "S": 0.122,
@@ -553,6 +553,28 @@
         "p_recent": 0.0,
         "zP": -0.33,
         "thermal": 0.96
+      },
+      "asof": "2026-05-24"
+    },
+    "FR": {
+      "dengue": {
+        "S": 0.058,
+        "band": "minimal",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.152,
+        "band": "minimal",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 14.0,
+        "zT": 0.73,
+        "p_recent": 2.0,
+        "zP": 0.02,
+        "thermal": 0.0
       },
       "asof": "2026-05-24"
     },
