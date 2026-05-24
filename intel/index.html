@@ -102,6 +102,29 @@
   .fcols ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:11px;font-size:14px}
   .fcols a{color:rgba(255,255,255,.85)}.fcols a:hover{color:#fff}
   .fbot{margin-top:48px;border-top:1px solid var(--rule-dark);padding-top:24px;font-size:13px;color:var(--night-muted)}
+
+  /* ── World Pulse ──────────────────────────────────────────── */
+  .pulse-wrap{max-width:820px;margin:0 auto;padding:8px 24px 0}
+  .pulse-card{background:#0D1015;color:#fff;border-radius:20px;padding:26px 30px 24px}
+  .pulse-eye{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);display:flex;align-items:center;gap:8px}
+  .pulse-eye .live{width:7px;height:7px;border-radius:50%;background:#00A56F;box-shadow:0 0 0 3px rgba(0,165,111,.25)}
+  .pulse-top{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-top:12px}
+  .pulse-num{font-size:68px;font-weight:800;letter-spacing:-.04em;line-height:.9}
+  .pulse-num .max{font-size:24px;font-weight:600;color:var(--night-muted);letter-spacing:-.02em}
+  .pulse-band{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding-bottom:8px}
+  .pulse-delta{font-size:13.5px;color:var(--night-muted);padding-bottom:9px}
+  .pulse-bar{height:9px;border-radius:99px;background:rgba(255,255,255,.10);margin:16px 0 12px;overflow:hidden}
+  .pulse-bar > i{display:block;height:100%;border-radius:99px;transition:width .6s ease}
+  .pulse-breadth{font-size:13.5px;color:var(--night-muted);line-height:1.5}
+  .pulse-breadth b{color:#fff;font-weight:700}
+  .pulse-hot{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.10)}
+  .pulse-hl{width:100%;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--night-muted);margin-bottom:2px}
+  .pulse-chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.07);color:#fff;text-decoration:none}
+  .pulse-chip:hover{background:rgba(255,255,255,.13);text-decoration:none}
+  .pulse-chip .d{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+  .pulse-chip .s{color:var(--night-muted);font-family:var(--mono);font-weight:500}
+  .pulse-foot{font-size:11.5px;color:rgba(255,255,255,.35);margin-top:14px}
+  .pulse-foot a{color:rgba(255,255,255,.55)}
 </style>
 <script async src="https://plausible.io/js/pa-1F7e-8n1dZRZiXazut-nG.js"></script>
 <script>
@@ -137,6 +160,42 @@
   <h1>Risk briefings, <span class="h-it">source-traceable.</span></h1>
   <p class="lede">Weekly global risk briefs and monthly deep-dives across health, conflict, disasters, infrastructure, civil unrest, climate and border — built on the same live engine behind the globe, scored from 44 verified feeds.</p>
 </section>
+
+<!-- ── World Pulse — live planetary risk temperature ── -->
+<div class="pulse-wrap"><div class="pulse-card" id="pulseCard" style="display:none">
+  <div class="pulse-eye"><span class="live"></span> Vigilo World Pulse · live</div>
+  <div class="pulse-top">
+    <div class="pulse-num"><span id="pNum">—</span><span class="max">/100</span></div>
+    <div class="pulse-band" id="pBand"></div>
+    <div class="pulse-delta" id="pDelta"></div>
+  </div>
+  <div class="pulse-bar"><i id="pBar" style="width:0%"></i></div>
+  <div class="pulse-breadth" id="pBreadth"></div>
+  <div class="pulse-hot" id="pHot"></div>
+  <div class="pulse-foot">Mean composite risk across countries with active risk, indexed 0–100. <a href="/methodology">Methodology →</a></div>
+</div></div>
+<script>
+(function(){
+  var BANDC = {calm:'#00A56F',unsettled:'#E4B514',tense:'#E8590C',crisis:'#C92A2A'};
+  var DOTC  = {minimal:'#5b9d6b',low:'#caa53d',moderate:'#e2820f',elevated:'#d8531e',severe:'#c0392b',critical:'#7d1a12'};
+  fetch('/public/pulse.json?_='+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(d){
+    if(!d || typeof d.pulse!=='number') return;
+    var c = BANDC[d.band]||'#E8590C';
+    document.getElementById('pNum').textContent = d.pulse;
+    var bandEl = document.getElementById('pBand'); bandEl.textContent = d.band; bandEl.style.color = c;
+    var del = d.delta||0;
+    document.getElementById('pDelta').textContent = del>0?('▲ +'+del+' vs yesterday') : del<0?('▼ '+del+' vs yesterday') : 'flat vs yesterday';
+    document.getElementById('pBar').style.cssText = 'width:'+Math.max(3,Math.min(100,d.pulse))+'%;background:'+c;
+    var b = d.breadth||{};
+    document.getElementById('pBreadth').innerHTML = '<b>'+b.active+'</b> countries with active risk · <b>'+b.elevated_plus+'</b> at elevated or higher · monitoring <b>'+b.monitored+'</b>';
+    var hot = (d.hotspots||[]).slice(0,6).map(function(h){
+      return '<a class="pulse-chip" href="/app"><span class="d" style="background:'+(DOTC[h.band]||'#888')+'"></span>'+h.name+' <span class="s">'+h.score.toFixed(1)+'</span></a>';
+    }).join('');
+    document.getElementById('pHot').innerHTML = '<span class="pulse-hl">Today’s hotspots</span>'+hot;
+    document.getElementById('pulseCard').style.display='block';
+  }).catch(function(){});
+})();
+</script>
 
 <div class="feed">
   <div class="feed-h">Latest</div>
