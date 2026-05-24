@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-05-24T16:50:14.151437+00:00",
-    "events_total": 385,
-    "countries": 115,
+    "generated_at": "2026-05-24T17:49:14.675151+00:00",
+    "events_total": 388,
+    "countries": 114,
     "categories": [
       "health",
       "conflict",
@@ -14,9 +14,9 @@
     ],
     "schema": "1.0",
     "fetch_health": {
-      "ok": 43,
-      "failed": 0,
-      "fail_rate": 0.0,
+      "ok": 39,
+      "failed": 4,
+      "fail_rate": 0.093,
       "degraded": false
     }
   },
@@ -137,7 +137,7 @@
       "id": "evt_5fdd64fbb3d3",
       "category": "conflict",
       "type": "kinetic_strike",
-      "headline": "Nigeria, US fresh airstrikes kill over 20 ISWAP fighters in Borno - P.M. News",
+      "headline": "Nigeria, US fresh airstrikes kill over 20 ISWAP fighters in Borno - PM News Nigeria",
       "severity": 5,
       "confidence": 0.9,
       "source_verification": "media_ai_signal",
@@ -386,6 +386,34 @@
       "is_new": true
     },
     {
+      "id": "evt_bcd08049faeb",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Russia uses Oreshnik missile after deadly dorm strike dispute - MSN",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 61.5,
+        "lng": 105.3,
+        "place": "Russia",
+        "country": "RU",
+        "admin1": null
+      },
+      "country": "RU",
+      "first_seen": "2026-05-24T09:41:31+00:00",
+      "last_updated": "2026-05-24T09:41:31+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQaUJBakZTNDNCamdTTUFFSHA5Y3oyZk4zdHk3OHZoTkttTGYwaWZ5UmVlY1NvbzZwd2ZRa0VPVkJtYjd5Z1hZZ0RNM3AzbHhYT0VlMVk3OVE0S3d6anZHU3lIemptQkRrYmxpZnBOUXROZnBGTTdMMlJJelFxaFUwQ1FWd1NGem9wQlVSYUVMS0JFcWFlT3RjZ3hlcVBaLTk5MGNZUFM4b1lfc05JSXlLT1ZBTDE4NFRVN0RvcEluWmV4ZkZ3TUtWbUVwQWt2Tl9YdTFNZ0NIUll6cGc3MlNNME5rOEhKUQ?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_60c0959609d3",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -439,34 +467,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPR2MtVHhPSmxBcDR0ZUpfN0tFX0R4cUEwc2FROExZWU1YZ0VUV1pDcUJIU3JlNHdYX0VLY2t3RGtrcTV1MUsxS0hPRFJ6SjJIWGpZYnVGS1VFTjFkMEtreURKenN4Z0pTc1JxcXhMZ2tTU3FHVzNlZGZpRmQwM3RWa3AwdjNOcVRUcHlCYThVNHJlY0MzSHduWHBxUdIBmwFBVV95cUxPR2MtVHhPSmxBcDR0ZUpfN0tFX0R4cUEwc2FROExZWU1YZ0VUV1pDcUJIU3JlNHdYX0VLY2t3RGtrcTV1MUsxS0hPRFJ6SjJIWGpZYnVGS1VFTjFkMEtreURKenN4Z0pTc1JxcXhMZ2tTU3FHVzNlZGZpRmQwM3RWa3AwdjNOcVRUcHlCYThVNHJlY0MzSHduWHBxUQ?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_15d46a2775c2",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Russian missile, drone strikes kill four in Ukraine's northern regions, officials say - The Hindu",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 48.4,
-        "lng": 31.2,
-        "place": "Ukraine",
-        "country": "UA",
-        "admin1": null
-      },
-      "country": "UA",
-      "first_seen": "2026-05-19T11:04:42+00:00",
-      "last_updated": "2026-05-19T11:04:42+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQSTQtX1lzdHBoX081ZWtSVC1PUDlkUVdjdWxIVGJjTmgxbnBDam9Rci1VYl83X3FFMkpkczA0WDdFVmVFbDc3S0RTUmxzQU5nTXdZSVcxMGR5aUNtTHZXeWxCbVRLMFdfQW5wVVhpRHVRUTg5WFhxZzhiLTFfcUt3XzgzUU5HSG1HVmhWWFh6T3VQWC0tUVY5Mi04QTVRVllMbUFHSWR6bzFFU0Z2UHdYOEoyVFdPQ25yeGVhUm1oT0laUkxucFBvX2c4bHdRX2dMNlRTWHJXLWlzWGVjYi1Z0gHmAUFVX3lxTE93YTZVaDZGOVBPcHFhTkZtQm1Ka0UtTkZZbW1ZS2Y1aTVlQzcyN3ZBTzV0bUxuVnlHcjB3QzRYblFCR2JjcmpTOXBrUk4zMW14VlRDd0tsSGo0dEttMkoxZVQ5aURoWVBXSGNTdTRZQzlOdXhvb1BzN2JyNklfMFV4UmdROTlSNno5UkY1OTdEWTRIOVVsbTlfQUFoTkJVMVpnYnlhc0VJWGIyWGprLXpXdE5sa3hEZVZlWjdrT0xmUXEtNEpvNkoweW1EcGRkT3lQcWRSV1g3b2k2QW96bm5YbVRBVG93?oc=5",
       "is_new": true
     },
     {
@@ -722,6 +722,62 @@
       "is_new": true
     },
     {
+      "id": "evt_aaa2233fa6ba",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Russia Launches 90 Missiles and 600 Drones Against Ukraine - inkorr.com",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 48.4,
+        "lng": 31.2,
+        "place": "Ukraine",
+        "country": "UA",
+        "admin1": null
+      },
+      "country": "UA",
+      "first_seen": "2026-05-24T14:52:43+00:00",
+      "last_updated": "2026-05-24T14:52:43+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPV2d6MUFzSTdTR3M2RnJ6bzNqdVBpUXkwcUk1c3BfUEJEcUVuV09uVFhSNFBrNjhiaGpfbjNzWlNIY25pQWVUdGg0WkJJZG1pSFpSNnVBMWZ2SmZnWW1RelNtT2hidjNsZHlWTS1NblR5b1N6SV9NaHNRSGNQM1QyLTIwa9IBiAFBVV95cUxNYUFhWkw4V2VtVTBaVXhaZ0dINmVrQWw1NkUzNGNQVVNldmxsR2poengwdjJDanZxVGFqNjZ1RE01M2tRZVp0ZlY3NHNiRGhyOEFvSm5fSHRwdmN4UTItNkpPVkhVVkEzVW4xZWNEWGI1dnRsaENmWmdlbE0xaDZSdVNKNUM5RzRr?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_651c7152f6a9",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Massive Strike on Kyiv and Surrounding Regions: Over 50 Missiles and Up to 700 Drones Used, Resulting in Fatalities and Injuries - inkorr.com",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 50.4,
+        "lng": 30.5,
+        "place": "Kyiv",
+        "country": "UA",
+        "admin1": null
+      },
+      "country": "UA",
+      "first_seen": "2026-05-24T13:41:15+00:00",
+      "last_updated": "2026-05-24T13:41:15+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOQW1qaU4xRVpMT005WTJTbFZCV2xOT0RMZV9GT2tZLUZQdVh2ZEgwUzB3VzNra1hnUmRnWWxjXzFkTmJFUXlybXJKV2psZElqTng5TjdCenpZNDRudVZrUkpxNHVYaF91ckhuU0EtMkJLb3RiRkpiQnYzdTJtVzJwSGIxaDFIUmx5SVRWZEtDaGVrM1FyWGhJVDBhLXZLaDRSQXBjbEdZRDBuaW1XQ3hn0gGvAUFVX3lxTE5BbWppTjFFWkxPTTlZMlNsVkJXbE5PRExlX0ZPa1ktRlB1WHZkSDBTMHdXM2trWGdSZGdZbGNfMWROYkVReXJtckpXamxkSWpOeDlON0J6elk0NG51VmtSSnE0dVhoX3VySG5TQS0yQktvdGJGSmJCdjN1Mm1XMnBIYjFoMUhSbHlJVFZkS0NoZWszUXJYaElUMGEtdktoNFJBcGNsR1lEMG5pbVdDeGc?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_1e536b33fa43",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -806,31 +862,31 @@
       "is_new": true
     },
     {
-      "id": "evt_67400fa7e370",
+      "id": "evt_285b0e7099cd",
       "category": "conflict",
       "type": "insurgent_attack",
-      "headline": "At least 14 people were killed on Sunday after a bomb exploded near a passenger train in southwestern Pakistan, local officials said, in the latest outbreak of violence in a region",
+      "headline": "Car bomb attack near Syrian Defence Ministry in Damascus - MSN",
       "severity": 4,
       "confidence": 0.83,
       "source_verification": "media_ai_signal",
       "source_class": "tier4_media",
       "source_name": "news.google.com",
       "geo": {
-        "lat": 30.4,
-        "lng": 69.3,
-        "place": "Pakistan",
-        "country": "PK",
+        "lat": 33.5,
+        "lng": 36.3,
+        "place": "Damascus",
+        "country": "SY",
         "admin1": null
       },
-      "country": "PK",
-      "first_seen": "2026-05-24T12:55:02+00:00",
-      "last_updated": "2026-05-24T12:55:02+00:00",
+      "country": "SY",
+      "first_seen": "2026-05-19T15:31:45+00:00",
+      "last_updated": "2026-05-19T15:31:45+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNc3Y4anlQMzVkb1NvR29WcXVEMV9lUzItcEtnNDdUZTVMTDY4YkQydXpWYkVhb3BNdXcyT3Fpd2U5Z0JkUGp3WE1QWVl6TDg3RDZsRFQ5WDVRdUFzNzFROWNpZUE2WHhwRUdCRTlacmtTVzdJbTFleEV5U2VVQTVQVnVnY1k1ZldhdDBfM1h3VXJFcUZQOW92bVctQ28tdWp6V2JNV0g3WmRId1ppVGdsWHlSOTVvM1JJSXFpQ0VSVFFYcGVxdXBzdThjbzBQUmMyTmpF?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOMlUxd2k2M2JjUC1ydGJmWmJFekVieDhjcEVVcXVHT1JSb2ZFR0kwWEZVWG81dktQZ0VhOE5KRk5VbWV1LVVvT0tZenl5VnB1NkM0UGZDOVN1ZU1DZEhtWERLekc5NDhkNm1DcXo0cTdsMnBmX1RNcjBTc19iS3lINXA4blA3a0c0RlkydmZGUkJwamstemRqcS01S29hMkVEdGJFOEU2U3Y?oc=5",
       "is_new": true
     },
     {
@@ -887,34 +943,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNVDR6LWRsZno2cV9SWmR2NmJfZEdzWmFVbFN3cVdnUWtTaHdCOHUzcFV0V28zMUoxaV9idTJsTGZfUWFodWU4R0Vrd0h4RnFBcGVxYjF3RjdWNWstaFFTN1phLVdXbmlTSHRod0NZd1Q3QnhKR0pzNktSLUtGMk93QkNWd294Tjh3WE9qX2lyWjI4VFhNbklULTFUcExXYVJlLTl5ZlR6RnBGNmlIZFFHLTZpZlZMb3pqWndOYk9fXzF1WGEtMmhVN3JnRG5abUpBYVk1YUg1QnM3bFhDOXM2VzdXcFlTVTVD?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_8cc953a19a9a",
-      "category": "conflict",
-      "type": "military_buildup",
-      "headline": "US-Israel-Iran War Latest Update: Israel Strikes Lebanon as Hezbollah Claims Attacks on Troops; Hormuz Plan Sparks Global Alarm - Dailyhunt",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "2026-05-17T17:06:42+00:00",
-      "last_updated": "2026-05-17T17:06:42+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxQMmh4NUVldnFrZVUxWWttejlsRWJVbXJiX2NyZlRsWDl4MF9IYndZUGMweG5xdkxLRjc3Z3V5elV6OTFQZ2tEamhnZFBfLWNlR25jVFpvaWo5MnNfTmRtdGtRaXRTZGhMM1Rvb25Hdzl4WTJiZklXMEhGN1VJTHVDWlF3S2hNdmNqRGpmRGhkdUVrbmg4ckdjUUtPdy0wSzFNSFVQMWp5WFNVQnMtNTc2d3RtMjQzY1I1Sm9LTmpJSThXVTNvNEx2ZE0xSUVZUWNIY3RaamE0dUtyUFhlM2RsUUc5azZKQjh1QWM0TjNKOFJORk9xWkhzVzBWQzZMc2ZhM2FCdWhSOTlGYUNMNm1sWk1IUkF4MzNhdklUYS1LbkNkbjBpY1NZZjVhWlFsci16TU8wRDdIRUNVMEhtSTFVRg?oc=5",
       "is_new": true
     },
     {
@@ -1089,7 +1117,7 @@
       "id": "evt_8a98cf46c3c9",
       "category": "conflict",
       "type": "kinetic_strike",
-      "headline": "Video. Israel destroyed a four storey house in overnight airstrike in central Gaza camp - Euronews.com",
+      "headline": "Video. Israel destroyed a four storey house in overnight airstrike in central Gaza camp - Euronews",
       "severity": 5,
       "confidence": 0.9,
       "source_verification": "media_ai_signal",
@@ -1338,6 +1366,34 @@
       "is_new": true
     },
     {
+      "id": "evt_ed9f02a87acb",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Palestinian was killed, artillery shelling as Israel persists in violating Gaza truce - وكالة سبأ",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-22T11:20:34+00:00",
+      "last_updated": "2026-05-22T11:20:34+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE00M2otQXRzMmwxOHZyUGNBV0x3aFNyLTM0TDlMUXB2cVZIV0FUSkZlTWFlamhCUlhBenF4aW5MV3Vidm54UWVTU3VTSlVTSkE?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_e9bf7eb4842c",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1391,34 +1447,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxOREI2aXplQ3BjcHljSG1WM3c2bnQwOS0xdl9PR3MxTFpXUlB3WXdYckNSRzBpcWszR3FtYkpvR3RSamsyWU1BOTFxYnlURGw2UlZSUkpEQ1pHNmdyMTJRMC1tZHE4VmItQ1dzZU0tQ1ZtRUNNT2NyNFdQVkdPaTM3WHdFMUgzM3RrRWZ3Mkp3Z1R0MkVBcldEb21zR3QwNnRxeGxqYXhnOW5PU0p2UVBBelJlSFphTGNzTlp2M1poaG43cWprUTI0UXBLM3FsZjZUQUFr?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_789a5717de7a",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Palestinian killed, others injured in Israeli airstrikes on Khan Younis and Gaza City - وكالة سبأ",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.3,
-        "lng": 34.3,
-        "place": "Khan Younis",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-17T17:37:58+00:00",
-      "last_updated": "2026-05-17T17:37:58+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBFVTJsVTR4V0RBY01PWXAzSy1zZTRsNnJVRGt1b0Frd1kzbEFFeDZZNTZyUE1RRXBHdWN1aEpyNmdNSzBlTHpLU0EzdU51OFE?oc=5",
       "is_new": true
     },
     {
@@ -1565,7 +1593,7 @@
       "id": "evt_7daffc9f768d",
       "category": "conflict",
       "type": "kinetic_strike",
-      "headline": "Farsnews | Israeli Airstrike on Gaza Hospital Tent Camp Claims Lives of Displaced Palestinians - farsnews.ir",
+      "headline": "Farsnews | Israeli Airstrike on Gaza Hospital Tent Camp Claims Lives of Displaced Palestinians - خبرگزاری فارس",
       "severity": 5,
       "confidence": 0.9,
       "source_verification": "media_ai_signal",
@@ -1643,6 +1671,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPWjVjVkpCZXdUQklzU2NaNjFqNlU1NzA5Z29ycS1NY3k4WXJDWUI3dWNDekFxTS03MUVoMVNIaERNdEtSbEpCVFllMi1VZXAxS3NDSklYaE9lemdpam9QbXNZMHMtSmVCOFk2dXFpRjBkNG90MTZVaG5iZVNhYWgwQmlDd0FFVzhBQ0lEeHZRaEVBOVlqVEs2LXBPbmh6ZHcyd2NDQmhncWJBMHM2TWtMdmhaN3cwbjVGcnk4Y3l1MlluZHJKdXhJSW9xQ1M1b0tjNGw4?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_9ea8ca2d7de7",
+      "category": "conflict",
+      "type": "armed_clash",
+      "headline": "Houthi drone strikes an Israeli airport as Israel steps up Gaza City offensive - MSN",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 15.4,
+        "lng": 44.2,
+        "place": "Houthi",
+        "country": "YE",
+        "admin1": null
+      },
+      "country": "YE",
+      "first_seen": "2026-05-23T03:56:54+00:00",
+      "last_updated": "2026-05-23T03:56:54+00:00",
+      "lead_time_hours": 0,
+      "source_count": 2,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2wJBVV95cUxOWFNhelNNTHZYNFZ5c0IxaVFqbFJ2MmdpcXI4Q3BLcUp6ZWZuVmhWMlhJdFota19ncGYzdmFjMWVlcXBWQl9TeXpGck85N1NocnZ2dUtweUVKVTNpckpxbmk5dlZ2WTJaWWxUb1FtamJ6ZFRoVTlOVkwzT3p2YVVzdFlnSV9qN0dnVWhvWUg2WHlpT0hmcHBJLURjdHhnaHRTWEVmc1ZyRmN5ZFZnSVN1VXEtUGFaazZzczEwa0daSmJUMUY5U0c1N0tLZ2VjWFZweEhwNlBuUTdXNGhBV3l3U3dKTEdHdm5FY29SVEJkOTFRQnZ1cm8wRjhBajhTanZtTDJhNWpZc0RIZ21yc2FRM2ZCWi05bU90aXFRUFN6NG9sa0hvY1NPUjZVcFhUV281OGdYVG1TbmRFU0N4blBycjBnOUZIMXlQRDFjRjIwaFhyNXhnX3JEb2pfOA?oc=5",
       "is_new": true
     },
     {
@@ -2038,6 +2094,34 @@
       "is_new": true
     },
     {
+      "id": "evt_029c4bbbe78e",
+      "category": "conflict",
+      "type": "insurgent_attack",
+      "headline": "Syrian soldier killed and at least 18 people wounded by Damascus car bomb - France 24",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 46.2,
+        "lng": 2.2,
+        "place": "France",
+        "country": "FR",
+        "admin1": null
+      },
+      "country": "FR",
+      "first_seen": "2026-05-19T14:15:39+00:00",
+      "last_updated": "2026-05-19T14:15:39+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOYU1neE5Camh4VlBLMU4wV1BIQ1VRQ2VTeXgtSEc5SlkwQmV0UmFESDB5N21faUJpaXE4R1pqM3d4dUplNGc2QXhHUk5IQjhSdXFJQzdqM0lycjRrWTZEMWdpMlRNajRoeWNXSkRWZFJXSWQzdFBRWnpDZWtrUHY2QVNDZXlHT2o4bnpYbmk0cmhuVnBQckxIYlNQc1hjVzM1U0NGLVlFbGhWWXZLQVRoZVJYNlR5UEs2TnBzUm9kRQ?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_7786cfe711c2",
       "category": "conflict",
       "type": "armed_clash",
@@ -2122,34 +2206,6 @@
       "is_new": true
     },
     {
-      "id": "evt_fe41b6cad3be",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Yemen: Houthi missile fragments fall near Tadawin, Marib - Yemen Online",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 15.6,
-        "lng": 48.5,
-        "place": "Yemen",
-        "country": "YE",
-        "admin1": null
-      },
-      "country": "YE",
-      "first_seen": "2026-05-18T18:33:28+00:00",
-      "last_updated": "2026-05-18T18:33:28+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1BU3VBSDFWUjJUY1lOY1kyYnJqcjk3XzlOSDIyeE53V0N0MTRjNW4tZkEtOHhyTnZBU3UwcVBYaDJZVmZ1ZUNSZ3Y1V1F6RVJjVVpxVkFJTVR6UQ?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_c9cd395ce108",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -2170,7 +2226,7 @@
       "first_seen": "2026-05-18T04:00:25+00:00",
       "last_updated": "2026-05-18T04:00:25+00:00",
       "lead_time_hours": 0,
-      "source_count": 2,
+      "source_count": 1,
       "sources": [
         "google_news"
       ],
@@ -2203,34 +2259,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi1wJBVV95cUxOTlpXU0tlT0xTbUd0d0w0dS1uWEFrQUFXbldaTWhEb1lxYlJmTUxadC11Ri1oR2YwWWRvVXBaVzBiMEFBYVl1S2VrSlB3aU5PQ3hxMWdTTFg3YmlrZUFFM1pPLS1ING9LN3hqWW9rUEhOQVAyeHltd3p3R0NXUEVYcWJaRFhRVTc0c1FvNnl3b0ltQ3ZhV3QxdFNLWkRGVndyaWtGbHNMME1scC1sbDBqUWs4UndUdXBmZ1MxeFJ5V1Y2d25HUkFzSW1CY3NINlZoMlo0djNpWEhUeHBPWlVTRDYzRmhDcFJkZ0xrbDdILTNNeFJTREZxOHJzN3NwOE1mSDRQLXREVFdFeklyQ0JOdkpRekdjUDQ0NVpyRTFveVNYMjJsT0ZDVFNhbTczSUpOd1JYdHYyT1h1U3RVM0p0eHlZV2ZNR3BiOVN4S1BHUzhONFc4MDZz?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_9ea8ca2d7de7",
-      "category": "conflict",
-      "type": "armed_clash",
-      "headline": "Houthi drone strikes an Israeli airport as Israel steps up Gaza City offensive - MSN",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 15.4,
-        "lng": 44.2,
-        "place": "Houthi",
-        "country": "YE",
-        "admin1": null
-      },
-      "country": "YE",
-      "first_seen": "2026-05-23T03:56:54+00:00",
-      "last_updated": "2026-05-23T03:56:54+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNRVM4THdjeUlZOXNqMEFSOUtHMFdxRmxEVk1Fdl9SdlBvNjJvdC04NDZSVFdEckJvcTN3dVJNX1VTMGlJTXFKLXNQcGhKUk1YdUVrcy1EakR4QXhPUHU5NlFCUjVaYzV1eWkwLUl0WmtrUEdiMW9hbFFQcWI4OTBNVDlHVGozcWV1YUhmc0JlRWhIVWowUXIta3hpOFB5T2V1M0FDR3NfNkVHLUJRU0ZwN25HWVNFSm5uNEl3MkpDY3UteFpub0xNei1qcGVMS3pCMF8yYmpnb2VyZjVrcHhSYUwzWXJpY0l4NHBGN2NvdWs1TWU2N0xlWUNoTFdHVHQyU0FXWDV3TVBpY1ROd000cXRCOWFqcDYteGFRUUlOYnlTNUJIS0RXMk9nRURxTlMwTnFCV2QwOWRSQVpmcDFfMEROYXRHamNpOXBWZVBzMTNGandtQWZSZEY1Ynk?oc=5",
       "is_new": true
     },
     {
@@ -2615,8 +2643,8 @@
         "admin1": null
       },
       "country": "EC",
-      "first_seen": "2026-05-24T05:39:38+00:00",
-      "last_updated": "2026-05-24T05:39:38+00:00",
+      "first_seen": "2026-05-23T01:12:15+00:00",
+      "last_updated": "2026-05-23T01:12:15+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
@@ -2710,34 +2738,6 @@
       "is_new": true
     },
     {
-      "id": "evt_0a5fd0086fed",
-      "category": "civil_unrest",
-      "type": "protest",
-      "headline": "Explainer: What is behind Bolivia’s widening protests? - Reuters",
-      "severity": 2,
-      "confidence": 0.69,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": -16.3,
-        "lng": -63.6,
-        "place": "Bolivia",
-        "country": "BO",
-        "admin1": null
-      },
-      "country": "BO",
-      "first_seen": "2026-05-19T13:45:40+00:00",
-      "last_updated": "2026-05-19T13:45:40+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNWThkeDkxTktQLUNfZnZVY1BCT3d6TEhpVHNaa3JCSTVGQlFtQWd3WlV1dl9BTHl0TnJaMmE3Z19lMFpZX0FGQkZjSWpzQ3JsRFlrVnFSdmVnc25pVHI5X1FPRkJRYnZ3MkRlckItNmlKM0NMQXlXUEF1OElOMUJpazN4WmYwejFyMFZCc2V2c0ZFMVhKYlJ3?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_521e1fcd13c7",
       "category": "civil_unrest",
       "type": "protest",
@@ -2766,6 +2766,34 @@
       "is_new": true
     },
     {
+      "id": "evt_0a5fd0086fed",
+      "category": "civil_unrest",
+      "type": "protest",
+      "headline": "Explainer: What is behind Bolivia’s widening protests? - Reuters",
+      "severity": 2,
+      "confidence": 0.69,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": -16.3,
+        "lng": -63.6,
+        "place": "Bolivia",
+        "country": "BO",
+        "admin1": null
+      },
+      "country": "BO",
+      "first_seen": "2026-05-19T13:45:40+00:00",
+      "last_updated": "2026-05-19T13:45:40+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNWThkeDkxTktQLUNfZnZVY1BCT3d6TEhpVHNaa3JCSTVGQlFtQWd3WlV1dl9BTHl0TnJaMmE3Z19lMFpZX0FGQkZjSWpzQ3JsRFlrVnFSdmVnc25pVHI5X1FPRkJRYnZ3MkRlckItNmlKM0NMQXlXUEF1OElOMUJpazN4WmYwejFyMFZCc2V2c0ZFMVhKYlJ3?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_b2f4d1ede773",
       "category": "civil_unrest",
       "type": "mass_protest",
@@ -2791,6 +2819,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFB1VGRWbURlWm8xbHMzRF8xYldqMHJ5QVJTNGlJWXpoTExGbVpROG5ud25BQkdEZGdjSWxqSGdSM2pLc2t0YnRHMEV4Q0lkaTUtQVlZWS14SXFaR20zQVBTMGc4bFZfNHZOTDJmNWF0a3A?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_a23eaa70c6d9",
+      "category": "civil_unrest",
+      "type": "protest",
+      "headline": "Patrick Kennedy Backs Iran’s Resistance Units and NCRI at Massive Washington Rally - Iran Freedom",
+      "severity": 2,
+      "confidence": 0.69,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-18T08:18:10+00:00",
+      "last_updated": "2026-05-18T08:18:10+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPeTdHaFBXc2lsRk1uT1VlMzlPRDNDU2RLMzNwZmhCbnc5ckNhOFFvMnhSdlhqLUR0SUdnbV9BM3dUT01oNkJYUlNBdExzWVdtNWRsX3lldVU4cVVGbkJobkdZZWlOdGp0c293SHl4NHdGZ1JMYU03bTZPZlJudmdFRXVialNXb0J2WkJkd0V0OFFKWFNBdExuMjR5ZVhOWTJDV1diZUx4WWRoZnFnell6dUthdnRLU2ZQcVhvb0JxUTBnZkxtUms5OHk0bm5BNFAya3o5WNIB2gFBVV95cUxPWkJPV19iMVFCaG5fdU9ZNDZQbWVIZ09DSTNDNDloLXdKcS1idHlKWlB6dTlOckkwdlJGWEs5RnNocF9hYzdfemhKeGVwZUZGaXVfR1YwZm1laHliVWpqZ2xHTWlGZjJ4OVZBN0xUdXN1cVRlZjBMY3h6WGZlTmRRaEU4ZUN6ZUZVSnlwLW9ibXhreHkyWU9QMUpTVURGa0ZzMUJoLXZqcUk0eU9GWVpqUkY2TTFkSXk5TU9FandoNDZ5bDN3UjlZcHdmUjZveVNjU2dPTTZzdWRFUQ?oc=5",
       "is_new": true
     },
     {
@@ -2909,7 +2965,7 @@
       "id": "evt_aa7a79a75964",
       "category": "civil_unrest",
       "type": "protest",
-      "headline": "Video. Protest erupts at Venezuela’s Central University after prisoner deaths - Euronews.com",
+      "headline": "Video. Protest erupts at Venezuela’s Central University after prisoner deaths - Euronews",
       "severity": 2,
       "confidence": 0.69,
       "source_verification": "media_ai_signal",
@@ -3158,34 +3214,6 @@
       "is_new": true
     },
     {
-      "id": "evt_5d943fa6b0cb",
-      "category": "border",
-      "type": "entry_restriction",
-      "headline": "U.S. Ebola Travel Ban Faces Criticism From Congo Health Officials - The New York Times",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": -4.0,
-        "lng": 21.7,
-        "place": "Congo",
-        "country": "CD",
-        "admin1": null
-      },
-      "country": "CD",
-      "first_seen": "2026-05-23T19:46:08+00:00",
-      "last_updated": "2026-05-23T19:46:08+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPY05kS1JxUkZTMDJYOE5veHplWmpCVUxNWWxrWlZJUndFRERxdFAtN1pXMnhLbmNUclppQTJHWHZ1TmwwR041b3lPV3lORWlQdUQ0QlVpOGZMbnhQRFV5LVZvMVMzSjM3VFI0ZUhia3FBYWtObUFkS3oyTXdfRDRET0RKUHcxZw?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_02e1cd7ea475",
       "category": "border",
       "type": "entry_restriction",
@@ -3270,10 +3298,10 @@
       "is_new": true
     },
     {
-      "id": "evt_bdc841a7403e",
+      "id": "evt_f0f518ee88e7",
       "category": "infrastructure",
       "type": "utility_outage",
-      "headline": "'All gone dark' - Bad weather triggers major blackout issues across Indonesia's Sumatra, confirms top official - The Star | Malaysia",
+      "headline": "'All gone dark' - Bad weather triggers major blackout issues across Indonesia's Sumatra, confirms top official - thestar.com.my",
       "severity": 3,
       "confidence": 0.76,
       "source_verification": "media_ai_signal",
@@ -3710,11 +3738,11 @@
       "first_seen": "2026-05-20T05:28:57+00:00",
       "last_updated": "2026-05-20T05:28:57+00:00",
       "lead_time_hours": 0,
-      "source_count": 2,
+      "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNZ3hqTVM4OG5KRjcyc2ZzV0IwZ1FITFJOMExPckRKS0pJdktxcmRfOTNHX1NRU09rTzNQTkNzZ2kzLUY5YW1ONGJfT09SbGdMWjI5ODdHX2RxYklKUy1aRWtoT1p1dFpGQXV2cW5WSkZjMUJWbGhsd202VE5aeXRIMDVBejR5Qk10Y0RucURrREVOS0g3b3NsU0h0ZGNxcmcyZndKZ1FpRThIUlBZVVhPdXpIYWVNSUVndHpZX2NtMFkwcTd3U0sydUVLdXJJaWVESE9XNEpubFF1M1VmSFlzbEVUemZYWHRiTnJ0cFd2el93OG1CcHFlV2x3TDJ1cThrWWc?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNZ3hqTVM4OG5KRjcyc2ZzV0IwZ1FITFJOMExPckRKS0pJdktxcmRfOTNHX1NRU09rTzNQTkNzZ2kzLUY5YW1ONGJfT09SbGdMWjI5ODdHX2RxYklKUy1aRWtoT1p1dFpGQXV2cW5WSkZjMUJWbGhsd202VE5aeXRIMDVBejR5Qk10Y0RucURrREVOS0g3b3NsU0h0ZGNxcmcyZndKZ1FpRThIUlBZVVhPdXpIYWVNSUVndHpZX2NtMFkwcTd3U0sydUVLdXJJaWVESE9XNEpubFF1M1VmSFlzbEVUemZYWHRiTnJ0cFd2el93OG1CcHFlV2x3TDJ1cThrWWfSAYcCQVVfeXFMTVp2QXlOc1gxa2VHeU5oYmZRYkJvR2FHLXB6R3dXQk9SZlM2U0doQlY2NDBqWmVXOUZQRWZrS1pDMFM3UkVWRnhaT2hWeEhEeEthV2JXMnFjZ0gzNDBYWlZUM1Q1OGgtdHlVYW5rRnRxNXJXOTBxN2gwdzdhSXlxTUVzR2NnOFUxcS1zMHllaWxKMVRQTVhCRE1naFhxUGlEZUpxdnhQMDdreTVOUU9ORVNTQURvenp1bWtJZ0ZnQUJodWl2Q3FvWkpwZ1c3Z1RZaFhyTk1wSlNhVUZNMC1kY0pfalk3bXNueFh2TDVPQXNvRng2TVhSYTZtdXhZeGhiYzZOVXo1Uk0?oc=5",
       "is_new": true
     },
     {
@@ -3746,34 +3774,6 @@
       "is_new": true
     },
     {
-      "id": "evt_b976d46415bd",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Japan rocked by 5.9-magnitude earthquake, no tsunami warning issued - CNBC TV18",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 36.2,
-        "lng": 138.3,
-        "place": "Japan",
-        "country": "JP",
-        "admin1": null
-      },
-      "country": "JP",
-      "first_seen": "2026-05-20T03:02:12+00:00",
-      "last_updated": "2026-05-20T03:02:12+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNMUZ1UDZZS1JwYWgtZ0dleTdmU0lMWWRhTUdwUmN0eTc1NHh5ZnpKRF93eU1nUnprYTZoUTBlcEZGVWxQUWRaT3VGRllWMnNaTEFhU0VLaE5YUHVGa0t3QkJTOS1DUDdnS2k5Tl9uY2xpWEkzdDN5Ty1rTTBiYUdRd201RVlEeUFpRVN3bExYYmcxbXBUUHdfSEo3c1hkNEF3bTF0T0s2NmZZaW9ZWjJxTHVha3J4SE82VGpNLXFxbTJFam5Jc25wcdIBzgFBVV95cUxON1g5MURxSjVhU25vOHVXNm9HUVFSN0FIblRnaE5ENlc3Z00wVnJMTFhNUEVKNEJfV3RmR2JMRFpZTnZoOXE3ejVBT3VQVHhONUcxSGZnSEJoREN1UXJIVjdMMXBiZmpid21Hc3ZwalRHaW5rOVg0cFQ3VmlLeU9HZU5aejdUalV2OVE5dktUckxvSzd5RE1CVUFDcHJEY3hVR3ZqQXp0eTM2UkJMamR6YlBMQnpIVWV5NWIwQkxvaTJQczRvVXJZVFRDeWZFUQ?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_b740008c160d",
       "category": "climate",
       "type": "earthquake",
@@ -3794,39 +3794,11 @@
       "first_seen": "2026-05-18T08:48:02+00:00",
       "last_updated": "2026-05-18T08:48:02+00:00",
       "lead_time_hours": 0,
-      "source_count": 2,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMihwJBVV95cUxNWWRmVDRaaVh6UWxqTlBpTC1YRjdTZ3JTTEtaT2FJWkNXMDhERGJWd3JndEVfVGFYZnEtSTlybDBScWVDeExDQ0UwbU1LVUlyYjc5MEc3T2kwM3hGU0VnWDVqblkzbFpqbnRoNldhQTgwUjRjQUZZQ01YNVVmcE1qcTlWVllXRHFneGVqNjNSbFExbmRoUmQxYWJ0Z0ZPTm5BQy1fQTZVRF8tZGVvU1gzdjVJcDg2enNmX3BrRWJON01mZFByc2V0RU54U01OOU5MaWtOQUlfSDNUaHdsNkp3Y2E4a21CT2ZUT0REV3lEMnE0WGZVcGtEalVjd0FsQWh6MmZUaDh0b9IBjAJBVV95cUxPN2FydC0wVEtrc1NHTmYxRDR3S29Hclh5cHFUa01abGVad1czT1lVeVFUOTBqODVSVDhuZU5zclhRT1pYTG83QVdNcGhKT2JWb1UtZHNnVm4zTWMtVkhIT0tOak4tYVI3NkJhbzB5NDR0S1RUVWc2dmlZeERKeXpuczgxaVIxVHk3eFBfNlB0WThZTkVQWHpZSnFLWnBGUm9PdHRrRnVaZEtpWHBGRXFOcTVaMDRKMGRBTEcxaE1CZE9MZHIzdlRMOExURTNMS2F3OXFGNk1iZFB6OG81b09tVGp3dVgtdXlncldSX0JwTEU5QU85TXM5Yy1vbjhjZi12Zm5rNGhpNjhDS0dp?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_c2e510570b19",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Peru: Strong 6.1-magnitude earthquake centered in Ica felt in Lima - Agencia Peruana de Noticias | ANDINA",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": -9.2,
-        "lng": -75.0,
-        "place": "Peru",
-        "country": "PE",
-        "admin1": null
-      },
-      "country": "PE",
-      "first_seen": "2026-05-19T21:42:21+00:00",
-      "last_updated": "2026-05-19T21:42:21+00:00",
-      "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRm1vODE4d2FrQzBTRXktcWhPZ1QtRTdQUVdDN0V1TXZiU1lic2NRbnF1LXFiVEZGOUlsNXk2TXVReHlkR04tdjRxcU5IaF9WcGpfSWdIaDBsWmxWV3lET1JjRVVXTm5mZnhFMHFfR3dFcEo0RnRSMVRPZkd5UEpUdW93MzFTXzcyOVpzUXpsbXlpWTFtQWJmcm9iQ25FRUY5X2hEdEV5UmRveXZkMFE?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMihwJBVV95cUxNWWRmVDRaaVh6UWxqTlBpTC1YRjdTZ3JTTEtaT2FJWkNXMDhERGJWd3JndEVfVGFYZnEtSTlybDBScWVDeExDQ0UwbU1LVUlyYjc5MEc3T2kwM3hGU0VnWDVqblkzbFpqbnRoNldhQTgwUjRjQUZZQ01YNVVmcE1qcTlWVllXRHFneGVqNjNSbFExbmRoUmQxYWJ0Z0ZPTm5BQy1fQTZVRF8tZGVvU1gzdjVJcDg2enNmX3BrRWJON01mZFByc2V0RU54U01OOU5MaWtOQUlfSDNUaHdsNkp3Y2E4a21CT2ZUT0REV3lEMnE0WGZVcGtEalVjd0FsQWh6MmZUaDh0b9IBjAJBVV95cUxPN2FydC0wVEtrc1NHTmYxRDR3S29Hclh5cHFUa01abGVad1czT1lVeVFUOTBqODVSVDhuZU5zclhRT1pYTG83QVdNcGhKT2JWb1UtZHNnVm4zTWMtVkhIT0tOak4tYVI3NkJhbzB5NDR0S1RUVWc2dmlZeERKeXpuczgxaVIxVHk3eFBfNlB0WThZTkVQWHpZSnFLWnBGUm9PdHRrRnVaZEtpWHBGRXFOcTVaMDRKMGRBTEcxaE1CZE9MZHIzdlRMOExURTNMS2F3OXFGNk1iZFB6OG81b09tVGp3dVgtdXlncldSX0JwTEU5QU85TXM5Yy1vbjhjZi12Zm5rNGhpNjhDS0dp?oc=5",
       "is_new": true
     },
     {
@@ -3855,34 +3827,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNUFNoVUJrMHVZWEdYZGFYSkl4clVjbmIxcVZEZWE3bFlONFRRM2hjTGxYZVRfVXdaOVBHRlFaaE95RGVfc2FVTTRydW9UcDhoRlRqVnhBcDBhcl9FMl9rTC1oelBnQkEzeHY5Q0FGLXJ2VExjTFpfaXBhd2Y3R1c2V2dPQmFSWWVvakdHWEs5UUpnb2l4WmVkd3NMbGEtdmk2MFJRbnAtVWVNVXY5RmVfMl90M0p5dlBXSGxZUw?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_6d517fff6fd5",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Significant Magnitude 5.9 Earthquake 36 km East of Ica, Peru - Volcano Discovery",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": -9.2,
-        "lng": -75.0,
-        "place": "Peru",
-        "country": "PE",
-        "admin1": null
-      },
-      "country": "PE",
-      "first_seen": "2026-05-19T18:17:27+00:00",
-      "last_updated": "2026-05-19T18:17:27+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPUFFYODE5amtrQ05jbVZhVEc3STNTT2liaGN3LW5QOUdSbUNHNm1NWFdtMmhEMi1rdXE0b2steWE1Z0xIWVhocFY1bEZQM01RR3ZtNGdzYXpLckpHQ3lqeGtSQlRmZXQ0dk9mUzItdG4tQThMbHB3cWxxWGtBZ0oxUnJQQjQyQUF5WXpzaDhoTWJfV1luWnV6RTA3Z2xwd0djUHNXWlo4SFI5RXYxU2RndWFmUDNNRXhpWFc4?oc=5",
       "is_new": true
     },
     {
@@ -3942,62 +3886,6 @@
       "is_new": true
     },
     {
-      "id": "evt_79947fff8142",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Significant Earthquake of Magnitude 5.7 Just Reported 43 km North of Kahta, Turkey - Volcano Discovery",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 38.9,
-        "lng": 35.2,
-        "place": "Turkey",
-        "country": "TR",
-        "admin1": null
-      },
-      "country": "TR",
-      "first_seen": "2026-05-20T06:45:12+00:00",
-      "last_updated": "2026-05-20T06:45:12+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQS29LdlpnRjBsa05MRTVtZ2xuUzBnSWItSGIyUlJKSDEzNFlNbm1jVTlTVlV5cHlJYXpyVkhfUFhHNTB6clVOMlkzSnJaT2JveWxmSlBMbGd5MEFmb2tGdWhnU05ubzhGR1BOMDE0dkhUNTladWlzcDF4dmw5NUpZUEg0Q2VhaU9tdVJ6bmZSaDUxS3NiVWVBU1VPeGhFZjl6a1I4X1ZrVno1VHRUakEzcUZGdkFzSzRYWkY4RGdFeERZNlg2QkUtOFdReDlqb0RfM1dJbHR1Nnk?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_95681fa10dfc",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Magnitude 5.9 Earthquake Strikes Near Hilo, Hawaii County, Hawaii, USA - Volcano Discovery",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 37.1,
-        "lng": -95.7,
-        "place": "Usa",
-        "country": "US",
-        "admin1": null
-      },
-      "country": "US",
-      "first_seen": "2026-05-23T08:50:53+00:00",
-      "last_updated": "2026-05-23T08:50:53+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPSmFEZEFqVUd6d0lPU3FwSUUwN2h2Uy1pQVZ2X1JrVTB2emlsLTRWS3Y1Y1FIVTFTdEdBQnZrMUNrQ014Sk9vdC1BSWx1QmgtQ3VOdkVTWEFhS3lSdHZjU2RYY3JoV0Y1LUZWY09kdFp0MFpjWWRnM01zdGM1TkNnLVpIM2NTeUJpODFqckJxVFVyYmd5QmZ2cFVlZnZyNDZTVVh1V1dUUTBUSFBYdklXMGtDUmdMUlh5ajNvNU5qMXZUdldrVEE?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_47b0a661bf01",
       "category": "climate",
       "type": "earthquake",
@@ -4023,34 +3911,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxOSU51UmxMUEdGWmg0MnhxWGtiU0hIck9OZVN4THpybzlMeG1vZmRIei01VnJDWS1yWU9pWFBUbndrT1BLVlRHNDFzdnVoM1VKU29yM0Z5YWZINGt5MG9OWkZkWU8zbFcxNk95T0NvQ213M000STg3Ui1PSlJSamx4Q2s1UUpqU0I4VExXSjdrUFJYT1FtV3h5S29uUTBYT0p1cDBoa3p4UmV3dktyLWpRTWJPRkcyeVBYS3lmRVhmM3FCWG5weEJ3RWI5QkdLdjdMMFE4c0cwVzZReEd4Y09CMHAzalQ3T0JYQW1FWmZCUzJsNjA?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_128dff8321f8",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Significant magnitude 5.5 quake hits 83 km southeast of Uchkuduk, Uzbekistan early morning - Volcano Discovery",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 41.4,
-        "lng": 64.6,
-        "place": "Uzbekistan",
-        "country": "UZ",
-        "admin1": null
-      },
-      "country": "UZ",
-      "first_seen": "2026-05-19T20:58:03+00:00",
-      "last_updated": "2026-05-19T20:58:03+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxPSklpMVJhZlpIYnd4S1RrZjY1amVUa3p6TzktMnlRbnU1Nlo5d0I5b0laemJDV3d6X1AwNU9vOUdHdlpES0stU1A5ZENwRGl4UGFZZkljelFyYjdDZEo5c2VMU3dPQkFRYUpBaDAtMENxaVFLeTNabGRMOVA1b25OWWRGMExvMTVEMGowZzVyc2ZQR3daSTJ5b3hrOWVmNEIybEF6aFRlOEt1SjRTMUljVkZVd21BckpuTFpYcnZFWW9DTTRTaDZIblBmNTBlcUVpRVh4S0JQbC1ZTm5pVGlNSWxuWWo?oc=5",
       "is_new": true
     },
     {
@@ -4138,15 +3998,43 @@
       "is_new": true
     },
     {
-      "id": "evt_h_sig-811f501fcb",
+      "id": "evt_d25894ecf9fe",
+      "category": "climate",
+      "type": "tropical_cyclone",
+      "headline": "Hurricane Melissa Makes Landfall in Cuba - MSN",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 21.5,
+        "lng": -79.5,
+        "place": "Cuba",
+        "country": "CU",
+        "admin1": null
+      },
+      "country": "CU",
+      "first_seen": "2026-05-20T05:30:30+00:00",
+      "last_updated": "2026-05-20T05:30:30+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMitAJBVV95cUxPY1JYbFdjYXJCdW9DdS1JNTB6WmtjU0ZXQU1lemlqUl9SUkplWE5YVm9KeFAwZlFoQXN4RVgzWTBvQ0xPZXpxYTd5ekFmSk9WaFVDTUhidkd2QTlSX25FSXR6dGhRSXFZQkE5N3Q1X09qMjlPTG5oYXRvSUNiWnU5VHo2Qk5rUE05NXNLRm9udzZEeHpXZUxleDJiSG84RVd3M051OGRCb3RxVU01ME1fWkVPWXlPLVNvYlptTW1VTGdMSzZiQnZXei1UX3liVVFtcWdGenMtUjg3a21ubTZfTVdHLXJmY0JUdXVuSGhvRWd4c3BHa1VTLTFucXMwdVpwVzNBUmFFX0JaQk82MEVQN2gxc05SMndraGZCdk03bEFMZm11QlhxM0FPRm45Y0RETEpKcQ?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_h_sig-a62b3acb8d",
       "category": "health",
       "type": "Ebola virus disease",
-      "headline": "Bundibugyo virus: Why this Ebola disease outbreak is different - Doctors Without Borders",
+      "headline": "DR Congo Ebola cases rise amid distrust, armed conflict zone - NPR",
       "severity": 3,
       "confidence": 0.45,
       "source_verification": "official_agency",
       "source_class": "tier1_official",
-      "source_name": "medrxiv",
+      "source_name": "nigeria_ncdc",
       "geo": {
         "lat": -4.0,
         "lng": 21.7,
@@ -4158,28 +4046,28 @@
       "first_seen": "2026-05-24T11:52:06.776658+00:00",
       "last_updated": "2026-05-24T11:52:06.776658+00:00",
       "lead_time_hours": 48,
-      "source_count": 96,
+      "source_count": 100,
       "sources": [
-        "medrxiv",
-        "cdc_mmwr",
-        "reliefweb",
-        "google_news_zh",
-        "google_news",
-        "rospotrebnadzor",
-        "reddit",
-        "who_ihr",
         "nigeria_ncdc",
-        "google_news_ru",
-        "africa_cdc",
-        "east_africa",
         "hk_chp",
-        "who_afro"
+        "reliefweb",
+        "google_news",
+        "google_news_ru",
+        "medrxiv",
+        "who_afro",
+        "rospotrebnadzor",
+        "google_news_zh",
+        "africa_cdc",
+        "reddit",
+        "cdc_mmwr",
+        "east_africa",
+        "who_ihr"
       ],
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPSHJfaWpKTHM2U2g1OXk0dTJxaVlKMHZ5ZHVvSWN2ZmxUbU8yNzN3NVpaSjFSOGtqUmh1OWR4NzIzQ1Y3VkthdTFjR2swTzN0MUw5b19DdjA4cmpkTjR1LVRjVlZPOHZfeG1UZmpQMjNLTThzczhrUWIxd1htdWs1ZW4yOXJ6ejc3WW9fbjFPYnhCQzZYTGFKUXk2RGpWa2c?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1jd0ljdTd2SjROdzVMTFljTFYzXzBUTG1kYkJnb2xCaG5vRGJDZWNmclhrV0d4S3lkTVprZGVuNXc2SnRYT0Q3NzJKUEpCRkdLdV96dGJBQ3JpbENUMXMwa0s4c05Qbjh6bzhPc0Jn?oc=5",
       "is_new": false
     },
     {
-      "id": "evt_h_sig-e2acbf7f31",
+      "id": "evt_h_sig-973e0ee6a5",
       "category": "health",
       "type": "Ebola virus disease",
       "headline": "Ebola Outbreak in DRC and Uganda: Situation Report #1 (May 20, 2026) - ReliefWeb",
@@ -4187,7 +4075,7 @@
       "confidence": 0.45,
       "source_verification": "official_agency",
       "source_class": "tier1_official",
-      "source_name": "cdc_mmwr",
+      "source_name": "hk_chp",
       "geo": {
         "lat": 1.4,
         "lng": 32.3,
@@ -4199,26 +4087,26 @@
       "first_seen": "2026-05-24T11:52:07.115639+00:00",
       "last_updated": "2026-05-24T11:52:07.115639+00:00",
       "lead_time_hours": 48,
-      "source_count": 21,
+      "source_count": 22,
       "sources": [
-        "cdc_mmwr",
+        "hk_chp",
         "reliefweb",
         "google_news",
         "philippines_doh",
-        "reddit",
         "africa_cdc",
+        "reddit",
+        "cdc_mmwr",
         "east_africa",
-        "hk_chp",
         "who_don"
       ],
       "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNVFVvRXFZeUZsazd1ZWRMdEVGR0dqVWY2ZmJUUTVWb21pbjdMdF80Z1RuQkcwYjVNbHdrb0lWNm5pXzViZUVLa19UMzFLb1EyWkMzaEdqVTZuZ1d3V05EVUdFRWtyc1huV0xWZU0yaU9WR2RrWGxUbU8tUHVxemNkSTY0TDdZUDFOWjQ4QVZ1STZSVWVLdTgzdGdlcV9wVmhZVk83emJoX1VJMk5pQ3pCemp2OWt2UQ?oc=5",
       "is_new": false
     },
     {
-      "id": "evt_h_sig-76a20c3843",
+      "id": "evt_h_sig-7bc1eadb79",
       "category": "health",
       "type": "Measles",
-      "headline": "More than 500 children die in measles outbreak in Bangladesh - Al Jazeera",
+      "headline": "Suspected and confirmed measles deaths top 500 in Bangladesh - Reuters",
       "severity": 3,
       "confidence": 0.42,
       "source_verification": "media_ai_signal",
@@ -4235,12 +4123,12 @@
       "first_seen": "2026-05-24T11:52:06.710001+00:00",
       "last_updated": "2026-05-24T11:52:06.710001+00:00",
       "lead_time_hours": 24,
-      "source_count": 6,
+      "source_count": 4,
       "sources": [
         "google_news",
         "google_news_zh"
       ],
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPeVg3Vl81R0hxMWk0M1l1Q0dNV1FhVjBWNWRQZmo2dW5zS1lwSkg0RkhEY0VUeEhmWjJ1akFJVXE5eUF0Q0pkSkc0YzhwZDlOQkkzWDFseTktRlVsdEFydk1YYlU0b3lMY3A2RmtjWGtrS3pmM3hONnhVVVR6bzVHclZWSE4yN3U4WGFVbTcxSWtnNkFzcW52MmxIU1pkNDFPc05XNFM2SdIBrAFBVV95cUxNb2dXam8zcXRqb3IyZm5JekdiV0pTR25obkduMS1BVFN2M21OTnJDaVJCQVJaaG5ETXhLWHdVeW5SM1NPV1BfbXMySUxqbGZsM1ktMmVoOTc4d096eUppd1N4U2c5S2xkSHRlQVBVQVpiaHJBTmRIMWRsOWttSjBJMUtacVhCVklfTWVmajhQZDZVeTR5WWJORlE0Q095ZnM2UUJEN3g0WHRnaTFE?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPSHNwaEhueEFFcndOdTJObW8ybFpaVDI1N1QzMU95T2NVSjMxSUE2eU5RYTR4OFNhdld3VFgtdVBNOWQ4Yi1nNU8wTGMyNnV6d1pxeTRjZGotWGtaUkF1OEdCcElTdFZacXo4SXh3ODlqRFpHa1MyaXY3VTcwb25URHFjQkdJNVh1LWhHbEQ3cTk3S1Qwb0lrSW8zT1VhSWV2OVZvUDhPc2xPTWNYMDhtYVUzNVRCcFVXYzBwaXROdTRXb2s?oc=5",
       "is_new": false
     },
     {
@@ -4262,8 +4150,8 @@
         "admin1": null
       },
       "country": "TH",
-      "first_seen": "2026-05-24T16:50:07.816315+00:00",
-      "last_updated": "2026-05-24T16:50:07.816320+00:00",
+      "first_seen": "2026-05-24T17:49:00.933338+00:00",
+      "last_updated": "2026-05-24T17:49:00.933344+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4292,8 +4180,8 @@
         "admin1": null
       },
       "country": "ID",
-      "first_seen": "2026-05-24T16:50:07.816331+00:00",
-      "last_updated": "2026-05-24T16:50:07.816333+00:00",
+      "first_seen": "2026-05-24T17:49:00.933363+00:00",
+      "last_updated": "2026-05-24T17:49:00.933366+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4322,8 +4210,8 @@
         "admin1": null
       },
       "country": "PH",
-      "first_seen": "2026-05-24T16:50:07.816340+00:00",
-      "last_updated": "2026-05-24T16:50:07.816342+00:00",
+      "first_seen": "2026-05-24T17:49:00.933374+00:00",
+      "last_updated": "2026-05-24T17:49:00.933376+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4352,38 +4240,8 @@
         "admin1": null
       },
       "country": "BD",
-      "first_seen": "2026-05-24T16:50:07.816347+00:00",
-      "last_updated": "2026-05-24T16:50:07.816349+00:00",
-      "lead_time_hours": 240,
-      "source_count": 1,
-      "sources": [
-        "climate_model"
-      ],
-      "url": "",
-      "is_new": false,
-      "predictive": true
-    },
-    {
-      "id": "evt_clim_dengue_BR",
-      "category": "health",
-      "type": "dengue_climate_lead",
-      "headline": "Climate-elevated Dengue fever suitability (elevated) — model leading indicator, ~10d ahead of reports",
-      "severity": 2,
-      "confidence": 0.47,
-      "source_verification": "model",
-      "source_class": "tier3_pro",
-      "source_name": "Vigilo climate model",
-      "geo": {
-        "lat": -14.2,
-        "lng": -51.9,
-        "geo_precision": "country_centroid",
-        "place": "BR",
-        "country": "BR",
-        "admin1": null
-      },
-      "country": "BR",
-      "first_seen": "2026-05-24T16:50:07.816354+00:00",
-      "last_updated": "2026-05-24T16:50:07.816356+00:00",
+      "first_seen": "2026-05-24T17:49:00.933382+00:00",
+      "last_updated": "2026-05-24T17:49:00.933384+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4412,8 +4270,8 @@
         "admin1": null
       },
       "country": "MX",
-      "first_seen": "2026-05-24T16:50:07.816361+00:00",
-      "last_updated": "2026-05-24T16:50:07.816363+00:00",
+      "first_seen": "2026-05-24T17:49:00.933390+00:00",
+      "last_updated": "2026-05-24T17:49:00.933392+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -4442,38 +4300,8 @@
         "admin1": null
       },
       "country": "NG",
-      "first_seen": "2026-05-24T16:50:07.816368+00:00",
-      "last_updated": "2026-05-24T16:50:07.816370+00:00",
-      "lead_time_hours": 240,
-      "source_count": 1,
-      "sources": [
-        "climate_model"
-      ],
-      "url": "",
-      "is_new": false,
-      "predictive": true
-    },
-    {
-      "id": "evt_clim_dengue_PK",
-      "category": "health",
-      "type": "dengue_climate_lead",
-      "headline": "Climate-elevated Dengue fever suitability (severe) — model leading indicator, ~10d ahead of reports",
-      "severity": 3,
-      "confidence": 0.58,
-      "source_verification": "model",
-      "source_class": "tier3_pro",
-      "source_name": "Vigilo climate model",
-      "geo": {
-        "lat": 30.4,
-        "lng": 69.3,
-        "geo_precision": "country_centroid",
-        "place": "PK",
-        "country": "PK",
-        "admin1": null
-      },
-      "country": "PK",
-      "first_seen": "2026-05-24T16:50:07.816376+00:00",
-      "last_updated": "2026-05-24T16:50:07.816378+00:00",
+      "first_seen": "2026-05-24T17:49:00.933398+00:00",
+      "last_updated": "2026-05-24T17:49:00.933400+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4502,8 +4330,8 @@
         "admin1": null
       },
       "country": "EG",
-      "first_seen": "2026-05-24T16:50:07.816383+00:00",
-      "last_updated": "2026-05-24T16:50:07.816384+00:00",
+      "first_seen": "2026-05-24T17:49:00.933410+00:00",
+      "last_updated": "2026-05-24T17:49:00.933411+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4532,8 +4360,8 @@
         "admin1": null
       },
       "country": "YE",
-      "first_seen": "2026-05-24T16:50:07.816392+00:00",
-      "last_updated": "2026-05-24T16:50:07.816395+00:00",
+      "first_seen": "2026-05-24T17:49:00.933417+00:00",
+      "last_updated": "2026-05-24T17:49:00.933419+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4562,8 +4390,38 @@
         "admin1": null
       },
       "country": "YE",
-      "first_seen": "2026-05-24T16:50:07.816400+00:00",
-      "last_updated": "2026-05-24T16:50:07.816403+00:00",
+      "first_seen": "2026-05-24T17:49:00.933423+00:00",
+      "last_updated": "2026-05-24T17:49:00.933425+00:00",
+      "lead_time_hours": 336,
+      "source_count": 1,
+      "sources": [
+        "climate_model"
+      ],
+      "url": "",
+      "is_new": false,
+      "predictive": true
+    },
+    {
+      "id": "evt_clim_cholera_HT",
+      "category": "health",
+      "type": "cholera_climate_lead",
+      "headline": "Climate-elevated Cholera suitability (elevated) — model leading indicator, ~14d ahead of reports",
+      "severity": 2,
+      "confidence": 0.44,
+      "source_verification": "model",
+      "source_class": "tier3_pro",
+      "source_name": "Vigilo climate model",
+      "geo": {
+        "lat": 19.0,
+        "lng": -72.3,
+        "geo_precision": "country_centroid",
+        "place": "HT",
+        "country": "HT",
+        "admin1": null
+      },
+      "country": "HT",
+      "first_seen": "2026-05-24T17:49:00.933430+00:00",
+      "last_updated": "2026-05-24T17:49:00.933432+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -4592,8 +4450,8 @@
         "admin1": null
       },
       "country": "SD",
-      "first_seen": "2026-05-24T16:50:07.816408+00:00",
-      "last_updated": "2026-05-24T16:50:07.816409+00:00",
+      "first_seen": "2026-05-24T17:49:00.933436+00:00",
+      "last_updated": "2026-05-24T17:49:00.933438+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -4622,8 +4480,8 @@
         "admin1": null
       },
       "country": "MM",
-      "first_seen": "2026-05-24T16:50:07.816414+00:00",
-      "last_updated": "2026-05-24T16:50:07.816416+00:00",
+      "first_seen": "2026-05-24T17:49:00.933443+00:00",
+      "last_updated": "2026-05-24T17:49:00.933444+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4652,37 +4510,8 @@
         "admin1": null
       },
       "country": "KH",
-      "first_seen": "2026-05-24T16:50:07.816421+00:00",
-      "last_updated": "2026-05-24T16:50:07.816422+00:00",
-      "lead_time_hours": 240,
-      "source_count": 1,
-      "sources": [
-        "climate_model"
-      ],
-      "url": "",
-      "is_new": false,
-      "predictive": true
-    },
-    {
-      "id": "evt_clim_dengue_AE",
-      "category": "health",
-      "type": "dengue_climate_lead",
-      "headline": "Climate-elevated Dengue fever suitability (elevated) — model leading indicator, ~10d ahead of reports",
-      "severity": 2,
-      "confidence": 0.53,
-      "source_verification": "model",
-      "source_class": "tier3_pro",
-      "source_name": "Vigilo climate model",
-      "geo": {
-        "lat": null,
-        "lng": null,
-        "place": "AE",
-        "country": "AE",
-        "admin1": null
-      },
-      "country": "AE",
-      "first_seen": "2026-05-24T16:50:07.816428+00:00",
-      "last_updated": "2026-05-24T16:50:07.816430+00:00",
+      "first_seen": "2026-05-24T17:49:00.933449+00:00",
+      "last_updated": "2026-05-24T17:49:00.933451+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -4711,8 +4540,8 @@
         "geo_precision": "country_centroid"
       },
       "country": "IQ",
-      "first_seen": "2026-05-24T16:50:09.644224+00:00",
-      "last_updated": "2026-05-24T16:50:09.644239+00:00",
+      "first_seen": "2026-05-24T17:49:04.934213+00:00",
+      "last_updated": "2026-05-24T17:49:04.934229+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
@@ -4740,8 +4569,8 @@
         "geo_precision": "country_centroid"
       },
       "country": "HT",
-      "first_seen": "2026-05-24T16:50:11.391822+00:00",
-      "last_updated": "2026-05-24T16:50:11.391835+00:00",
+      "first_seen": "2026-05-24T17:49:08.924558+00:00",
+      "last_updated": "2026-05-24T17:49:08.924575+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
@@ -5196,6 +5025,62 @@
         "GDACS"
       ],
       "url": "https://www.gdacs.org/report.aspx?eventid=1541910&episodeid=1707144&eventtype=EQ",
+      "is_new": false
+    },
+    {
+      "id": "evt_gdacs_1542305_EQ",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Green M 5.8 Earthquake in Philippines at: 24 May 2026 16:48:37.",
+      "severity": 2,
+      "confidence": 0.9,
+      "source_verification": "official_agency",
+      "source_class": "tier1_official",
+      "source_name": "GDACS",
+      "geo": {
+        "lat": 9.3137,
+        "lng": 126.3038,
+        "place": "Philippines",
+        "country": "PH",
+        "admin1": null
+      },
+      "country": "PH",
+      "first_seen": "2026-05-24T16:48:37",
+      "last_updated": "2026-05-24T16:48:37",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "GDACS"
+      ],
+      "url": "https://www.gdacs.org/report.aspx?eventid=1542305&episodeid=1707591&eventtype=EQ",
+      "is_new": false
+    },
+    {
+      "id": "evt_gdacs_1542305_EQ",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Green M 5.8 Earthquake in Philippines at: 24 May 2026 16:48:37.",
+      "severity": 2,
+      "confidence": 0.9,
+      "source_verification": "official_agency",
+      "source_class": "tier1_official",
+      "source_name": "GDACS",
+      "geo": {
+        "lat": 12.9,
+        "lng": 121.8,
+        "place": "Philippines",
+        "country": "PH",
+        "admin1": null
+      },
+      "country": "PH",
+      "first_seen": "2026-05-24T16:48:37",
+      "last_updated": "2026-05-24T16:48:37",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "GDACS"
+      ],
+      "url": "https://www.gdacs.org/report.aspx?eventid=1542305&episodeid=1707591&eventtype=EQ",
       "is_new": false
     },
     {
@@ -5815,6 +5700,370 @@
       "is_new": false
     },
     {
+      "id": "evt_15d46a2775c2",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Russian missile, drone strikes kill four in Ukraine's northern regions, officials say - The Hindu",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 48.4,
+        "lng": 31.2,
+        "place": "Ukraine",
+        "country": "UA",
+        "admin1": null
+      },
+      "country": "UA",
+      "first_seen": "2026-05-19T11:04:42+00:00",
+      "last_updated": "2026-05-19T11:04:42+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQSTQtX1lzdHBoX081ZWtSVC1PUDlkUVdjdWxIVGJjTmgxbnBDam9Rci1VYl83X3FFMkpkczA0WDdFVmVFbDc3S0RTUmxzQU5nTXdZSVcxMGR5aUNtTHZXeWxCbVRLMFdfQW5wVVhpRHVRUTg5WFhxZzhiLTFfcUt3XzgzUU5HSG1HVmhWWFh6T3VQWC0tUVY5Mi04QTVRVllMbUFHSWR6bzFFU0Z2UHdYOEoyVFdPQ25yeGVhUm1oT0laUkxucFBvX2c4bHdRX2dMNlRTWHJXLWlzWGVjYi1Z0gHmAUFVX3lxTE93YTZVaDZGOVBPcHFhTkZtQm1Ka0UtTkZZbW1ZS2Y1aTVlQzcyN3ZBTzV0bUxuVnlHcjB3QzRYblFCR2JjcmpTOXBrUk4zMW14VlRDd0tsSGo0dEttMkoxZVQ5aURoWVBXSGNTdTRZQzlOdXhvb1BzN2JyNklfMFV4UmdROTlSNno5UkY1OTdEWTRIOVVsbTlfQUFoTkJVMVpnYnlhc0VJWGIyWGprLXpXdE5sa3hEZVZlWjdrT0xmUXEtNEpvNkoweW1EcGRkT3lQcWRSV1g3b2k2QW96bm5YbVRBVG93?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_67400fa7e370",
+      "category": "conflict",
+      "type": "insurgent_attack",
+      "headline": "At least 14 people were killed on Sunday after a bomb exploded near a passenger train in southwestern Pakistan, local officials said, in the latest outbreak of violence in a region",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 30.4,
+        "lng": 69.3,
+        "place": "Pakistan",
+        "country": "PK",
+        "admin1": null
+      },
+      "country": "PK",
+      "first_seen": "2026-05-24T12:55:02+00:00",
+      "last_updated": "2026-05-24T12:55:02+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNc3Y4anlQMzVkb1NvR29WcXVEMV9lUzItcEtnNDdUZTVMTDY4YkQydXpWYkVhb3BNdXcyT3Fpd2U5Z0JkUGp3WE1QWVl6TDg3RDZsRFQ5WDVRdUFzNzFROWNpZUE2WHhwRUdCRTlacmtTVzdJbTFleEV5U2VVQTVQVnVnY1k1ZldhdDBfM1h3VXJFcUZQOW92bVctQ28tdWp6V2JNV0g3WmRId1ppVGdsWHlSOTVvM1JJSXFpQ0VSVFFYcGVxdXBzdThjbzBQUmMyTmpF?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_8cc953a19a9a",
+      "category": "conflict",
+      "type": "military_buildup",
+      "headline": "US-Israel-Iran War Latest Update: Israel Strikes Lebanon as Hezbollah Claims Attacks on Troops; Hormuz Plan Sparks Global Alarm - Dailyhunt",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-17T17:06:42+00:00",
+      "last_updated": "2026-05-17T17:06:42+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxQMmh4NUVldnFrZVUxWWttejlsRWJVbXJiX2NyZlRsWDl4MF9IYndZUGMweG5xdkxLRjc3Z3V5elV6OTFQZ2tEamhnZFBfLWNlR25jVFpvaWo5MnNfTmRtdGtRaXRTZGhMM1Rvb25Hdzl4WTJiZklXMEhGN1VJTHVDWlF3S2hNdmNqRGpmRGhkdUVrbmg4ckdjUUtPdy0wSzFNSFVQMWp5WFNVQnMtNTc2d3RtMjQzY1I1Sm9LTmpJSThXVTNvNEx2ZE0xSUVZUWNIY3RaamE0dUtyUFhlM2RsUUc5azZKQjh1QWM0TjNKOFJORk9xWkhzVzBWQzZMc2ZhM2FCdWhSOTlGYUNMNm1sWk1IUkF4MzNhdklUYS1LbkNkbjBpY1NZZjVhWlFsci16TU8wRDdIRUNVMEhtSTFVRg?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_789a5717de7a",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Palestinian killed, others injured in Israeli airstrikes on Khan Younis and Gaza City - وكالة سبأ",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.3,
+        "lng": 34.3,
+        "place": "Khan Younis",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-17T17:37:58+00:00",
+      "last_updated": "2026-05-17T17:37:58+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBFVTJsVTR4V0RBY01PWXAzSy1zZTRsNnJVRGt1b0Frd1kzbEFFeDZZNTZyUE1RRXBHdWN1aEpyNmdNSzBlTHpLU0EzdU51OFE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_fe41b6cad3be",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Yemen: Houthi missile fragments fall near Tadawin, Marib - Yemen Online",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 15.6,
+        "lng": 48.5,
+        "place": "Yemen",
+        "country": "YE",
+        "admin1": null
+      },
+      "country": "YE",
+      "first_seen": "2026-05-18T18:33:28+00:00",
+      "last_updated": "2026-05-18T18:33:28+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1BU3VBSDFWUjJUY1lOY1kyYnJqcjk3XzlOSDIyeE53V0N0MTRjNW4tZkEtOHhyTnZBU3UwcVBYaDJZVmZ1ZUNSZ3Y1V1F6RVJjVVpxVkFJTVR6UQ?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_5d943fa6b0cb",
+      "category": "border",
+      "type": "entry_restriction",
+      "headline": "U.S. Ebola Travel Ban Faces Criticism From Congo Health Officials - The New York Times",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": -4.0,
+        "lng": 21.7,
+        "place": "Congo",
+        "country": "CD",
+        "admin1": null
+      },
+      "country": "CD",
+      "first_seen": "2026-05-23T19:46:08+00:00",
+      "last_updated": "2026-05-23T19:46:08+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPY05kS1JxUkZTMDJYOE5veHplWmpCVUxNWWxrWlZJUndFRERxdFAtN1pXMnhLbmNUclppQTJHWHZ1TmwwR041b3lPV3lORWlQdUQ0QlVpOGZMbnhQRFV5LVZvMVMzSjM3VFI0ZUhia3FBYWtObUFkS3oyTXdfRDRET0RKUHcxZw?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_bdc841a7403e",
+      "category": "infrastructure",
+      "type": "utility_outage",
+      "headline": "'All gone dark' - Bad weather triggers major blackout issues across Indonesia's Sumatra, confirms top official - The Star | Malaysia",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": -0.8,
+        "lng": 113.9,
+        "place": "Indonesia",
+        "country": "ID",
+        "admin1": null
+      },
+      "country": "ID",
+      "first_seen": "2026-05-23T13:54:00+00:00",
+      "last_updated": "2026-05-23T13:54:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxNc1E0WVRPckpjcjZsVnFvMUxPbkR2OF9HTUxGMGZZLTNBWGUxeUdzMW1yUWNXdWNWMWk5VjJqanBOdW1RRkNXRlpjZmJDcmlZZ2tTczg0WVpKLS1aVkE5Z3ljOVdBN3FGNDlSekJGNV9vbC0xU0JHRlVCem9udk5rbE5BV3hHSFlFbjd6Y1VieFNlYUlPUzRGeUs5azhqNHNKM3JHYjN2dXBqa2JySms1VXBjdWN4Q0s5a1RaWjZqOEtQOGFLQmVfeVVxQnA3UDVOLTRwR01yVlJxUXlpdU1McnRPTm5tMXcyaGZpOXhPdktSTDZSd3h4QzBNaFhLb3M0OGM4MVZnVG5ZUQ?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_b976d46415bd",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Japan rocked by 5.9-magnitude earthquake, no tsunami warning issued - CNBC TV18",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 36.2,
+        "lng": 138.3,
+        "place": "Japan",
+        "country": "JP",
+        "admin1": null
+      },
+      "country": "JP",
+      "first_seen": "2026-05-20T03:02:12+00:00",
+      "last_updated": "2026-05-20T03:02:12+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNMUZ1UDZZS1JwYWgtZ0dleTdmU0lMWWRhTUdwUmN0eTc1NHh5ZnpKRF93eU1nUnprYTZoUTBlcEZGVWxQUWRaT3VGRllWMnNaTEFhU0VLaE5YUHVGa0t3QkJTOS1DUDdnS2k5Tl9uY2xpWEkzdDN5Ty1rTTBiYUdRd201RVlEeUFpRVN3bExYYmcxbXBUUHdfSEo3c1hkNEF3bTF0T0s2NmZZaW9ZWjJxTHVha3J4SE82VGpNLXFxbTJFam5Jc25wcdIBzgFBVV95cUxON1g5MURxSjVhU25vOHVXNm9HUVFSN0FIblRnaE5ENlc3Z00wVnJMTFhNUEVKNEJfV3RmR2JMRFpZTnZoOXE3ejVBT3VQVHhONUcxSGZnSEJoREN1UXJIVjdMMXBiZmpid21Hc3ZwalRHaW5rOVg0cFQ3VmlLeU9HZU5aejdUalV2OVE5dktUckxvSzd5RE1CVUFDcHJEY3hVR3ZqQXp0eTM2UkJMamR6YlBMQnpIVWV5NWIwQkxvaTJQczRvVXJZVFRDeWZFUQ?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_c2e510570b19",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Peru: Strong 6.1-magnitude earthquake centered in Ica felt in Lima - Agencia Peruana de Noticias | ANDINA",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": -9.2,
+        "lng": -75.0,
+        "place": "Peru",
+        "country": "PE",
+        "admin1": null
+      },
+      "country": "PE",
+      "first_seen": "2026-05-19T21:42:21+00:00",
+      "last_updated": "2026-05-19T21:42:21+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRm1vODE4d2FrQzBTRXktcWhPZ1QtRTdQUVdDN0V1TXZiU1lic2NRbnF1LXFiVEZGOUlsNXk2TXVReHlkR04tdjRxcU5IaF9WcGpfSWdIaDBsWmxWV3lET1JjRVVXTm5mZnhFMHFfR3dFcEo0RnRSMVRPZkd5UEpUdW93MzFTXzcyOVpzUXpsbXlpWTFtQWJmcm9iQ25FRUY5X2hEdEV5UmRveXZkMFE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_6d517fff6fd5",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Significant Magnitude 5.9 Earthquake 36 km East of Ica, Peru - Volcano Discovery",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": -9.2,
+        "lng": -75.0,
+        "place": "Peru",
+        "country": "PE",
+        "admin1": null
+      },
+      "country": "PE",
+      "first_seen": "2026-05-19T18:17:27+00:00",
+      "last_updated": "2026-05-19T18:17:27+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPUFFYODE5amtrQ05jbVZhVEc3STNTT2liaGN3LW5QOUdSbUNHNm1NWFdtMmhEMi1rdXE0b2steWE1Z0xIWVhocFY1bEZQM01RR3ZtNGdzYXpLckpHQ3lqeGtSQlRmZXQ0dk9mUzItdG4tQThMbHB3cWxxWGtBZ0oxUnJQQjQyQUF5WXpzaDhoTWJfV1luWnV6RTA3Z2xwd0djUHNXWlo4SFI5RXYxU2RndWFmUDNNRXhpWFc4?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_79947fff8142",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Significant Earthquake of Magnitude 5.7 Just Reported 43 km North of Kahta, Turkey - Volcano Discovery",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 38.9,
+        "lng": 35.2,
+        "place": "Turkey",
+        "country": "TR",
+        "admin1": null
+      },
+      "country": "TR",
+      "first_seen": "2026-05-20T06:45:12+00:00",
+      "last_updated": "2026-05-20T06:45:12+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQS29LdlpnRjBsa05MRTVtZ2xuUzBnSWItSGIyUlJKSDEzNFlNbm1jVTlTVlV5cHlJYXpyVkhfUFhHNTB6clVOMlkzSnJaT2JveWxmSlBMbGd5MEFmb2tGdWhnU05ubzhGR1BOMDE0dkhUNTladWlzcDF4dmw5NUpZUEg0Q2VhaU9tdVJ6bmZSaDUxS3NiVWVBU1VPeGhFZjl6a1I4X1ZrVno1VHRUakEzcUZGdkFzSzRYWkY4RGdFeERZNlg2QkUtOFdReDlqb0RfM1dJbHR1Nnk?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_95681fa10dfc",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Magnitude 5.9 Earthquake Strikes Near Hilo, Hawaii County, Hawaii, USA - Volcano Discovery",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 37.1,
+        "lng": -95.7,
+        "place": "Usa",
+        "country": "US",
+        "admin1": null
+      },
+      "country": "US",
+      "first_seen": "2026-05-23T08:50:53+00:00",
+      "last_updated": "2026-05-23T08:50:53+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPSmFEZEFqVUd6d0lPU3FwSUUwN2h2Uy1pQVZ2X1JrVTB2emlsLTRWS3Y1Y1FIVTFTdEdBQnZrMUNrQ014Sk9vdC1BSWx1QmgtQ3VOdkVTWEFhS3lSdHZjU2RYY3JoV0Y1LUZWY09kdFp0MFpjWWRnM01zdGM1TkNnLVpIM2NTeUJpODFqckJxVFVyYmd5QmZ2cFVlZnZyNDZTVVh1V1dUUTBUSFBYdklXMGtDUmdMUlh5ajNvNU5qMXZUdldrVEE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_128dff8321f8",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Significant magnitude 5.5 quake hits 83 km southeast of Uchkuduk, Uzbekistan early morning - Volcano Discovery",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 41.4,
+        "lng": 64.6,
+        "place": "Uzbekistan",
+        "country": "UZ",
+        "admin1": null
+      },
+      "country": "UZ",
+      "first_seen": "2026-05-19T20:58:03+00:00",
+      "last_updated": "2026-05-19T20:58:03+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxPSklpMVJhZlpIYnd4S1RrZjY1amVUa3p6TzktMnlRbnU1Nlo5d0I5b0laemJDV3d6X1AwNU9vOUdHdlpES0stU1A5ZENwRGl4UGFZZkljelFyYjdDZEo5c2VMU3dPQkFRYUpBaDAtMENxaVFLeTNabGRMOVA1b25OWWRGMExvMTVEMGowZzVyc2ZQR3daSTJ5b3hrOWVmNEIybEF6aFRlOEt1SjRTMUljVkZVd21BckpuTFpYcnZFWW9DTTRTaDZIblBmNTBlcUVpRVh4S0JQbC1ZTm5pVGlNSWxuWWo?oc=5",
+      "is_new": false
+    },
+    {
       "id": "evt_2392e12f190c",
       "category": "conflict",
       "type": "escalation",
@@ -5840,34 +6089,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxPaDlGV0F2N1VZWS0wekZUSTJHM21iYTZEMHBkbHFYb1o1STBldnV2dk9IM2Fua2puRHBiVjFUc054Vk5NZGdvT3Y3WTVBdDUyQjZxY1Vzb3Z1bWlUamZMU3dCUzktemlRYzJqZUhBOHE0ZmpyNzNDTXB4WTdPX0dTNjhSdHh0ek1zaFhMaWQ0MjF0cFE2QzI4VzdQYjFOZ20wazJmS0phdFpZQVRQX1pwTm45QzZ5emxKSzlnSWprTjZNV3JmTGxrVDFoZXVFeHVGbDFyVjFRVHhyYlMyZU55bjB5LXRkY3ZhVHlFYmpaS05FY01K?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_285b0e7099cd",
-      "category": "conflict",
-      "type": "insurgent_attack",
-      "headline": "Car bomb attack near Syrian Defence Ministry in Damascus - MSN",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 33.5,
-        "lng": 36.3,
-        "place": "Damascus",
-        "country": "SY",
-        "admin1": null
-      },
-      "country": "SY",
-      "first_seen": "2026-05-19T15:31:45+00:00",
-      "last_updated": "2026-05-19T15:31:45+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOMlUxd2k2M2JjUC1ydGJmWmJFekVieDhjcEVVcXVHT1JSb2ZFR0kwWEZVWG81dktQZ0VhOE5KRk5VbWV1LVVvT0tZenl5VnB1NkM0UGZDOVN1ZU1DZEhtWERLekc5NDhkNm1DcXo0cTdsMnBmX1RNcjBTc19iS3lINXA4blA3a0c0RlkydmZGUkJwamstemRqcS01S29hMkVEdGJFOEU2U3Y?oc=5",
       "is_new": false
     },
     {
@@ -5927,34 +6148,6 @@
       "is_new": false
     },
     {
-      "id": "evt_ed9f02a87acb",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Palestinian was killed, artillery shelling as Israel persists in violating Gaza truce - وكالة سبأ",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-22T11:20:34+00:00",
-      "last_updated": "2026-05-22T11:20:34+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE00M2otQXRzMmwxOHZyUGNBV0x3aFNyLTM0TDlMUXB2cVZIV0FUSkZlTWFlamhCUlhBenF4aW5MV3Vidm54UWVTU3VTSlVTSkE?oc=5",
-      "is_new": false
-    },
-    {
       "id": "evt_252af1aa9eb1",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -5980,34 +6173,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPb0QySXVOU0xIMEFEV1ZobzhwR1VhWWVLaEh3NkhxMmZmbGdRQnRuanJRMDNoV2l4WnNndzJ5Wk9tOWFWWTVHeFZHRUhmRXlZOVlYNjE5OFZwQThNUDNCZEtZbUhJYTZjSzlIZHVDM1FicXVMTGFnWGtwUl9zNEVNN0VBNnhSVjJ6aHZvajhUbjlyZWhYSEJ3?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_029c4bbbe78e",
-      "category": "conflict",
-      "type": "insurgent_attack",
-      "headline": "Syrian soldier killed and at least 18 people wounded by Damascus car bomb - France 24",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 46.2,
-        "lng": 2.2,
-        "place": "France",
-        "country": "FR",
-        "admin1": null
-      },
-      "country": "FR",
-      "first_seen": "2026-05-19T14:15:39+00:00",
-      "last_updated": "2026-05-19T14:15:39+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOYU1neE5Camh4VlBLMU4wV1BIQ1VRQ2VTeXgtSEc5SlkwQmV0UmFESDB5N21faUJpaXE4R1pqM3d4dUplNGc2QXhHUk5IQjhSdXFJQzdqM0lycjRrWTZEMWdpMlRNajRoeWNXSkRWZFJXSWQzdFBRWnpDZWtrUHY2QVNDZXlHT2o4bnpYbmk0cmhuVnBQckxIYlNQc1hjVzM1U0NGLVlFbGhWWXZLQVRoZVJYNlR5UEs2TnBzUm9kRQ?oc=5",
       "is_new": false
     },
     {
@@ -6064,34 +6229,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNbzFiQ295SHZNamk1Q3Ztd2tXT3VwbHFVdHVBeWY2bzZIZDlIUEpkY0FqMjdOVjdlRXRqN19nU1Zvb2p3T1E4aGJuQm1HelJKMDQ3NG1uaTRpR3lrd1VoTFNmRVFXX25TZWE5TE81b1NWNVB0R1pDbXBId3JMSjlWOWRvYUd6S24talkwa1pJbWlhQVdrOHVUNXI5QUpqQjBGaUHSAacBQVVfeXFMTVR1Z2ZLNEpzdDdoazFNaDNvc1F0UnVsdWlONG9NLUg2VDZkakRJdExVU3dib09odFRIRWtkejRfTmdjeXpEWF9fM0hBRVFIcEhqRlJsMWphaXJkVl9EcGw1Q1ZnaXhPLTNiTExrYmxibUstb3BJMjZ4Q3pEejZxRVRUbVlIWWo4OHc1eHh3SUZnR0o4VGkyZkRnSEJPc2Z2aElDaDdGOEE?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_f0f518ee88e7",
-      "category": "infrastructure",
-      "type": "utility_outage",
-      "headline": "'All gone dark' - Bad weather triggers major blackout issues across Indonesia's Sumatra, confirms top official - thestar.com.my",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": -0.8,
-        "lng": 113.9,
-        "place": "Indonesia",
-        "country": "ID",
-        "admin1": null
-      },
-      "country": "ID",
-      "first_seen": "2026-05-23T13:54:00+00:00",
-      "last_updated": "2026-05-23T13:54:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxNc1E0WVRPckpjcjZsVnFvMUxPbkR2OF9HTUxGMGZZLTNBWGUxeUdzMW1yUWNXdWNWMWk5VjJqanBOdW1RRkNXRlpjZmJDcmlZZ2tTczg0WVpKLS1aVkE5Z3ljOVdBN3FGNDlSekJGNV9vbC0xU0JHRlVCem9udk5rbE5BV3hHSFlFbjd6Y1VieFNlYUlPUzRGeUs5azhqNHNKM3JHYjN2dXBqa2JySms1VXBjdWN4Q0s5a1RaWjZqOEtQOGFLQmVfeVVxQnA3UDVOLTRwR01yVlJxUXlpdU1McnRPTm5tMXcyaGZpOXhPdktSTDZSd3h4QzBNaFhLb3M0OGM4MVZnVG5ZUQ?oc=5",
       "is_new": false
     },
     {
@@ -6319,34 +6456,6 @@
       "is_new": false
     },
     {
-      "id": "evt_d25894ecf9fe",
-      "category": "climate",
-      "type": "tropical_cyclone",
-      "headline": "Hurricane Melissa Makes Landfall in Cuba - MSN",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 21.5,
-        "lng": -79.5,
-        "place": "Cuba",
-        "country": "CU",
-        "admin1": null
-      },
-      "country": "CU",
-      "first_seen": "2026-05-20T05:30:30+00:00",
-      "last_updated": "2026-05-20T05:30:30+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMitAJBVV95cUxPY1JYbFdjYXJCdW9DdS1JNTB6WmtjU0ZXQU1lemlqUl9SUkplWE5YVm9KeFAwZlFoQXN4RVgzWTBvQ0xPZXpxYTd5ekFmSk9WaFVDTUhidkd2QTlSX25FSXR6dGhRSXFZQkE5N3Q1X09qMjlPTG5oYXRvSUNiWnU5VHo2Qk5rUE05NXNLRm9udzZEeHpXZUxleDJiSG84RVd3M051OGRCb3RxVU01ME1fWkVPWXlPLVNvYlptTW1VTGdMSzZiQnZXei1UX3liVVFtcWdGenMtUjg3a21ubTZfTVdHLXJmY0JUdXVuSGhvRWd4c3BHa1VTLTFucXMwdVpwVzNBUmFFX0JaQk82MEVQN2gxc05SMndraGZCdk03bEFMZm11QlhxM0FPRm45Y0RETEpKcQ?oc=5",
-      "is_new": false
-    },
-    {
       "id": "evt_b5727b0b705d",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -6400,34 +6509,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOR25XWVE1MGFTcmRoRTlyZ0IxYTFBX0c0NGhrS3Y5TkU2ZmJnQnR2LVFsWE52dTREOWZ2eGdFMDZmQnBHUHlGQkpfSE9QeFFnYlZPUnlXUWM3bzdkRTV3TXRvMWRQX3Z6ZDdxSHM0eHN1X1VxQ1d6V05VRV9iTU9nTDRhVWVtTnFDZEYtSG1XUUpzVVJVbmxyTUQzVzU1U0NpOUFVRkVTVTEwMXF0djhfR2ZLQ0N1cTZMUjdyVnlTQWFWblnSAdABQVVfeXFMT1pvczB3Y2REckNZajhEY1dObUZ2WjdPOENWS3hrSm85d1pFOXBPSlpnV1hYNkdnd3dmZDNtTERMTmdKNXM5Q1pacHRGNWZIalE3aGlXM2swQnpHal9Od09BWFNzeXIzYlFCMzlEY0ZBVlhhVFJQYWE5UlN4dnN2REI2VmhfRzhvVVVZRkxzYUJENUwwUmJrbnItbHk5LTkxNVVhdkNzOVhnd0dGZHNhQUQtRDdrQWNpZmVlQV9fNmxFdzdJYnZaTG5PUnh1Y05ZQQ?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_a23eaa70c6d9",
-      "category": "civil_unrest",
-      "type": "protest",
-      "headline": "Patrick Kennedy Backs Iran’s Resistance Units and NCRI at Massive Washington Rally - Iran Freedom",
-      "severity": 2,
-      "confidence": 0.69,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "2026-05-18T08:18:10+00:00",
-      "last_updated": "2026-05-18T08:18:10+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPeTdHaFBXc2lsRk1uT1VlMzlPRDNDU2RLMzNwZmhCbnc5ckNhOFFvMnhSdlhqLUR0SUdnbV9BM3dUT01oNkJYUlNBdExzWVdtNWRsX3lldVU4cVVGbkJobkdZZWlOdGp0c293SHl4NHdGZ1JMYU03bTZPZlJudmdFRXVialNXb0J2WkJkd0V0OFFKWFNBdExuMjR5ZVhOWTJDV1diZUx4WWRoZnFnell6dUthdnRLU2ZQcVhvb0JxUTBnZkxtUms5OHk0bm5BNFAya3o5WNIB2gFBVV95cUxPWkJPV19iMVFCaG5fdU9ZNDZQbWVIZ09DSTNDNDloLXdKcS1idHlKWlB6dTlOckkwdlJGWEs5RnNocF9hYzdfemhKeGVwZUZGaXVfR1YwZm1laHliVWpqZ2xHTWlGZjJ4OVZBN0xUdXN1cVRlZjBMY3h6WGZlTmRRaEU4ZUN6ZUZVSnlwLW9ibXhreHkyWU9QMUpTVURGa0ZzMUJoLXZqcUk0eU9GWVpqUkY2TTFkSXk5TU9FandoNDZ5bDN3UjlZcHdmUjZveVNjU2dPTTZzdWRFUQ?oc=5",
       "is_new": false
     },
     {
