@@ -1,0 +1,35 @@
+name: Test Alert Email (manual)
+
+# One-off: render the alert email on real events and send it to a chosen
+# address via Resend. Manual only — for previewing the email template.
+
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: 'Recipient email'
+        required: true
+      lang:
+        description: 'Language (en/ru)'
+        required: false
+        default: 'en'
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Send test alert
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TEST_TO: ${{ inputs.to }}
+          TEST_LANG: ${{ inputs.lang }}
+        run: node scripts/send_test_alert.mjs
