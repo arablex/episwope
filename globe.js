@@ -3303,6 +3303,53 @@ function toggleTheme(){
 }
 window.toggleTheme = toggleTheme;
 
+/* Share menu — context-aware (selected country → /app?c=ISO, else global view).
+   Extends the viral loop into the app. X / LinkedIn / Copy. */
+function openShareMenu(ev){
+  if(ev) ev.stopPropagation();
+  const old = document.getElementById('shareMenu');
+  if(old){ old.remove(); return; }                 // toggle
+  const tr = (en,ru)=> (typeof TR==='function'?TR(en,ru):en);
+  const sel = (typeof state!=='undefined') && state.selectedCountry;
+  let url, text;
+  if(sel){
+    const meta = findCountry(sel);
+    const iso2 = ((meta && meta.iso2) || '').toUpperCase();
+    url = location.origin + '/app' + (iso2 ? ('?c='+iso2) : '');
+    const ri = iso2 && RISK_INDEX[iso2];
+    const band = ri && ri.composite_risk && ri.composite_risk.band;
+    text = tr(`${countryName(sel)} risk on Vigilo${band?' — '+band:''}. Live, source-traceable risk intelligence.`,
+              `Риск: ${countryName(sel)} на Vigilo${band?' — '+band:''}. Живой, source-traceable.`);
+  } else {
+    url = location.origin + '/app';
+    text = tr('Live global risk intelligence on Vigilo — 7 domains, source-traceable.',
+              'Живой глобальный risk-intelligence на Vigilo — 7 доменов, source-traceable.');
+  }
+  const X='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.4l8.2-9.3L1 2h7l4.9 6.5L18.9 2zm-1.2 18h1.9L7.2 4H5.2l12.5 16z"/></svg>';
+  const L='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>';
+  const C='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const btn = document.getElementById('shareBtn');
+  const r = btn ? btn.getBoundingClientRect() : {bottom:56,right:innerWidth-20};
+  const m = document.createElement('div');
+  m.id = 'shareMenu';
+  m.style.cssText = `position:fixed;top:${r.bottom+8}px;right:${Math.max(12, innerWidth - r.right)}px;z-index:10001;background:var(--bg-card,#fff);border:1px solid var(--line,#eee);border-radius:12px;box-shadow:0 18px 50px -16px rgba(0,0,0,.35);padding:6px;min-width:190px`;
+  const it=(lbl,svg)=>`<button class="sm-item" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;padding:9px 11px;border-radius:8px;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer">${svg}<span>${lbl}</span></button>`;
+  m.innerHTML =
+    `<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 11px 4px">${sel?countryName(sel):tr('Global view','Глобальный вид')}</div>`+
+    it(tr('Share on X','Поделиться в X'), X)+
+    it(tr('Share on LinkedIn','В LinkedIn'), L)+
+    it('<span id="smCopy">'+tr('Copy link','Копировать ссылку')+'</span>', C);
+  document.body.appendChild(m);
+  const items = m.querySelectorAll('.sm-item');
+  const track=(net)=>{ try{ if(window.track) track('app_share',{net:net,ctx:sel?'country':'global'}); }catch(e){} };
+  items[0].onclick=()=>{ track('x'); open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener'); m.remove(); };
+  items[1].onclick=()=>{ track('linkedin'); open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url),'_blank','noopener'); m.remove(); };
+  items[2].onclick=()=>{ track('copy'); try{navigator.clipboard.writeText(url); document.getElementById('smCopy').textContent=tr('Copied!','Скопировано!'); setTimeout(()=>m.remove(),900);}catch(e){ m.remove(); } };
+  items.forEach(b=>{ b.onmouseenter=()=>b.style.background='var(--hover-bg,#f3f1ea)'; b.onmouseleave=()=>b.style.background='none'; });
+  setTimeout(()=>{ const close=(e)=>{ if(!m.contains(e.target) && e.target.id!=='shareBtn'){ m.remove(); document.removeEventListener('click',close); } }; document.addEventListener('click',close); }, 0);
+}
+window.openShareMenu = openShareMenu;
+
 /* Deep-link: /app?c=ISO (or ?country=Name) opens that country on load.
    Enables "share this view" — a shared country link lands on it. */
 function openDeepLinkCountry(){
