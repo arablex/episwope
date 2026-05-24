@@ -1,22 +1,20 @@
 {
   "meta": {
-    "updated_at": "2026-05-24T07:06:50.362970+00:00",
-    "total_events": 90,
-    "total_alerts": 57,
+    "updated_at": "2026-05-24T13:57:19.560140+00:00",
+    "total_events": 87,
+    "total_alerts": 55,
     "mode": "gemini (free)",
     "sources": [
-      "CDC-TRAVEL",
-      "WHO",
       "GDACS",
-      "USGS",
-      "News signal · Google",
-      "WHO DON",
-      "HK CHP",
-      "NASA EONET",
-      "ONT",
-      "ECDC-CDTR",
+      "WHO",
       "Роспотребнадзор",
-      "GDELT (news signal)"
+      "HK CHP",
+      "ECDC-CDTR",
+      "USGS",
+      "WHO DON",
+      "NASA EONET",
+      "CDC-TRAVEL",
+      "ONT"
     ]
   },
   "events": [
@@ -39,7 +37,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON559",
       "date": "2025-03-13T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.202957+00:00"
+      "fetched_at": "2026-05-24T13:51:37.148394+00:00"
     },
     {
       "id": "who-8",
@@ -60,7 +58,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON592",
       "date": "2026-01-26T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.717848+00:00"
+      "fetched_at": "2026-05-24T13:51:36.077228+00:00"
     },
     {
       "id": "who-7",
@@ -81,7 +79,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON593",
       "date": "2026-01-30T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.700073+00:00"
+      "fetched_at": "2026-05-24T13:51:36.045364+00:00"
     },
     {
       "id": "who-6",
@@ -102,7 +100,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON594",
       "date": "2026-02-06T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.685354+00:00"
+      "fetched_at": "2026-05-24T13:51:36.011123+00:00"
     },
     {
       "id": "who-0",
@@ -123,10 +121,10 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON603",
       "date": "2026-05-21T22:00:47Z",
-      "fetched_at": "2026-05-24T07:01:37.540522+00:00"
+      "fetched_at": "2026-05-24T13:51:35.667339+00:00"
     },
     {
-      "id": "cdc-travel-56",
+      "id": "cdc-travel-55",
       "type": "epidemic",
       "disease": "Ebola virus disease",
       "country": "Uganda",
@@ -142,10 +140,29 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level1/ebola-uganda",
       "date": "Fri, 15 May 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.659684+00:00"
+      "fetched_at": "2026-05-24T13:56:08.015395+00:00"
     },
     {
-      "id": "ecdc-cdtr-63",
+      "id": "rosp-33",
+      "type": "epidemic",
+      "disease": "Ebola virus disease",
+      "country": "Russia",
+      "iso": "RU",
+      "region": "EURO",
+      "lat": 61.5,
+      "lng": 105.3,
+      "cases": null,
+      "deaths": null,
+      "severity": "critical",
+      "summary": "Russia epidemiology alert: Ebola virus disease in Russia. Из-за вспышки лихорадки Эбола в Африке свердловские туристы попали в группу риска - URA.RU  Из-за вспышки лихорадки Эбола в Африке свердловские туристы попали в группу риска &nbsp;",
+      "summary_ru": "Из-за вспышки лихорадки Эбола в Африке свердловские туристы попали в группу риска - URA.RU. Из-за вспышки лихорадки Эбола в Африке свердловские туристы попали в группу риска - URA.RU  Из-за вспышки лихорадки Эбола в Африке свердловские туристы попали",
+      "source": "Роспотребнадзор",
+      "link": "https://news.google.com/rss/articles/CBMiR0FVX3lxTFAwdzZNaGhpempJM2c2Q3p1VUpzb1NOckMyc3YwUmxWZ25QZk1xMHlJY1dOcXh4STd1VVRBajZqWVh5ZUdEWm93?oc=5",
+      "date": "Fri, 22 May 2026 08:32:00 GMT",
+      "fetched_at": "2026-05-24T13:53:50.637292+00:00"
+    },
+    {
+      "id": "ecdc-cdtr-62",
       "type": "epidemic",
       "disease": "Ebola virus disease",
       "country": null,
@@ -161,29 +178,10 @@
       "source": "ECDC-CDTR",
       "link": "https://www.ecdc.europa.eu/en/publications-data/communicable-disease-threats-report-14-22-may-2026-week-21",
       "date": "Fri, 22 May 2026 17:24:45 +0200",
-      "fetched_at": "2026-05-24T07:06:04.254329+00:00"
+      "fetched_at": "2026-05-24T13:56:16.036799+00:00"
     },
     {
-      "id": "rosp-32",
-      "type": "epidemic",
-      "disease": "Ebola virus disease",
-      "country": "Russia",
-      "iso": "RU",
-      "region": "EURO",
-      "lat": 61.5,
-      "lng": 105.3,
-      "cases": null,
-      "deaths": null,
-      "severity": "critical",
-      "summary": "Russia epidemiology alert: Ebola virus disease in Russia. В Республике Конго более 90 человек скончались в результате вспышки лихорадки Эбола - https://expert.ru  В Республике Конго более 90 человек скончались в результате вспышки лихорад",
-      "summary_ru": "В Республике Конго более 90 человек скончались в результате вспышки лихорадки Эбола - https://expert.ru. В Республике Конго более 90 человек скончались в результате вспышки лихорадки Эбола - https://expert.ru  В Республике Конго более 90 человек скон",
-      "source": "Роспотребнадзор",
-      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOZmdPaUZFcnVFQnZhWUZBeEstcGlXa2NPa2NSdG9NY1NmVTNxdHBoQnE1WDZpcElaTzJRbTFVdkVaWTJvLV91X1VObkU2ODZNZDEwNHZuZWRyVWlDajBKNThWamt0dktIODZSdGhMa2JKaEdUZ3gzNGlYX2xuYWhBVQ?oc=5",
-      "date": "Mon, 18 May 2026 12:06:24 GMT",
-      "fetched_at": "2026-05-24T07:03:49.904195+00:00"
-    },
-    {
-      "id": "hkchp-39",
+      "id": "hkchp-35",
       "type": "epidemic",
       "disease": "Ebola virus disease",
       "country": "China",
@@ -194,31 +192,12 @@
       "cases": null,
       "deaths": null,
       "severity": "critical",
-      "summary": "Hong Kong Activates Ebola Alert Response Level Amid WHO Emergency Declaration &nbsp;&nbsp; 巴士的報",
+      "summary": "Ebola Disease &nbsp;&nbsp; Centre for Health Protection",
       "summary_ru": "",
       "source": "HK CHP",
-      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPVEVFVW5vTEsxdTdvWUZGbDhiRnNVX3JUSW9fcjQ3NXZsVHJnUkFmSW5FVUg3aXNZVEJsSzd2ME9hZjd1Y0hxSFUwMW0xNU1SYndCRkViS2VzU2hSeTZGSnNZZGg0VGhWSXZSOWVFTFZYTXA3R0dGNlFXcU1nY3RQa3Y5anhNZXd3WUh4VS1yYWVZS0FwMmZoUkI0cm1IUHE5OWpKOERuWVF5R3hMT1I1SXItamIzYmluY3daRTMxVHBHRXBMdzlJcg?oc=5",
-      "date": "Sun, 17 May 2026 10:56:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.694185+00:00"
-    },
-    {
-      "id": "hkchp-51",
-      "type": "epidemic",
-      "disease": "Nipah virus",
-      "country": "Singapore",
-      "iso": "SG",
-      "region": "WPRO",
-      "lat": 1.4,
-      "lng": 103.8,
-      "cases": null,
-      "deaths": null,
-      "severity": "critical",
-      "summary": "Singapore Installs Temperature Scanners at Airports to Prevent Nipah Virus &nbsp;&nbsp; Tempo.co English",
-      "summary_ru": "",
-      "source": "HK CHP",
-      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNNG9kOXZsa3Z6R1g2V3BBcmZ2aW1nX3lsTGNiRWJVR0lhZjZ1d25tanRqSE9GNEktT2ZhWmNjWWVkejBEc3V0UmlsX3NJeUJ5Sjk5Z1RTb1lteTN6SXFHMi1lWUk5a2ZzUF9sLTBBRi1DV0d6dHYxeVU5NmY0Q3k5M0tKWk5HSFQzbjZvRm1zR3Y1MmdiNG9tbVdvTlhBNjlEbjN5eHNETzJmT1E?oc=5",
-      "date": "Thu, 29 Jan 2026 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.610381+00:00"
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBSVHNyMk9uYzM2a2JOam1fSHhBenlJcGFjT3NxenhSaXhKdHVDQ1RlYkhNQnBEc1VzdWdXX1dnWGRFYWJydXMyclRkcG1YRnBpUjBnUDFIREhJV2otWlFSZDlnS3RxZlNkb1dQTw?oc=5",
+      "date": "Mon, 18 May 2026 07:00:00 GMT",
+      "fetched_at": "2026-05-24T13:56:00.698958+00:00"
     },
     {
       "id": "hkchp-36",
@@ -237,7 +216,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxPYjliUHROdkticGdTNFFLUExkcWIwWEVUOHYxNTNXakEzM1hhVXNpZG1TUHpyVms3bU9oN1UtMzR6M2RTTHV6cFlrbWxMVnFjOXJzeWdsMmU5TnNKemp3SDhVRmhtQV9lZXlRZE00UzYzZ0psOHlWbzh0Vmt0cG8zdUdGWWl6aDNQVUdBdWl3dW9JNjF0VUhHN1ZaRVFITzRTVi1vbWZubHo2bFVMMzFKUHdvV1NlX01oMkFqOEhhUnIxLS1saDRfNExQb0xkc05Zbms1b1hTSlBrVXR2dUNyN0ZzZXFHQQ?oc=5",
       "date": "Tue, 19 May 2026 10:52:54 GMT",
-      "fetched_at": "2026-05-24T07:05:56.601364+00:00"
+      "fetched_at": "2026-05-24T13:56:00.765044+00:00"
     },
     {
       "id": "hkchp-38",
@@ -256,7 +235,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9rYnZUMDJKYlhQZ3Rid1JwYXVTT3l6a3VLUVl4NUxkTEZHaFZzQXV2d2hpTFdhdk44NzUwSDJPSHBIbHhrQ0NWUVp4c0ZJTllkcWh3TVdDSDFiS1lUMVRyVURQNmhVeTdBQVV1ejYtUQ?oc=5",
       "date": "Wed, 28 Jan 2026 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.681054+00:00"
+      "fetched_at": "2026-05-24T13:56:00.880804+00:00"
     },
     {
       "id": "who-28",
@@ -277,7 +256,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON562",
       "date": "2025-03-28T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.167114+00:00"
+      "fetched_at": "2026-05-24T13:51:37.077335+00:00"
     },
     {
       "id": "who-27",
@@ -298,7 +277,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON563",
       "date": "2025-04-11T10:58:47Z",
-      "fetched_at": "2026-05-24T07:01:38.153462+00:00"
+      "fetched_at": "2026-05-24T13:51:37.042359+00:00"
     },
     {
       "id": "who-26",
@@ -319,7 +298,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON564",
       "date": "2025-04-17T18:08:00Z",
-      "fetched_at": "2026-05-24T07:01:38.137656+00:00"
+      "fetched_at": "2026-05-24T13:51:37.008076+00:00"
     },
     {
       "id": "who-19",
@@ -340,7 +319,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON575",
       "date": "2025-07-05T05:41:27Z",
-      "fetched_at": "2026-05-24T07:01:37.977111+00:00"
+      "fetched_at": "2026-05-24T13:51:36.647643+00:00"
     },
     {
       "id": "who-16",
@@ -361,7 +340,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON579",
       "date": "2025-08-29T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.912974+00:00"
+      "fetched_at": "2026-05-24T13:51:36.502705+00:00"
     },
     {
       "id": "who-12",
@@ -382,7 +361,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON590",
       "date": "2025-12-05T16:36:27Z",
-      "fetched_at": "2026-05-24T07:01:37.778627+00:00"
+      "fetched_at": "2026-05-24T13:51:36.221843+00:00"
     },
     {
       "id": "who-4",
@@ -403,10 +382,10 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON597",
       "date": "2026-04-10T13:51:44Z",
-      "fetched_at": "2026-05-24T07:01:37.639825+00:00"
+      "fetched_at": "2026-05-24T13:51:35.903348+00:00"
     },
     {
-      "id": "usgs-67",
+      "id": "usgs-66",
       "type": "disaster",
       "disaster_type": "EQ",
       "disease": "Earthquake",
@@ -423,10 +402,10 @@
       "source": "USGS",
       "link": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000sxwq",
       "date": "2026-05-15",
-      "fetched_at": "2026-05-24T07:06:26.156294+00:00"
+      "fetched_at": "2026-05-24T13:56:39.036996+00:00"
     },
     {
-      "id": "eonet-84",
+      "id": "eonet-83",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -443,10 +422,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/fcccb1cd-f00f-484f-beeb-43874cb5fd86",
       "date": "2026-05-17",
-      "fetched_at": "2026-05-24T07:06:27.105615+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656941+00:00"
     },
     {
-      "id": "eonet-85",
+      "id": "eonet-84",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -463,10 +442,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/59686f08-125a-4dc7-91e9-af37f0968ccd",
       "date": "2026-05-17",
-      "fetched_at": "2026-05-24T07:06:27.105623+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656948+00:00"
     },
     {
-      "id": "eonet-86",
+      "id": "eonet-85",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -483,10 +462,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/474cb867-2af9-4bab-828f-a1ec34db0425",
       "date": "2026-05-17",
-      "fetched_at": "2026-05-24T07:06:27.105631+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656956+00:00"
     },
     {
-      "id": "eonet-87",
+      "id": "eonet-86",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -503,10 +482,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/928cddcb-c14e-4b63-85f7-774058e51acb",
       "date": "2026-05-17",
-      "fetched_at": "2026-05-24T07:06:27.105638+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656963+00:00"
     },
     {
-      "id": "eonet-79",
+      "id": "eonet-78",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -523,10 +502,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/9b17d10e-20c4-4177-9b18-236dfae9d57d",
       "date": "2026-05-18",
-      "fetched_at": "2026-05-24T07:06:27.105554+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656904+00:00"
     },
     {
-      "id": "eonet-80",
+      "id": "eonet-79",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -543,10 +522,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/a4eb258a-f5d1-46c3-9560-8fbc8042d9c3",
       "date": "2026-05-18",
-      "fetched_at": "2026-05-24T07:06:27.105561+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656912+00:00"
     },
     {
-      "id": "eonet-81",
+      "id": "eonet-80",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -563,10 +542,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/91c7775a-98f7-45b3-a8c1-3433796360ca",
       "date": "2026-05-18",
-      "fetched_at": "2026-05-24T07:06:27.105568+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656919+00:00"
     },
     {
-      "id": "eonet-82",
+      "id": "eonet-81",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -583,10 +562,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/d271309e-154d-4b76-83e4-71e83869b4b6",
       "date": "2026-05-18",
-      "fetched_at": "2026-05-24T07:06:27.105575+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656927+00:00"
     },
     {
-      "id": "eonet-83",
+      "id": "eonet-82",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -603,10 +582,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/971f49d7-75c2-43c7-9db0-05c7d006565c",
       "date": "2026-05-18",
-      "fetched_at": "2026-05-24T07:06:27.105604+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656934+00:00"
     },
     {
-      "id": "eonet-71",
+      "id": "eonet-70",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -623,10 +602,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/66bfa6ae-29e9-4cde-b0e0-27aa4ec8cee0",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105487+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656810+00:00"
     },
     {
-      "id": "eonet-72",
+      "id": "eonet-71",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -643,10 +622,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/fe13eac3-abc4-49be-87bf-1cc7b095ec74",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105496+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656825+00:00"
     },
     {
-      "id": "eonet-73",
+      "id": "eonet-72",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -663,10 +642,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/86678603-6464-406f-bd21-065bbb15a368",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105504+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656839+00:00"
     },
     {
-      "id": "eonet-74",
+      "id": "eonet-73",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -683,10 +662,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/5fa51a06-a7d8-4926-84cb-c4a1f2bbb6a8",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105512+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656855+00:00"
     },
     {
-      "id": "eonet-75",
+      "id": "eonet-74",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -703,10 +682,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/a7c6f956-f17f-4a90-9fe7-011addde290c",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105520+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656870+00:00"
     },
     {
-      "id": "eonet-76",
+      "id": "eonet-75",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -723,10 +702,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/5eb5f2f6-8d24-41e3-a185-60f921e3fad4",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105529+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656878+00:00"
     },
     {
-      "id": "eonet-77",
+      "id": "eonet-76",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -743,10 +722,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/44e802a8-6362-4483-911b-0e60f6a2824c",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105538+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656887+00:00"
     },
     {
-      "id": "eonet-78",
+      "id": "eonet-77",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -763,10 +742,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/fa5d7760-1c86-47cc-a58b-469caf22ed53",
       "date": "2026-05-19",
-      "fetched_at": "2026-05-24T07:06:27.105545+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656896+00:00"
     },
     {
-      "id": "usgs-65",
+      "id": "usgs-64",
       "type": "disaster",
       "disaster_type": "EQ",
       "disease": "Earthquake",
@@ -783,10 +762,10 @@
       "source": "USGS",
       "link": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000sz1d",
       "date": "2026-05-20",
-      "fetched_at": "2026-05-24T07:06:26.156240+00:00"
+      "fetched_at": "2026-05-24T13:56:39.036965+00:00"
     },
     {
-      "id": "eonet-68",
+      "id": "eonet-67",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -803,10 +782,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/0aa79001-67d5-4ffb-aa44-82feeb972f29",
       "date": "2026-05-20",
-      "fetched_at": "2026-05-24T07:06:27.105446+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656741+00:00"
     },
     {
-      "id": "eonet-69",
+      "id": "eonet-68",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -823,10 +802,10 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/29128400-a817-4d78-a1a7-3a5bb5b597fd",
       "date": "2026-05-20",
-      "fetched_at": "2026-05-24T07:06:27.105468+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656775+00:00"
     },
     {
-      "id": "eonet-70",
+      "id": "eonet-69",
       "type": "disaster",
       "disaster_type": "WF",
       "disease": "Wildfire",
@@ -843,27 +822,7 @@
       "source": "NASA EONET",
       "link": "https://irwin.doi.gov/observer/incidents/7dafe704-220a-4c5e-a9e6-d883cb9a7c35",
       "date": "2026-05-20",
-      "fetched_at": "2026-05-24T07:06:27.105479+00:00"
-    },
-    {
-      "id": "gdelt-88",
-      "type": "epidemic",
-      "disease": "Ebola virus disease",
-      "country": "India",
-      "iso": "IN",
-      "region": "SEARO",
-      "lat": 20.6,
-      "lng": 78.9,
-      "cases": null,
-      "deaths": null,
-      "severity": "alert",
-      "summary": "India issues travel advisory as WHO declares Ebola outbreak a public health emergency — indianexpress.com",
-      "summary_ru": "",
-      "source": "GDELT (news signal)",
-      "confidence": "signal",
-      "link": "https://indianexpress.com/article/india/india-travel-advisory-who-ebola-outbreak-public-health-emergency-10705159/",
-      "date": "2026-05-24",
-      "fetched_at": "2026-05-24T07:06:44.746624+00:00"
+      "fetched_at": "2026-05-24T13:56:39.656792+00:00"
     },
     {
       "id": "hkchp-37",
@@ -882,10 +841,10 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5qM19XM2ViRHFadGxEUzR0N1c0XzJ3ODRkcksxSFAzMmhvLTA4cG9hV2dYenlnSGVRaWw1b2pVWUYtUU9fTDBpWVUzbHJ6UEo5UTI2WV9iM2FudUdQVVhLQzFVbUFYNTNJbGdJcDdIY3UycTZ5SUFSQUt4bThyQQ?oc=5",
       "date": "Fri, 13 Mar 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.618738+00:00"
+      "fetched_at": "2026-05-24T13:56:00.808500+00:00"
     },
     {
-      "id": "hkchp-43",
+      "id": "hkchp-44",
       "type": "epidemic",
       "disease": "Meningitis",
       "country": "China",
@@ -901,10 +860,10 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNRUhGZHlCdHQ5bDFJVHZ3WVBsVVY0NzFfUktPSnZ5WXA0QVN1dm56S0VEb1hzVVh3VHlSVElwb3lJRm1fVVd2cWtTSTcxYl81b0J0Yy15bEdjSUk3UVJUUHFMSlFFbk8yUTBvMFBTQWpWTVF5NTl5MGdGLWZiV0s5R0FMM0oyamhYVzJubVE0WGV5RkN3Wmx1YU43eDh4M01uaTV1Y0RPelB0bnl3Y3M3ZA?oc=5",
       "date": "Fri, 20 Mar 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.836257+00:00"
+      "fetched_at": "2026-05-24T13:56:01.338479+00:00"
     },
     {
-      "id": "who-53",
+      "id": "who-52",
       "type": "epidemic",
       "disease": "Malaria",
       "country": null,
@@ -920,10 +879,10 @@
       "source": "WHO",
       "link": "https://www.who.int/news/item/24-04-2026-who-prequalifies-first-ever-malaria-treatment-for-newborns-and-infants-adds-new-diagnostic-tests",
       "date": "Fri, 24 Apr 2026 16:11:22 Z",
-      "fetched_at": "2026-05-24T07:06:01.022367+00:00"
+      "fetched_at": "2026-05-24T13:56:07.072259+00:00"
     },
     {
-      "id": "cdc-travel-55",
+      "id": "cdc-travel-54",
       "type": "epidemic",
       "disease": "Dengue fever",
       "country": "Mali",
@@ -939,10 +898,10 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level1/dengue-global",
       "date": "Mon, 18 May 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.647481+00:00"
+      "fetched_at": "2026-05-24T13:56:07.981871+00:00"
     },
     {
-      "id": "ont-62",
+      "id": "ont-61",
       "type": "epidemic",
       "disease": "Avian influenza",
       "country": "Turkey",
@@ -958,7 +917,7 @@
       "source": "ONT",
       "link": "https://outbreaknewstoday.com/israel-reports-bird-flu-in-jezreel-valley-turkey-flock-second-case-this-season-490/",
       "date": "Mon, 23 Feb 2026 23:09:44 +0000",
-      "fetched_at": "2026-05-24T07:06:03.240383+00:00"
+      "fetched_at": "2026-05-24T13:56:09.649419+00:00"
     },
     {
       "id": "hkchp-49",
@@ -977,7 +936,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPLW84Z09DSEhfT2FvVEk5NElzaEJ4OVpVZk0zSTZjX2FrOWM3Xy1NU2haM2hpaDJGV0FKN0NJREFETGJJRWcxckJ0eHBSUjc0SnlKVUY3REVVT1hQVlIwOW9JQkxvZkFRUGhpQS1VN09lU29kQVZGYUNfUEZBaExpbDVuT00?oc=5",
       "date": "Sat, 03 Dec 2022 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.361671+00:00"
+      "fetched_at": "2026-05-24T13:56:02.527819+00:00"
     },
     {
       "id": "hkchp-50",
@@ -996,7 +955,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9SMFk4UTktNnBtOG9TZTlocGw1dDhQZEM0UG45QWxmU1VWc3p1M0c4WHB5Z0s0bloyc1JXbUxCdWttRlhLZ1FmOHk5dzBaWml5Q1hQYU5xNWhRQWY3SExLVTZmR0k3RkpReTUySHBn?oc=5",
       "date": "Sat, 05 Jul 2025 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.467732+00:00"
+      "fetched_at": "2026-05-24T13:56:02.881413+00:00"
     },
     {
       "id": "hkchp-42",
@@ -1015,10 +974,10 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNcUdTVTh5Wkd1OFR1RE5xa3VLeHhJdnpEUENUMlo2MENPa0czOV9UWllFTlFoQWswYVlfX29nQkVjNXVzdUVBU1Y2bDFWQkVvRXJNdFY4Smk4bUU2cFBhbzloeHRyMWdqaEZwMUlFTm9pdEE1WVBmeVQydkY3dmlCRzcxRVNldVJUVENEMFJB?oc=5",
       "date": "Sun, 22 Mar 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.821953+00:00"
+      "fetched_at": "2026-05-24T13:56:01.234260+00:00"
     },
     {
-      "id": "ont-60",
+      "id": "ont-59",
       "type": "epidemic",
       "disease": "Avian influenza",
       "country": "India",
@@ -1034,10 +993,10 @@
       "source": "ONT",
       "link": "https://outbreaknewstoday.com/india-h5n1-reported-in-five-kozhikode-local-bodies-culling-to-follow-629/",
       "date": "Thu, 19 Mar 2026 17:36:00 +0000",
-      "fetched_at": "2026-05-24T07:06:03.161228+00:00"
+      "fetched_at": "2026-05-24T13:56:09.468180+00:00"
     },
     {
-      "id": "gdacs-DR-64",
+      "id": "gdacs-DR-63",
       "type": "disaster",
       "disaster_type": "DR",
       "disease": "Severe Drought",
@@ -1054,10 +1013,10 @@
       "source": "GDACS",
       "link": "https://www.gdacs.org/report.aspx?eventtype=DR&eventid=1018431",
       "date": "Thu, 30 Apr 2026 13:07:35 GMT",
-      "fetched_at": "2026-05-24T07:06:26.002336+00:00"
+      "fetched_at": "2026-05-24T13:56:38.892068+00:00"
     },
     {
-      "id": "ont-61",
+      "id": "ont-60",
       "type": "epidemic",
       "disease": "Avian influenza",
       "country": null,
@@ -1073,10 +1032,10 @@
       "source": "ONT",
       "link": "https://outbreaknewstoday.com/pennsylvania-ramps-up-testing-as-bird-flu-affects-7-2-million-birds-in-2026-547/",
       "date": "Tue, 24 Feb 2026 21:04:38 +0000",
-      "fetched_at": "2026-05-24T07:06:03.208792+00:00"
+      "fetched_at": "2026-05-24T13:56:09.583403+00:00"
     },
     {
-      "id": "cdc-travel-57",
+      "id": "cdc-travel-56",
       "type": "epidemic",
       "disease": "Meningitis",
       "country": "Democratic Republic Of The Congo",
@@ -1092,10 +1051,10 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level2/meningococcal-drc",
       "date": "Tue, 24 Mar 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.714182+00:00"
+      "fetched_at": "2026-05-24T13:56:08.113869+00:00"
     },
     {
-      "id": "who-52",
+      "id": "who-51",
       "type": "epidemic",
       "disease": "Hepatitis",
       "country": null,
@@ -1111,10 +1070,10 @@
       "source": "WHO",
       "link": "https://www.who.int/news/item/28-04-2026-efforts-to-eliminate-hepatitis-delivers-gains-but-more-action-needed-to-meet-2030-targets",
       "date": "Tue, 28 Apr 2026 05:37:30 Z",
-      "fetched_at": "2026-05-24T07:06:00.987727+00:00"
+      "fetched_at": "2026-05-24T13:56:07.005356+00:00"
     },
     {
-      "id": "hkchp-35",
+      "id": "hkchp-39",
       "type": "epidemic",
       "disease": "Avian influenza",
       "country": "China",
@@ -1125,15 +1084,15 @@
       "cases": null,
       "deaths": null,
       "severity": "alert",
-      "summary": "3 new human avian flu cases reported in China &nbsp;&nbsp; CIDRAP",
+      "summary": "WPRO Table-Top Exercise Crystal: A `Bovine' Novel Flu Outbreak Scenario &nbsp;&nbsp; Avian Flu Diary",
       "summary_ru": "",
       "source": "HK CHP",
-      "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNdzFvMmhGc1lhQXBITFN2S19uQkZtQUZWVWNzUkY5QmpPUVBLWGRSM3d0SFRVcUNYR01nd0FVUnJKN3lmZE1vNDR1anVMSk9KeG12djJCNVBtQUUwRmRzQTBBUmpMMTZSZU4wN29yaklnMU1GcXFXMUJVNDU1TFd0ak5xRlVsNnJTWTM5eWYwdGRyU3JqUHcyeUNB?oc=5",
-      "date": "Wed, 11 Feb 2026 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.587790+00:00"
+      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPNDJFNmx2WEhIM2dLdXkxVHQtSlY0RkstVTR4YXhKLTY4RzV4UGtBSVI5R0ZTTWdjQ29SSHh5WXUxZ1ZaaFNZcExnbG44b0V3NUMwalB5QmN6UlNKbTY0Zl9qMmIyRzBvYkNqYThyd1hoeWZ1N1A0aVNkZXNRSUF5U2pDMFoxdW1lREE?oc=5",
+      "date": "Wed, 03 Dec 2025 08:00:00 GMT",
+      "fetched_at": "2026-05-24T13:56:00.916010+00:00"
     },
     {
-      "id": "hkchp-44",
+      "id": "hkchp-43",
       "type": "epidemic",
       "disease": "Dengue fever",
       "country": "China",
@@ -1149,7 +1108,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE16WVRNUTl0eFNhRlZteEtwRFVJZm1uSjl2MG05Q0REbGNteUF0N0pobTd2U1pjbzhUM3RQSExYdWtDbGliRkFIY0k5dXFKQ05vdDh0VVJfdmhnSU05VHowRzdHZGhZOXVMVVB1NHB5UQ?oc=5",
       "date": "Wed, 22 Apr 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.853879+00:00"
+      "fetched_at": "2026-05-24T13:56:01.305341+00:00"
     },
     {
       "id": "who-31",
@@ -1170,7 +1129,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON549",
       "date": "2025-01-29T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.327946+00:00"
+      "fetched_at": "2026-05-24T13:51:37.403585+00:00"
     },
     {
       "id": "who-29",
@@ -1191,7 +1150,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON561",
       "date": "2025-03-27T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.187882+00:00"
+      "fetched_at": "2026-05-24T13:51:37.115253+00:00"
     },
     {
       "id": "who-25",
@@ -1212,7 +1171,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON565",
       "date": "2025-04-28T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.100797+00:00"
+      "fetched_at": "2026-05-24T13:51:36.938969+00:00"
     },
     {
       "id": "who-24",
@@ -1233,7 +1192,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON568",
       "date": "2025-05-13T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.055025+00:00"
+      "fetched_at": "2026-05-24T13:51:36.829575+00:00"
     },
     {
       "id": "who-23",
@@ -1254,7 +1213,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON570",
       "date": "2025-05-16T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:38.039244+00:00"
+      "fetched_at": "2026-05-24T13:51:36.794431+00:00"
     },
     {
       "id": "who-22",
@@ -1275,7 +1234,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON571",
       "date": "2025-05-20T13:26:10Z",
-      "fetched_at": "2026-05-24T07:01:38.020290+00:00"
+      "fetched_at": "2026-05-24T13:51:36.757976+00:00"
     },
     {
       "id": "who-20",
@@ -1296,7 +1255,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON573",
       "date": "2025-05-29T16:05:07Z",
-      "fetched_at": "2026-05-24T07:01:37.990731+00:00"
+      "fetched_at": "2026-05-24T13:51:36.689814+00:00"
     },
     {
       "id": "who-17",
@@ -1317,7 +1276,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON578",
       "date": "2025-08-20T16:06:59Z",
-      "fetched_at": "2026-05-24T07:01:37.929948+00:00"
+      "fetched_at": "2026-05-24T13:51:36.539375+00:00"
     },
     {
       "id": "who-15",
@@ -1338,7 +1297,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON581",
       "date": "2025-10-03T11:25:30Z",
-      "fetched_at": "2026-05-24T07:01:37.861691+00:00"
+      "fetched_at": "2026-05-24T13:51:36.397986+00:00"
     },
     {
       "id": "who-14",
@@ -1359,7 +1318,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON584",
       "date": "2025-11-05T15:07:26Z",
-      "fetched_at": "2026-05-24T07:01:37.844555+00:00"
+      "fetched_at": "2026-05-24T13:51:36.361977+00:00"
     },
     {
       "id": "who-13",
@@ -1380,7 +1339,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/DON588",
       "date": "2025-11-21T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.812464+00:00"
+      "fetched_at": "2026-05-24T13:51:36.287984+00:00"
     },
     {
       "id": "who-11",
@@ -1401,7 +1360,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON587",
       "date": "2025-12-05T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.763046+00:00"
+      "fetched_at": "2026-05-24T13:51:36.187245+00:00"
     },
     {
       "id": "who-5",
@@ -1422,7 +1381,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON595",
       "date": "2026-02-14T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.669990+00:00"
+      "fetched_at": "2026-05-24T13:51:35.975812+00:00"
     },
     {
       "id": "who-3",
@@ -1443,7 +1402,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON598",
       "date": "2026-04-23T12:58:07Z",
-      "fetched_at": "2026-05-24T07:01:37.625318+00:00"
+      "fetched_at": "2026-05-24T13:51:35.869450+00:00"
     },
     {
       "id": "who-2",
@@ -1464,7 +1423,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON600",
       "date": "2026-05-08T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.595626+00:00"
+      "fetched_at": "2026-05-24T13:51:35.797887+00:00"
     },
     {
       "id": "who-1",
@@ -1485,10 +1444,10 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2026-DON601",
       "date": "2026-05-13T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.578541+00:00"
+      "fetched_at": "2026-05-24T13:51:35.736762+00:00"
     },
     {
-      "id": "usgs-66",
+      "id": "usgs-65",
       "type": "disaster",
       "disaster_type": "EQ",
       "disease": "Earthquake",
@@ -1505,29 +1464,10 @@
       "source": "USGS",
       "link": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000sy84",
       "date": "2026-05-16",
-      "fetched_at": "2026-05-24T07:06:26.156273+00:00"
+      "fetched_at": "2026-05-24T13:56:39.036985+00:00"
     },
     {
-      "id": "hkchp-41",
-      "type": "epidemic",
-      "disease": "Chikungunya",
-      "country": "China",
-      "iso": "CN",
-      "region": "WPRO",
-      "lat": 35.9,
-      "lng": 104.2,
-      "cases": null,
-      "deaths": null,
-      "severity": "warning",
-      "summary": "Hong Kong records first imported case of chikungunya fever after outbreak in mainland China &nbsp;&nbsp; Hong Kong Free Press HKFP",
-      "summary_ru": "",
-      "source": "HK CHP",
-      "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOcmFVTGp1bVVaYWZZd0hkbUEwU2s2ZWRmM1VJUEN1TEwycmtRQ1phZTBLUGU2TlA0VG9vakJTSTlKQ3hjajhDQnlMVlBKYzRiejZ1YUUwZlk4b0h0dVhLTVJtRVVUa0QzN0ZuWGN4c2kyZDFzcllDYmJlblFHZVJRa1Fqd29LWTEzUnBlQ2g2VXJWbnAxdzR1M3J4V0V0VzE2bnhwWnZmS1BYN2prMjFHTVkwc2oxeGE1NVZCbEZkd3NXVWtL?oc=5",
-      "date": "Mon, 04 Aug 2025 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.772298+00:00"
-    },
-    {
-      "id": "cdc-travel-59",
+      "id": "cdc-travel-58",
       "type": "epidemic",
       "disease": "Polio",
       "country": "Democratic Republic Of The Congo",
@@ -1543,10 +1483,10 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level2/global-polio",
       "date": "Mon, 09 Mar 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.759937+00:00"
+      "fetched_at": "2026-05-24T13:56:08.219366+00:00"
     },
     {
-      "id": "cdc-travel-58",
+      "id": "cdc-travel-57",
       "type": "epidemic",
       "disease": "Yellow fever",
       "country": "Venezuela",
@@ -1562,7 +1502,7 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level2/yellow-fever-venezuela",
       "date": "Mon, 16 Mar 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.729898+00:00"
+      "fetched_at": "2026-05-24T13:56:08.147237+00:00"
     },
     {
       "id": "hkchp-45",
@@ -1581,27 +1521,26 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPdDJyenNYTFN2WEdDYVF6NDhTakx1YnZTZ3Iwc2RjcHJaZjVWcTlNcWRXbzVQOVAyWTJRRmgtdUZhbnJ2RHVjbk9faERDaFhfQUJPOHBMNWc3YVpDNHhyM082QXlHQmZ1TGZYMjRrZmpsaVZlU1FSNjlhcC0xNmVrUHI5eUVUdmw4bWNpMkh2LXVYdFczR0w1Y3VhRWItNmZ0SXJRWmVSMmhlbVY5VU9VWVdZQ09Qd3pfbWZkc3U4LUZOdmEyZUx0QndueE80NVQ5djFZ0gHTAUFVX3lxTFAwMWdCOTEwVVU5cXlxXzA2YVk1Z0JJZ3MyNUVmblZPM3Z4YkZrUW1JRXlMcWk0OF8yWFJoclBvaEQ1QXdPUElieEFvVUNmQ0J4cGktWEdqSzJjZFdyd29zOWxmR2RrYXZxemdwWnFzRGhGVkJKMEljSjl1QVJrMDJCdWxWYTJEQzZlZVhwVkFZRjhGRUFGX2Z0bHNmU3RyUFY2MTlISmlobW1NVWRiWGNvdm51VTBmNTFPZ2dsa0VLSHZ0dTBlSWVKSHpfWUhXVzJacWs?oc=5",
       "date": "Sun, 02 Mar 2025 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.008707+00:00"
+      "fetched_at": "2026-05-24T13:56:01.824213+00:00"
     },
     {
-      "id": "gnews-89",
+      "id": "hkchp-41",
       "type": "epidemic",
-      "disease": "Mpox",
-      "country": "United States",
-      "iso": "US",
-      "region": "AMRO",
-      "lat": 37.1,
-      "lng": -95.7,
+      "disease": "Chikungunya",
+      "country": "China",
+      "iso": "CN",
+      "region": "WPRO",
+      "lat": 35.9,
+      "lng": 104.2,
       "cases": null,
       "deaths": null,
       "severity": "warning",
-      "summary": "Monkeypox in the United States and Around the World: Current Situation",
+      "summary": "Chikungunya in Hong Kong: 10th locally acquired case reported &nbsp;&nbsp; Outbreak News Today",
       "summary_ru": "",
-      "source": "News signal · Google",
-      "confidence": "signal",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5hN2FwbDA2U3VfUENnOFJ0LTNvTUs2U3VWbzlKYnJpMElxZ05qLVhwRDJBMUxjVGhucGNMa042ODJrVll2bjdOWXlFZ3FHMXA1SVVxSVJqYmlPem5nZnh6WHN4LXF2YmlIelE?oc=5",
-      "date": "Thu, 21 May 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:49.805273+00:00"
+      "source": "HK CHP",
+      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNVHFqaHFQZ2hpT2cyTlVubFRLZ040Zm4xZ2d4QjJ6b3lQUTIxcDQtbGQ0Qnk1Z2U5ZHFCQzhxQ3M2YU1sXzlEYmdERlFYNW55Qm5QdGlRVS12TURpOHpZeFZZNmNXTjZlV1ZaTUVBcllnOTMtdzNKV2ppU3Z0aTJZZlVfbGg?oc=5",
+      "date": "Sun, 07 Dec 2025 08:00:00 GMT",
+      "fetched_at": "2026-05-24T13:56:01.128620+00:00"
     },
     {
       "id": "hkchp-48",
@@ -1620,7 +1559,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNeUl1MDh4bGIzT2tPTDA1NmdCR0kxak1PSFpUYWlWTzdGNEtpb25iOEtYLU9fZmlSdzJPWkdURTRSMmdfbllNZkdXa3Z3OTBwWjFPRUJJcGVlemdJNVhVT3ZNS2RBMTZqY21sNElyeEFtZzM1MU9OTjU1ODdBLXZUdEhUZ1ZtdWpzbXlVRGhaSTdLejZQaWFYSUd0LThKckdaX1VXZkw4VHllV3ZxMjNnSE1manN4LWR2akdnblFTRGdFWnhDajB6Q0RDSWJYRHZmQ3d5ZEU3UEZta0UtTDFsal9yRE5XS3ptemJmRmZjYmtxSzNkemVIMkhSUlU1d9IB_gFBVV95cUxPbEFaOUxIN2J1UUZVaE1YV3J1THYtQzBza0VKeThxTjFvcEttUHZ1OExmdlRKOTNpV0VnUDQwMTRuZWZvOTYzejZJZDlYMzREUHhSM1NMdUJSc2htdmQ3SF9jSE5ObzRXS01vc09uemlyZmM2eFNVRkFBX0hCbk5jZUhyZ0JaUEZYYktfdDVuNVRPU21PX0htR29jVGxwRXVZUXJLSU5hMDNCQmpKemN4ZVVMM2hSV044SnpJZHFpUG8xdUxlMVNZYXlFWXZNMmpoTWdXMDNuRHJPX0dKd2VWMWkyQ2RVTXJkRTZVVDZlcFM3MUdwMkJmSGFreE9ydw?oc=5",
       "date": "Tue, 01 Aug 2023 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.252540+00:00"
+      "fetched_at": "2026-05-24T13:56:02.273171+00:00"
     },
     {
       "id": "hkchp-46",
@@ -1639,10 +1578,10 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxON1NuRktJa3Jqb2FBczRiZkxZa2tIOE5PbHZYS3BCb0haY0piUVI2M21UOUVVRWQwODBLa01ZcDVvVThOei1VQW9nTEt6MFdoeXBhLVpDbUQwenNFVU5iN1dSR1FUaER6NE5YczJPRlZVZnJtN2ttUE04aUZwUzF1bGhwd3M3dGJUNVFVYjA2cXk5Q2NESE8xWG5NOVF0NXhnckxudjY3MA?oc=5",
       "date": "Tue, 23 Dec 2025 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.085984+00:00"
+      "fetched_at": "2026-05-24T13:56:01.903290+00:00"
     },
     {
-      "id": "rosp-34",
+      "id": "rosp-32",
       "type": "epidemic",
       "disease": "Encephalitis",
       "country": "Russia",
@@ -1658,10 +1597,10 @@
       "source": "Роспотребнадзор",
       "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNMnZycXY3Y1lORnI0NklrcDZra3pVaV83a0ZWempZVTcwallmWklMSUV3YzI1cUZQQkhyNEF2MjhkMnRmVW4tYWlaRlAzY3pfYXZQUEtWQlhFb1NtVzBFcFl3OFFfeFd2RklCRHVrWnhLQkJfdHFSRHRBc3pwNjIwN0VHUTN3dXdRMFBwQXZPWWNzaXV0Qk0wS196VDYtb1JRczNJa2VwT2YwbFU?oc=5",
       "date": "Wed, 13 May 2026 07:00:00 GMT",
-      "fetched_at": "2026-05-24T07:03:49.991524+00:00"
+      "fetched_at": "2026-05-24T13:53:50.602777+00:00"
     },
     {
-      "id": "cdc-travel-54",
+      "id": "cdc-travel-53",
       "type": "epidemic",
       "disease": "Hantavirus",
       "country": "Argentina",
@@ -1677,7 +1616,7 @@
       "source": "CDC-TRAVEL",
       "link": "https://wwwnc.cdc.gov/travel/notices/level1/andes-virus-south-america",
       "date": "Wed, 20 May 2026 04:00:00 GMT",
-      "fetched_at": "2026-05-24T07:06:01.633128+00:00"
+      "fetched_at": "2026-05-24T13:56:07.948114+00:00"
     },
     {
       "id": "who-21",
@@ -1698,7 +1637,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON572",
       "date": "2025-05-28T09:21:09Z",
-      "fetched_at": "2026-05-24T07:01:38.006821+00:00"
+      "fetched_at": "2026-05-24T13:51:36.726070+00:00"
     },
     {
       "id": "who-18",
@@ -1719,7 +1658,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON576",
       "date": "2025-07-24T18:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.962943+00:00"
+      "fetched_at": "2026-05-24T13:51:36.614263+00:00"
     },
     {
       "id": "who-10",
@@ -1740,7 +1679,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON586",
       "date": "2025-12-10T19:00:00Z",
-      "fetched_at": "2026-05-24T07:01:37.748279+00:00"
+      "fetched_at": "2026-05-24T13:51:36.146843+00:00"
     },
     {
       "id": "who-9",
@@ -1761,7 +1700,7 @@
       "source": "WHO DON",
       "link": "https://www.who.int/2025-DON591",
       "date": "2025-12-24T05:38:07Z",
-      "fetched_at": "2026-05-24T07:01:37.733267+00:00"
+      "fetched_at": "2026-05-24T13:51:36.111951+00:00"
     },
     {
       "id": "hkchp-47",
@@ -1780,7 +1719,26 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPeHdXWDNUekQ1ZXh0MjlNdWFuTGFmcURkRHhiMndtSTBpQjJwQXF1ZDQyUTZDdnJJZFBnamkwUjRDNkFWdVlTeDFibFlOYjRJZnh3b1RUd05mc0dYNXYyZWNvY2h2TkY2dUtxVGFhT0JKSmhDU09pbWdWSlo2QjJicEVtNDlUb2FpYW04NTJHVVIwejl2YWlhVlA4dHhaLVZ5SlBXWWRRQ1pjeGhIX3NLOWxxeThwZTdyc1cteDNtUmo5RVBWZHlpaHg4MHg0VjRsajNZNW9R0gHWAUFVX3lxTE0zZnd1eGZCQ2NYY1QyYnFkdG8zQXUwZXdDdm5lcUJ3M0Rkd0dVUlJvVFp0RmxzOHpNMVJyNU5CUHpJZXp4eHpaQ3JyMUxJdjk3MWcxNEhXdU5NYVpCNTN5THgtTjBZRlJXZDlLZ2EwZTlDb1VpZHdpQkRoQlUzd0dnc1ctSnpUQ2w4NmZRdmgtcENhQk1qX2dJQUlaZ3VxRHo5bW45ejc1OUFiX0tBV0VlTzRuUXcza3ctd0ktcTI3ZjZVUUVqUHAzYTltNjdtbXFOQkZvaUE?oc=5",
       "date": "Sat, 03 Jan 2026 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:57.143733+00:00"
+      "fetched_at": "2026-05-24T13:56:02.118579+00:00"
+    },
+    {
+      "id": "rosp-34",
+      "type": "epidemic",
+      "disease": "Infectious disease",
+      "country": "Russia",
+      "iso": "RU",
+      "region": "EURO",
+      "lat": 61.5,
+      "lng": 105.3,
+      "cases": null,
+      "deaths": null,
+      "severity": "monitoring",
+      "summary": "Russia epidemiology alert: Infectious disease in Russia. Роспотребнадзор нашёл РНК вирусы в питьевой воде после вспышки кишечной инфекции в Нововятске - istochnik.online  Роспотребнадзор нашёл РНК вирусы в питьевой воде после вспышки киш",
+      "summary_ru": "Роспотребнадзор нашёл РНК вирусы в питьевой воде после вспышки кишечной инфекции в Нововятске - istochnik.online. Роспотребнадзор нашёл РНК вирусы в питьевой воде после вспышки кишечной инфекции в Нововятске - istochnik.online  Роспотребнадзор нашёл",
+      "source": "Роспотребнадзор",
+      "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPRnRqS1BUMi1KQjUybVByY1Jla2V5TEVDR0JQalp4QTNydUExejhRMjU3T1lEWnk4Z1poTzNJNkJxdUFkanNMUUIyMHhOMXZ0SlNFYmZsQjFyTUVuU3ptVHUzdkZ3b0tWc0FMZ0drQWxDX3YyY3ZZUFNXcDJNRU5TNGdlRnhwcmI3XzVIUWtESVdKSnA2ZHJhNkt6Z1E5aWlNUkxhd19mazQyWWlJRUd6TkhzbDQ5aUJXaGVQSEQ4Uk9JUDRIeFl4Q2VMbjU?oc=5",
+      "date": "Sun, 17 May 2026 12:12:50 GMT",
+      "fetched_at": "2026-05-24T13:53:51.194792+00:00"
     },
     {
       "id": "hkchp-40",
@@ -1799,26 +1757,7 @@
       "source": "HK CHP",
       "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE55aWNsaEV2b1ZZVmNid05VMHBSVUlTS0xVSDBQbU1TcXZ3dm8tZF9CaTJfbEdwc3dHa2Y0RUxjemd2MjZtWmV4eWxlcktWMTYwcXZuTDJGYnVXZmxCVEw4?oc=5",
       "date": "Thu, 05 Jan 2023 08:00:00 GMT",
-      "fetched_at": "2026-05-24T07:05:56.755424+00:00"
-    },
-    {
-      "id": "rosp-33",
-      "type": "epidemic",
-      "disease": "Infectious disease",
-      "country": "Russia",
-      "iso": "RU",
-      "region": "EURO",
-      "lat": 61.5,
-      "lng": 105.3,
-      "cases": null,
-      "deaths": null,
-      "severity": "monitoring",
-      "summary": "Russia epidemiology alert: Infectious disease in Russia. В Тюменской области зарегистрировано девять случаев заражения клещевыми инфекциями - vsluh.ru  В Тюменской области зарегистрировано девять случаев заражения клещевыми инфекциями &n",
-      "summary_ru": "В Тюменской области зарегистрировано девять случаев заражения клещевыми инфекциями - vsluh.ru. В Тюменской области зарегистрировано девять случаев заражения клещевыми инфекциями - vsluh.ru  В Тюменской области зарегистрировано девять случаев заражени",
-      "source": "Роспотребнадзор",
-      "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNV3k4YUNHbGFINVU0cjlwdFZoOU03VFB4NVBiUmpxZzZJRjl5RjlIaHlqeHZpMlZvY2FWQjNLSDJHejZaUmt0UlpBNHdGeHBDVmhkMHVKblFrbmFoMGpHS2VEaDV1SDhBX3Uwb0JjcU9ndVBBMS0tREpVclBqLUVwTEN3TXFwSm1Mb0E0RTcwaUI3bmtKZjh1Nnl6V1RraHVCZ2NxdXNwdXZTQmRWZEtGTVVKbnlndHVWOWM1NFFVRF9qQUNVNnBuLUVObXNxbUlNMnc?oc=5",
-      "date": "Wed, 20 May 2026 08:25:22 GMT",
-      "fetched_at": "2026-05-24T07:03:49.964890+00:00"
+      "fetched_at": "2026-05-24T13:56:01.094620+00:00"
     }
   ]
 }
