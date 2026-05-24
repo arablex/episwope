@@ -122,6 +122,7 @@ export function renderAlertEmail({ events, lang = 'en' }) {
       subject:  (n) => `Vigilo Alert: ${n} new risk event${n !== 1 ? 's' : ''} in your watched countries`,
       headline: 'Risk Alert',
       intro:    'New risk activity was detected in countries you follow:',
+      asOf:     'As of',
       cta:      'Open Vigilo',
       ctaUrl:   'https://vigilo.cc/',
       footer:   'You are receiving these alerts because you subscribed to Vigilo outbreak monitoring.',
@@ -137,6 +138,7 @@ export function renderAlertEmail({ events, lang = 'en' }) {
       subject:  (n) => `Vigilo: новые риски в ваших странах (${n})`,
       headline: 'Уведомление о риске',
       intro:    'Обнаружена новая риск-активность в странах, которые вы отслеживаете:',
+      asOf:     'По состоянию на',
       cta:      'Открыть Vigilo',
       ctaUrl:   'https://vigilo.cc/ru/',
       footer:   'Вы получаете эти уведомления, потому что подписались на мониторинг вспышек Vigilo.',
@@ -151,6 +153,8 @@ export function renderAlertEmail({ events, lang = 'en' }) {
   };
 
   const L = STRINGS[lang] || STRINGS.en;
+  const stamp = `${L.asOf} ${new Date().toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-GB',
+    { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
 
   // ── Human-readable helpers (handle both health + multi-domain risk events) ──
   const ISO_NAMES = {
@@ -211,7 +215,8 @@ export function renderAlertEmail({ events, lang = 'en' }) {
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #ECEAE2;border-radius:14px;padding:32px;">
     <tr><td>
       <h1 style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin:0 0 12px;">${L.headline}</h1>
-      <p style="font-size:14px;line-height:1.55;color:#3B3A36;margin:0 0 20px;">${L.intro}</p>
+      <p style="font-size:14px;line-height:1.55;color:#3B3A36;margin:0 0 4px;">${L.intro}</p>
+      <p style="font-size:11.5px;color:#9F9685;margin:0 0 20px;">${stamp}</p>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:24px;">${htmlRows}</table>
       <p style="margin:0 0 28px;"><a href="${escapeHtml(L.ctaUrl)}" style="display:inline-block;background:#0F0E0C;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 22px;border-radius:10px;">${L.cta}</a></p>
       <p style="font-size:11.5px;line-height:1.55;color:#807E76;margin:0;">${L.footer}</p>
@@ -220,6 +225,6 @@ export function renderAlertEmail({ events, lang = 'en' }) {
 </body>
 </html>`;
 
-  const text = `${L.headline}\n\n${L.intro}\n\n${textRows}\n\n${L.cta}: ${L.ctaUrl}\n\n${L.footer}`;
+  const text = `${L.headline}\n${stamp}\n\n${L.intro}\n\n${textRows}\n\n${L.cta}: ${L.ctaUrl}\n\n${L.footer}`;
   return { subject: L.subject(count), html, text };
 }
