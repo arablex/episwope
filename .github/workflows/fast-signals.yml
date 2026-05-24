@@ -70,12 +70,17 @@ jobs:
         run: python3 scripts/world_pulse.py
         continue-on-error: true
 
+      - name: Compute lead-time receipts
+        # Reads signals_history.json (written by fast_signals.py above)
+        run: python3 scripts/receipts.py
+        continue-on-error: true
+
       - name: Commit signals if changed
         if: always()   # commit whatever regenerated, even if a prior step failed
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json public/osint_dossiers.json public/pulse.json public/pulse_history.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json public/osint_dossiers.json public/pulse.json public/pulse_history.json public/receipts.json || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else
