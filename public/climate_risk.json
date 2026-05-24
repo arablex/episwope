@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-05-24T15:45:55.157112+00:00",
-    "countries": 28,
+    "generated_at": "2026-05-24T16:46:46.755348+00:00",
+    "countries": 29,
     "model": "open-meteo climate anomaly → pathogen suitability",
     "note": "Model-derived leading hazard signal, not a case forecast."
   },
@@ -204,6 +204,28 @@
       },
       "asof": "2026-05-24"
     },
+    "PE": {
+      "dengue": {
+        "S": 0.0,
+        "band": "minimal",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.0,
+        "band": "minimal",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 4.8,
+        "zT": -0.16,
+        "p_recent": 2.93,
+        "zP": -0.67,
+        "thermal": 0.0
+      },
+      "asof": "2026-05-24"
+    },
     "NG": {
       "dengue": {
         "S": 0.596,
@@ -402,28 +424,6 @@
       },
       "asof": "2026-05-24"
     },
-    "HT": {
-      "dengue": {
-        "S": 0.33,
-        "band": "low",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.518,
-        "band": "elevated",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 21.4,
-        "zT": 1.22,
-        "p_recent": 7.61,
-        "zP": 0.28,
-        "thermal": 0.36
-      },
-      "asof": "2026-05-24"
-    },
     "SD": {
       "dengue": {
         "S": 0.14,
@@ -490,6 +490,28 @@
       },
       "asof": "2026-05-24"
     },
+    "LK": {
+      "dengue": {
+        "S": 0.467,
+        "band": "moderate",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.0,
+        "band": "minimal",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 26.7,
+        "zT": -0.29,
+        "p_recent": 2.78,
+        "zP": -0.17,
+        "thermal": 0.85
+      },
+      "asof": "2026-05-24"
+    },
     "AO": {
       "dengue": {
         "S": 0.122,
@@ -514,22 +536,22 @@
     },
     "TR": {
       "dengue": {
-        "S": 0.149,
+        "S": 0.144,
         "band": "minimal",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.357,
-        "band": "moderate",
+        "S": 0.347,
+        "band": "low",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
-        "t_recent": 13.4,
-        "zT": 1.37,
-        "p_recent": 3.04,
-        "zP": 0.31,
+        "t_recent": 13.5,
+        "zT": 1.38,
+        "p_recent": 2.9,
+        "zP": 0.27,
         "thermal": 0.0
       },
       "asof": "2026-05-24"
