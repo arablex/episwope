@@ -8,12 +8,16 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function handleSubscribe(input, deps) {
   const email = String(input.email || '').trim().toLowerCase();
   const lang = input.lang === 'ru' ? 'ru' : 'en';
-  const country = canonicalCountry(input.country);
+  // Accept a single country, a list (watchlist), and/or a global-digest flag.
+  const rawList = Array.isArray(input.countries) ? input.countries
+                : (input.country ? [input.country] : []);
+  const countries = [...new Set(rawList.map(canonicalCountry).filter(Boolean))];
+  const wantGlobal = input.tier === 'global' || input.global === true;
 
   if (!EMAIL_RE.test(email)) {
     return { status: 400, body: { error: 'invalid_email' } };
   }
-  if (!country) {
+  if (!countries.length && !wantGlobal) {
     return { status: 400, body: { error: 'unknown_country' } };
   }
 
@@ -24,7 +28,8 @@ export async function handleSubscribe(input, deps) {
   if (!rec) {
     rec = {
       email,
-      countries: [country],
+      countries,
+      globalDigest: wantGlobal,
       lang,
       status: 'pending',
       verifyToken: deps.randomToken(),
@@ -34,19 +39,20 @@ export async function handleSubscribe(input, deps) {
       lastDigestSentAt: null,
     };
   } else if (rec.status === 'unsubscribed') {
-    // Treat as a brand-new subscription: reopen as pending with fresh tokens
+    // Reopen the existing record in place as a fresh pending subscription.
     rec.status = 'pending';
-    rec.countries = [country];
+    rec.countries = countries;
+    rec.globalDigest = wantGlobal;
     rec.lang = lang;
     rec.verifyToken = deps.randomToken();
-    rec.unsubToken = deps.randomToken();
     rec.verifiedAt = null;
     rec.createdAt = now;
   } else {
-    if (!rec.countries.includes(country)) {
-      rec.countries.push(country);
-    } else {
-      // Already subscribed to this country — no-op, no extra verify email
+    // Existing record — merge scope in place. No-op (no extra email) if nothing new.
+    const before = JSON.stringify([rec.countries || [], !!rec.globalDigest]);
+    rec.countries = [...new Set([...(rec.countries || []), ...countries])];
+    if (wantGlobal) rec.globalDigest = true;
+    if (JSON.stringify([rec.countries, !!rec.globalDigest]) === before) {
       return { status: 200, body: { ok: true, alreadySubscribed: true } };
     }
   }
@@ -59,6 +65,7 @@ export async function handleSubscribe(input, deps) {
     const unsubUrl = `${deps.siteOrigin}/api/unsubscribe?t=${rec.unsubToken}`;
     const { subject, html, text } = renderVerifyEmail({
       countries: rec.countries,
+      globalDigest: rec.globalDigest,
       verifyUrl,
       unsubUrl,
       lang: rec.lang,

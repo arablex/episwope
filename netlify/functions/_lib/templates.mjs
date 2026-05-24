@@ -26,9 +26,11 @@ const STRINGS = {
   },
 };
 
-export function renderVerifyEmail({ countries, verifyUrl, unsubUrl, lang }) {
+export function renderVerifyEmail({ countries, verifyUrl, unsubUrl, lang, globalDigest }) {
   const L = STRINGS[lang] || STRINGS.en;
-  const list = countries.map(escapeHtml);
+  const gd = lang === 'ru' ? 'Еженедельный глобальный дайджест' : 'Weekly global digest';
+  const scope = [...(globalDigest ? [gd] : []), ...(countries || [])];
+  const list = scope.map(escapeHtml);
   const htmlList = list.map((c) => `<li>${c}</li>`).join('');
   const textList = list.map((c) => `  • ${c}`).join('\n');
 

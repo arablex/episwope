@@ -3155,47 +3155,71 @@ function _aqiAdvice(aqi){
 function openAlertModal(o){
   const modal = document.getElementById('alertModal');
   if(!modal) return;
-
   const isRu = LANG === 'ru';
+  const tr = (en,ru)=> isRu?ru:en;
   const hasCtx = o != null;
   const disName = hasCtx ? diseaseName(o) : '';
+  const watched = (typeof WATCHED!=='undefined') ? [...WATCHED] : [];
+  modal.dataset.mode = hasCtx ? 'context' : 'global';
 
-  // Fill context labels
-  const sub = modal.querySelector('#alertModalSub');
-  if(sub) sub.textContent = hasCtx ? `${disName} · ${o.country}` : (isRu ? 'Глобальный мониторинг' : 'Global monitoring');
+  const sub      = modal.querySelector('#alertModalSub');
+  const rowCtry  = document.getElementById('alertTierCountryRow');
+  const rowSpec  = document.getElementById('alertTierSpecificRow');
+  const ctryName = document.getElementById('alertTierCountryName');
+  const ctryDesc = document.getElementById('alertTierCountryDesc');
+  const specName = document.getElementById('alertTierSpecificName');
+  const form     = modal.querySelector('#alertModalForm');
+  form.dataset.outbreak = hasCtx ? o.id : '';
+  form.dataset.country  = hasCtx ? o.country : '';
+  form.dataset.disease  = disName;
 
-  const ctryName = modal.querySelector('#alertTierCountryName');
-  if(ctryName) ctryName.textContent = hasCtx
-    ? (isRu ? `По стране: ${o.country}` : `By country: ${o.country}`)
-    : (isRu ? 'По стране' : 'By country');
-
-  const specName = modal.querySelector('#alertTierSpecificName');
-  if(specName) specName.textContent = hasCtx
-    ? (isRu ? `Точный алерт: ${disName}` : `Specific alert: ${disName}`)
-    : (isRu ? 'Точный алерт' : 'Specific alert');
-
-  // Store context on form for submission
-  const form = modal.querySelector('#alertModalForm');
-  if(form){
-    form.dataset.outbreak = hasCtx ? o.id : '';
-    form.dataset.country  = hasCtx ? o.country : '';
-    form.dataset.disease  = disName;
+  let defaultTier;
+  if(hasCtx){
+    if(sub) sub.textContent = `${disName} · ${o.country}`;
+    if(ctryName) ctryName.textContent = tr(`By country: ${o.country}`, `По стране: ${o.country}`);
+    if(ctryDesc) ctryDesc.textContent = tr('New outbreaks in this country','Новые вспышки в этой стране');
+    if(specName) specName.textContent = tr(`Specific alert: ${disName}`, `Точный алерт: ${disName}`);
+    rowCtry.style.display = ''; rowSpec.style.display = '';
+    defaultTier = 'country';
+  } else {
+    if(sub) sub.textContent = tr('Global monitoring','Глобальный мониторинг');
+    rowSpec.style.display = 'none';                 // no outbreak in global mode
+    if(watched.length){
+      const names = watched.map(c=>countryName(c));
+      if(ctryName) ctryName.textContent = tr(`My countries (${watched.length})`, `Мои страны (${watched.length})`);
+      if(ctryDesc) ctryDesc.textContent = names.slice(0,4).join(', ') + (names.length>4?` +${names.length-4}`:'');
+      rowCtry.style.display = '';
+      defaultTier = 'country';                       // = the watchlist
+    } else {
+      rowCtry.style.display = 'none';
+      defaultTier = 'global';
+    }
   }
 
-  // Default tier: global when no context, country otherwise
-  const defaultTier = hasCtx ? 'country' : 'global';
-  const defaultRadio = modal.querySelector(`input[value="${defaultTier}"]`);
-  if(defaultRadio) defaultRadio.checked = true;
-  modal.querySelectorAll('.alert-tier').forEach(el => {
-    el.classList.toggle('is-selected', el.querySelector('input')?.value === defaultTier);
-  });
+  const dr = modal.querySelector(`input[value="${defaultTier}"]`);
+  if(dr) dr.checked = true;
 
-  // Reset form state
+  const summary = document.getElementById('alertModalSummary');
+  function syncSel(){ modal.querySelectorAll('.alert-tier').forEach(el => el.classList.toggle('is-selected', !!el.querySelector('input')?.checked)); }
+  function updateSummary(){
+    const t = modal.querySelector('input[name="alertTier"]:checked')?.value;
+    let s = '';
+    if(t==='global') s = tr('You’ll get a <b>weekly global digest</b> across all 7 risk domains.','Будете получать <b>еженедельный глобальный дайджест</b> по всем 7 доменам риска.');
+    else if(t==='specific') s = tr(`Alerts when <b>${disName}</b> in <b>${o.country}</b> changes status.`,`Алерты, когда <b>${disName}</b> в <b>${o.country}</b> меняет статус.`);
+    else if(t==='country'){
+      if(hasCtx) s = tr(`Alerts for <b>${o.country}</b> when its risk rises.`,`Алерты по <b>${o.country}</b> при росте риска.`);
+      else { const names = watched.map(c=>countryName(c)); s = tr(`Alerts for your <b>${watched.length}</b> watched ${watched.length===1?'country':'countries'}: ${names.join(', ')}.`,`Алерты по вашим <b>${watched.length}</b> странам: ${names.join(', ')}.`); }
+    }
+    if(summary) summary.innerHTML = s;
+  }
+  modal.querySelectorAll('input[name="alertTier"]').forEach(r => { r.onchange = () => { syncSel(); updateSummary(); }; });
+  syncSel(); updateSummary();
+
   const emailInput = modal.querySelector('#alertModalEmail');
   if(emailInput) emailInput.value = '';
   const ok = modal.querySelector('#alertModalOk');
   if(ok) ok.style.display = 'none';
-  if(form) form.style.display = '';
+  form.style.display = '';
 
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -3215,29 +3239,42 @@ window.closeAlertModal = closeAlertModal;
 async function _submitAlertModal(e){
   e.preventDefault();
   const form  = e.currentTarget;
+  const modal = form.closest('#alertModal');
   const email = form.querySelector('#alertModalEmail')?.value?.trim();
   if(!email) return;
 
-  const tier     = form.closest('#alertModal')?.querySelector('input[name="alertTier"]:checked')?.value || 'country';
+  const tier     = modal?.querySelector('input[name="alertTier"]:checked')?.value || 'global';
+  const mode     = modal?.dataset.mode || 'global';
   const country  = form.dataset.country  || '';
   const outbreak = form.dataset.outbreak || '';
   const disease  = form.dataset.disease  || '';
+  const watched  = (typeof WATCHED!=='undefined') ? [...WATCHED] : [];
+
+  // Build a payload that matches what the user actually selected.
+  const payload = { email, lang: LANG };
+  if(tier === 'global'){ payload.tier = 'global'; payload.global = true; }
+  else if(mode === 'global' && tier === 'country'){ payload.tier = 'watchlist'; payload.countries = watched; }
+  else if(tier === 'specific'){ payload.tier = 'specific'; payload.country = country; payload.outbreak = outbreak; payload.disease = disease; }
+  else { payload.tier = 'country'; payload.country = country; }
 
   const btn = form.querySelector('button[type="submit"]');
-  if(btn){ btn.disabled = true; btn.textContent = LANG === 'ru' ? 'Подождите…' : 'Sending…'; }
+  if(btn){ btn.disabled = true; btn.textContent = LANG === 'ru' ? 'Отправка…' : 'Sending…'; }
 
   try {
-    await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, tier, country, outbreak, disease, lang: LANG }),
-    });
+    await fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    try{ if(window.track) track('alert_subscribe', { tier: payload.tier }); }catch(_){}
   } catch(_){ /* Netlify form fallback */ }
 
   form.style.display = 'none';
-  const ok = form.closest('#alertModal')?.querySelector('#alertModalOk');
-  if(ok) ok.style.display = 'block';
-  if(btn){ btn.disabled = false; }
+  const ok = modal?.querySelector('#alertModalOk');
+  if(ok){
+    ok.style.display = 'block';
+    ok.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#19A463" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> `
+      + (LANG === 'ru'
+          ? 'Почти готово — подтвердите подписку в письме (проверьте «Спам»).'
+          : 'Almost there — confirm via the email we just sent (check spam).');
+  }
+  if(btn){ btn.disabled = false; btn.textContent = LANG === 'ru' ? 'Подписаться' : 'Subscribe'; }
 }
 
 const SEV_COLOR_EXPR = ['match', ['get','sev'],
