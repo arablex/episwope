@@ -3350,6 +3350,75 @@ function openShareMenu(ev){
 }
 window.openShareMenu = openShareMenu;
 
+/* Help menu — replaces the cryptic "?" → restart-tour. A proper help popover:
+   tour, how-it-works, methodology, feedback. */
+function openHelpMenu(ev){
+  if(ev) ev.stopPropagation();
+  const old = document.getElementById('helpMenu');
+  if(old){ old.remove(); return; }
+  const tr = (en,ru)=> (typeof TR==='function'?TR(en,ru):en);
+  const I = {
+    tour:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>',
+    hiw:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 2.5"/><line x1="12" y1="17" x2="12" y2="17"/></svg>',
+    meth:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>',
+    fb:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  };
+  const btn = document.getElementById('tourBtn');
+  const r = btn ? btn.getBoundingClientRect() : {bottom:56,right:innerWidth-60};
+  const m = document.createElement('div');
+  m.id = 'helpMenu';
+  m.style.cssText = `position:fixed;top:${r.bottom+8}px;right:${Math.max(12, innerWidth - r.right)}px;z-index:10001;background:var(--bg-card,#fff);border:1px solid var(--line,#eee);border-radius:12px;box-shadow:0 18px 50px -16px rgba(0,0,0,.35);padding:6px;min-width:210px`;
+  const it=(lbl,svg)=>`<button class="hm-item" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;padding:9px 11px;border-radius:8px;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer">${svg}<span>${lbl}</span></button>`;
+  m.innerHTML =
+    `<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 11px 4px">${tr('Help','Помощь')}</div>`+
+    it(tr('Take the 30-sec tour','Пройти тур (30 сек)'), I.tour)+
+    it(tr('How it works','Как это работает'), I.hiw)+
+    it(tr('Methodology','Методология'), I.meth)+
+    `<div style="height:1px;background:var(--line);margin:5px 8px"></div>`+
+    it(tr('Send feedback','Оставить отзыв'), I.fb);
+  document.body.appendChild(m);
+  const items = m.querySelectorAll('.hm-item');
+  items[0].onclick=()=>{ try{localStorage.removeItem('vigilo_app_onboarding_done');}catch(e){} location.reload(); };
+  items[1].onclick=()=>{ location.href='/how-it-works'; };
+  items[2].onclick=()=>{ window.open('/methodology','_blank','noopener'); m.remove(); };
+  items[3].onclick=()=>{ m.remove(); openAppFeedback(); };
+  items.forEach(b=>{ b.onmouseenter=()=>b.style.background='var(--hover-bg,#f3f1ea)'; b.onmouseleave=()=>b.style.background='none'; });
+  setTimeout(()=>{ const close=(e)=>{ if(!m.contains(e.target) && e.target.id!=='tourBtn'){ m.remove(); document.removeEventListener('click',close); } }; document.addEventListener('click',close); }, 0);
+}
+window.openHelpMenu = openHelpMenu;
+
+/* Minimal in-app feedback → /api/feedback (same endpoint as the cabinet). */
+function openAppFeedback(){
+  const tr = (en,ru)=> (typeof TR==='function'?TR(en,ru):en);
+  const ov = document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:10002;background:rgba(13,14,18,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.onclick = e => { if(e.target===ov) ov.remove(); };
+  ov.innerHTML = `<div style="background:var(--bg-card,#fff);width:100%;max-width:420px;border-radius:16px;padding:24px;box-shadow:0 30px 80px -20px rgba(13,14,18,.5)">
+    <h2 style="font-size:18px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px;color:var(--ink)">${tr('Send feedback','Оставить отзыв')}</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 14px">${tr("Bugs, ideas, what's missing — goes straight to the team.","Баги, идеи, чего не хватает — напрямую команде.")}</p>
+    <textarea id="afbText" rows="4" placeholder="${tr("What's on your mind?",'Что думаете?')}" style="width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:14px;resize:vertical;outline:none;background:var(--bg-card);color:var(--ink)"></textarea>
+    <div id="afbMsg" style="font-size:12.5px;margin-top:8px;min-height:16px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+      <button id="afbCancel" style="background:none;border:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer">${tr('Cancel','Отмена')}</button>
+      <button id="afbSend" style="background:var(--accent,#E8590C);color:#fff;border:none;border-radius:10px;padding:10px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">${tr('Send','Отправить')}</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  const txt = ov.querySelector('#afbText'); txt.focus();
+  ov.querySelector('#afbCancel').onclick = ()=> ov.remove();
+  ov.querySelector('#afbSend').onclick = async ()=>{
+    const message = txt.value.trim();
+    const msg = ov.querySelector('#afbMsg');
+    if(message.length < 3){ msg.style.color='var(--s3,#C92A2A)'; msg.textContent=tr('Add a little more.','Добавьте чуть больше.'); return; }
+    const btn = ov.querySelector('#afbSend'); btn.disabled=true; btn.style.opacity='.6';
+    try{
+      await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,email:'',page:'app'})});
+      ov.querySelector('div').innerHTML='<div style="text-align:center;padding:8px 0"><div style="font-size:17px;font-weight:800;color:var(--online,#19A463);margin-bottom:6px">'+tr('Thank you','Спасибо')+'</div><div style="font-size:13.5px;color:var(--muted)">'+tr('We read every message.','Читаем каждое сообщение.')+'</div></div>';
+      setTimeout(()=>ov.remove(),1400);
+    }catch(e){ btn.disabled=false; btn.style.opacity='1'; msg.style.color='var(--s3,#C92A2A)'; msg.textContent=tr('Could not send. Try again.','Не удалось. Попробуйте ещё.'); }
+  };
+}
+window.openAppFeedback = openAppFeedback;
+
 /* Deep-link: /app?c=ISO (or ?country=Name) opens that country on load.
    Enables "share this view" — a shared country link lands on it. */
 function openDeepLinkCountry(){
