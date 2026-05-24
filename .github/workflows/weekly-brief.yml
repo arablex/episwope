@@ -29,14 +29,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate brief draft
-        run: python3 scripts/gen_weekly_brief.py
+      - name: Generate brief draft (with infographic)
+        # Standard: every publication carries an infographic. gen_weekly_brief
+        # imports gen_infographic, which needs Pillow.
+        run: |
+          python3 -m pip install --quiet pillow || pip install --quiet pillow
+          python3 scripts/gen_weekly_brief.py
 
       - name: Commit draft if changed
         run: |
           git config user.name  "Vigilo Bot"
           git config user.email "bot@vigilo.noreply"
-          git add intel/_drafts/
+          git add intel/_drafts/ infographics/
           if git diff --cached --quiet; then
             echo "No new draft — skipping commit"
           else

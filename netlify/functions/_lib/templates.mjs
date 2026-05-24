@@ -123,6 +123,8 @@ export function renderAlertEmail({ events, lang = 'en' }) {
       headline: 'Risk Alert',
       intro:    'New risk activity was detected in countries you follow:',
       asOf:     'As of',
+      hotspots: "Today's global risk hotspots",
+      hotspotsAlt: 'Vigilo — top risk hotspots, composite risk 0–6, coloured by band',
       cta:      'Open Vigilo',
       ctaUrl:   'https://vigilo.cc/',
       footer:   'You are receiving these alerts because you subscribed to Vigilo outbreak monitoring.',
@@ -139,6 +141,8 @@ export function renderAlertEmail({ events, lang = 'en' }) {
       headline: 'Уведомление о риске',
       intro:    'Обнаружена новая риск-активность в странах, которые вы отслеживаете:',
       asOf:     'По состоянию на',
+      hotspots: 'Главные очаги риска сегодня',
+      hotspotsAlt: 'Vigilo — главные очаги риска, композитный риск 0–6, по цвету уровня',
       cta:      'Открыть Vigilo',
       ctaUrl:   'https://vigilo.cc/ru/',
       footer:   'Вы получаете эти уведомления, потому что подписались на мониторинг вспышек Vigilo.',
@@ -155,6 +159,12 @@ export function renderAlertEmail({ events, lang = 'en' }) {
   const L = STRINGS[lang] || STRINGS.en;
   const stamp = `${L.asOf} ${new Date().toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-GB',
     { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
+
+  // Standard: every alert carries the live "Top risk hotspots" infographic.
+  // Regenerated continuously by the data pipeline and served from the site, so
+  // the URL is stable and the image is always current. ?t= busts email-proxy caches.
+  const infoSrc  = `https://vigilo.cc/infographics/hotspots-latest.png?t=${new Date().toISOString().slice(0, 10)}`;
+  const infoLink = lang === 'ru' ? 'https://vigilo.cc/ru/' : 'https://vigilo.cc/app';
 
   // ── Human-readable helpers (handle both health + multi-domain risk events) ──
   const ISO_NAMES = {
@@ -216,7 +226,11 @@ export function renderAlertEmail({ events, lang = 'en' }) {
     <tr><td>
       <h1 style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin:0 0 12px;">${L.headline}</h1>
       <p style="font-size:14px;line-height:1.55;color:#3B3A36;margin:0 0 4px;">${L.intro}</p>
-      <p style="font-size:11.5px;color:#9F9685;margin:0 0 20px;">${stamp}</p>
+      <p style="font-size:11.5px;color:#9F9685;margin:0 0 18px;">${stamp}</p>
+      <a href="${escapeHtml(infoLink)}" style="text-decoration:none;display:block;margin:0 0 6px;">
+        <img src="${escapeHtml(infoSrc)}" alt="${escapeHtml(L.hotspotsAlt)}" width="496" style="display:block;width:100%;max-width:496px;height:auto;border-radius:10px;border:1px solid #ECEAE2;">
+      </a>
+      <p style="font-size:11.5px;color:#9F9685;margin:0 0 22px;text-align:center;">${L.hotspots}</p>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:24px;">${htmlRows}</table>
       <p style="margin:0 0 28px;"><a href="${escapeHtml(L.ctaUrl)}" style="display:inline-block;background:#0F0E0C;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 22px;border-radius:10px;">${L.cta}</a></p>
       <p style="font-size:11.5px;line-height:1.55;color:#807E76;margin:0;">${L.footer}</p>
@@ -225,6 +239,6 @@ export function renderAlertEmail({ events, lang = 'en' }) {
 </body>
 </html>`;
 
-  const text = `${L.headline}\n${stamp}\n\n${L.intro}\n\n${textRows}\n\n${L.cta}: ${L.ctaUrl}\n\n${L.footer}`;
+  const text = `${L.headline}\n${stamp}\n\n${L.intro}\n\n${L.hotspots}: ${infoSrc}\n\n${textRows}\n\n${L.cta}: ${L.ctaUrl}\n\n${L.footer}`;
   return { subject: L.subject(count), html, text };
 }

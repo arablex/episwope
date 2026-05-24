@@ -64,8 +64,14 @@ def main():
         f"#riskintelligence #dutyofcare #OSINT #travelrisk"
     )
 
-    (DRAFTS/f"pulse-x-{date}.md").write_text(x, encoding="utf-8")
-    (DRAFTS/f"pulse-linkedin-{date}.md").write_text(li, encoding="utf-8")
+    # Standard: every publication carries an infographic. These are manual
+    # posts, so prepend an attach reminder (kept out of the post body so the
+    # tweet stays ≤280). hotspots-latest.png is refreshed by fast-signals.yml.
+    note = ("[ATTACH IMAGE → infographics/hotspots-latest.png "
+            "(always current — refreshed each pipeline run)]\n"
+            "----- post text below -----\n\n")
+    (DRAFTS/f"pulse-x-{date}.md").write_text(note + x, encoding="utf-8")
+    (DRAFTS/f"pulse-linkedin-{date}.md").write_text(note + li, encoding="utf-8")
     print(f"daily pulse drafts written for {date} (pulse {p['pulse']}, {p['band']})")
 
 if __name__ == "__main__":

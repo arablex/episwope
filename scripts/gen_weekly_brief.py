@@ -163,6 +163,9 @@ HTML_HEAD = """<!doctype html>
   .band.elevated{background:rgba(232,89,12,.13);color:#B8480C}
   .band.moderate{background:rgba(228,181,20,.18);color:#8A6A00}
   .dom{font-size:13px;color:var(--ink600)}
+  figure.info-fig{margin:22px 0 8px}
+  figure.info-fig img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--rule);box-shadow:0 18px 40px -24px rgba(20,17,12,.5)}
+  figure.info-fig figcaption{font-size:13px;color:var(--ink500);margin-top:10px;text-align:center}
   .method{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:20px 22px;margin:26px 0}
   .method .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:6px}
   .method .kpi{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink)}
@@ -187,6 +190,7 @@ HTML_HEAD = """<!doctype html>
     </tbody>
   </table>
 {thin_note}
+{infographic}
   <h2>What's driving the top of the table</h2>
   <div class="todo">DRAFT — write 2–4 short paragraphs of editorial analysis on the top movers below. Auto-generated factual stubs are provided as a starting point; rewrite with judgement, keep claims hedged and source-traceable.</div>
 {drivers}
@@ -224,7 +228,7 @@ document.addEventListener('click',function(e){
 """
 
 
-def render_html(rows: list[dict], meta: dict, date: str, date_h: str) -> str:
+def render_html(rows: list[dict], meta: dict, date: str, date_h: str, infographic: str = "") -> str:
     lead_names = ", ".join(r["name"] for r in rows[:4])
     lede = (f"Vigilo scored {meta.get('countries', '—')} countries across seven risk "
             f"domains this week. The highest composite scores: {lead_names}. "
@@ -265,6 +269,7 @@ def render_html(rows: list[dict], meta: dict, date: str, date_h: str) -> str:
         "{date_h}": date_h, "{date}": date, "{lede}": lede,
         "{score_min}": str(SCORE_MIN), "{rows}": "\n".join(row_html),
         "{thin_note}": thin_note, "{drivers}": "\n".join(drivers),
+        "{infographic}": infographic,
         "{countries}": str(meta.get("countries", "—")),
         "{events}": str(meta.get("events_total", "—")),
     }
@@ -313,10 +318,29 @@ def main() -> None:
     meta = index_doc.get("meta", {})
     rows = top_rows(index)
 
+    # Standard: every publication carries an infographic. Generate the branded
+    # "Top Risk Hotspots" chart for this brief's publish slug and embed it.
+    # Non-fatal: if Pillow/fonts are unavailable the draft still generates.
+    slug = f"global-risk-brief-{date}"
+    infographic = ""
+    try:
+        import gen_infographic
+        gen_infographic.generate(slug)
+        infographic = (
+            f'  <figure class="info-fig">\n'
+            f'    <img src="/infographics/{slug}.png" alt="Vigilo top risk hotspots, {date_h} — '
+            f'composite risk 0–6, coloured by band">\n'
+            f'    <figcaption>Top risk hotspots, {date_h} — live composite scores. '
+            f'Updates continuously on the <a href="/app">live globe</a>.</figcaption>\n'
+            f'  </figure>'
+        )
+    except Exception as e:
+        print(f"  ⚠ infographic generation skipped: {e}")
+
     DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
     html_path = DRAFTS_DIR / f"weekly-brief-{date}.html"
     md_path   = DRAFTS_DIR / f"linkedin-{date}.md"
-    html_path.write_text(render_html(rows, meta, date, date_h), encoding="utf-8")
+    html_path.write_text(render_html(rows, meta, date, date_h, infographic), encoding="utf-8")
     md_path.write_text(render_linkedin(rows, meta, date, date_h), encoding="utf-8")
 
     print(f"✓ Weekly brief draft → {html_path.relative_to(ROOT)}")

@@ -75,12 +75,21 @@ jobs:
         run: python3 scripts/receipts.py
         continue-on-error: true
 
+      - name: Refresh risk infographic
+        # Standard: every publication + email carries an infographic. Keep
+        # infographics/hotspots-latest.png current (alert emails embed it by URL).
+        # Reads risk_index.json from the aggregator above. Never block the commit.
+        run: |
+          python3 -m pip install --quiet pillow || pip install --quiet pillow
+          python3 scripts/gen_infographic.py
+        continue-on-error: true
+
       - name: Commit signals if changed
         if: always()   # commit whatever regenerated, even if a prior step failed
         run: |
           git config user.name  "Vigilo Signals Bot"
           git config user.email "signals@vigilo.noreply"
-          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json public/osint_dossiers.json public/pulse.json public/pulse_history.json public/receipts.json || true
+          git add public/signals.json public/signals_history.json public/opensky_baseline.json public/ncbi_baseline.json public/risk_index.json public/risk_events.json public/climate_risk.json public/climate_baseline.json public/forecast.json public/risk_history.json public/osint_dossiers.json public/pulse.json public/pulse_history.json public/receipts.json infographics/hotspots-latest.png || true
           if git diff --cached --quiet; then
             echo "No signal changes — skipping commit"
           else
