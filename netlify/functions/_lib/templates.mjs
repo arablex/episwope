@@ -119,43 +119,81 @@ export function renderAlertEmail({ events, lang = 'en' }) {
 
   const STRINGS = {
     en: {
-      subject:  (n) => `Vigilo Alert: ${n} new outbreak${n !== 1 ? 's' : ''} in your watched countries`,
-      headline: 'Outbreak Alert',
-      intro:    'New disease activity was detected in countries you follow:',
+      subject:  (n) => `Vigilo Alert: ${n} new risk event${n !== 1 ? 's' : ''} in your watched countries`,
+      headline: 'Risk Alert',
+      intro:    'New risk activity was detected in countries you follow:',
       cta:      'Open Vigilo',
       ctaUrl:   'https://vigilo.cc/',
       footer:   'You are receiving these alerts because you subscribed to Vigilo outbreak monitoring.',
       critical: '🔴 Critical',
+      severe:   '🔴 Severe',
       alert:    '🟠 Alert',
+      elevated: '🟠 Elevated',
       warning:  '🟡 Warning',
+      moderate: '🟡 Moderate',
+      low:      'Low',
     },
     ru: {
-      subject:  (n) => `Vigilo: ${n} нов${n === 1 ? 'ая вспышка' : 'ых вспышки'} в ваших странах`,
-      headline: 'Уведомление о вспышке',
-      intro:    'Обнаружена новая эпидемическая активность в странах, которые вы отслеживаете:',
+      subject:  (n) => `Vigilo: новые риски в ваших странах (${n})`,
+      headline: 'Уведомление о риске',
+      intro:    'Обнаружена новая риск-активность в странах, которые вы отслеживаете:',
       cta:      'Открыть Vigilo',
       ctaUrl:   'https://vigilo.cc/ru/',
       footer:   'Вы получаете эти уведомления, потому что подписались на мониторинг вспышек Vigilo.',
-      critical: '🔴 Критическая',
+      critical: '🔴 Критический',
+      severe:   '🔴 Серьёзный',
       alert:    '🟠 Тревога',
+      elevated: '🟠 Повышенный',
       warning:  '🟡 Предупреждение',
+      moderate: '🟡 Умеренный',
+      low:      'Низкий',
     },
   };
 
   const L = STRINGS[lang] || STRINGS.en;
 
-  const badgeLabel = (sev) => L[sev] || escapeHtml(sev);
+  // ── Human-readable helpers (handle both health + multi-domain risk events) ──
+  const ISO_NAMES = {
+    TR:'Turkey',TH:'Thailand',UA:'Ukraine',RU:'Russia',PS:'Palestinian Territories',MM:'Myanmar',
+    YE:'Yemen',IR:'Iran',CD:'DR Congo',SD:'Sudan',NG:'Nigeria',ET:'Ethiopia',SS:'South Sudan',
+    SO:'Somalia',ML:'Mali',BF:'Burkina Faso',NE:'Niger',TD:'Chad',CF:'Central African Rep.',
+    LY:'Libya',SY:'Syria',IQ:'Iraq',AF:'Afghanistan',PK:'Pakistan',BD:'Bangladesh',IN:'India',
+    CN:'China',LB:'Lebanon',IL:'Israel',EG:'Egypt',CO:'Colombia',MX:'Mexico',VE:'Venezuela',
+    HT:'Haiti',BR:'Brazil',CM:'Cameroon',MZ:'Mozambique',KE:'Kenya',UG:'Uganda',TZ:'Tanzania',
+    PH:'Philippines',ID:'Indonesia',KP:'North Korea',TW:'Taiwan',US:'United States',GB:'United Kingdom',
+    FR:'France',DE:'Germany',ES:'Spain',IT:'Italy',SA:'Saudi Arabia',AE:'UAE',JO:'Jordan',DZ:'Algeria',
+    TN:'Tunisia',MA:'Morocco',SN:'Senegal',CI:'Ivory Coast',GH:'Ghana',EC:'Ecuador',PE:'Peru',
+    CU:'Cuba',NI:'Nicaragua',GT:'Guatemala',JP:'Japan',VN:'Vietnam',LK:'Sri Lanka',NP:'Nepal',
+    AM:'Armenia',AZ:'Azerbaijan',GE:'Georgia',ZA:'South Africa',AO:'Angola',ZW:'Zimbabwe',
+  };
+  const CAT_LABEL = {
+    health:'Health', conflict:'Armed conflict', civil_unrest:'Civil unrest',
+    climate:'Climate & disasters', infrastructure:'Infrastructure', transport:'Transport', border:'Border',
+  };
+  const countryLabel = (c) => {
+    const s = String(c || '').trim();
+    return (/^[A-Za-z]{2}$/.test(s) && ISO_NAMES[s.toUpperCase()]) ? ISO_NAMES[s.toUpperCase()] : (s || '—');
+  };
+  const sevWord = (sev) => {
+    const n = (typeof sev === 'number' || /^\d+$/.test(String(sev))) ? Number(sev) : null;
+    if (n !== null) return n >= 5 ? L.critical : n >= 4 ? L.severe : n >= 3 ? L.elevated : n >= 2 ? L.moderate : L.low;
+    return L[String(sev).toLowerCase()] || escapeHtml(String(sev));
+  };
+  const eventTitle = (ev) =>
+    ev.disease || ev.headline || ev.title || ev.name || CAT_LABEL[ev.category] || 'Risk signal';
 
   const htmlRows = events.map((ev) => {
     const summary = ev[lang === 'ru' && ev.summary_ru ? 'summary_ru' : 'summary'] || '';
     const snippet = summary.length > 220 ? summary.slice(0, 220) + '…' : summary;
+    const link = ev.link || ev.url || '';
+    const domain = ev.category && CAT_LABEL[ev.category] ? ` · ${CAT_LABEL[ev.category]}` : '';
     return `
       <tr>
         <td style="padding:14px 0;border-bottom:1px solid #ECEAE2;">
-          <div style="font-size:11.5px;color:#807E76;margin-bottom:3px;">${escapeHtml(ev.country || '—')} · ${badgeLabel(ev.severity)}</div>
-          <div style="font-size:14px;font-weight:700;color:#0F0E0C;">${escapeHtml(ev.disease || '—')}</div>
+          <div style="font-size:11.5px;color:#807E76;margin-bottom:3px;">${escapeHtml(countryLabel(ev.country))} · ${sevWord(ev.severity)}${escapeHtml(domain)}</div>
+          <div style="font-size:14px;font-weight:700;color:#0F0E0C;">${escapeHtml(eventTitle(ev))}</div>
           ${snippet ? `<div style="font-size:13px;color:#3B3A36;margin-top:5px;line-height:1.55;">${escapeHtml(snippet)}</div>` : ''}
-          ${ev.link ? `<div style="margin-top:6px;"><a href="${escapeHtml(ev.link)}" style="font-size:12px;color:#807E76;">Source →</a></div>` : ''}
+          ${link ? `<div style="margin-top:6px;"><a href="${escapeHtml(link)}" style="font-size:12px;color:#807E76;">Source →</a></div>` : ''}
         </td>
       </tr>`;
   }).join('');
@@ -163,7 +201,8 @@ export function renderAlertEmail({ events, lang = 'en' }) {
   const textRows = events.map((ev) => {
     const summary = ev[lang === 'ru' && ev.summary_ru ? 'summary_ru' : 'summary'] || '';
     const snippet = summary.length > 200 ? summary.slice(0, 200) + '…' : summary;
-    return `• ${ev.country || '—'} — ${ev.disease || '—'} [${ev.severity}]\n  ${snippet}${ev.link ? `\n  ${ev.link}` : ''}`;
+    const link = ev.link || ev.url || '';
+    return `• ${countryLabel(ev.country)} — ${eventTitle(ev)} [${sevWord(ev.severity)}]${snippet ? `\n  ${snippet}` : ''}${link ? `\n  ${link}` : ''}`;
   }).join('\n\n');
 
   const html = `<!doctype html>
