@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-05-24T18:52:47.170784+00:00",
-    "countries": 27,
+    "generated_at": "2026-05-24T20:04:50.946621+00:00",
+    "countries": 28,
     "model": "open-meteo climate anomaly → pathogen suitability",
     "note": "Model-derived leading hazard signal, not a case forecast."
   },
   "risk": {
     "TH": {
       "dengue": {
-        "S": 0.834,
+        "S": 0.833,
         "band": "critical",
         "lead_days": 10,
         "confidence": "model"
@@ -21,22 +21,22 @@
       },
       "drivers": {
         "t_recent": 28.8,
-        "zT": -1.55,
-        "p_recent": 7.39,
-        "zP": 2.05,
+        "zT": -1.58,
+        "p_recent": 7.6,
+        "zP": 2.12,
         "thermal": 0.97
       },
       "asof": "2026-05-24"
     },
     "IN": {
       "dengue": {
-        "S": 0.496,
+        "S": 0.495,
         "band": "moderate",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.317,
+        "S": 0.318,
         "band": "low",
         "lead_days": 14,
         "confidence": "model"
@@ -46,26 +46,26 @@
         "zT": 1.59,
         "p_recent": 0.04,
         "zP": -0.21,
-        "thermal": 0.69
+        "thermal": 0.68
       },
       "asof": "2026-05-24"
     },
     "ID": {
       "dengue": {
-        "S": 0.604,
+        "S": 0.605,
         "band": "elevated",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.175,
+        "S": 0.177,
         "band": "minimal",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
         "t_recent": 28.8,
-        "zT": 0.79,
+        "zT": 0.8,
         "p_recent": 7.79,
         "zP": 0.07,
         "thermal": 0.97
@@ -74,13 +74,13 @@
     },
     "PH": {
       "dengue": {
-        "S": 0.735,
+        "S": 0.736,
         "band": "severe",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.462,
+        "S": 0.463,
         "band": "moderate",
         "lead_days": 14,
         "confidence": "model"
@@ -118,20 +118,20 @@
     },
     "BD": {
       "dengue": {
-        "S": 0.608,
+        "S": 0.61,
         "band": "elevated",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.378,
+        "S": 0.383,
         "band": "moderate",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
         "t_recent": 29.1,
-        "zT": 0.86,
+        "zT": 0.88,
         "p_recent": 3.35,
         "zP": 0.02,
         "thermal": 0.98
@@ -140,29 +140,51 @@
     },
     "BR": {
       "dengue": {
-        "S": 0.554,
+        "S": 0.557,
         "band": "elevated",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.264,
+        "S": 0.27,
         "band": "low",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
         "t_recent": 26.4,
-        "zT": 1.32,
+        "zT": 1.35,
         "p_recent": 0.31,
         "zP": -0.79,
         "thermal": 0.83
       },
       "asof": "2026-05-24"
     },
+    "MX": {
+      "dengue": {
+        "S": 0.467,
+        "band": "moderate",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.509,
+        "band": "elevated",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 20.6,
+        "zT": 0.54,
+        "p_recent": 2.81,
+        "zP": 1.84,
+        "thermal": 0.27
+      },
+      "asof": "2026-05-24"
+    },
     "CO": {
       "dengue": {
-        "S": 0.522,
+        "S": 0.523,
         "band": "elevated",
         "lead_days": 10,
         "confidence": "model"
@@ -174,8 +196,8 @@
         "confidence": "model"
       },
       "drivers": {
-        "t_recent": 25.1,
-        "zT": -1.09,
+        "t_recent": 25.2,
+        "zT": -1.08,
         "p_recent": 15.42,
         "zP": 0.83,
         "thermal": 0.72
@@ -197,7 +219,7 @@
       },
       "drivers": {
         "t_recent": 4.8,
-        "zT": -0.16,
+        "zT": -0.13,
         "p_recent": 2.66,
         "zP": -0.71,
         "thermal": 0.0
@@ -206,7 +228,7 @@
     },
     "NG": {
       "dengue": {
-        "S": 0.593,
+        "S": 0.594,
         "band": "elevated",
         "lead_days": 10,
         "confidence": "model"
@@ -223,28 +245,6 @@
         "p_recent": 5.02,
         "zP": 0.97,
         "thermal": 0.81
-      },
-      "asof": "2026-05-24"
-    },
-    "CD": {
-      "dengue": {
-        "S": 0.518,
-        "band": "elevated",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.358,
-        "band": "moderate",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 26.5,
-        "zT": 0.79,
-        "p_recent": 1.22,
-        "zP": -0.34,
-        "thermal": 0.83
       },
       "asof": "2026-05-24"
     },
@@ -294,20 +294,20 @@
     },
     "TZ": {
       "dengue": {
-        "S": 0.38,
+        "S": 0.379,
         "band": "moderate",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.48,
+        "S": 0.478,
         "band": "moderate",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
         "t_recent": 22.8,
-        "zT": 1.4,
+        "zT": 1.39,
         "p_recent": 0.21,
         "zP": -0.69,
         "thermal": 0.5
@@ -333,6 +333,28 @@
         "p_recent": 1.08,
         "zP": -0.38,
         "thermal": 0.61
+      },
+      "asof": "2026-05-24"
+    },
+    "PK": {
+      "dengue": {
+        "S": 0.688,
+        "band": "severe",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.38,
+        "band": "moderate",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 30.8,
+        "zT": 1.9,
+        "p_recent": 0.22,
+        "zP": -0.27,
+        "thermal": 0.99
       },
       "asof": "2026-05-24"
     },
@@ -382,13 +404,13 @@
     },
     "HT": {
       "dengue": {
-        "S": 0.329,
+        "S": 0.33,
         "band": "low",
         "lead_days": 10,
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.515,
+        "S": 0.516,
         "band": "elevated",
         "lead_days": 14,
         "confidence": "model"
@@ -439,38 +461,16 @@
       },
       "drivers": {
         "t_recent": 29.8,
-        "zT": -0.46,
+        "zT": -0.44,
         "p_recent": 3.43,
         "zP": 0.38,
         "thermal": 1.0
       },
       "asof": "2026-05-24"
     },
-    "KH": {
-      "dengue": {
-        "S": 0.678,
-        "band": "severe",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.228,
-        "band": "low",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 30.3,
-        "zT": -0.13,
-        "p_recent": 3.77,
-        "zP": 0.86,
-        "thermal": 1.0
-      },
-      "asof": "2026-05-24"
-    },
     "LK": {
       "dengue": {
-        "S": 0.467,
+        "S": 0.468,
         "band": "moderate",
         "lead_days": 10,
         "confidence": "model"
@@ -483,7 +483,7 @@
       },
       "drivers": {
         "t_recent": 26.7,
-        "zT": -0.29,
+        "zT": -0.27,
         "p_recent": 2.78,
         "zP": -0.17,
         "thermal": 0.85
@@ -512,6 +512,28 @@
       },
       "asof": "2026-05-24"
     },
+    "TR": {
+      "dengue": {
+        "S": 0.144,
+        "band": "minimal",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.348,
+        "band": "low",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 13.5,
+        "zT": 1.38,
+        "p_recent": 2.91,
+        "zP": 0.27,
+        "thermal": 0.0
+      },
+      "asof": "2026-05-24"
+    },
     "AE": {
       "dengue": {
         "S": 0.625,
@@ -520,14 +542,14 @@
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.259,
+        "S": 0.26,
         "band": "low",
         "lead_days": 14,
         "confidence": "model"
       },
       "drivers": {
         "t_recent": 31.6,
-        "zT": 1.29,
+        "zT": 1.3,
         "p_recent": 0.0,
         "zP": -0.33,
         "thermal": 0.96
@@ -564,7 +586,7 @@
         "confidence": "model"
       },
       "cholera": {
-        "S": 0.263,
+        "S": 0.264,
         "band": "low",
         "lead_days": 14,
         "confidence": "model"
