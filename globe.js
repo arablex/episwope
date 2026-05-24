@@ -3264,6 +3264,21 @@ function toggleTheme(){
 }
 window.toggleTheme = toggleTheme;
 
+/* Deep-link: /app?c=ISO (or ?country=Name) opens that country on load.
+   Enables "share this view" — a shared country link lands on it. */
+function openDeepLinkCountry(){
+  try{
+    const q = new URLSearchParams(location.search);
+    let name = q.get('country');
+    const iso = q.get('c');
+    if(!name && iso){
+      const c = (typeof COUNTRY_BY_ISO2 !== 'undefined') && COUNTRY_BY_ISO2[iso.toUpperCase()];
+      if(c) name = c.en;
+    }
+    if(name) setTimeout(() => { try{ selectCountry(name); }catch(e){} }, 400);
+  }catch(e){}
+}
+
 function initMap(){
   map = new mapboxgl.Map({
     container: 'globe',
@@ -3305,6 +3320,7 @@ function initMap(){
     map.on('resize', positionPopup);
     updateClock();
     if(state.cats.air) showAQILayer(true);
+    openDeepLinkCountry();   // ?c=ISO or ?country=Name → open that country
   });
 
   // Click on empty map → deselect (skip if a marker layer just handled it)
