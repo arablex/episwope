@@ -1848,29 +1848,68 @@ async function sendMagicLink() {
 /** Render the "My countries" sidebar section from the WATCHED Set.
  *  Empty state explains how to add countries. Each row clicks to the
  *  country profile; trailing × removes from the watch list. */
+const MC_BAND_C = { minimal:'#9aa0a6', low:'#E4B514', moderate:'#E8590C', elevated:'#d8531e', severe:'#C92A2A', critical:'#8B1A1A' };
+let _mcSeen = null;   // last-visit snapshot {iso2: score}, frozen for the session
+
+/* Composite score+band for a watched country name (via RISK_INDEX, ISO2 key). */
+function mcRisk(name){
+  const meta = findCountry(name);
+  const iso2 = (meta && meta.iso2 || '').toUpperCase();
+  const ri = iso2 ? RISK_INDEX[iso2] : null;
+  const cr = ri && ri.composite_risk;
+  return { iso2, score: cr && typeof cr.score==='number' ? cr.score : null, band: cr && cr.band || null };
+}
+
 function renderMyCountries(){
   const root = document.getElementById('myCountries');
   const count = document.getElementById('myCountriesCount');
   if(!root) return;
-  const list = [...WATCHED].sort((a,b)=> countryName(a).localeCompare(countryName(b)));
-  if(count) count.textContent = list.length;
-  if(!list.length){
+  if(_mcSeen === null){ try{ _mcSeen = JSON.parse(localStorage.getItem('vigilo_seen')||'{}'); }catch(e){ _mcSeen = {}; } }
+
+  const watched = [...WATCHED];
+  if(count) count.textContent = watched.length;
+  if(!watched.length){
     root.innerHTML = `<div class="mc-empty">${LANG==='ru'
       ? 'Подпишись на страну в правой панели — она появится здесь.'
       : 'Watch a country from the right panel — it lands here.'}</div>`;
     return;
   }
-  root.innerHTML = list.map(c => {
-    const meta = findCountry(c);
-    const flag = meta ? flagEmoji(meta.iso2) : '';
-    const n = OUTBREAKS.filter(o => o.country === c || (findCountry(o.country)?.en === c)).length;
+
+  // Compute current risk + delta-since-last-visit, then sort changed-first.
+  const seenNow = {};
+  const rows = watched.map(c => {
+    const r = mcRisk(c);
+    let delta = 0, isNew = false;
+    if(r.score !== null){
+      seenNow[r.iso2] = r.score;
+      const prev = _mcSeen[r.iso2];
+      if(typeof prev === 'number') delta = +(r.score - prev).toFixed(2);
+      else isNew = true;
+    }
+    return { c, r, delta, isNew, n: OUTBREAKS.filter(o => o.country === c || (findCountry(o.country)?.en === c)).length };
+  });
+  rows.sort((a,b) => (Math.abs(b.delta)-Math.abs(a.delta)) || countryName(a.c).localeCompare(countryName(b.c)));
+  // Persist current scores as the new "last seen" for the next session.
+  try{ localStorage.setItem('vigilo_seen', JSON.stringify(Object.assign({}, _mcSeen, seenNow))); }catch(e){}
+
+  const changed = rows.filter(x => Math.abs(x.delta) >= 0.3).length;
+  const sumEl = document.getElementById('myCountriesDelta');
+  if(sumEl) sumEl.textContent = changed
+    ? (LANG==='ru' ? `${changed} изменилось с прошлого визита` : `${changed} changed since your last visit`)
+    : (LANG==='ru' ? 'без изменений с прошлого визита' : 'no change since your last visit');
+
+  root.innerHTML = rows.map(({c, r, delta, isNew, n}) => {
     const isSel = state.selectedCountry === c;
-    const cntCls = n > 0 ? 'cnt has' : 'cnt';
-    const cntText = n > 0 ? String(n) : '—';
+    const dotC = r.band ? (MC_BAND_C[r.band]||'#9aa0a6') : '#cfccc1';
+    let dlt = '';
+    if(isNew) dlt = `<span class="mc-delta new" title="${LANG==='ru'?'новое в списке':'new to your list'}">•</span>`;
+    else if(delta >= 0.3) dlt = `<span class="mc-delta up" title="${LANG==='ru'?'риск вырос':'risk rose'} (+${delta})">▲</span>`;
+    else if(delta <= -0.3) dlt = `<span class="mc-delta down" title="${LANG==='ru'?'риск снизился':'risk eased'} (${delta})">▼</span>`;
     return `<div class="mc-row${isSel ? ' is-selected' : ''}" data-country="${c.replace(/"/g,'&quot;')}">
-      <span class="flag">${flag}</span>
+      <span class="mc-dot" style="background:${dotC}" title="${r.band||'—'}"></span>
       <span class="nm">${countryName(c)}</span>
-      <span class="${cntCls}">${cntText}</span>
+      ${dlt}
+      <span class="cnt${n>0?' has':''}">${n>0?n:'—'}</span>
       <span class="x" data-remove="${c.replace(/"/g,'&quot;')}" title="${LANG==='ru'?'Удалить':'Remove'}">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </span>
@@ -4695,6 +4734,7 @@ async function loadLiveData(){
         const rj = await ri.json();
         RISK_INDEX = rj.index || {};
         try { refreshCountryRiskFill(); } catch(_){}
+        try { renderMyCountries(); } catch(_){}   // re-render watchlist now that risk + deltas are available
       }
     } catch(_e){ /* graceful — country panel shows "no data" */ }
 

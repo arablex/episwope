@@ -1423,7 +1423,13 @@
   .mc-row:hover{ background:var(--bg); }
   .mc-row.is-selected{ background:rgba(232,89,12,0.08); }
   .mc-row .flag{ font-size:15px; flex-shrink:0; line-height:1; }
+  .mc-row .mc-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
   .mc-row .nm{ flex:1; min-width:0; font-size:12.5px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mc-delta{ font-size:10px; font-weight:800; flex-shrink:0; }
+  .mc-delta.up{ color:var(--s3,#C92A2A); }
+  .mc-delta.down{ color:var(--online,#19A463); }
+  .mc-delta.new{ color:var(--accent,#E8590C); }
+  .mc-delta-sum{ font-size:10.5px; color:var(--muted); margin:2px 0 8px; font-weight:500; }
   .mc-row .cnt{
     font-size:10px; font-weight:800; padding:1px 7px; border-radius:99px;
     background:var(--bg); color:var(--muted);
@@ -2414,6 +2420,7 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
 
       <div class="side-section my-countries-section" id="myCountriesSection">
         <div class="side-h">My countries <span class="count" id="myCountriesCount">0</span></div>
+        <div class="mc-delta-sum" id="myCountriesDelta"></div>
         <div id="myCountries" class="my-countries"></div>
       </div>
 
