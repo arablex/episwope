@@ -35,7 +35,7 @@ d.text((64, 452), "Live across health · conflict · disasters · climate · bor
 # footer
 d.line([(62, 540), (W-62, 540)], fill=(40, 44, 52), width=1)
 d.text((62, 560), "vigilo.cc", font=G.fnt("bold", 26), fill=PAPER)
-foot = "44 verified feeds · composite risk 0–6"
+foot = "44 verified feeds · composite risk 0–5"
 d.text((W-62-d.textlength(foot, font=G.fnt("reg", 24)), 562), foot, font=G.fnt("reg", 24), fill=MUT)
 
 out = ROOT / "og-intel.jpg"

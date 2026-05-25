@@ -112,7 +112,7 @@ def generate(slug):
     # Footer
     d.line([(62,H-86),(W-62,H-86)],fill=LINE,width=1)
     d.text((62,H-66),"vigilo.cc",font=f_foot,fill=INK)
-    foot_r = "Composite risk 0–6 · 44 verified feeds"
+    foot_r = "Composite risk 0–5 · 44 verified feeds"
     d.text((W-62-d.textlength(foot_r,font=f_foot),H-66),foot_r,font=f_foot,fill=MUT)
 
     path = OUT/f"{slug}.png"

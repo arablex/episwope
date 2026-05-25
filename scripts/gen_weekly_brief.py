@@ -25,7 +25,7 @@ ROOT       = Path(__file__).resolve().parent.parent
 INDEX_IN   = ROOT / "public" / "risk_index.json"
 DRAFTS_DIR = ROOT / "intel" / "_drafts"
 
-# Composite score (0–6) cutoff for inclusion, and a hard cap on rows.
+# Composite score (0–5) cutoff for inclusion, and a hard cap on rows.
 SCORE_MIN  = 1.9
 MAX_ROWS   = 10
 # Below this event count a high score may be a transient news spike — flag for review.
@@ -182,7 +182,7 @@ HTML_HEAD = """<!doctype html>
   <div class="byline"><span>Generated {date_h}</span><span>·</span><span>44 verified feeds · 7 domains</span><span>·</span><span>By Vigilo Intelligence</span></div>
 
   <h2>This week's top hotspots</h2>
-  <p>The composite risk score (0–6) blends signal density, severity and structural fragility across all seven domains. Higher means more corroborated, more severe, or more sustained. These are the countries scoring {score_min} and above.</p>
+  <p>The composite risk score (0–5) blends signal density, severity and structural fragility across all seven domains. Higher means more corroborated, more severe, or more sustained. These are the countries scoring {score_min} and above.</p>
   <table class="htable">
     <thead><tr><th>#</th><th>Country</th><th>Composite</th><th>Band</th><th>Lead domain</th></tr></thead>
     <tbody>
@@ -329,7 +329,7 @@ def main() -> None:
         infographic = (
             f'  <figure class="info-fig">\n'
             f'    <img src="/infographics/{slug}.png" alt="Vigilo top risk hotspots, {date_h} — '
-            f'composite risk 0–6, coloured by band">\n'
+            f'composite risk 0–5, coloured by band">\n'
             f'    <figcaption>Top risk hotspots, {date_h} — live composite scores. '
             f'Updates continuously on the <a href="/app">live globe</a>.</figcaption>\n'
             f'  </figure>'
