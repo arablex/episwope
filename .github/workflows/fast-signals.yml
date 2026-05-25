@@ -2,9 +2,11 @@ name: Fast Signals — Early Warning Engine
 
 on:
   schedule:
-    # Every 15 minutes — GitHub Actions minimum recommended interval
-    # Note: actual firing may lag 1-5 min under load
-    - cron: "*/15 * * * *"
+    # Every 3 hours. Risk scores move slowly, and EVERY push to main triggers a
+    # Netlify build (continuous deployment is on), so frequent runs burn build
+    # minutes fast. 3h keeps data fresh enough while staying well under the quota.
+    # (Bump back down after the monthly Netlify cycle resets if needed.)
+    - cron: "0 */3 * * *"
   workflow_dispatch:   # manual trigger from GitHub UI
 
 permissions:
@@ -152,21 +154,9 @@ jobs:
               print(f'Push error: {e}')
           PYEOF
 
-      # Trigger Netlify rebuild so the fresh data is served
-      - name: Trigger Netlify deploy
-        if: always()   # deploy even if an earlier non-critical step failed
-        env:
-          NETLIFY_DEPLOY_HOOK: ${{ secrets.NETLIFY_DEPLOY_HOOK }}
-        run: |
-          if [ -n "$NETLIFY_DEPLOY_HOOK" ]; then
-            # Build hooks return an EMPTY body — do NOT pipe to json.load (that
-            # crashed the step and failed the whole job even though the deploy
-            # fired fine). Just POST and report the HTTP status; never fail here.
-            code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$NETLIFY_DEPLOY_HOOK" || echo "000")
-            echo "Netlify deploy hook → HTTP $code"
-          else
-            echo "No deploy hook configured — skipping"
-          fi
+      # NOTE: no explicit Netlify deploy hook here. Netlify continuous deployment
+      # already auto-builds on every push to main (the commit step above), so an
+      # extra hook would DOUBLE the build-minute cost for zero benefit.
 
       # Fire B2B risk webhooks for any subscription whose threshold was crossed
       - name: Dispatch risk webhooks
