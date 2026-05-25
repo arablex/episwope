@@ -33,7 +33,8 @@ from fast_signals import (  # noqa: E402
     fetch_url, detect_country, log, Article, _strip_html,
     COUNTRY_DB, LANDMARK_DB,
 )
-from risk_scoring import score_geo, CATEGORIES  # noqa: E402
+from risk_scoring import score_geo, composite_score, CATEGORIES  # noqa: E402
+from inform import load_fragility  # noqa: E402
 
 # ISO-2 → (lat, lng) centroid lookup, built from the name-keyed COUNTRY_DB
 # (+ landmark coords). Used to backfill geolocation for events that have a
@@ -639,9 +640,10 @@ def build_index(events: list[dict]) -> dict:
         by_country.setdefault(e["country"], []).append(e)
 
     now = _now()
+    frag = load_fragility()
     index = {}
     for iso, evs in by_country.items():
-        scored = score_geo(evs, now)
+        scored = score_geo(evs, now, fragility=frag.get(iso, 0.0))
         index[iso] = {
             "composite_risk": scored["composite_risk"],
             "category_breakdown": scored["category_breakdown"],
@@ -666,9 +668,9 @@ def build_index(events: list[dict]) -> dict:
     for iso in ISO_CENTROID:
         if iso in index:
             continue
+        comp = composite_score({c: 0.0 for c in CATEGORIES}, fragility=frag.get(iso, 0.0))
         index[iso] = {
-            "composite_risk": {"score": 0.0, "band": "minimal",
-                               "dominant_category": None},
+            "composite_risk": comp,
             "category_breakdown": _empty_breakdown(),
             "event_count": 0,
             "event_ids": [],
