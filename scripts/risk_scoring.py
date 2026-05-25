@@ -40,6 +40,13 @@ SRC_MULT = {
 
 BANDS = ["minimal", "low", "moderate", "elevated", "severe", "critical"]
 
+# ── Structural fragility layer (INFORM) ─────────────────────────────
+# Bounded floor + amplifier so a quiet-but-fragile country reads above a
+# quiet-stable one, WITHOUT letting structure dominate the live signal.
+USE_FRAGILITY = True
+FLOOR_MAX = 1.0   # max score (=="low") a quiet, maximally-fragile country reaches
+AMP = 0.20        # live signal of the most fragile country amplified up to +20%
+
 
 def _clip(v: float, lo: float = 0.0, hi: float = 5.0) -> float:
     return max(lo, min(hi, v))
@@ -83,37 +90,39 @@ def category_score(events: list[dict], category: str,
     return round(_clip(raw * INTRINSIC_WEIGHT.get(category, 0.6) * 5.0), 2)
 
 
-def composite_score(cat_scores: dict[str, float]) -> dict:
+def composite_score(cat_scores: dict[str, float], fragility: float = 0.0) -> dict:
     """
-    Fuse per-category scores into the headline 0–5 composite.
-
-    Returns {score, band, dominant_category}.
+    Fuse per-category scores into the headline 0–5 composite, then apply the
+    structural-fragility floor + amplifier. Returns
+    {score, live_score, fragility, band, dominant_category}.
     """
     ranked = sorted(
         ((c, s) for c, s in cat_scores.items()),
         key=lambda kv: kv[1], reverse=True,
     )
-    if not ranked:
-        return {"score": 0.0, "band": "minimal", "dominant_category": None}
+    if not ranked or ranked[0][1] <= 0:
+        live = 0.0
+        dominant = None
+    else:
+        top_score = ranked[0][1]
+        tail = ranked[1:]
+        tail_add = 0.0
+        for i, (_, s) in enumerate(tail):
+            tail_add += (0.45 if i == 0 else 0.20 if i == 1 else 0.08) * s
+        comp = top_score + min(tail_add, 5.0 - top_score) * 0.6
+        if sum(1 for _, s in ranked if s >= 3.0) >= 2:
+            comp *= 1.15
+        live = round(_clip(comp), 2)
+        dominant = ranked[0][0]
 
-    # Dominant category sets a FLOOR (a lone full-blown war must reach
-    # "critical", not be diluted), the tail adds multi-domain pressure.
-    top_score = ranked[0][1]
-    tail = ranked[1:]
-    tail_add = 0.0
-    for i, (_, s) in enumerate(tail):
-        tail_add += (0.45 if i == 0 else 0.20 if i == 1 else 0.08) * s
-    comp = top_score + min(tail_add, 5.0 - top_score) * 0.6
-
-    # Multi-domain crisis amplifier
-    if sum(1 for _, s in ranked if s >= 3.0) >= 2:
-        comp *= 1.15
-
-    comp = round(_clip(comp), 2)
+    f = max(0.0, min(1.0, float(fragility))) if USE_FRAGILITY else 0.0
+    final = round(_clip(max(live * (1.0 + AMP * f), f * FLOOR_MAX)), 2)
     return {
-        "score": comp,
-        "band": band_for(comp),
-        "dominant_category": ranked[0][0] if ranked[0][1] > 0 else None,
+        "score": final,
+        "live_score": live,
+        "fragility": round(f, 3),
+        "band": band_for(final),
+        "dominant_category": dominant,
     }
 
 
