@@ -15,11 +15,17 @@ returns HTML with `tgme_widget_message` blocks).
 
 ## Decisions (locked in brainstorming)
 
-- **Trust gate = QUARANTINE until corroborated.** A Telegram-origin event is
-  captured (speed preserved) but marked `unverified:true` and **excluded from the
-  composite score** until at least one NON-Telegram source corroborates it. Then
-  it flips to counted. Protects the score from lone propaganda; keeps the
-  early-warning value.
+- **Trust gate = QUARANTINE until corroborated (by country + domain).** A
+  Telegram-origin event is captured (speed preserved) but marked `unverified:true`
+  and **excluded from the composite score** unless there is at least one
+  NON-Telegram event of the **same category** (conflict/civil_unrest) in the
+  **same country** in the current event set. (Headline-level dedup can't match a
+  Telegram post to a differently-worded news headline, so "same incident"
+  corroboration is impossible without semantic matching, which is out of scope —
+  hence the country+domain co-occurrence rule.) This blocks the dangerous case (a
+  fabricated crisis in a quiet country has no corroborating news → stays
+  quarantined), while letting Telegram add speed/granularity where conflict is
+  already corroborated elsewhere (at tier5 = 0.70, a low contribution).
 - **Domains: conflict + civil_unrest only** at start. Telegram-derived items whose
   extracted category is anything else are dropped (health/disasters are well
   covered by official feeds).
@@ -55,14 +61,15 @@ returns HTML with `tgme_widget_message` blocks).
 4. **`scripts/risk_aggregate.py`** (modify) — two precise changes:
    - `_source_class()`: a source id starting `telegram_` → return
      `("tier5_social", "social_telegram")`.
-   - **Quarantine gate:** when assembling an event, if ALL of its `sources` are
-     Telegram (no non-Telegram source), set `unverified: true` on the event. In
-     `build_index`/scoring, events with `unverified: true` are **excluded from
-     `score_geo`** (they don't move the composite). They remain in
-     `risk_events.json` (so the app can show them in a separate "unverified /
-     early" lane, and so corroboration can later promote them). When a
-     non-Telegram source matches the same dedup key (existing corroboration path),
-     `unverified` flips to false and the event counts normally.
+   - **Quarantine gate (country + domain co-occurrence):** after all events are
+     assembled, compute the set of `(country, category)` pairs that have at least
+     one NON-Telegram source. Any event whose `sources` are ALL `telegram_*` is
+     marked `unverified: true` UNLESS its `(country, category)` is in that set
+     (i.e. a non-Telegram conflict/unrest event exists in the same country) — in
+     which case it's promoted (`unverified: false`). In `build_index`, events with
+     `unverified: true` are **filtered out before `score_geo`** (they don't move
+     the composite). All events (incl. unverified) still go into `risk_events.json`
+     so the app can show a separate "unverified / early" lane.
 
 ## Data flow
 
