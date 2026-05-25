@@ -55,6 +55,20 @@ def fnt(role, s):
     p = FONT.get(role)
     return ImageFont.truetype(p, s) if p else ImageFont.load_default()
 
+def draw_mark(d, cx, cy, R, disc, line, bg):
+    """New Vigilo globe-V seal: filled disc + wireframe globe + V cutout."""
+    s = R / 110.0
+    lw = max(2, round(4.2 * s))
+    d.ellipse([cx-R, cy-R, cx+R, cy+R], fill=disc)                 # disc
+    for rx in (44, 84):                                            # meridians
+        d.ellipse([cx-rx*s, cy-R, cx+rx*s, cy+R], outline=line, width=lw)
+    d.line([(cx, cy-R), (cx, cy+R)], fill=line, width=lw)          # axis
+    d.ellipse([cx-R, cy-round(22*s), cx+R, cy+round(22*s)], outline=line, width=lw)  # equator
+    for off in (-58, 58):                                          # N/S latitudes
+        d.ellipse([cx-88*s, cy+off*s-round(11*s), cx+88*s, cy+off*s+round(11*s)], outline=line, width=lw)
+    V = [(44,50),(92,50),(120,124),(148,50),(196,50),(130,196),(110,196)]
+    d.polygon([(cx+(x-120)*s, cy+(y-120)*s) for (x,y) in V], fill=bg)  # V cutout
+
 def generate(slug):
     idx = json.load(open(PUB/"risk_index.json")).get("index", {})
     rows = []
@@ -73,10 +87,9 @@ def generate(slug):
 
     # Header band
     d.rectangle([0,0,W,250], fill=NIGHT)
-    # logo
-    d.rounded_rectangle([60,56,112,108], radius=13, fill=AMBER)
-    d.line([(74,73),(86,93),(98,73)], fill="white", width=5, joint="curve")
-    d.text((124,64),"Vigilo",font=f_h,fill=(244,242,238))
+    # logo — new globe-V seal (amber disc, paper lines, V cutout shows the band)
+    draw_mark(d, 90, 84, 30, AMBER, PAPER, NIGHT)
+    d.text((138,54),"Vigilo",font=f_h,fill=PAPER)
     def tracked(x,y,t,f,fill,tr=2):
         for ch in t: d.text((x,y),ch,font=f,fill=fill); x+=d.textlength(ch,font=f)+tr
     tracked(62,150,"LIVE GLOBAL RISK · SOURCE-TRACEABLE",f_eye,AMBER,2)
@@ -95,21 +108,6 @@ def generate(slug):
         bw = max(24, int(barw_max * min(s,maxs)/maxs))
         d.rounded_rectangle([barx,y+10,barx+bw,y+54], radius=9, fill=c)
         d.text((barx+bw+14,y+16),f"{s:.1f}",font=f_score,fill=INK)
-    # gradient legend
-    ly = top + len(rows)*rowh + 16
-    d.text((x0,ly),"LOW",font=f_dom,fill=MUT)
-    d.text((W-150,ly),"HIGH",font=f_dom,fill=MUT)
-    grad_x0, grad_x1 = x0+60, W-160
-    for gx in range(grad_x0, grad_x1):
-        t=(gx-grad_x0)/(grad_x1-grad_x0)
-        # green→yellow→amber→red
-        stops=[(0,(0,165,111)),(.4,(228,181,20)),(.7,(232,89,12)),(1,(201,42,42))]
-        for j in range(len(stops)-1):
-            t0,c0=stops[j]; t1,c1=stops[j+1]
-            if t0<=t<=t1:
-                k=(t-t0)/(t1-t0); col=tuple(int(c0[m]+(c1[m]-c0[m])*k) for m in range(3)); break
-        else: col=(201,42,42)
-        d.line([(gx,ly+4),(gx,ly+18)],fill=col)
 
     # Footer
     d.line([(62,H-86),(W-62,H-86)],fill=LINE,width=1)
