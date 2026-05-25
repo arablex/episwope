@@ -9,7 +9,7 @@ import { sendEmail }                from './_lib/resend.mjs';
 import { rateLimitOk, ipFromReq }   from './_lib/rate-limit.mjs';
 
 const CORS  = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
-const ADMIN = 'alex@vigilo.cc';
+const ADMIN = 'aleksey.stepikin@gmail.com';
 const rlStore = () => getStore({ name: 'rate-limits', consistency: 'strong' });
 const esc = (s) => String(s).replace(/[<>&]/g, c => ({ '<':'&lt;', '>':'&gt;', '&':'&amp;' }[c]));
 const isEmail = (s) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
