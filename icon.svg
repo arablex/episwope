@@ -1,19 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#161513"/>
-  <!-- globe base -->
-  <circle cx="256" cy="256" r="160" fill="none" stroke="#E8590C" stroke-width="12"/>
-  <!-- latitude lines -->
-  <ellipse cx="256" cy="256" rx="160" ry="60" fill="none" stroke="#E8590C" stroke-width="6" opacity="0.5"/>
-  <!-- longitude line -->
-  <line x1="256" y1="96" x2="256" y2="416" stroke="#E8590C" stroke-width="6" opacity="0.5"/>
-  <!-- horizontal axis -->
-  <line x1="96" y1="256" x2="416" y2="256" stroke="#E8590C" stroke-width="6" opacity="0.5"/>
-  <!-- alert dot — DRC area -->
-  <circle cx="280" cy="290" r="18" fill="#C92A2A"/>
-  <circle cx="280" cy="290" r="28" fill="#C92A2A" opacity="0.25"/>
-  <!-- alert dot — Brazil -->
-  <circle cx="190" cy="300" r="12" fill="#E8590C"/>
-  <circle cx="190" cy="300" r="20" fill="#E8590C" opacity="0.20"/>
-  <!-- small dot — SE Asia -->
-  <circle cx="360" cy="270" r="8" fill="#E4B514"/>
+  <rect width="512" height="512" rx="112" fill="#F4F2EE"/>
+  <svg x="76" y="76" width="360" height="360" viewBox="0 0 240 240">
+    <defs>
+      <mask id="fm"><rect width="240" height="240" fill="#fff"/><path d="M44 50 L92 50 L120 124 L148 50 L196 50 L130 196 L110 196 Z" fill="#000"/></mask>
+      <clipPath id="fc"><circle cx="120" cy="120" r="110"/></clipPath>
+    </defs>
+    <g mask="url(#fm)">
+      <circle cx="120" cy="120" r="110" fill="#14110C"/>
+      <g clip-path="url(#fc)" stroke="#F4F2EE" stroke-width="4" fill="none" stroke-linecap="round">
+        <ellipse cx="120" cy="120" rx="44" ry="110"/>
+        <ellipse cx="120" cy="120" rx="84" ry="110"/>
+        <line x1="120" y1="10" x2="120" y2="230"/>
+        <path d="M30 64 Q120 78 210 64"/>
+        <path d="M10 120 Q120 142 230 120"/>
+        <path d="M30 176 Q120 190 210 176"/>
+      </g>
+    </g>
+  </svg>
 </svg>
