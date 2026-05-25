@@ -55,10 +55,14 @@ function formatSignal(sig) {
 }
 
 export default async (req) => {
-  if (req.method !== 'POST') {
-    return new Response('ok', { status: 200 });
-  }
+  // DISABLED: the public Telegram subscriber bot (/start /stop) is not used.
+  // Leaving an unauthenticated inbound webhook live let anyone spoof Telegram
+  // updates and poison/wipe the subscriber store, so the endpoint is hard-off.
+  // (Admin alerts are OUTBOUND-only and unaffected. Telegram-CHANNEL ingestion
+  // is a separate, future feature — not this endpoint.)
+  return new Response('Not found', { status: 404 });
 
+  // eslint-disable-next-line no-unreachable
   let update;
   try { update = await req.json(); }
   catch { return new Response('bad json', { status: 400 }); }
