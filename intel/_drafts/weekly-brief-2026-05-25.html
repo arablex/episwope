@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[DRAFT] Global Risk Brief — Week of 25 May 2026 | Vigilo Intelligence</title>
+<meta name="description" content="DRAFT — weekly highest-risk countries across 7 domains.">
+<!-- DRAFT: noindex until reviewed and published to /intel/<slug>.html -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F2EE;--paper50:#FBF9F4;--ink:#14110C;--ink700:#332E26;--ink600:#544D42;--ink500:#7A7263;--ink400:#9F9685;
+    --night:#0D1015;--night-muted:#9CA3B0;--amber:#E8590C;--red:#C92A2A;--yellow:#E4B514;--green:#00A56F;
+    --rule:rgba(20,17,12,.10);--rule-strong:rgba(20,17,12,.18);
+    --sans:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--serif:'Instrument Serif',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;letter-spacing:-.003em}
+  a{color:var(--amber);text-decoration:none}a:hover{text-decoration:underline}
+  .h-it{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--amber)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .draftbar{background:#1A1916;color:#fff;font-size:13px;padding:10px 16px;text-align:center;position:sticky;top:0;z-index:60}
+  .draftbar b{color:var(--amber)}
+  .article{max-width:760px;margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-top:34px;display:block}
+  h1{font-size:clamp(30px,4.4vw,44px);line-height:1.08;letter-spacing:-.035em;font-weight:800;margin:14px 0 16px}
+  .lede{font-size:19px;line-height:1.55;color:var(--ink700)}
+  .byline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:22px 0 8px;font-size:13px;color:var(--ink500);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 0}
+  .article h2{font-size:24px;letter-spacing:-.02em;font-weight:800;margin:42px 0 12px}
+  .article h3{font-size:18px;letter-spacing:-.01em;font-weight:700;margin:28px 0 8px}
+  .article p{margin:0 0 18px;color:var(--ink700)}
+  .article strong{color:var(--ink);font-weight:700}
+  .todo{background:#FFF7E6;border:1px dashed var(--amber);border-radius:10px;padding:12px 16px;margin:12px 0;font-size:14px;color:#8A5A00}
+  .htable{width:100%;border-collapse:collapse;margin:8px 0 22px;font-size:14.5px}
+  .htable th{text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink500);padding:0 10px 10px;border-bottom:1px solid var(--rule-strong)}
+  .htable td{padding:12px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+  .htable .rank{color:var(--ink400);font-weight:700;width:26px}
+  .htable .ctry{font-weight:700;color:var(--ink)}
+  .htable .score{font-family:var(--mono);font-weight:600}
+  .band{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .band.severe{background:rgba(201,42,42,.12);color:#A11}
+  .band.elevated{background:rgba(232,89,12,.13);color:#B8480C}
+  .band.moderate{background:rgba(228,181,20,.18);color:#8A6A00}
+  .dom{font-size:13px;color:var(--ink600)}
+  figure.info-fig{margin:22px 0 8px}
+  figure.info-fig img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--rule);box-shadow:0 18px 40px -24px rgba(20,17,12,.5)}
+  figure.info-fig figcaption{font-size:13px;color:var(--ink500);margin-top:10px;text-align:center}
+  .method{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:20px 22px;margin:26px 0}
+  .method .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:6px}
+  .method .kpi{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink)}
+  .method .kpi-l{font-size:12px;color:var(--ink500);margin-top:2px}
+  .disclaimer{font-size:12.5px;color:var(--ink400);line-height:1.6;margin:30px 0 60px;border-top:1px solid var(--rule);padding-top:18px}
+</style>
+</head>
+<body>
+<div class="draftbar"><b>DRAFT</b> — review &amp; add analysis, then publish to <span class="mono">/intel/global-risk-brief-2026-05-25</span> (noindex until then)</div>
+<article class="article">
+  <span class="eyebrow">Global Risk Brief</span>
+  <h1>The world's highest-risk countries, <span class="h-it">week of 25 May 2026</span></h1>
+  <p class="lede">Vigilo scored 115 countries across seven risk domains this week. The highest composite scores: Russia, Ukraine, Palestinian Territories, Pakistan. Every score below is traceable to its source feeds.</p>
+  <div class="byline"><span>Generated 25 May 2026</span><span>·</span><span>44 verified feeds · 7 domains</span><span>·</span><span>By Vigilo Intelligence</span></div>
+
+  <h2>This week's top hotspots</h2>
+  <p>The composite risk score (0–6) blends signal density, severity and structural fragility across all seven domains. Higher means more corroborated, more severe, or more sustained. These are the countries scoring 1.9 and above.</p>
+  <table class="htable">
+    <thead><tr><th>#</th><th>Country</th><th>Composite</th><th>Band</th><th>Lead domain</th></tr></thead>
+    <tbody>
+      <tr><td class="rank">1</td><td class="ctry">Russia</td><td class="score">3.67</td><td><span class="band severe">Severe</span></td><td class="dom">Conflict · 16 events</td></tr>
+      <tr><td class="rank">2</td><td class="ctry">Ukraine</td><td class="score">3.51</td><td><span class="band severe">Severe</span></td><td class="dom">Conflict · 43 events</td></tr>
+      <tr><td class="rank">3</td><td class="ctry">Palestinian Territories</td><td class="score">3.1</td><td><span class="band elevated">Elevated</span></td><td class="dom">Conflict · 60 events</td></tr>
+      <tr><td class="rank">4</td><td class="ctry">Pakistan</td><td class="score">2.94</td><td><span class="band elevated">Elevated</span></td><td class="dom">Conflict · 6 events</td></tr>
+      <tr><td class="rank">5</td><td class="ctry">Yemen</td><td class="score">2.57</td><td><span class="band elevated">Elevated</span></td><td class="dom">Conflict · 8 events</td></tr>
+      <tr><td class="rank">6</td><td class="ctry">Saudi Arabia</td><td class="score">2.17</td><td><span class="band moderate">Moderate</span></td><td class="dom">Conflict · 2 events</td></tr>
+      <tr><td class="rank">7</td><td class="ctry">DR Congo</td><td class="score">2.01</td><td><span class="band moderate">Moderate</span></td><td class="dom">Conflict · 7 events</td></tr>
+      <tr><td class="rank">8</td><td class="ctry">Myanmar</td><td class="score">1.93</td><td><span class="band moderate">Moderate</span></td><td class="dom">Conflict · 11 events</td></tr>
+    </tbody>
+  </table>
+  <div class="todo">VERIFY before publishing — high score on few events (possible transient news spike): Saudi Arabia (2). Confirm these are real or drop them.</div>
+
+  <figure class="info-fig">
+    <img src="/infographics/global-risk-brief-2026-05-25.png" alt="Vigilo top risk hotspots, 25 May 2026 — composite risk 0–6, coloured by band">
+    <figcaption>Top risk hotspots, 25 May 2026 — live composite scores. Updates continuously on the <a href="/app">live globe</a>.</figcaption>
+  </figure>
+  <h2>What's driving the top of the table</h2>
+  <div class="todo">DRAFT — write 2–4 short paragraphs of editorial analysis on the top movers below. Auto-generated factual stubs are provided as a starting point; rewrite with judgement, keep claims hedged and source-traceable.</div>
+  <h3>Russia — severe (3.67)</h3>
+  <p>Russia scores 3.67 on the conflict domain across 16 tracked event(s). <em>[DRAFT: add what is actually driving this — sources, recent developments, why it matters for travellers / NGOs / teams.]</em></p>
+  <h3>Ukraine — severe (3.51)</h3>
+  <p>Ukraine scores 3.51 on the conflict domain across 43 tracked event(s). <em>[DRAFT: add what is actually driving this — sources, recent developments, why it matters for travellers / NGOs / teams.]</em></p>
+  <h3>Palestinian Territories — elevated (3.1)</h3>
+  <p>Palestinian Territories scores 3.1 on the conflict domain across 60 tracked event(s). <em>[DRAFT: add what is actually driving this — sources, recent developments, why it matters for travellers / NGOs / teams.]</em></p>
+  <h3>Pakistan — elevated (2.94)</h3>
+  <p>Pakistan scores 2.94 on the conflict domain across 6 tracked event(s). <em>[DRAFT: add what is actually driving this — sources, recent developments, why it matters for travellers / NGOs / teams.]</em></p>
+  <div class="method">
+    <h3>How Vigilo scores risk</h3>
+    <p style="margin-bottom:6px">Every composite is built from public, verifiable feeds and is traceable back to its sources — no black box, no single-source claims.</p>
+    <div class="grid">
+      <div><div class="kpi">115</div><div class="kpi-l">countries scored</div></div>
+      <div><div class="kpi">407</div><div class="kpi-l">active events</div></div>
+      <div><div class="kpi">7</div><div class="kpi-l">risk domains</div></div>
+      <div><div class="kpi">44</div><div class="kpi-l">verified feeds</div></div>
+    </div>
+    <p style="margin:14px 0 0;font-size:13.5px;color:var(--ink600)">Sources include WHO, ECDC, CDC, GDACS, GDELT, IODA and more — refreshed continuously. <a href="/methodology">Read the full methodology →</a></p>
+  </div>
+  <p class="disclaimer">Vigilo aggregates publicly available reporting and structural indicators into transparent, source-traceable risk scores. Scores describe measured signal density and structural fragility — they are decision-support, not guarantees. Country labels follow source-feed conventions and imply no political position. Figures reflect the data snapshot of 25 May 2026.</p>
+</article>
+<!-- Yandex.Metrika -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=109240834','ym');
+ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/109240834" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
+<!-- /Yandex.Metrika -->
+<!-- Funnel: intel -> app click (Plausible + Yandex) -->
+<script>
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a[href^="/app"]');
+  if(!a) return;
+  try{ if(window.plausible) plausible('intel_open_app'); }catch(_){}
+  try{ if(window.ym) ym(109240834,'reachGoal','intel_open_app'); }catch(_){}
+});
+</script>
+</body>
+</html>
