@@ -126,7 +126,8 @@ def composite_score(cat_scores: dict[str, float], fragility: float = 0.0) -> dic
     }
 
 
-def score_geo(events: list[dict], now: datetime | None = None) -> dict:
+def score_geo(events: list[dict], now: datetime | None = None,
+              fragility: float = 0.0) -> dict:
     """
     Full scoring for one geography.
 
@@ -153,5 +154,5 @@ def score_geo(events: list[dict], now: datetime | None = None) -> dict:
             "top_threat": (top or {}).get("type") or (top or {}).get("headline"),
         }
 
-    comp = composite_score(cat_scores)
+    comp = composite_score(cat_scores, fragility=fragility)
     return {"composite_risk": comp, "category_breakdown": breakdown}
