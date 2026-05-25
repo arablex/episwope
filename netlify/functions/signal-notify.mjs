@@ -26,13 +26,23 @@ export default async (req) => {
       status: 204,
       headers: cors({
         'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       }),
     });
   }
 
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: cors() });
+  }
+
+  // Auth gate — fail closed: reject if INTERNAL_SECRET is unset/empty or header doesn't match
+  const internalSecret = process.env.INTERNAL_SECRET;
+  if (!internalSecret) {
+    return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: cors() });
+  }
+  const authHeader = req.headers.get('authorization') || '';
+  if (authHeader !== `Bearer ${internalSecret}`) {
+    return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: cors() });
   }
 
   let body;

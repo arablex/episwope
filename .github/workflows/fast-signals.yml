@@ -113,12 +113,14 @@ jobs:
         env:
           VIGILO_SITE: ${{ secrets.VIGILO_SITE_URL || 'https://vigilo.cc' }}
           EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
+          INTERNAL_SECRET: ${{ secrets.INTERNAL_SECRET }}
         run: |
           python3 - << 'PYEOF'
           import json, os, urllib.request, urllib.error
 
-          site  = os.environ.get('VIGILO_SITE', 'https://vigilo.cc').rstrip('/')
-          token = os.environ.get('EPISCOPE_TOKEN_SECRET', '')
+          site            = os.environ.get('VIGILO_SITE', 'https://vigilo.cc').rstrip('/')
+          token           = os.environ.get('EPISCOPE_TOKEN_SECRET', '')
+          internal_secret = os.environ.get('INTERNAL_SECRET', '')
 
           try:
               with open('public/signals.json') as f:
@@ -141,7 +143,10 @@ jobs:
           req = urllib.request.Request(
               f'{site}/api/signal-notify',
               data=payload,
-              headers={'Content-Type': 'application/json'},
+              headers={
+                  'Content-Type': 'application/json',
+                  'Authorization': f'Bearer {internal_secret}',
+              },
               method='POST',
           )
           try:

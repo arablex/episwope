@@ -25,6 +25,9 @@ function secret() {
  * @returns {string} compact JWT
  */
 export function signJWT(payload, expiresInDays = 30) {
+  if ((process.env.JWT_SECRET || '').length < 32) {
+    throw new Error('JWT_SECRET must be >= 32 chars');
+  }
   const header = b64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const now    = Math.floor(Date.now() / 1000);
   const body   = b64url(JSON.stringify({
@@ -47,6 +50,12 @@ export function verifyJWT(token) {
   if (parts.length !== 3) throw new Error('invalid_token');
 
   const [header, body, sig] = parts;
+
+  // Pin algorithm — reject anything that isn't explicitly HS256/JWT
+  let hdr;
+  try { hdr = JSON.parse(b64urlDecode(header)); } catch { throw new Error('invalid_token'); }
+  if (hdr.alg !== 'HS256' || hdr.typ !== 'JWT') throw new Error('invalid_token');
+
   const data     = `${header}.${body}`;
   const expected = createHmac('sha256', secret()).update(data).digest('base64url');
 

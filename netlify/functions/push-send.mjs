@@ -5,8 +5,9 @@
  *
  * Env: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, ADMIN_SECRET
  */
-import webpush      from 'web-push';
-import { getStore } from '@netlify/blobs';
+import webpush                        from 'web-push';
+import { getStore }                   from '@netlify/blobs';
+import { timingSafeEqual }            from 'node:crypto';
 
 function pushStore() {
   return getStore({ name: 'push-subscriptions', consistency: 'strong' });
@@ -24,9 +25,16 @@ export default async (req) => {
     return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: cors() });
   }
 
-  // Auth check
-  const secret = req.headers.get('x-admin-secret');
-  if (!secret || secret !== process.env.ADMIN_SECRET) {
+  // Auth check — constant-time compare to prevent timing attacks
+  const adminSecret = process.env.ADMIN_SECRET;
+  const provided    = req.headers.get('x-admin-secret') || '';
+  let authorized = false;
+  if (adminSecret && provided) {
+    const a = Buffer.from(provided,     'utf8');
+    const b = Buffer.from(adminSecret,  'utf8');
+    authorized = a.length === b.length && timingSafeEqual(a, b);
+  }
+  if (!authorized) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: cors() });
   }
 
