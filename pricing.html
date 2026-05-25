@@ -453,6 +453,7 @@ window._inquire = function(plan){
       field('Countries / regions you cover','inqRegion','text','e.g. West Africa, SE Asia',false)+
       field(isEnt?'Use case & timeline':'Anything we should know','inqMsg','textarea',isEnt?'What you need, est. users, procurement timeline…':'Optional',false)+
       '<div id="inqMsgBox" style="font-size:12.5px;margin-top:8px;min-height:16px"></div>'+
+      '<div style="font-size:11px;color:#807E76;line-height:1.45;margin-top:10px">By submitting, you agree to our <a href="/privacy.html" target="_blank" rel="noopener" style="color:#7A7263;text-decoration:underline">Privacy Policy</a>.</div>'+
       '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">'+
         '<button id="inqCancel" style="background:none;border:none;color:#7A7263;font:inherit;font-size:13px;cursor:pointer">Cancel</button>'+
         '<button id="inqSend" style="background:#E8590C;color:#fff;border:none;border-radius:10px;padding:11px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">'+(isEnt?'Send':'Request access')+'</button>'+
