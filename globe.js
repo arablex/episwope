@@ -4091,15 +4091,20 @@ function renderList(){
       const isOpen = _listExpanded.has(g.key);
       const sevC = (SEV[worst.sev]||SEV.warning).color;
       const rows = g.items.map(o => {
-        const title = o._risk ? (fullHeadline(o) || shortTitle(o)) : diseaseName(o);
+        // Localised label as the title (reads in RU); raw source headline kept
+        // as a small subline so same-domain events stay distinguishable.
+        const title = o._risk ? shortTitle(o) : diseaseName(o);
+        const headline = o._risk ? fullHeadline(o) : '';
         const when  = _eventWhen(o);
         const ctry  = countryName(o.country) || o.country || '';
-        const meta  = [ctry, when].filter(Boolean).join(' · ');
+        // risk title already carries the place — don't repeat the country
+        const meta  = o._risk ? when : [ctry, when].filter(Boolean).join(' · ');
         return `
         <button class="lrow ${o.id===state.selectedId?'is-selected':''}" data-id="${o.id}">
           <span class="lrow-sev" style="background:${(SEV[o.sev]||SEV.warning).color}"></span>
           <span class="lrow-main">
             <span class="lrow-title">${escapeAttr(title)}</span>
+            ${headline ? `<span class="lrow-head">${escapeAttr(headline)}</span>` : ''}
             ${meta ? `<span class="lrow-meta">${escapeAttr(meta)}</span>` : ''}
           </span>
           <span class="lrow-sub">${escapeAttr(sevLbl(o.sev))}</span>
