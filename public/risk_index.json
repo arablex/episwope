@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-05-26T15:43:49.946525+00:00",
-    "events_total": 489,
+    "generated_at": "2026-05-26T20:20:30.097713+00:00",
+    "events_total": 512,
     "countries": 115,
     "categories": [
       "health",
@@ -14,17 +14,240 @@
     ],
     "schema": "1.0",
     "fetch_health": {
-      "ok": 39,
-      "failed": 4,
-      "fail_rate": 0.093,
+      "ok": 42,
+      "failed": 1,
+      "fail_rate": 0.023,
       "degraded": false
     }
   },
   "index": {
+    "IR": {
+      "composite_risk": {
+        "score": 3.97,
+        "live_score": 3.55,
+        "fragility": 0.59,
+        "band": "severe",
+        "dominant_category": "conflict"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 2.96,
+          "band": "elevated",
+          "active_events": 12,
+          "top_threat": "kinetic_strike"
+        },
+        "civil_unrest": {
+          "score": 0.12,
+          "band": "minimal",
+          "active_events": 4,
+          "top_threat": "protest"
+        },
+        "transport": {
+          "score": 0.92,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "flight_disruption"
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 1.77,
+          "band": "moderate",
+          "active_events": 20,
+          "top_threat": "comms_outage"
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 37,
+      "event_ids": [
+        "evt_d2921090fa73",
+        "evt_50f3b2184648",
+        "evt_aeb6f4aa7744",
+        "evt_51b888b8784a",
+        "evt_1691a90fe916",
+        "evt_eca2e06b62e3",
+        "evt_6140334b0689",
+        "evt_dacec1a73a0c",
+        "evt_8d1b1e4722ab",
+        "evt_e8d9dfdf00ce",
+        "evt_f78aeabbc12e",
+        "evt_244d9584bb9f",
+        "evt_b01e9b20226a",
+        "evt_9330279c0f3e",
+        "evt_2e9e29be1e77",
+        "evt_c563f045fc04",
+        "evt_a9cd124b3af0",
+        "evt_837c26138e20",
+        "evt_abc5d3f2f2fe",
+        "evt_7f6b5b62977f",
+        "evt_8822b430b3fe",
+        "evt_52f469b4d4c8",
+        "evt_a4f7f24b2667",
+        "evt_ec7d9d45c5cc",
+        "evt_a23eaa70c6d9",
+        "evt_8cc953a19a9a",
+        "evt_1247c27e87d1",
+        "evt_28c9ba51d6f3",
+        "evt_3fc9a51ffca2",
+        "evt_63fe7d9eca6f",
+        "evt_1a0ca532d245",
+        "evt_7b216f060226",
+        "evt_7aeda902c4d2",
+        "evt_0b724bbe8164",
+        "evt_173f50c6e0a1",
+        "evt_81d6afc3e802",
+        "evt_40a73fa431c8"
+      ]
+    },
+    "FR": {
+      "composite_risk": {
+        "score": 2.46,
+        "live_score": 2.34,
+        "fragility": 0.26,
+        "band": "moderate",
+        "dominant_category": "conflict"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 2.2,
+          "band": "moderate",
+          "active_events": 3,
+          "top_threat": "kinetic_strike"
+        },
+        "civil_unrest": {
+          "score": 0.52,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "mass_protest"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 4,
+      "event_ids": [
+        "evt_03315574f764",
+        "evt_077c613e2221",
+        "evt_029c4bbbe78e",
+        "evt_239f428b6cb3"
+      ]
+    },
+    "MM": {
+      "composite_risk": {
+        "score": 4.05,
+        "live_score": 3.56,
+        "fragility": 0.69,
+        "band": "severe",
+        "dominant_category": "conflict"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.48,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "dengue_climate_lead"
+        },
+        "conflict": {
+          "score": 3.21,
+          "band": "elevated",
+          "active_events": 11,
+          "top_threat": "kinetic_strike"
+        },
+        "civil_unrest": {
+          "score": 1.1,
+          "band": "low",
+          "active_events": 2,
+          "top_threat": "emergency_declared"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 14,
+      "event_ids": [
+        "evt_33d5cdac6a05",
+        "evt_576bd53907a8",
+        "evt_48e60cddd7ad",
+        "evt_2db387d9a972",
+        "evt_370292ad6a5f",
+        "evt_dacb7694ec22",
+        "evt_f913e1d42f6c",
+        "evt_09cb51820df9",
+        "evt_9773f6849c49",
+        "evt_clim_dengue_MM",
+        "evt_288ad0a31539",
+        "evt_543d20535c85",
+        "evt_5f76f72bbdeb",
+        "evt_1ed4329029f5"
+      ]
+    },
     "LB": {
       "composite_risk": {
-        "score": 3.14,
-        "live_score": 2.79,
+        "score": 2.95,
+        "live_score": 2.62,
         "fragility": 0.63,
         "band": "elevated",
         "dominant_category": "conflict"
@@ -37,9 +260,9 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 2.79,
+          "score": 2.62,
           "band": "elevated",
-          "active_events": 6,
+          "active_events": 7,
           "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
@@ -73,21 +296,22 @@
           "top_threat": null
         }
       },
-      "event_count": 6,
+      "event_count": 7,
       "event_ids": [
-        "evt_ed6c6343eebc",
         "evt_0c67085fbe92",
+        "evt_c82587ec8a6b",
+        "evt_c270ed857e04",
         "evt_57f89e484a4b",
         "evt_da241152991a",
         "evt_192aac47d96a",
-        "evt_c82587ec8a6b"
+        "evt_ed6c6343eebc"
       ]
     },
-    "MM": {
+    "UA": {
       "composite_risk": {
-        "score": 2.54,
-        "live_score": 2.23,
-        "fragility": 0.69,
+        "score": 3.12,
+        "live_score": 2.81,
+        "fragility": 0.56,
         "band": "elevated",
         "dominant_category": "conflict"
       },
@@ -99,16 +323,16 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 1.92,
-          "band": "moderate",
-          "active_events": 10,
-          "top_threat": "escalation"
+          "score": 2.69,
+          "band": "elevated",
+          "active_events": 50,
+          "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
-          "score": 1.14,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "emergency_declared"
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
         },
         "transport": {
           "score": 0.0,
@@ -123,10 +347,10 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.0,
+          "score": 0.44,
           "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
+          "active_events": 1,
+          "top_threat": "grid_failure"
         },
         "climate": {
           "score": 0.0,
@@ -135,26 +359,65 @@
           "top_threat": null
         }
       },
-      "event_count": 12,
+      "event_count": 51,
       "event_ids": [
-        "evt_576bd53907a8",
-        "evt_48e60cddd7ad",
-        "evt_2db387d9a972",
-        "evt_370292ad6a5f",
-        "evt_dacb7694ec22",
-        "evt_f913e1d42f6c",
-        "evt_09cb51820df9",
-        "evt_9773f6849c49",
-        "evt_288ad0a31539",
-        "evt_543d20535c85",
-        "evt_5f76f72bbdeb",
-        "evt_1ed4329029f5"
+        "evt_ab1cf9407486",
+        "evt_3564a67c5862",
+        "evt_f694d1114854",
+        "evt_7ce58548b60f",
+        "evt_bb1cefa5275b",
+        "evt_c73431aa2f58",
+        "evt_3866d7b89d2c",
+        "evt_11bf39e410f3",
+        "evt_4e05613ac7d2",
+        "evt_2b292318938a",
+        "evt_838ab04085d4",
+        "evt_68e185cdda03",
+        "evt_6d1103c078d6",
+        "evt_56b8f753e34c",
+        "evt_1441aa2ab7d2",
+        "evt_b7436c815b89",
+        "evt_1e536b33fa43",
+        "evt_6ff165727df4",
+        "evt_4c161e2e7c4a",
+        "evt_9f4807d1cf6e",
+        "evt_c5db54fe734e",
+        "evt_28911bf4c593",
+        "evt_dea1785d4b6b",
+        "evt_651c7152f6a9",
+        "evt_2d8a62ea846e",
+        "evt_bb63b3062ad6",
+        "evt_8d6b041f8394",
+        "evt_9dcf808256ab",
+        "evt_aaa2233fa6ba",
+        "evt_84113ce997e6",
+        "evt_be2726143704",
+        "evt_15d46a2775c2",
+        "evt_2392e12f190c",
+        "evt_b5727b0b705d",
+        "evt_6ffddf21c5cf",
+        "evt_04d4dbb8b1e1",
+        "evt_1401270d821e",
+        "evt_6b3df4c566c5",
+        "evt_73c6dc21a0df",
+        "evt_04d509a1bb7e",
+        "evt_51b9d69c97e1",
+        "evt_e60915596749",
+        "evt_4f1a5e4a271f",
+        "evt_6a5d300db994",
+        "evt_3b452dcc3c88",
+        "evt_5cf2a196f5f3",
+        "evt_1891e805f84f",
+        "evt_8796f38a9686",
+        "evt_d4ca0d2bdcf4",
+        "evt_cee374bb104f",
+        "evt_76717ca6e6a8"
       ]
     },
     "NG": {
       "composite_risk": {
-        "score": 0.8,
-        "live_score": 0.7,
+        "score": 0.79,
+        "live_score": 0.69,
         "fragility": 0.71,
         "band": "low",
         "dominant_category": "health"
@@ -167,13 +430,13 @@
           "top_threat": "dengue_climate_lead"
         },
         "conflict": {
-          "score": 0.48,
+          "score": 0.45,
           "band": "minimal",
           "active_events": 4,
           "top_threat": "military_buildup"
         },
         "civil_unrest": {
-          "score": 0.5,
+          "score": 0.48,
           "band": "minimal",
           "active_events": 2,
           "top_threat": "emergency_declared"
@@ -206,185 +469,19 @@
       "event_count": 8,
       "event_ids": [
         "evt_8450ace2e39b",
-        "evt_ed9e2c98f824",
         "evt_clim_dengue_NG",
         "evt_clim_cholera_NG",
+        "evt_ed9e2c98f824",
         "evt_c6fafaefed32",
         "evt_a5c18491fffa",
         "evt_5fdd64fbb3d3",
         "evt_e324c4edc18f"
       ]
     },
-    "UA": {
-      "composite_risk": {
-        "score": 3.32,
-        "live_score": 2.99,
-        "fragility": 0.56,
-        "band": "elevated",
-        "dominant_category": "conflict"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 2.87,
-          "band": "elevated",
-          "active_events": 50,
-          "top_threat": "kinetic_strike"
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.46,
-          "band": "minimal",
-          "active_events": 1,
-          "top_threat": "grid_failure"
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 51,
-      "event_ids": [
-        "evt_3564a67c5862",
-        "evt_f694d1114854",
-        "evt_7ce58548b60f",
-        "evt_bb1cefa5275b",
-        "evt_c73431aa2f58",
-        "evt_3866d7b89d2c",
-        "evt_11bf39e410f3",
-        "evt_b7436c815b89",
-        "evt_4e05613ac7d2",
-        "evt_2b292318938a",
-        "evt_838ab04085d4",
-        "evt_68e185cdda03",
-        "evt_6d1103c078d6",
-        "evt_56b8f753e34c",
-        "evt_1441aa2ab7d2",
-        "evt_1e536b33fa43",
-        "evt_6ff165727df4",
-        "evt_4c161e2e7c4a",
-        "evt_9f4807d1cf6e",
-        "evt_c5db54fe734e",
-        "evt_28911bf4c593",
-        "evt_ab1cf9407486",
-        "evt_dea1785d4b6b",
-        "evt_651c7152f6a9",
-        "evt_2d8a62ea846e",
-        "evt_bb63b3062ad6",
-        "evt_8d6b041f8394",
-        "evt_9dcf808256ab",
-        "evt_aaa2233fa6ba",
-        "evt_84113ce997e6",
-        "evt_be2726143704",
-        "evt_15d46a2775c2",
-        "evt_2392e12f190c",
-        "evt_b5727b0b705d",
-        "evt_6ffddf21c5cf",
-        "evt_04d4dbb8b1e1",
-        "evt_1401270d821e",
-        "evt_6b3df4c566c5",
-        "evt_73c6dc21a0df",
-        "evt_04d509a1bb7e",
-        "evt_51b9d69c97e1",
-        "evt_e60915596749",
-        "evt_4f1a5e4a271f",
-        "evt_6a5d300db994",
-        "evt_3b452dcc3c88",
-        "evt_5cf2a196f5f3",
-        "evt_1891e805f84f",
-        "evt_8796f38a9686",
-        "evt_d4ca0d2bdcf4",
-        "evt_cee374bb104f",
-        "evt_76717ca6e6a8"
-      ]
-    },
-    "FR": {
-      "composite_risk": {
-        "score": 1.1,
-        "live_score": 1.05,
-        "fragility": 0.26,
-        "band": "low",
-        "dominant_category": "conflict"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.9,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "insurgent_attack"
-        },
-        "civil_unrest": {
-          "score": 0.54,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "mass_protest"
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 3,
-      "event_ids": [
-        "evt_077c613e2221",
-        "evt_029c4bbbe78e",
-        "evt_239f428b6cb3"
-      ]
-    },
     "RU": {
       "composite_risk": {
-        "score": 3.22,
-        "live_score": 2.98,
+        "score": 3.02,
+        "live_score": 2.8,
         "fragility": 0.4,
         "band": "elevated",
         "dominant_category": "conflict"
@@ -397,7 +494,7 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 2.95,
+          "score": 2.77,
           "band": "elevated",
           "active_events": 24,
           "top_threat": "kinetic_strike"
@@ -421,7 +518,7 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.11,
+          "score": 0.1,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "utility_outage"
@@ -435,17 +532,17 @@
       },
       "event_count": 25,
       "event_ids": [
-        "evt_e509c57cff3c",
         "evt_503e2f530e86",
-        "evt_d2bbf6336f1d",
         "evt_6dbda70bbd1f",
         "evt_bcd08049faeb",
         "evt_f33757aeb652",
-        "evt_f3c59a7806ed",
+        "evt_d2bbf6336f1d",
+        "evt_8ccd00bbf86b",
         "evt_c4c9457760fa",
+        "evt_e509c57cff3c",
+        "evt_f3c59a7806ed",
         "evt_2b618a70cdf6",
         "evt_8b0c7243e8bd",
-        "evt_8ccd00bbf86b",
         "evt_129cd8ce3138",
         "evt_8d9235ddf7f4",
         "evt_b29ffa6f5325",
@@ -464,8 +561,8 @@
     },
     "PK": {
       "composite_risk": {
-        "score": 2.86,
-        "live_score": 2.53,
+        "score": 3.16,
+        "live_score": 2.79,
         "fragility": 0.66,
         "band": "elevated",
         "dominant_category": "conflict"
@@ -478,7 +575,7 @@
           "top_threat": "dengue_climate_lead"
         },
         "conflict": {
-          "score": 1.97,
+          "score": 2.25,
           "band": "moderate",
           "active_events": 6,
           "top_threat": "escalation"
@@ -502,7 +599,7 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 1.71,
+          "score": 1.63,
           "band": "moderate",
           "active_events": 2,
           "top_threat": "comms_outage"
@@ -527,97 +624,10 @@
         "evt_16dccbd22221"
       ]
     },
-    "IR": {
-      "composite_risk": {
-        "score": 4.01,
-        "live_score": 3.59,
-        "fragility": 0.59,
-        "band": "severe",
-        "dominant_category": "conflict"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 2.97,
-          "band": "elevated",
-          "active_events": 11,
-          "top_threat": "kinetic_strike"
-        },
-        "civil_unrest": {
-          "score": 0.13,
-          "band": "minimal",
-          "active_events": 4,
-          "top_threat": "protest"
-        },
-        "transport": {
-          "score": 0.97,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "flight_disruption"
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 1.86,
-          "band": "moderate",
-          "active_events": 15,
-          "top_threat": "comms_outage"
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 31,
-      "event_ids": [
-        "evt_aeb6f4aa7744",
-        "evt_51b888b8784a",
-        "evt_a9cd124b3af0",
-        "evt_837c26138e20",
-        "evt_abc5d3f2f2fe",
-        "evt_7f6b5b62977f",
-        "evt_eca2e06b62e3",
-        "evt_dacec1a73a0c",
-        "evt_8d1b1e4722ab",
-        "evt_e8d9dfdf00ce",
-        "evt_244d9584bb9f",
-        "evt_b01e9b20226a",
-        "evt_9330279c0f3e",
-        "evt_8822b430b3fe",
-        "evt_52f469b4d4c8",
-        "evt_a4f7f24b2667",
-        "evt_ec7d9d45c5cc",
-        "evt_a23eaa70c6d9",
-        "evt_d2921090fa73",
-        "evt_8cc953a19a9a",
-        "evt_1247c27e87d1",
-        "evt_28c9ba51d6f3",
-        "evt_3fc9a51ffca2",
-        "evt_63fe7d9eca6f",
-        "evt_1a0ca532d245",
-        "evt_7b216f060226",
-        "evt_7aeda902c4d2",
-        "evt_0b724bbe8164",
-        "evt_173f50c6e0a1",
-        "evt_81d6afc3e802",
-        "evt_40a73fa431c8"
-      ]
-    },
     "SD": {
       "composite_risk": {
-        "score": 2.76,
-        "live_score": 2.39,
+        "score": 2.6,
+        "live_score": 2.25,
         "fragility": 0.78,
         "band": "elevated",
         "dominant_category": "conflict"
@@ -630,7 +640,7 @@
           "top_threat": "cholera_climate_lead"
         },
         "conflict": {
-          "score": 2.26,
+          "score": 2.12,
           "band": "moderate",
           "active_events": 5,
           "top_threat": "insurgent_attack"
@@ -678,8 +688,8 @@
     },
     "PS": {
       "composite_risk": {
-        "score": 4.33,
-        "live_score": 3.84,
+        "score": 4.37,
+        "live_score": 3.87,
         "fragility": 0.64,
         "band": "severe",
         "dominant_category": "conflict"
@@ -692,13 +702,13 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 3.76,
+          "score": 3.79,
           "band": "severe",
-          "active_events": 78,
+          "active_events": 82,
           "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
-          "score": 0.31,
+          "score": 0.3,
           "band": "minimal",
           "active_events": 2,
           "top_threat": "protest"
@@ -728,45 +738,49 @@
           "top_threat": null
         }
       },
-      "event_count": 80,
+      "event_count": 84,
       "event_ids": [
-        "evt_148053f35bce",
         "evt_a20d4850036c",
-        "evt_52ca3ebab178",
-        "evt_e62b9cd95799",
+        "evt_35770aab6394",
+        "evt_148053f35bce",
         "evt_8a98cf46c3c9",
         "evt_6324d57b275c",
         "evt_d0187b81dda7",
-        "evt_7e4e3ba5db4f",
+        "evt_52ca3ebab178",
         "evt_e7ad2054b5bf",
         "evt_30ed9c8e7864",
+        "evt_7e4e3ba5db4f",
         "evt_a9cc45e5dae1",
         "evt_78a71ba3b07f",
         "evt_fd20aab6d9d2",
         "evt_d38a4716ef6c",
+        "evt_c59fc8dc0fe7",
+        "evt_575dc851321c",
         "evt_58169670485b",
         "evt_c1ff91e80f8b",
-        "evt_4a9dac259c5d",
         "evt_1563350e2909",
         "evt_18dc5e1c07c4",
         "evt_be82f7326bf8",
         "evt_73aa65daaa4b",
+        "evt_7fd4ab3c826a",
         "evt_b39072764db5",
         "evt_cc4efdc13657",
         "evt_ed9f02a87acb",
         "evt_83837e55158f",
-        "evt_6b20bd40432a",
         "evt_1d6c526393a5",
         "evt_86d191925659",
+        "evt_6b20bd40432a",
         "evt_9faf42ab2f97",
         "evt_19f77e9cf031",
         "evt_3aa6d5d28759",
         "evt_7daffc9f768d",
-        "evt_a7589beecc21",
         "evt_bc637ec49f15",
         "evt_8bc4e913c113",
         "evt_d829c8bf828b",
         "evt_c28d324eec0d",
+        "evt_e62b9cd95799",
+        "evt_4a9dac259c5d",
+        "evt_a7589beecc21",
         "evt_e9bf7eb4842c",
         "evt_2bb862091adc",
         "evt_f2f3889e3ac3",
@@ -812,10 +826,71 @@
         "evt_c9d010bb5605"
       ]
     },
+    "BD": {
+      "composite_risk": {
+        "score": 4.62,
+        "live_score": 4.11,
+        "fragility": 0.62,
+        "band": "critical",
+        "dominant_category": "conflict"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.59,
+          "band": "low",
+          "active_events": 2,
+          "top_threat": "Measles"
+        },
+        "conflict": {
+          "score": 3.71,
+          "band": "severe",
+          "active_events": 1,
+          "top_threat": "kinetic_strike"
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 1.13,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "border_closure"
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.59,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 5,
+      "event_ids": [
+        "evt_724c8b84b5b1",
+        "evt_h_sig-290add3dcd",
+        "evt_clim_dengue_BD",
+        "evt_db52c99b4a1a",
+        "evt_47f3753dbfd7"
+      ]
+    },
     "NP": {
       "composite_risk": {
-        "score": 4.07,
-        "live_score": 3.71,
+        "score": 3.82,
+        "live_score": 3.48,
         "fragility": 0.49,
         "band": "severe",
         "dominant_category": "conflict"
@@ -828,8 +903,8 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 3.71,
-          "band": "severe",
+          "score": 3.48,
+          "band": "elevated",
           "active_events": 1,
           "top_threat": "kinetic_strike"
         },
@@ -871,21 +946,21 @@
     },
     "YE": {
       "composite_risk": {
-        "score": 3.6,
-        "live_score": 3.1,
+        "score": 3.22,
+        "live_score": 2.77,
         "fragility": 0.81,
-        "band": "severe",
+        "band": "elevated",
         "dominant_category": "conflict"
       },
       "category_breakdown": {
         "health": {
-          "score": 0.54,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "dengue_climate_lead"
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
         },
         "conflict": {
-          "score": 2.95,
+          "score": 2.77,
           "band": "elevated",
           "active_events": 10,
           "top_threat": "kinetic_strike"
@@ -921,16 +996,14 @@
           "top_threat": null
         }
       },
-      "event_count": 12,
+      "event_count": 10,
       "event_ids": [
         "evt_9ea8ca2d7de7",
         "evt_8bbf3ada2750",
         "evt_229991cf8c8b",
-        "evt_0a0b9a633a01",
         "evt_571478640c0c",
         "evt_35caab37e874",
-        "evt_clim_dengue_YE",
-        "evt_clim_cholera_YE",
+        "evt_0a0b9a633a01",
         "evt_d5d9eedb3141",
         "evt_fe41b6cad3be",
         "evt_c9cd395ce108",
@@ -939,24 +1012,24 @@
     },
     "CD": {
       "composite_risk": {
-        "score": 1.75,
-        "live_score": 1.51,
+        "score": 3.16,
+        "live_score": 2.72,
         "fragility": 0.8,
-        "band": "moderate",
+        "band": "elevated",
         "dominant_category": "conflict"
       },
       "category_breakdown": {
         "health": {
-          "score": 0.7,
+          "score": 0.69,
           "band": "low",
           "active_events": 2,
           "top_threat": "Ebola virus disease"
         },
         "conflict": {
-          "score": 1.2,
-          "band": "low",
-          "active_events": 3,
-          "top_threat": "escalation"
+          "score": 2.28,
+          "band": "moderate",
+          "active_events": 4,
+          "top_threat": "armed_clash"
         },
         "civil_unrest": {
           "score": 0.0,
@@ -971,9 +1044,9 @@
           "top_threat": null
         },
         "border": {
-          "score": 0.82,
+          "score": 1.34,
           "band": "low",
-          "active_events": 3,
+          "active_events": 4,
           "top_threat": "entry_restriction"
         },
         "infrastructure": {
@@ -989,13 +1062,15 @@
           "top_threat": null
         }
       },
-      "event_count": 8,
+      "event_count": 10,
       "event_ids": [
+        "evt_e53dac3c3ab7",
         "evt_7b80ca4eb71f",
         "evt_d9d00357e069",
         "evt_6b900947b24d",
         "evt_02e1cd7ea475",
-        "evt_h_sig-4697939657",
+        "evt_acb3ee372d98",
+        "evt_h_sig-6215fa0716",
         "evt_clim_dengue_CD",
         "evt_5d943fa6b0cb",
         "evt_7f53ce8896f9"
@@ -1003,8 +1078,8 @@
     },
     "MY": {
       "composite_risk": {
-        "score": 0.63,
-        "live_score": 0.59,
+        "score": 0.6,
+        "live_score": 0.56,
         "fragility": 0.36,
         "band": "low",
         "dominant_category": "conflict"
@@ -1017,13 +1092,13 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.48,
+          "score": 0.45,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "armed_clash"
         },
         "civil_unrest": {
-          "score": 0.41,
+          "score": 0.4,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "violent_unrest"
@@ -1061,8 +1136,8 @@
     },
     "SA": {
       "composite_risk": {
-        "score": 1.45,
-        "live_score": 1.38,
+        "score": 1.37,
+        "live_score": 1.3,
         "fragility": 0.27,
         "band": "low",
         "dominant_category": "conflict"
@@ -1075,7 +1150,7 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 1.38,
+          "score": 1.3,
           "band": "low",
           "active_events": 2,
           "top_threat": "kinetic_strike"
@@ -1120,7 +1195,7 @@
     "ML": {
       "composite_risk": {
         "score": 0.71,
-        "live_score": 0.56,
+        "live_score": 0.53,
         "fragility": 0.71,
         "band": "low",
         "dominant_category": "conflict"
@@ -1133,7 +1208,7 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.56,
+          "score": 0.53,
           "band": "low",
           "active_events": 3,
           "top_threat": "escalation"
@@ -1178,10 +1253,10 @@
     },
     "SY": {
       "composite_risk": {
-        "score": 0.78,
-        "live_score": 0.36,
+        "score": 3.41,
+        "live_score": 2.95,
         "fragility": 0.78,
-        "band": "low",
+        "band": "elevated",
         "dominant_category": "conflict"
       },
       "category_breakdown": {
@@ -1192,10 +1267,10 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.36,
-          "band": "minimal",
-          "active_events": 5,
-          "top_threat": "armed_clash"
+          "score": 2.95,
+          "band": "elevated",
+          "active_events": 6,
+          "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
           "score": 0.0,
@@ -1228,9 +1303,10 @@
           "top_threat": null
         }
       },
-      "event_count": 5,
+      "event_count": 6,
       "event_ids": [
         "evt_77692cac1f40",
+        "evt_36c3909bafff",
         "evt_0ab71e2bb030",
         "evt_285b0e7099cd",
         "evt_37fd8547a913",
@@ -1239,8 +1315,8 @@
     },
     "BO": {
       "composite_risk": {
-        "score": 0.9,
-        "live_score": 0.82,
+        "score": 1.22,
+        "live_score": 1.12,
         "fragility": 0.46,
         "band": "low",
         "dominant_category": "civil_unrest"
@@ -1259,10 +1335,10 @@
           "top_threat": null
         },
         "civil_unrest": {
-          "score": 0.82,
+          "score": 1.12,
           "band": "low",
           "active_events": 26,
-          "top_threat": "mass_protest"
+          "top_threat": "violent_unrest"
         },
         "transport": {
           "score": 0.0,
@@ -1292,11 +1368,11 @@
       "event_count": 26,
       "event_ids": [
         "evt_fdf79f74b2b6",
-        "evt_16f9751146e1",
         "evt_2c8029502715",
         "evt_aa42a4af204d",
         "evt_c0652af65502",
         "evt_b2f4d1ede773",
+        "evt_16f9751146e1",
         "evt_0a5fd0086fed",
         "evt_48c926102796",
         "evt_521e1fcd13c7",
@@ -1319,10 +1395,146 @@
         "evt_9da51031e1a1"
       ]
     },
+    "GB": {
+      "composite_risk": {
+        "score": 1.31,
+        "live_score": 1.26,
+        "fragility": 0.21,
+        "band": "low",
+        "dominant_category": "civil_unrest"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 1.08,
+          "band": "low",
+          "active_events": 3,
+          "top_threat": "violent_unrest"
+        },
+        "transport": {
+          "score": 0.67,
+          "band": "low",
+          "active_events": 6,
+          "top_threat": "transport_strike"
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 9,
+      "event_ids": [
+        "evt_0062e5bcbb46",
+        "evt_6dc72c08561b",
+        "evt_7e8026546690",
+        "evt_ad0670dba670",
+        "evt_a135b35d6613",
+        "evt_bbbc5882ff2f",
+        "evt_6a62dd994a68",
+        "evt_6ae7e52c4de0",
+        "evt_167dae133abf"
+      ]
+    },
+    "IN": {
+      "composite_risk": {
+        "score": 1.55,
+        "live_score": 1.4,
+        "fragility": 0.53,
+        "band": "moderate",
+        "dominant_category": "infrastructure"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.23,
+          "band": "minimal",
+          "active_events": 3,
+          "top_threat": "escalation"
+        },
+        "civil_unrest": {
+          "score": 0.79,
+          "band": "low",
+          "active_events": 7,
+          "top_threat": "emergency_declared"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 1.11,
+          "band": "low",
+          "active_events": 3,
+          "top_threat": "utility_outage"
+        },
+        "climate": {
+          "score": 0.58,
+          "band": "low",
+          "active_events": 2,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 15,
+      "event_ids": [
+        "evt_efeb789414f9",
+        "evt_a6488aa445af",
+        "evt_625e642822ae",
+        "evt_28412dd19b25",
+        "evt_a874a6f08ca4",
+        "evt_146947711b78",
+        "evt_252af1aa9eb1",
+        "evt_9715e35c615b",
+        "evt_dcacce49b1bd",
+        "evt_6b19e9a1264a",
+        "evt_415e16a10e07",
+        "evt_ac3f629011d0",
+        "evt_d590ac6fc4f3",
+        "evt_458d60f4a435",
+        "evt_fecc65ba6431"
+      ]
+    },
     "CA": {
       "composite_risk": {
-        "score": 0.87,
-        "live_score": 0.82,
+        "score": 0.81,
+        "live_score": 0.77,
         "fragility": 0.28,
         "band": "low",
         "dominant_category": "conflict"
@@ -1335,13 +1547,13 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.65,
+          "score": 0.61,
           "band": "low",
           "active_events": 2,
           "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
-          "score": 0.63,
+          "score": 0.6,
           "band": "low",
           "active_events": 1,
           "top_threat": "emergency_declared"
@@ -1378,10 +1590,68 @@
         "evt_bcd176a757f7"
       ]
     },
+    "EC": {
+      "composite_risk": {
+        "score": 1.07,
+        "live_score": 0.96,
+        "fragility": 0.55,
+        "band": "low",
+        "dominant_category": "civil_unrest"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.96,
+          "band": "low",
+          "active_events": 2,
+          "top_threat": "emergency_declared"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 2,
+      "event_ids": [
+        "evt_03f8641b1de0",
+        "evt_6dce5566e4b1"
+      ]
+    },
     "US": {
       "composite_risk": {
-        "score": 1.21,
-        "live_score": 1.14,
+        "score": 1.18,
+        "live_score": 1.11,
         "fragility": 0.32,
         "band": "low",
         "dominant_category": "climate"
@@ -1400,13 +1670,13 @@
           "top_threat": null
         },
         "civil_unrest": {
-          "score": 0.7,
+          "score": 0.67,
           "band": "low",
           "active_events": 1,
           "top_threat": "violent_unrest"
         },
         "transport": {
-          "score": 0.37,
+          "score": 0.35,
           "band": "minimal",
           "active_events": 3,
           "top_threat": "transport_strike"
@@ -1424,7 +1694,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.91,
+          "score": 0.89,
           "band": "low",
           "active_events": 14,
           "top_threat": "earthquake"
@@ -1435,13 +1705,13 @@
         "evt_07f2d94867ce",
         "evt_0581cff9cbc7",
         "evt_ef95dd2e87b3",
+        "evt_gdacs_1542057_EQ",
+        "evt_gdacs_1542057_EQ",
+        "evt_gdacs_1018546_DR",
+        "evt_gdacs_1018546_DR",
+        "evt_gdacs_1018093_DR",
+        "evt_gdacs_1018093_DR",
         "evt_95681fa10dfc",
-        "evt_gdacs_1542057_EQ",
-        "evt_gdacs_1542057_EQ",
-        "evt_gdacs_1018546_DR",
-        "evt_gdacs_1018546_DR",
-        "evt_gdacs_1018093_DR",
-        "evt_gdacs_1018093_DR",
         "evt_03fd29a4d3c2",
         "evt_27c715e6071e",
         "evt_e309bf0dd072",
@@ -1454,8 +1724,8 @@
     },
     "VE": {
       "composite_risk": {
-        "score": 0.74,
-        "live_score": 0.66,
+        "score": 0.72,
+        "live_score": 0.64,
         "fragility": 0.59,
         "band": "low",
         "dominant_category": "civil_unrest"
@@ -1474,9 +1744,9 @@
           "top_threat": null
         },
         "civil_unrest": {
-          "score": 0.66,
+          "score": 0.64,
           "band": "low",
-          "active_events": 17,
+          "active_events": 18,
           "top_threat": "protest"
         },
         "transport": {
@@ -1504,17 +1774,18 @@
           "top_threat": null
         }
       },
-      "event_count": 17,
+      "event_count": 18,
       "event_ids": [
         "evt_85a4e2fb22cd",
         "evt_32dddc5ea67a",
         "evt_b54bb94c74f4",
         "evt_c27edf6e9578",
         "evt_b7d29890a237",
+        "evt_2dbd31053cc7",
         "evt_5b6230cb4931",
-        "evt_0af22b47b19f",
         "evt_b92df8b4b520",
         "evt_9b4248f3ad0d",
+        "evt_0af22b47b19f",
         "evt_6151ffaa27ab",
         "evt_8c728afd4c00",
         "evt_aa7a79a75964",
@@ -1525,10 +1796,67 @@
         "evt_67ffac846df9"
       ]
     },
+    "VN": {
+      "composite_risk": {
+        "score": 0.64,
+        "live_score": 0.59,
+        "fragility": 0.4,
+        "band": "low",
+        "dominant_category": "civil_unrest"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.59,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "protest"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_bcdd8c4e0498"
+      ]
+    },
     "GH": {
       "composite_risk": {
-        "score": 0.7,
-        "live_score": 0.64,
+        "score": 0.68,
+        "live_score": 0.62,
         "fragility": 0.46,
         "band": "low",
         "dominant_category": "civil_unrest"
@@ -1541,13 +1869,13 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.18,
+          "score": 0.17,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
-          "score": 0.59,
+          "score": 0.57,
           "band": "low",
           "active_events": 3,
           "top_threat": "protest"
@@ -1587,8 +1915,8 @@
     },
     "IT": {
       "composite_risk": {
-        "score": 1.58,
-        "live_score": 1.49,
+        "score": 1.51,
+        "live_score": 1.42,
         "fragility": 0.3,
         "band": "moderate",
         "dominant_category": "transport"
@@ -1613,7 +1941,7 @@
           "top_threat": null
         },
         "transport": {
-          "score": 1.27,
+          "score": 1.21,
           "band": "low",
           "active_events": 8,
           "top_threat": "transport_strike"
@@ -1631,7 +1959,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.81,
+          "score": 0.79,
           "band": "low",
           "active_events": 2,
           "top_threat": "earthquake"
@@ -1653,8 +1981,8 @@
     },
     "DE": {
       "composite_risk": {
-        "score": 0.94,
-        "live_score": 0.89,
+        "score": 0.89,
+        "live_score": 0.85,
         "fragility": 0.26,
         "band": "low",
         "dominant_category": "transport"
@@ -1679,7 +2007,7 @@
           "top_threat": null
         },
         "transport": {
-          "score": 0.72,
+          "score": 0.69,
           "band": "low",
           "active_events": 1,
           "top_threat": "transport_strike"
@@ -1697,7 +2025,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.62,
+          "score": 0.6,
           "band": "low",
           "active_events": 2,
           "top_threat": "drought"
@@ -1710,76 +2038,12 @@
         "evt_gdacs_1018332_DR"
       ]
     },
-    "GB": {
-      "composite_risk": {
-        "score": 0.88,
-        "live_score": 0.84,
-        "fragility": 0.21,
-        "band": "low",
-        "dominant_category": "transport"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.53,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "emergency_declared"
-        },
-        "transport": {
-          "score": 0.7,
-          "band": "low",
-          "active_events": 6,
-          "top_threat": "transport_strike"
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 8,
-      "event_ids": [
-        "evt_6dc72c08561b",
-        "evt_7e8026546690",
-        "evt_ad0670dba670",
-        "evt_a135b35d6613",
-        "evt_bbbc5882ff2f",
-        "evt_6a62dd994a68",
-        "evt_6ae7e52c4de0",
-        "evt_167dae133abf"
-      ]
-    },
     "KH": {
       "composite_risk": {
-        "score": 2.57,
-        "live_score": 2.33,
+        "score": 2.49,
+        "live_score": 2.26,
         "fragility": 0.51,
-        "band": "elevated",
+        "band": "moderate",
         "dominant_category": "border"
       },
       "category_breakdown": {
@@ -1808,7 +2072,7 @@
           "top_threat": null
         },
         "border": {
-          "score": 2.1,
+          "score": 2.03,
           "band": "moderate",
           "active_events": 1,
           "top_threat": "border_closure"
@@ -1834,8 +2098,8 @@
     },
     "ID": {
       "composite_risk": {
-        "score": 1.61,
-        "live_score": 1.47,
+        "score": 1.57,
+        "live_score": 1.44,
         "fragility": 0.46,
         "band": "moderate",
         "dominant_category": "climate"
@@ -1872,13 +2136,13 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.61,
+          "score": 0.58,
           "band": "low",
           "active_events": 3,
           "top_threat": "utility_outage"
         },
         "climate": {
-          "score": 1.25,
+          "score": 1.22,
           "band": "low",
           "active_events": 7,
           "top_threat": "earthquake"
@@ -1886,93 +2150,23 @@
       },
       "event_count": 11,
       "event_ids": [
-        "evt_bdc841a7403e",
+        "evt_f0f518ee88e7",
         "evt_3c9e1d740720",
         "evt_clim_dengue_ID",
         "evt_gdacs_1542484_EQ",
         "evt_gdacs_1542484_EQ",
         "evt_gdacs_1018545_DR",
         "evt_gdacs_1018545_DR",
-        "evt_f0f518ee88e7",
+        "evt_bdc841a7403e",
         "evt_9aa7fa718447",
         "evt_8b5ad1114ad4",
         "evt_3a31e64aa274"
       ]
     },
-    "IN": {
-      "composite_risk": {
-        "score": 1.6,
-        "live_score": 1.45,
-        "fragility": 0.53,
-        "band": "moderate",
-        "dominant_category": "infrastructure"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.25,
-          "band": "minimal",
-          "active_events": 3,
-          "top_threat": "escalation"
-        },
-        "civil_unrest": {
-          "score": 0.76,
-          "band": "low",
-          "active_events": 6,
-          "top_threat": "emergency_declared"
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 1.16,
-          "band": "low",
-          "active_events": 3,
-          "top_threat": "utility_outage"
-        },
-        "climate": {
-          "score": 0.6,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 14,
-      "event_ids": [
-        "evt_a6488aa445af",
-        "evt_625e642822ae",
-        "evt_28412dd19b25",
-        "evt_a874a6f08ca4",
-        "evt_146947711b78",
-        "evt_252af1aa9eb1",
-        "evt_9715e35c615b",
-        "evt_dcacce49b1bd",
-        "evt_6b19e9a1264a",
-        "evt_415e16a10e07",
-        "evt_ac3f629011d0",
-        "evt_d590ac6fc4f3",
-        "evt_458d60f4a435",
-        "evt_fecc65ba6431"
-      ]
-    },
     "CU": {
       "composite_risk": {
-        "score": 1.64,
-        "live_score": 1.53,
+        "score": 1.73,
+        "live_score": 1.62,
         "fragility": 0.35,
         "band": "moderate",
         "dominant_category": "infrastructure"
@@ -2009,26 +2203,27 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 1.26,
+          "score": 1.36,
           "band": "low",
-          "active_events": 14,
+          "active_events": 15,
           "top_threat": "grid_failure"
         },
         "climate": {
-          "score": 1.01,
+          "score": 0.98,
           "band": "low",
           "active_events": 2,
           "top_threat": "tropical_cyclone"
         }
       },
-      "event_count": 16,
+      "event_count": 17,
       "event_ids": [
+        "evt_691272518285",
         "evt_adb4ac3b9d9d",
         "evt_0b4116015831",
+        "evt_a57d89b5d364",
         "evt_164561dbc955",
         "evt_7fb0020b55af",
         "evt_d96aa4ed0ffc",
-        "evt_691272518285",
         "evt_c47b05390063",
         "evt_58d079368b9f",
         "evt_1c9c607a0ed2",
@@ -2043,8 +2238,8 @@
     },
     "JP": {
       "composite_risk": {
-        "score": 0.64,
-        "live_score": 0.61,
+        "score": 0.63,
+        "live_score": 0.6,
         "fragility": 0.21,
         "band": "low",
         "dominant_category": "climate"
@@ -2087,7 +2282,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.61,
+          "score": 0.6,
           "band": "low",
           "active_events": 17,
           "top_threat": "earthquake"
@@ -2098,9 +2293,9 @@
         "evt_516b083ae8bb",
         "evt_d4d546f14ecc",
         "evt_e049c8438af8",
-        "evt_b976d46415bd",
         "evt_5469440bed2e",
         "evt_2c4510626add",
+        "evt_b976d46415bd",
         "evt_586875077bb2",
         "evt_8e31bfdbcccc",
         "evt_827a112b720e",
@@ -2116,8 +2311,8 @@
     },
     "UZ": {
       "composite_risk": {
-        "score": 0.64,
-        "live_score": 0.6,
+        "score": 0.62,
+        "live_score": 0.58,
         "fragility": 0.36,
         "band": "low",
         "dominant_category": "climate"
@@ -2160,7 +2355,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.6,
+          "score": 0.58,
           "band": "low",
           "active_events": 2,
           "top_threat": "earthquake"
@@ -2174,8 +2369,8 @@
     },
     "TR": {
       "composite_risk": {
-        "score": 0.71,
-        "live_score": 0.64,
+        "score": 0.7,
+        "live_score": 0.63,
         "fragility": 0.54,
         "band": "low",
         "dominant_category": "climate"
@@ -2218,7 +2413,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.64,
+          "score": 0.63,
           "band": "low",
           "active_events": 7,
           "top_threat": "earthquake"
@@ -2237,8 +2432,8 @@
     },
     "PL": {
       "composite_risk": {
-        "score": 1.39,
-        "live_score": 1.32,
+        "score": 1.35,
+        "live_score": 1.29,
         "fragility": 0.25,
         "band": "low",
         "dominant_category": "climate"
@@ -2281,7 +2476,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 1.32,
+          "score": 1.29,
           "band": "low",
           "active_events": 1,
           "top_threat": "earthquake"
@@ -2294,8 +2489,8 @@
     },
     "AR": {
       "composite_risk": {
-        "score": 1.01,
-        "live_score": 0.94,
+        "score": 0.98,
+        "live_score": 0.91,
         "fragility": 0.37,
         "band": "low",
         "dominant_category": "climate"
@@ -2338,7 +2533,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.94,
+          "score": 0.91,
           "band": "low",
           "active_events": 6,
           "top_threat": "earthquake"
@@ -2354,26 +2549,26 @@
         "evt_7f2b5d63fb04"
       ]
     },
-    "PH": {
+    "CN": {
       "composite_risk": {
-        "score": 1.32,
-        "live_score": 1.19,
-        "fragility": 0.53,
+        "score": 0.68,
+        "live_score": 0.64,
+        "fragility": 0.29,
         "band": "low",
-        "dominant_category": "health"
+        "dominant_category": "climate"
       },
       "category_breakdown": {
         "health": {
-          "score": 0.91,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "dengue_climate_lead"
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
         },
         "conflict": {
-          "score": 0.41,
+          "score": 0.29,
           "band": "minimal",
-          "active_events": 1,
-          "top_threat": "insurgent_attack"
+          "active_events": 2,
+          "top_threat": "kinetic_strike"
         },
         "civil_unrest": {
           "score": 0.0,
@@ -2394,43 +2589,39 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.11,
+          "score": 0.0,
           "band": "minimal",
-          "active_events": 1,
-          "top_threat": "utility_outage"
+          "active_events": 0,
+          "top_threat": null
         },
         "climate": {
-          "score": 0.83,
+          "score": 0.56,
           "band": "low",
-          "active_events": 7,
+          "active_events": 4,
           "top_threat": "earthquake"
         }
       },
-      "event_count": 10,
+      "event_count": 6,
       "event_ids": [
-        "evt_beac67b62946",
-        "evt_clim_dengue_PH",
-        "evt_gdacs_1103880_FL",
-        "evt_gdacs_1103880_FL",
-        "evt_gdacs_1103880_FL",
-        "evt_gdacs_1542305_EQ",
-        "evt_gdacs_1542305_EQ",
-        "evt_5361430c7d3d",
-        "evt_ff26dcffb90d",
-        "evt_9653b75db994"
+        "evt_a365626f9061",
+        "evt_d8f9e41729de",
+        "evt_b740008c160d",
+        "evt_882ce96f0c30",
+        "evt_cb91db6deca8",
+        "evt_b4e8c649cc35"
       ]
     },
     "UG": {
       "composite_risk": {
-        "score": 0.82,
-        "live_score": 0.73,
+        "score": 0.81,
+        "live_score": 0.72,
         "fragility": 0.65,
         "band": "low",
         "dominant_category": "health"
       },
       "category_breakdown": {
         "health": {
-          "score": 0.73,
+          "score": 0.72,
           "band": "low",
           "active_events": 1,
           "top_threat": "Ebola virus disease"
@@ -2474,67 +2665,7 @@
       },
       "event_count": 1,
       "event_ids": [
-        "evt_h_sig-b31635ace1"
-      ]
-    },
-    "BD": {
-      "composite_risk": {
-        "score": 1.58,
-        "live_score": 1.41,
-        "fragility": 0.62,
-        "band": "moderate",
-        "dominant_category": "border"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.6,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "Measles"
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 1.17,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "border_closure"
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.61,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 4,
-      "event_ids": [
-        "evt_h_sig-f5c179f9ae",
-        "evt_clim_dengue_BD",
-        "evt_db52c99b4a1a",
-        "evt_47f3753dbfd7"
+        "evt_h_sig-1b4cd5b304"
       ]
     },
     "TH": {
@@ -2553,7 +2684,7 @@
           "top_threat": "dengue_climate_lead"
         },
         "conflict": {
-          "score": 0.12,
+          "score": 0.11,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "escalation"
@@ -2593,6 +2724,129 @@
       "event_ids": [
         "evt_clim_dengue_TH",
         "evt_34f97ce5b7b5"
+      ]
+    },
+    "PH": {
+      "composite_risk": {
+        "score": 1.32,
+        "live_score": 1.19,
+        "fragility": 0.53,
+        "band": "low",
+        "dominant_category": "health"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.92,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "dengue_climate_lead"
+        },
+        "conflict": {
+          "score": 0.39,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "insurgent_attack"
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.1,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "utility_outage"
+        },
+        "climate": {
+          "score": 0.81,
+          "band": "low",
+          "active_events": 7,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 10,
+      "event_ids": [
+        "evt_clim_dengue_PH",
+        "evt_gdacs_1103880_FL",
+        "evt_gdacs_1103880_FL",
+        "evt_gdacs_1103880_FL",
+        "evt_gdacs_1542305_EQ",
+        "evt_gdacs_1542305_EQ",
+        "evt_beac67b62946",
+        "evt_5361430c7d3d",
+        "evt_ff26dcffb90d",
+        "evt_9653b75db994"
+      ]
+    },
+    "BR": {
+      "composite_risk": {
+        "score": 0.52,
+        "live_score": 0.47,
+        "fragility": 0.51,
+        "band": "low",
+        "dominant_category": "health"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.47,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "dengue_climate_lead"
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_clim_dengue_BR"
       ]
     },
     "ET": {
@@ -2712,14 +2966,14 @@
     "HT": {
       "composite_risk": {
         "score": 0.75,
-        "live_score": 0.45,
+        "live_score": 0.44,
         "fragility": 0.75,
         "band": "low",
         "dominant_category": "health"
       },
       "category_breakdown": {
         "health": {
-          "score": 0.45,
+          "score": 0.44,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "cholera_climate_lead"
@@ -2825,8 +3079,8 @@
     },
     "IQ": {
       "composite_risk": {
-        "score": 0.93,
-        "live_score": 0.83,
+        "score": 0.92,
+        "live_score": 0.82,
         "fragility": 0.58,
         "band": "low",
         "dominant_category": "infrastructure"
@@ -2863,7 +3117,7 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.83,
+          "score": 0.82,
           "band": "low",
           "active_events": 2,
           "top_threat": "internet_outage"
@@ -2883,655 +3137,9 @@
     },
     "TM": {
       "composite_risk": {
-        "score": 0.66,
-        "live_score": 0.62,
-        "fragility": 0.29,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.62,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "drought"
-        }
-      },
-      "event_count": 2,
-      "event_ids": [
-        "evt_gdacs_1017535_DR",
-        "evt_gdacs_1017535_DR"
-      ]
-    },
-    "AU": {
-      "composite_risk": {
-        "score": 0.69,
-        "live_score": 0.66,
-        "fragility": 0.24,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.66,
-          "band": "low",
-          "active_events": 4,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 4,
-      "event_ids": [
-        "evt_gdacs_1018457_DR",
-        "evt_gdacs_1018457_DR",
-        "evt_b7f8d1cb7afe",
-        "evt_02002e4c02b9"
-      ]
-    },
-    "MG": {
-      "composite_risk": {
-        "score": 0.99,
-        "live_score": 0.89,
-        "fragility": 0.58,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.89,
-          "band": "low",
-          "active_events": 3,
-          "top_threat": "drought"
-        }
-      },
-      "event_count": 3,
-      "event_ids": [
-        "evt_gdacs_1018431_DR",
-        "evt_gdacs_1018431_DR",
-        "evt_a8f0cd925886"
-      ]
-    },
-    "AO": {
-      "composite_risk": {
-        "score": 1.03,
-        "live_score": 0.92,
-        "fragility": 0.6,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.92,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "drought"
-        }
-      },
-      "event_count": 2,
-      "event_ids": [
-        "evt_gdacs_1018344_DR",
-        "evt_gdacs_1018344_DR"
-      ]
-    },
-    "EC": {
-      "composite_risk": {
-        "score": 1.11,
-        "live_score": 1.0,
-        "fragility": 0.55,
-        "band": "low",
-        "dominant_category": "civil_unrest"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 1.0,
-          "band": "low",
-          "active_events": 2,
-          "top_threat": "emergency_declared"
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 2,
-      "event_ids": [
-        "evt_03f8641b1de0",
-        "evt_6dce5566e4b1"
-      ]
-    },
-    "SG": {
-      "composite_risk": {
-        "score": 1.38,
-        "live_score": 1.36,
-        "fragility": 0.07,
-        "band": "low",
-        "dominant_category": "civil_unrest"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 1.36,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "violent_unrest"
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 1,
-      "event_ids": [
-        "evt_ebffdc74dc45"
-      ]
-    },
-    "CN": {
-      "composite_risk": {
-        "score": 0.69,
-        "live_score": 0.65,
-        "fragility": 0.29,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.31,
-          "band": "minimal",
-          "active_events": 2,
-          "top_threat": "kinetic_strike"
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.57,
-          "band": "low",
-          "active_events": 3,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 5,
-      "event_ids": [
-        "evt_d8f9e41729de",
-        "evt_b740008c160d",
-        "evt_882ce96f0c30",
-        "evt_cb91db6deca8",
-        "evt_b4e8c649cc35"
-      ]
-    },
-    "PE": {
-      "composite_risk": {
-        "score": 0.67,
-        "live_score": 0.61,
-        "fragility": 0.52,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.61,
-          "band": "low",
-          "active_events": 8,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 8,
-      "event_ids": [
-        "evt_c2e510570b19",
-        "evt_6d517fff6fd5",
-        "evt_12e6196f93af",
-        "evt_c84f5bb42f49",
-        "evt_4520813c0d7b",
-        "evt_37d9fe787b7e",
-        "evt_23563be4b08f",
-        "evt_91b2252fda2b"
-      ]
-    },
-    "PG": {
-      "composite_risk": {
-        "score": 0.88,
-        "live_score": 0.78,
-        "fragility": 0.63,
-        "band": "low",
-        "dominant_category": "climate"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.78,
-          "band": "low",
-          "active_events": 1,
-          "top_threat": "earthquake"
-        }
-      },
-      "event_count": 1,
-      "event_ids": [
-        "evt_a7fb3a6df859"
-      ]
-    },
-    "KE": {
-      "composite_risk": {
-        "score": 0.62,
-        "live_score": 0.14,
-        "fragility": 0.62,
-        "band": "low",
-        "dominant_category": "civil_unrest"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.14,
-          "band": "minimal",
-          "active_events": 1,
-          "top_threat": "protest"
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 1,
-      "event_ids": [
-        "evt_6b74febf6081"
-      ]
-    },
-    "AT": {
-      "composite_risk": {
-        "score": 0.24,
-        "live_score": 0.17,
-        "fragility": 0.24,
-        "band": "minimal",
-        "dominant_category": "transport"
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.17,
-          "band": "minimal",
-          "active_events": 1,
-          "top_threat": "transport_strike"
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 1,
-      "event_ids": [
-        "evt_02e6e0087d63"
-      ]
-    },
-    "MX": {
-      "composite_risk": {
-        "score": 0.66,
+        "score": 0.63,
         "live_score": 0.6,
-        "fragility": 0.48,
+        "fragility": 0.29,
         "band": "low",
         "dominant_category": "climate"
       },
@@ -3575,6 +3183,533 @@
         "climate": {
           "score": 0.6,
           "band": "low",
+          "active_events": 2,
+          "top_threat": "drought"
+        }
+      },
+      "event_count": 2,
+      "event_ids": [
+        "evt_gdacs_1017535_DR",
+        "evt_gdacs_1017535_DR"
+      ]
+    },
+    "AU": {
+      "composite_risk": {
+        "score": 0.67,
+        "live_score": 0.64,
+        "fragility": 0.24,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.64,
+          "band": "low",
+          "active_events": 4,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 4,
+      "event_ids": [
+        "evt_gdacs_1018457_DR",
+        "evt_gdacs_1018457_DR",
+        "evt_b7f8d1cb7afe",
+        "evt_02002e4c02b9"
+      ]
+    },
+    "MG": {
+      "composite_risk": {
+        "score": 0.96,
+        "live_score": 0.86,
+        "fragility": 0.58,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.86,
+          "band": "low",
+          "active_events": 3,
+          "top_threat": "drought"
+        }
+      },
+      "event_count": 3,
+      "event_ids": [
+        "evt_gdacs_1018431_DR",
+        "evt_gdacs_1018431_DR",
+        "evt_a8f0cd925886"
+      ]
+    },
+    "AO": {
+      "composite_risk": {
+        "score": 1.01,
+        "live_score": 0.9,
+        "fragility": 0.6,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.9,
+          "band": "low",
+          "active_events": 2,
+          "top_threat": "drought"
+        }
+      },
+      "event_count": 2,
+      "event_ids": [
+        "evt_gdacs_1018344_DR",
+        "evt_gdacs_1018344_DR"
+      ]
+    },
+    "SG": {
+      "composite_risk": {
+        "score": 1.33,
+        "live_score": 1.31,
+        "fragility": 0.07,
+        "band": "low",
+        "dominant_category": "civil_unrest"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 1.31,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "violent_unrest"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_ebffdc74dc45"
+      ]
+    },
+    "PE": {
+      "composite_risk": {
+        "score": 0.65,
+        "live_score": 0.59,
+        "fragility": 0.52,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.59,
+          "band": "low",
+          "active_events": 8,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 8,
+      "event_ids": [
+        "evt_c2e510570b19",
+        "evt_6d517fff6fd5",
+        "evt_12e6196f93af",
+        "evt_c84f5bb42f49",
+        "evt_4520813c0d7b",
+        "evt_37d9fe787b7e",
+        "evt_23563be4b08f",
+        "evt_91b2252fda2b"
+      ]
+    },
+    "PG": {
+      "composite_risk": {
+        "score": 0.84,
+        "live_score": 0.75,
+        "fragility": 0.63,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.75,
+          "band": "low",
+          "active_events": 1,
+          "top_threat": "earthquake"
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_a7fb3a6df859"
+      ]
+    },
+    "KE": {
+      "composite_risk": {
+        "score": 0.62,
+        "live_score": 0.13,
+        "fragility": 0.62,
+        "band": "low",
+        "dominant_category": "civil_unrest"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.13,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "protest"
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_6b74febf6081"
+      ]
+    },
+    "AT": {
+      "composite_risk": {
+        "score": 0.24,
+        "live_score": 0.16,
+        "fragility": 0.24,
+        "band": "minimal",
+        "dominant_category": "transport"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.16,
+          "band": "minimal",
+          "active_events": 1,
+          "top_threat": "transport_strike"
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        }
+      },
+      "event_count": 1,
+      "event_ids": [
+        "evt_02e6e0087d63"
+      ]
+    },
+    "MX": {
+      "composite_risk": {
+        "score": 0.64,
+        "live_score": 0.58,
+        "fragility": 0.48,
+        "band": "low",
+        "dominant_category": "climate"
+      },
+      "category_breakdown": {
+        "health": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "conflict": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "civil_unrest": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "transport": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "border": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "infrastructure": {
+          "score": 0.0,
+          "band": "minimal",
+          "active_events": 0,
+          "top_threat": null
+        },
+        "climate": {
+          "score": 0.58,
+          "band": "low",
           "active_events": 3,
           "top_threat": "earthquake"
         }
@@ -3588,8 +3723,8 @@
     },
     "VU": {
       "composite_risk": {
-        "score": 0.57,
-        "live_score": 0.52,
+        "score": 0.55,
+        "live_score": 0.5,
         "fragility": 0.45,
         "band": "low",
         "dominant_category": "climate"
@@ -3632,8 +3767,8 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.52,
-          "band": "low",
+          "score": 0.5,
+          "band": "minimal",
           "active_events": 1,
           "top_threat": "earthquake"
         }
@@ -3646,7 +3781,7 @@
     "ZA": {
       "composite_risk": {
         "score": 0.51,
-        "live_score": 0.1,
+        "live_score": 0.09,
         "fragility": 0.51,
         "band": "low",
         "dominant_category": "conflict"
@@ -3659,7 +3794,7 @@
           "top_threat": null
         },
         "conflict": {
-          "score": 0.1,
+          "score": 0.09,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "military_buildup"
@@ -3703,7 +3838,7 @@
     "LK": {
       "composite_risk": {
         "score": 0.42,
-        "live_score": 0.31,
+        "live_score": 0.3,
         "fragility": 0.42,
         "band": "minimal",
         "dominant_category": "infrastructure"
@@ -3740,7 +3875,7 @@
           "top_threat": null
         },
         "infrastructure": {
-          "score": 0.31,
+          "score": 0.3,
           "band": "minimal",
           "active_events": 1,
           "top_threat": "utility_outage"
@@ -3759,8 +3894,8 @@
     },
     "TW": {
       "composite_risk": {
-        "score": 0.61,
-        "live_score": 0.61,
+        "score": 0.59,
+        "live_score": 0.59,
         "fragility": 0.0,
         "band": "low",
         "dominant_category": "climate"
@@ -3803,7 +3938,7 @@
           "top_threat": null
         },
         "climate": {
-          "score": 0.61,
+          "score": 0.59,
           "band": "low",
           "active_events": 1,
           "top_threat": "tropical_cyclone"
@@ -5158,62 +5293,6 @@
       "event_ids": [],
       "baseline": true
     },
-    "BR": {
-      "composite_risk": {
-        "score": 0.51,
-        "live_score": 0.0,
-        "fragility": 0.51,
-        "band": "low",
-        "dominant_category": null
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 0,
-      "event_ids": [],
-      "baseline": true
-    },
     "CO": {
       "composite_risk": {
         "score": 0.53,
@@ -5835,62 +5914,6 @@
         "score": 0.43,
         "live_score": 0.0,
         "fragility": 0.43,
-        "band": "minimal",
-        "dominant_category": null
-      },
-      "category_breakdown": {
-        "health": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "conflict": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "civil_unrest": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "transport": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "border": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "infrastructure": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        },
-        "climate": {
-          "score": 0.0,
-          "band": "minimal",
-          "active_events": 0,
-          "top_threat": null
-        }
-      },
-      "event_count": 0,
-      "event_ids": [],
-      "baseline": true
-    },
-    "VN": {
-      "composite_risk": {
-        "score": 0.4,
-        "live_score": 0.0,
-        "fragility": 0.4,
         "band": "minimal",
         "dominant_category": null
       },
