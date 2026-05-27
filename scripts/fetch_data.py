@@ -634,50 +634,66 @@ def fetch_reliefweb() -> list:
 # ---------------------------------------------------------------------------
 
 def fetch_who_don_json() -> list:
-    """WHO Disease Outbreak News — Sitefinity CMS internal endpoint."""
+    """WHO Disease Outbreak News — Sitefinity CMS internal endpoint.
+
+    Only endpoint 1 (news/diseaseoutbreaknews) is used.  The former
+    fallback endpoint (emergencies/diseaseoutbreaknews) returns a random
+    historical archive (events from 1996–2015) with no date ordering —
+    it was causing stale/garbage events to appear in the feed.
+    """
     print("Fetching WHO DON JSON …", flush=True)
-    endpoints = [
-        "https://www.who.int/api/news/diseaseoutbreaknews?sf_culture=en&$top=50&$orderby=PublicationDateAndTime+desc",
-        "https://www.who.int/api/emergencies/diseaseoutbreaknews?sf_culture=en&$top=50",
-    ]
-    for url in endpoints:
-        try:
-            req = urllib.request.Request(url, headers={
-                "User-Agent": "Mozilla/5.0 Vigilo/2.0",
-                "Accept": "application/json",
-            })
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                raw = resp.read()
-                data = json.loads(raw)
-            items = data if isinstance(data, list) else data.get("value", data.get("Items", []))
-            if not items:
+    url = "https://www.who.int/api/news/diseaseoutbreaknews?sf_culture=en&$top=50&$orderby=PublicationDateAndTime+desc"
+    cutoff = datetime.now(timezone.utc) - timedelta(days=180)
+    try:
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 Vigilo/2.0",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read()
+            data = json.loads(raw)
+        items = data if isinstance(data, list) else data.get("value", data.get("Items", []))
+        if not items:
+            print("  ✗ WHO DON JSON: empty response", flush=True)
+            return []
+        results = []
+        skipped_old = 0
+        for item in items[:50]:
+            title   = item.get("Title", item.get("ItemDefaultTitle", ""))
+            country = item.get("TitleSuffix", item.get("Countries", ""))
+            link    = item.get("ItemDefaultUrl", item.get("Url", ""))
+            date    = item.get("PublicationDateAndTime", item.get("Date", ""))
+            summary = re.sub(r"<[^>]+>", " ", item.get("Summary", item.get("Content", title)))[:400]
+            if not title:
                 continue
-            results = []
-            for item in items[:50]:
-                title   = item.get("Title", item.get("ItemDefaultTitle", ""))
-                country = item.get("TitleSuffix", item.get("Countries", ""))
-                link    = item.get("ItemDefaultUrl", item.get("Url", ""))
-                date    = item.get("PublicationDateAndTime", item.get("Date", ""))
-                summary = re.sub(r"<[^>]+>", " ", item.get("Summary", item.get("Content", title)))[:400]
-                if not title:
-                    continue
-                if isinstance(link, str) and not link.startswith("http"):
-                    link = "https://www.who.int" + link
-                results.append({
-                    "source": "WHO-DON",
-                    "title": title,
-                    "description": summary,
-                    "country_hint": country if isinstance(country, str) else "",
-                    "link": link,
-                    "pub_date": date,
-                })
-            print(f"  → {len(results)} WHO DON items (JSON)", flush=True)
-            return results
-        except Exception as e:
-            print(f"  ⚠ WHO DON JSON ({url[:50]}…): {e}", flush=True)
-            continue
-    print("  ✗ WHO DON JSON: all endpoints failed, falling back to RSS", flush=True)
-    return []
+            # Skip events older than 180 days — guards against API returning
+            # historical/archive data (e.g. emergencies endpoint fallback was
+            # returning 2001 events).
+            if date:
+                try:
+                    pub_dt = datetime.fromisoformat(date.replace("Z", "+00:00"))
+                    if pub_dt < cutoff:
+                        skipped_old += 1
+                        continue
+                except ValueError:
+                    pass
+            if isinstance(link, str) and not link.startswith("http"):
+                link = "https://www.who.int" + link
+            results.append({
+                "source": "WHO-DON",
+                "title": title,
+                "description": summary,
+                "country_hint": country if isinstance(country, str) else "",
+                "link": link,
+                "pub_date": date,
+            })
+        if skipped_old:
+            print(f"  ⚠ WHO DON: skipped {skipped_old} events older than 180 days", flush=True)
+        print(f"  → {len(results)} WHO DON items (JSON)", flush=True)
+        return results
+    except Exception as e:
+        print(f"  ✗ WHO DON JSON: {e}", flush=True)
+        return []
 
 # ---------------------------------------------------------------------------
 # Source 3: HealthMap API (optional — requires free API key)
