@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-27T15:57:41.864273+00:00",
+    "generated_at": "2026-05-27T20:29:45.590027+00:00",
     "horizon_days": 7,
     "model": "trend+exogenous v0 (LightGBM-quantile upgrade pending history accrual)",
     "countries": 115,
@@ -25,10 +25,10 @@
       ]
     },
     "MM": {
-      "composite_now": 3.13,
-      "proj_7d": 3.38,
+      "composite_now": 2.95,
+      "proj_7d": 3.13,
       "band_7d": "elevated",
-      "delta": 0.25,
+      "delta": 0.18,
       "trend": "rising",
       "confidence": "indicative",
       "regime_shift": false,
@@ -37,25 +37,25 @@
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.63
-        },
-        {
-          "factor": "trend",
-          "detail": "rising 8-day trend",
-          "impact": 0.18
+          "impact": 0.59
         },
         {
           "factor": "climate",
           "detail": "dengue suitability elevated",
+          "impact": 0.11
+        },
+        {
+          "factor": "trend",
+          "detail": "rising 8-day trend",
           "impact": 0.07
         }
       ]
     },
     "UA": {
-      "composite_now": 2.71,
-      "proj_7d": 1.78,
+      "composite_now": 2.55,
+      "proj_7d": 1.52,
       "band_7d": "moderate",
-      "delta": -0.93,
+      "delta": -1.02,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": true,
@@ -64,20 +64,120 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.93
+          "impact": -1.02
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.54
+          "impact": 0.51
         }
       ]
     },
     "RU": {
-      "composite_now": 2.7,
-      "proj_7d": 1.47,
+      "composite_now": 2.19,
+      "proj_7d": 0.67,
       "band_7d": "low",
-      "delta": -1.23,
+      "delta": -1.52,
+      "trend": "easing",
+      "confidence": "indicative",
+      "regime_shift": false,
+      "history_points": 8,
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "declining 8-day trend",
+          "impact": -1.52
+        },
+        {
+          "factor": "active_risk",
+          "detail": "conflict dominant now",
+          "impact": 0.44
+        }
+      ]
+    },
+    "IR": {
+      "composite_now": 3.48,
+      "proj_7d": 3.17,
+      "band_7d": "elevated",
+      "delta": -0.31,
+      "trend": "declining",
+      "confidence": "indicative",
+      "regime_shift": false,
+      "history_points": 8,
+      "drivers": [
+        {
+          "factor": "active_risk",
+          "detail": "conflict dominant now",
+          "impact": 0.7
+        },
+        {
+          "factor": "trend",
+          "detail": "declining 8-day trend",
+          "impact": -0.31
+        }
+      ]
+    },
+    "IN": {
+      "composite_now": 1.39,
+      "proj_7d": 0.72,
+      "band_7d": "low",
+      "delta": -0.67,
+      "trend": "easing",
+      "confidence": "indicative",
+      "regime_shift": false,
+      "history_points": 8,
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "declining 8-day trend",
+          "impact": -0.67
+        }
+      ]
+    },
+    "GB": {
+      "composite_now": 3.94,
+      "proj_7d": 5.0,
+      "band_7d": "critical",
+      "delta": 1.06,
+      "trend": "accelerating",
+      "confidence": "indicative",
+      "regime_shift": true,
+      "history_points": 8,
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "rising 8-day trend",
+          "impact": 1.62
+        },
+        {
+          "factor": "active_risk",
+          "detail": "conflict dominant now",
+          "impact": 0.79
+        }
+      ]
+    },
+    "EC": {
+      "composite_now": 0.87,
+      "proj_7d": 0.0,
+      "band_7d": "minimal",
+      "delta": -0.87,
+      "trend": "easing",
+      "confidence": "indicative",
+      "regime_shift": true,
+      "history_points": 7,
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "declining 7-day trend",
+          "impact": -0.93
+        }
+      ]
+    },
+    "GE": {
+      "composite_now": 0.46,
+      "proj_7d": 0.0,
+      "band_7d": "minimal",
+      "delta": -0.46,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -87,106 +187,6 @@
           "factor": "trend",
           "detail": "declining 8-day trend",
           "impact": -1.23
-        },
-        {
-          "factor": "active_risk",
-          "detail": "conflict dominant now",
-          "impact": 0.54
-        }
-      ]
-    },
-    "IR": {
-      "composite_now": 3.7,
-      "proj_7d": 3.52,
-      "band_7d": "severe",
-      "delta": -0.18,
-      "trend": "declining",
-      "confidence": "indicative",
-      "regime_shift": false,
-      "history_points": 8,
-      "drivers": [
-        {
-          "factor": "active_risk",
-          "detail": "conflict dominant now",
-          "impact": 0.74
-        },
-        {
-          "factor": "trend",
-          "detail": "declining 8-day trend",
-          "impact": -0.18
-        }
-      ]
-    },
-    "IN": {
-      "composite_now": 1.46,
-      "proj_7d": 0.83,
-      "band_7d": "low",
-      "delta": -0.63,
-      "trend": "easing",
-      "confidence": "indicative",
-      "regime_shift": false,
-      "history_points": 8,
-      "drivers": [
-        {
-          "factor": "trend",
-          "detail": "declining 8-day trend",
-          "impact": -0.63
-        }
-      ]
-    },
-    "GB": {
-      "composite_now": 4.16,
-      "proj_7d": 5.0,
-      "band_7d": "critical",
-      "delta": 0.84,
-      "trend": "accelerating",
-      "confidence": "indicative",
-      "regime_shift": true,
-      "history_points": 8,
-      "drivers": [
-        {
-          "factor": "trend",
-          "detail": "rising 8-day trend",
-          "impact": 1.75
-        },
-        {
-          "factor": "active_risk",
-          "detail": "conflict dominant now",
-          "impact": 0.83
-        }
-      ]
-    },
-    "EC": {
-      "composite_now": 0.9,
-      "proj_7d": 0.0,
-      "band_7d": "minimal",
-      "delta": -0.9,
-      "trend": "easing",
-      "confidence": "indicative",
-      "regime_shift": false,
-      "history_points": 7,
-      "drivers": [
-        {
-          "factor": "trend",
-          "detail": "declining 7-day trend",
-          "impact": -0.9
-        }
-      ]
-    },
-    "GE": {
-      "composite_now": 0.48,
-      "proj_7d": 0.0,
-      "band_7d": "minimal",
-      "delta": -0.48,
-      "trend": "easing",
-      "confidence": "indicative",
-      "regime_shift": false,
-      "history_points": 8,
-      "drivers": [
-        {
-          "factor": "trend",
-          "detail": "declining 8-day trend",
-          "impact": -1.22
         }
       ]
     },
@@ -208,10 +208,10 @@
       ]
     },
     "VE": {
-      "composite_now": 0.6,
+      "composite_now": 0.59,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.6,
+      "delta": -0.59,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -220,15 +220,15 @@
         {
           "factor": "trend",
           "detail": "declining 7-day trend",
-          "impact": -1.56
+          "impact": -1.57
         }
       ]
     },
     "HT": {
       "composite_now": 0.75,
-      "proj_7d": 0.26,
+      "proj_7d": 0.23,
       "band_7d": "minimal",
-      "delta": -0.49,
+      "delta": -0.52,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -238,19 +238,14 @@
           "factor": "trend",
           "detail": "declining 7-day trend",
           "impact": -0.53
-        },
-        {
-          "factor": "climate",
-          "detail": "cholera suitability elevated",
-          "impact": 0.04
         }
       ]
     },
     "SA": {
-      "composite_now": 1.23,
-      "proj_7d": 1.23,
+      "composite_now": 1.16,
+      "proj_7d": 1.11,
       "band_7d": "low",
-      "delta": 0.0,
+      "delta": -0.05,
       "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
@@ -258,19 +253,24 @@
       "drivers": []
     },
     "CU": {
-      "composite_now": 1.43,
-      "proj_7d": 1.26,
-      "band_7d": "low",
-      "delta": -0.17,
-      "trend": "declining",
+      "composite_now": 1.87,
+      "proj_7d": 1.96,
+      "band_7d": "moderate",
+      "delta": 0.09,
+      "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
       "history_points": 8,
       "drivers": [
         {
+          "factor": "active_risk",
+          "detail": "infrastructure dominant now",
+          "impact": 0.37
+        },
+        {
           "factor": "trend",
-          "detail": "declining 8-day trend",
-          "impact": -0.17
+          "detail": "rising 8-day trend",
+          "impact": 0.09
         }
       ]
     },
@@ -314,10 +314,10 @@
       ]
     },
     "ID": {
-      "composite_now": 1.44,
-      "proj_7d": 1.31,
+      "composite_now": 1.41,
+      "proj_7d": 1.27,
       "band_7d": "low",
-      "delta": -0.13,
+      "delta": -0.14,
       "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
@@ -326,7 +326,7 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.22
+          "impact": -0.24
         },
         {
           "factor": "climate",
@@ -336,10 +336,10 @@
       ]
     },
     "JP": {
-      "composite_now": 0.92,
-      "proj_7d": 0.39,
+      "composite_now": 0.9,
+      "proj_7d": 0.36,
       "band_7d": "minimal",
-      "delta": -0.53,
+      "delta": -0.54,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -348,15 +348,15 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.53
+          "impact": -0.54
         }
       ]
     },
     "VU": {
-      "composite_now": 0.49,
+      "composite_now": 0.48,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.49,
+      "delta": -0.48,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -365,15 +365,15 @@
         {
           "factor": "trend",
           "detail": "declining 7-day trend",
-          "impact": -1.15
+          "impact": -1.16
         }
       ]
     },
     "US": {
-      "composite_now": 1.04,
-      "proj_7d": 0.22,
+      "composite_now": 1.01,
+      "proj_7d": 0.17,
       "band_7d": "minimal",
-      "delta": -0.82,
+      "delta": -0.84,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": true,
@@ -382,15 +382,15 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.82
+          "impact": -0.84
         }
       ]
     },
     "PG": {
-      "composite_now": 0.75,
+      "composite_now": 0.73,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.75,
+      "delta": -0.73,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -399,7 +399,7 @@
         {
           "factor": "trend",
           "detail": "declining 7-day trend",
-          "impact": -0.82
+          "impact": -0.84
         }
       ]
     },
@@ -421,32 +421,37 @@
       ]
     },
     "CD": {
-      "composite_now": 3.38,
-      "proj_7d": 4.87,
+      "composite_now": 3.17,
+      "proj_7d": 4.61,
       "band_7d": "critical",
-      "delta": 1.49,
+      "delta": 1.44,
       "trend": "accelerating",
       "confidence": "indicative",
-      "regime_shift": true,
+      "regime_shift": false,
       "history_points": 8,
       "drivers": [
         {
           "factor": "trend",
           "detail": "rising 8-day trend",
-          "impact": 1.48
+          "impact": 1.36
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.68
+          "impact": 0.63
+        },
+        {
+          "factor": "climate",
+          "detail": "dengue suitability elevated",
+          "impact": 0.08
         }
       ]
     },
     "UG": {
-      "composite_now": 1.91,
-      "proj_7d": 1.29,
+      "composite_now": 1.85,
+      "proj_7d": 1.2,
       "band_7d": "low",
-      "delta": -0.61,
+      "delta": -0.65,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -455,20 +460,20 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.62
+          "impact": -0.65
         },
         {
           "factor": "active_risk",
           "detail": "border dominant now",
-          "impact": 0.38
+          "impact": 0.37
         }
       ]
     },
     "CN": {
-      "composite_now": 0.81,
+      "composite_now": 0.78,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.81,
+      "delta": -0.78,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -477,26 +482,32 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -1.32
+          "impact": -1.34
         }
       ]
     },
     "SG": {
-      "composite_now": 1.13,
-      "proj_7d": 1.09,
+      "composite_now": 1.08,
+      "proj_7d": 1.01,
       "band_7d": "low",
-      "delta": -0.04,
+      "delta": -0.07,
       "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
       "history_points": 8,
-      "drivers": []
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "declining 8-day trend",
+          "impact": -0.07
+        }
+      ]
     },
     "ET": {
       "composite_now": 0.7,
-      "proj_7d": 0.13,
+      "proj_7d": 0.06,
       "band_7d": "minimal",
-      "delta": -0.57,
+      "delta": -0.64,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -506,11 +517,6 @@
           "factor": "trend",
           "detail": "declining 8-day trend",
           "impact": -0.64
-        },
-        {
-          "factor": "climate",
-          "detail": "dengue suitability elevated",
-          "impact": 0.07
         }
       ]
     },
@@ -554,10 +560,10 @@
       ]
     },
     "MX": {
-      "composite_now": 0.7,
-      "proj_7d": 0.4,
+      "composite_now": 0.68,
+      "proj_7d": 0.36,
       "band_7d": "minimal",
-      "delta": -0.3,
+      "delta": -0.32,
       "trend": "declining",
       "confidence": "indicative",
       "regime_shift": false,
@@ -566,7 +572,7 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.34
+          "impact": -0.35
         },
         {
           "factor": "climate",
@@ -576,10 +582,10 @@
       ]
     },
     "PK": {
-      "composite_now": 3.57,
+      "composite_now": 3.36,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 1.43,
+      "delta": 1.64,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -588,12 +594,12 @@
         {
           "factor": "trend",
           "detail": "rising 8-day trend",
-          "impact": 2.79
+          "impact": 2.67
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.71
+          "impact": 0.67
         },
         {
           "factor": "climate",
@@ -603,10 +609,10 @@
       ]
     },
     "TR": {
-      "composite_now": 0.72,
-      "proj_7d": 0.45,
+      "composite_now": 0.7,
+      "proj_7d": 0.41,
       "band_7d": "minimal",
-      "delta": -0.27,
+      "delta": -0.29,
       "trend": "declining",
       "confidence": "indicative",
       "regime_shift": false,
@@ -615,7 +621,7 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.27
+          "impact": -0.29
         }
       ]
     },
@@ -637,10 +643,10 @@
       ]
     },
     "TW": {
-      "composite_now": 0.53,
+      "composite_now": 0.51,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.53,
+      "delta": -0.51,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -649,15 +655,15 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.72
+          "impact": -0.73
         }
       ]
     },
     "NG": {
-      "composite_now": 0.78,
+      "composite_now": 0.75,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.78,
+      "delta": -0.75,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -666,23 +672,23 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -1.52
+          "impact": -1.54
         },
         {
           "factor": "climate",
           "detail": "dengue suitability elevated",
-          "impact": 0.16
+          "impact": 0.15
         },
         {
           "factor": "climate",
           "detail": "cholera suitability elevated",
-          "impact": 0.07
+          "impact": 0.05
         }
       ]
     },
     "VN": {
-      "composite_now": 0.54,
-      "proj_7d": 0.02,
+      "composite_now": 0.52,
+      "proj_7d": 0.0,
       "band_7d": "minimal",
       "delta": -0.52,
       "trend": "easing",
@@ -693,7 +699,7 @@
         {
           "factor": "trend",
           "detail": "declining 8-day trend",
-          "impact": -0.52
+          "impact": -0.53
         }
       ]
     },
@@ -742,10 +748,10 @@
       ]
     },
     "YE": {
-      "composite_now": 3.82,
+      "composite_now": 3.6,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 1.18,
+      "delta": 1.4,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -754,12 +760,12 @@
         {
           "factor": "trend",
           "detail": "rising 8-day trend",
-          "impact": 3.71
+          "impact": 3.58
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.76
+          "impact": 0.72
         },
         {
           "factor": "climate",
@@ -769,10 +775,10 @@
       ]
     },
     "SD": {
-      "composite_now": 2.07,
-      "proj_7d": 4.22,
+      "composite_now": 1.95,
+      "proj_7d": 4.01,
       "band_7d": "severe",
-      "delta": 2.15,
+      "delta": 2.06,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -781,12 +787,12 @@
         {
           "factor": "trend",
           "detail": "rising 7-day trend",
-          "impact": 2.12
+          "impact": 2.03
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.41
+          "impact": 0.39
         },
         {
           "factor": "climate",
@@ -796,10 +802,10 @@
       ]
     },
     "KH": {
-      "composite_now": 1.95,
-      "proj_7d": 2.96,
+      "composite_now": 2.15,
+      "proj_7d": 3.47,
       "band_7d": "elevated",
-      "delta": 1.01,
+      "delta": 1.32,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -808,12 +814,17 @@
         {
           "factor": "trend",
           "detail": "rising 8-day trend",
-          "impact": 1.01
+          "impact": 1.13
         },
         {
           "factor": "active_risk",
           "detail": "border dominant now",
-          "impact": 0.39
+          "impact": 0.43
+        },
+        {
+          "factor": "climate",
+          "detail": "dengue suitability severe",
+          "impact": 0.19
         }
       ]
     },
@@ -852,10 +863,10 @@
       ]
     },
     "DE": {
-      "composite_now": 0.81,
-      "proj_7d": 1.31,
+      "composite_now": 0.79,
+      "proj_7d": 1.27,
       "band_7d": "low",
-      "delta": 0.5,
+      "delta": 0.48,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -864,7 +875,7 @@
         {
           "factor": "trend",
           "detail": "rising 6-day trend",
-          "impact": 0.5
+          "impact": 0.48
         }
       ]
     },
@@ -886,10 +897,10 @@
       ]
     },
     "IT": {
-      "composite_now": 1.25,
-      "proj_7d": 1.44,
+      "composite_now": 1.19,
+      "proj_7d": 1.34,
       "band_7d": "low",
-      "delta": 0.19,
+      "delta": 0.15,
       "trend": "rising",
       "confidence": "indicative",
       "regime_shift": false,
@@ -898,7 +909,7 @@
         {
           "factor": "trend",
           "detail": "rising 7-day trend",
-          "impact": 0.19
+          "impact": 0.15
         }
       ]
     },
@@ -920,10 +931,10 @@
       ]
     },
     "BO": {
-      "composite_now": 1.04,
-      "proj_7d": 0.48,
+      "composite_now": 1.0,
+      "proj_7d": 0.4,
       "band_7d": "minimal",
-      "delta": -0.56,
+      "delta": -0.6,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -932,15 +943,15 @@
         {
           "factor": "trend",
           "detail": "declining 6-day trend",
-          "impact": -0.56
+          "impact": -0.6
         }
       ]
     },
     "BD": {
-      "composite_now": 3.61,
+      "composite_now": 3.41,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 1.39,
+      "delta": 1.59,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -949,12 +960,12 @@
         {
           "factor": "trend",
           "detail": "rising 6-day trend",
-          "impact": 3.48
+          "impact": 3.28
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.72
+          "impact": 0.68
         },
         {
           "factor": "climate",
@@ -964,10 +975,10 @@
       ]
     },
     "AR": {
-      "composite_now": 0.88,
-      "proj_7d": 0.41,
+      "composite_now": 0.86,
+      "proj_7d": 0.37,
       "band_7d": "minimal",
-      "delta": -0.47,
+      "delta": -0.49,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -976,11 +987,28 @@
         {
           "factor": "trend",
           "detail": "declining 6-day trend",
-          "impact": -0.47
+          "impact": -0.49
         }
       ]
     },
     "UZ": {
+      "composite_now": 0.54,
+      "proj_7d": 0.0,
+      "band_7d": "minimal",
+      "delta": -0.54,
+      "trend": "easing",
+      "confidence": "indicative",
+      "regime_shift": false,
+      "history_points": 6,
+      "drivers": [
+        {
+          "factor": "trend",
+          "detail": "declining 6-day trend",
+          "impact": -1.03
+        }
+      ]
+    },
+    "PE": {
       "composite_now": 0.56,
       "proj_7d": 0.0,
       "band_7d": "minimal",
@@ -997,11 +1025,11 @@
         }
       ]
     },
-    "PE": {
-      "composite_now": 0.59,
-      "proj_7d": 0.0,
-      "band_7d": "minimal",
-      "delta": -0.59,
+    "MG": {
+      "composite_now": 0.95,
+      "proj_7d": 0.54,
+      "band_7d": "low",
+      "delta": -0.41,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1010,32 +1038,15 @@
         {
           "factor": "trend",
           "detail": "declining 6-day trend",
-          "impact": -0.98
-        }
-      ]
-    },
-    "MG": {
-      "composite_now": 0.98,
-      "proj_7d": 0.6,
-      "band_7d": "low",
-      "delta": -0.38,
-      "trend": "declining",
-      "confidence": "indicative",
-      "regime_shift": false,
-      "history_points": 6,
-      "drivers": [
-        {
-          "factor": "trend",
-          "detail": "declining 6-day trend",
-          "impact": -0.38
+          "impact": -0.41
         }
       ]
     },
     "SY": {
-      "composite_now": 2.59,
+      "composite_now": 2.44,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 2.41,
+      "delta": 2.56,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1044,20 +1055,20 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 4.3
+          "impact": 4.09
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.52
+          "impact": 0.49
         }
       ]
     },
     "PS": {
-      "composite_now": 4.34,
+      "composite_now": 4.17,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 0.66,
+      "delta": 0.83,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1066,12 +1077,12 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 1.61
+          "impact": 1.37
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.87
+          "impact": 0.83
         }
       ]
     },
@@ -1093,10 +1104,10 @@
       ]
     },
     "AU": {
-      "composite_now": 1.33,
-      "proj_7d": 2.41,
+      "composite_now": 1.29,
+      "proj_7d": 2.31,
       "band_7d": "moderate",
-      "delta": 1.08,
+      "delta": 1.02,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1105,15 +1116,15 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 1.08
+          "impact": 1.02
         }
       ]
     },
     "BR": {
       "composite_now": 0.51,
-      "proj_7d": 0.62,
+      "proj_7d": 0.63,
       "band_7d": "low",
-      "delta": 0.11,
+      "delta": 0.12,
       "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1149,10 +1160,10 @@
       ]
     },
     "GH": {
-      "composite_now": 0.58,
-      "proj_7d": 1.65,
-      "band_7d": "moderate",
-      "delta": 1.07,
+      "composite_now": 1.49,
+      "proj_7d": 3.83,
+      "band_7d": "severe",
+      "delta": 2.34,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1161,7 +1172,7 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 1.07
+          "impact": 2.35
         }
       ]
     },
@@ -1268,10 +1279,10 @@
       ]
     },
     "AO": {
-      "composite_now": 1.03,
-      "proj_7d": 1.32,
+      "composite_now": 1.01,
+      "proj_7d": 1.28,
       "band_7d": "low",
-      "delta": 0.29,
+      "delta": 0.27,
       "trend": "rising",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1280,7 +1291,7 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 0.29
+          "impact": 0.27
         }
       ]
     },
@@ -1647,10 +1658,10 @@
       ]
     },
     "CA": {
-      "composite_now": 1.53,
-      "proj_7d": 1.22,
+      "composite_now": 1.49,
+      "proj_7d": 1.13,
       "band_7d": "low",
-      "delta": -0.31,
+      "delta": -0.36,
       "trend": "declining",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1659,12 +1670,7 @@
         {
           "factor": "trend",
           "detail": "declining 5-day trend",
-          "impact": -0.31
-        },
-        {
-          "factor": "active_risk",
-          "detail": "border dominant now",
-          "impact": 0.31
+          "impact": -0.36
         }
       ]
     },
@@ -1771,10 +1777,10 @@
       ]
     },
     "NP": {
-      "composite_now": 2.91,
+      "composite_now": 2.73,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 2.09,
+      "delta": 2.27,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1783,12 +1789,12 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 6.67
+          "impact": 6.42
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.58
+          "impact": 0.55
         }
       ]
     },
@@ -1810,10 +1816,10 @@
       ]
     },
     "MY": {
-      "composite_now": 0.46,
+      "composite_now": 0.45,
       "proj_7d": 0.0,
       "band_7d": "minimal",
-      "delta": -0.46,
+      "delta": -0.45,
       "trend": "easing",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1822,15 +1828,15 @@
         {
           "factor": "trend",
           "detail": "declining 5-day trend",
-          "impact": -0.93
+          "impact": -0.95
         }
       ]
     },
     "FR": {
-      "composite_now": 1.88,
-      "proj_7d": 3.39,
+      "composite_now": 1.78,
+      "proj_7d": 3.15,
       "band_7d": "elevated",
-      "delta": 1.51,
+      "delta": 1.37,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1839,12 +1845,12 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 1.51
+          "impact": 1.37
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.38
+          "impact": 0.36
         }
       ]
     },
@@ -1900,10 +1906,10 @@
       ]
     },
     "TM": {
-      "composite_now": 0.66,
-      "proj_7d": 0.78,
+      "composite_now": 0.63,
+      "proj_7d": 0.71,
       "band_7d": "low",
-      "delta": 0.12,
+      "delta": 0.08,
       "trend": "stable",
       "confidence": "indicative",
       "regime_shift": false,
@@ -1912,7 +1918,7 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 0.12
+          "impact": 0.08
         }
       ]
     },
@@ -2053,10 +2059,10 @@
       ]
     },
     "PL": {
-      "composite_now": 1.2,
-      "proj_7d": 3.81,
+      "composite_now": 1.17,
+      "proj_7d": 3.74,
       "band_7d": "severe",
-      "delta": 2.61,
+      "delta": 2.57,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -2065,7 +2071,7 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 2.61
+          "impact": 2.57
         }
       ]
     },
@@ -2087,10 +2093,10 @@
       ]
     },
     "NL": {
-      "composite_now": 1.35,
-      "proj_7d": 3.42,
+      "composite_now": 1.29,
+      "proj_7d": 3.27,
       "band_7d": "elevated",
-      "delta": 2.07,
+      "delta": 1.98,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -2099,15 +2105,15 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 2.07
+          "impact": 1.98
         }
       ]
     },
     "LB": {
-      "composite_now": 2.5,
+      "composite_now": 2.91,
       "proj_7d": 5.0,
       "band_7d": "critical",
-      "delta": 2.5,
+      "delta": 2.09,
       "trend": "accelerating",
       "confidence": "indicative",
       "regime_shift": false,
@@ -2116,12 +2122,12 @@
         {
           "factor": "trend",
           "detail": "rising 5-day trend",
-          "impact": 5.5
+          "impact": 6.08
         },
         {
           "factor": "active_risk",
           "detail": "conflict dominant now",
-          "impact": 0.5
+          "impact": 0.58
         }
       ]
     }
