@@ -726,7 +726,19 @@ async function loadRiskIndex(){
   }catch{ _RISK_INDEX = {}; }
   return _RISK_INDEX || {};
 }
-function watchedList(){ return ls.get('vigilo_watched', []); }
+/** Normalise a stored country entry to ISO-2 using the COUNTRY_NAMES map.
+ *  Handles legacy full-name entries ("United States" → "US"). */
+function normIso(w){
+  if(String(w).length <= 3) return w; // already ISO
+  const found = Object.keys(COUNTRY_NAMES).find(k => COUNTRY_NAMES[k] === w);
+  return found || w;
+}
+function watchedList(){
+  const raw = ls.get('vigilo_watched', []);
+  // Deduplicate: normalise all to ISO, then unique
+  const seen = new Set();
+  return raw.map(normIso).filter(w => { if(seen.has(w)) return false; seen.add(w); return true; });
+}
 function saveWatched(list){
   ls.set('vigilo_watched', list);
   // Best-effort server sync (same endpoint globe.js uses)

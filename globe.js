@@ -870,8 +870,14 @@ async function loadServerCountries() {
     if (!res.ok) return;
     const data = await res.json();
     if (!Array.isArray(data.countries)) return;
-    // Merge: union of local + server
-    data.countries.forEach(c => WATCHED.add(c));
+    // Merge: union of local + server, normalise everything to ISO-2
+    data.countries.forEach(c => {
+      const norm = findCountry(c)?.iso2 || c;
+      WATCHED.add(norm);
+    });
+    // Re-normalise local entries too (cleans up legacy full-name storage)
+    const normalised = [...WATCHED].map(c => findCountry(c)?.iso2 || c);
+    WATCHED.clear(); normalised.forEach(c => WATCHED.add(c));
     localStorage.setItem('vigilo_watched', JSON.stringify([...WATCHED]));
     renderMyCountries();
     renderMyFeed();
@@ -882,6 +888,13 @@ async function loadServerCountries() {
 }
 
 function toggleWatch(country){
+  // Normalise to ISO-2 so globe (stores full name) and account.html (stores
+  // ISO) use the same key — prevents "United States" + "US" duplicates.
+  const _c = findCountry(country);
+  const iso = _c?.iso2 || country;
+  // Also evict any legacy full-name entry for this country
+  if(_c?.en && _c.en !== iso) WATCHED.delete(_c.en);
+  country = iso;
   if(!WATCHED.has(country) && !isPaid() && WATCHED.size >= FREE_COUNTRY_LIMIT){
     showProGate();
     return;
