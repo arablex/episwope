@@ -13,7 +13,10 @@ import sys
 import os
 from urllib import request
 
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") or "8783676807:AAGt1-2i3isP_LhhYXYXLm84xHxGd4hJgE0"
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+if not TOKEN:
+    print("ERROR: set TELEGRAM_BOT_TOKEN env var before running")
+    sys.exit(1)
 BASE  = f"https://api.telegram.org/bot{TOKEN}"
 
 
