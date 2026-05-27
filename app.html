@@ -707,6 +707,11 @@
     border-left:2px solid var(--line);padding-left:8px;margin-bottom:10px;
     line-height:1.5
   }
+  .sig-detail-headline a{
+    color:inherit;text-decoration:underline;text-decoration-color:var(--line);
+    text-underline-offset:2px;
+  }
+  .sig-detail-headline a:hover{ opacity:1; text-decoration-color:var(--accent); }
   .sig-detail-sources{font-size:10.5px;color:var(--muted);margin-bottom:10px}
   .sig-detail-sources b{color:var(--ink)}
   /* ── Threat analytics block ── */
@@ -3792,7 +3797,10 @@ function _openSignal(sig) {
 
   const hlEl = document.getElementById('sigDetailHeadline');
   if (sig.headline) {
-    hlEl.textContent = `"${sig.headline}"`;
+    const firstLink = sig.links && sig.links[0];
+    hlEl.innerHTML = firstLink
+      ? `<a href="${_esc(firstLink)}" target="_blank" rel="noopener">"${_esc(sig.headline)}"</a>`
+      : `"${_esc(sig.headline)}"`;
     hlEl.style.display = '';
   } else {
     hlEl.style.display = 'none';
@@ -3806,7 +3814,8 @@ function _openSignal(sig) {
   }
 
   const linkEl = document.getElementById('sigDetailLink');
-  if (sig.links && sig.links[0]) {
+  // Hide "Read source →" when the headline is already a link (avoid duplication)
+  if (sig.links && sig.links[0] && !sig.headline) {
     linkEl.href = sig.links[0];
     linkEl.style.display = '';
   } else {
