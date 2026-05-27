@@ -16,7 +16,6 @@ Sources (15-30 min latency):
   8. GDELT GKG themes         — Global Incident Map equivalent
 
 AI enhancement (optional, degrades gracefully):
-  GROQ_API_KEY   → llama-3.3-70b, fastest free inference (30 req/min)
   GEMINI_API_KEY → gemini-2.0-flash, multilingual NLP
 
 Outputs:
@@ -72,8 +71,6 @@ LOW_COVERAGE_ISOS = {
 CONFIDENCE_EMIT_LOW   = 0.40
 CONFIDENCE_EMIT_HIGH  = 0.60
 
-GROQ_RATE_LIMIT_SLEEP = 2.0  # seconds between Groq calls (free: 30 req/min)
-GROQ_MAX_CALLS        = 20   # cap AI calls per run
 HTTP_TIMEOUT          = 18   # seconds
 
 HEADERS = {
@@ -705,7 +702,6 @@ def make_signal_id(disease: str, iso: str) -> str:
 # AI extraction (Tier 3 — optional)
 # ---------------------------------------------------------------------------
 
-_groq_calls_this_run = 0
 _gemini_disabled = False
 
 SIGNAL_PROMPT = """Analyze this text and extract disease outbreak signal information. Return ONLY valid JSON.
@@ -728,42 +724,10 @@ def _parse_ai_json(raw: str) -> dict | None:
 
 
 def ai_classify(text: str) -> dict | None:
-    """Try Groq → Gemini → None. Respects rate limits and caps."""
-    global _groq_calls_this_run, _gemini_disabled
+    """Try Gemini → None."""
+    global _gemini_disabled
 
     prompt = SIGNAL_PROMPT.format(text=text[:1800])
-
-    # Try Groq first
-    groq_key = os.environ.get("GROQ_API_KEY", "")
-    if groq_key and _groq_calls_this_run < GROQ_MAX_CALLS:
-        payload = json.dumps({
-            "model": "llama-3.3-70b-versatile",
-            "max_tokens": 300,
-            "temperature": 0,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode()
-        req = request.Request(
-            "https://api.groq.com/openai/v1/chat/completions",
-            data=payload,
-            headers={
-                "Authorization": f"Bearer {groq_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        try:
-            with request.urlopen(req, timeout=20) as resp:
-                body = json.loads(resp.read())
-            _groq_calls_this_run += 1
-            time.sleep(GROQ_RATE_LIMIT_SLEEP)
-            return _parse_ai_json(body["choices"][0]["message"]["content"])
-        except error.HTTPError as e:
-            if e.code == 429:
-                log("  Groq rate limit — switching to Gemini")
-            else:
-                log(f"  Groq HTTP {e.code}")
-        except Exception as e:
-            log(f"  Groq error: {e}")
 
     # Try Gemini
     gemini_key = os.environ.get("GEMINI_API_KEY", "")
@@ -3118,7 +3082,7 @@ def build_signals(
     4. Emit signal if threshold met and not recently emitted
     """
     signals = []
-    use_ai = bool(os.environ.get("GROQ_API_KEY") or os.environ.get("GEMINI_API_KEY"))
+    use_ai = bool(os.environ.get("GEMINI_API_KEY"))
 
     for key, articles in buckets.items():
         iso, disease = key.split("|", 1)
@@ -3544,7 +3508,7 @@ def notify_telegram(signals: list[dict], dry_run: bool = False) -> None:
 
 def run(dry_run: bool = False) -> int:
     log("=== Vigilo Fast Signals Engine starting ===")
-    log(f"AI mode: {'groq' if os.environ.get('GROQ_API_KEY') else 'gemini' if os.environ.get('GEMINI_API_KEY') else 'regex/heuristic'}")
+    log(f"AI mode: {'gemini' if os.environ.get('GEMINI_API_KEY') else 'regex/heuristic'}")
 
     # Load and prune history
     history = load_history()

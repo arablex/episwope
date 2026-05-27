@@ -15,7 +15,6 @@ Sources (in priority order):
 
 AI extraction (optional, free tiers):
   GEMINI_API_KEY    → gemini-2.0-flash (1500 req/day free, multilingual)
-  GROQ_API_KEY      → llama-3.3-70b (14400 req/day free)
   ANTHROPIC_API_KEY → claude-haiku-4-5 (~$1-2/month)
 
 Cost: $0/month in regex mode. ~$0-2/month with AI keys.
@@ -344,28 +343,6 @@ def call_gemini(text: str) -> dict:
         return None
 
 
-def call_groq(text: str) -> dict:
-    key = os.environ.get("GROQ_API_KEY", "")
-    if not key:
-        return None
-    payload = json.dumps({
-        "model": "llama-3.3-70b-versatile",
-        "max_tokens": 500,
-        "temperature": 0,
-        "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(text=text[:2000])}]
-    }).encode()
-    req = urllib.request.Request(
-        "https://api.groq.com/openai/v1/chat/completions", data=payload,
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"}, method="POST"
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            body = json.loads(resp.read())
-            return _parse_ai_json(body["choices"][0]["message"]["content"])
-    except Exception as e:
-        print(f"  ⚠ Groq: {e}", flush=True)
-        return None
-
 
 def call_haiku(text: str) -> dict:
     key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -389,12 +366,11 @@ def call_haiku(text: str) -> dict:
 
 
 def call_ai(text: str) -> dict:
-    return call_gemini(text) or call_groq(text) or call_haiku(text)
+    return call_gemini(text) or call_haiku(text)
 
 
 def detect_ai_mode() -> str:
     if os.environ.get("GEMINI_API_KEY"):    return "gemini (free)"
-    if os.environ.get("GROQ_API_KEY"):      return "groq (free)"
     if os.environ.get("ANTHROPIC_API_KEY"): return "haiku (paid)"
     return "regex (free)"
 
