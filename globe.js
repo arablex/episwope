@@ -2830,7 +2830,7 @@ const HIGHLIGHT_ISO = new Set(OUTBREAKS.map(o=>o.iso));
 const stage   = document.getElementById('stage');
 const globeEl = document.getElementById('globe');
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXA1M2wxbWExM25xMnFxeWJzZG9tOWJuIn0.PJ8o0uIDJDvtKib-EoKXBw';
+mapboxgl.accessToken = 'pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXBucHlncDMwbzdkMnBzOWZieGVobXhpIn0.Dyr6Mi6dRB7L-bNnUEVLsA';
 
 const state = {
   filter: 'all',
