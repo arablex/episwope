@@ -1039,6 +1039,7 @@ def fetch_hk_chp() -> list:
     print("Fetching HK CHP...", flush=True)
     results = []
     opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+    _hkchp_cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)
     for url in [
         "https://www.chp.gov.hk/en/rss/enhanced-surveillance.xml",
         "https://www.chp.gov.hk/files/rss/cda_alert.xml",
@@ -1058,6 +1059,14 @@ def fetch_hk_chp() -> list:
                 link  = (item.findtext("link")  or "").strip()
                 desc  = re.sub(r"<[^>]+>", " ", item.findtext("description") or "").strip()
                 pub   = (item.findtext("pubDate") or "").strip()
+                # Skip items older than MAX_EVENT_AGE_DAYS
+                try:
+                    from email.utils import parsedate_to_datetime
+                    pub_dt = parsedate_to_datetime(pub).astimezone(timezone.utc) if pub else None
+                    if pub_dt and pub_dt < _hkchp_cutoff:
+                        continue
+                except Exception:
+                    pass
                 if title and any(kw in (title + " " + desc).lower() for kw in KEYWORDS):
                     results.append({
                         "source":      "HK-CHP",
@@ -2263,7 +2272,17 @@ def main():
     time.sleep(1)
 
     # ── 5b. HK CHP (Hong Kong Centre for Health Protection) ──────────────
+    _hkchp_main_cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_EVENT_AGE_DAYS)
     for raw in fetch_hk_chp():
+        # Secondary date guard — catch anything that slipped through fetch_hk_chp()
+        try:
+            from email.utils import parsedate_to_datetime as _pdt
+            _pub = raw.get("pub_date", "")
+            _dt  = _pdt(_pub).astimezone(timezone.utc) if _pub else None
+            if _dt and _dt < _hkchp_main_cutoff:
+                continue
+        except Exception:
+            pass
         text = raw["title"] + "\n\n" + raw["description"]
         extracted = None
         if has_ai:
@@ -2340,6 +2359,9 @@ def main():
             if not extracted or not extracted.get("disease"):
                 extracted = extract_free(raw["title"], raw["description"])
             if not extracted or not extracted.get("disease"):
+                continue
+            # Skip events without a resolvable country — they can't be placed on the globe
+            if not extracted.get("country") or not extracted.get("iso"):
                 continue
             sev = normalise_sev(extracted.get("severity", "monitoring"))
             add_event({
