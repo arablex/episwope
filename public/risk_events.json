@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-05-27T20:29:45.507958+00:00",
-    "events_total": 616,
+    "generated_at": "2026-05-27T22:49:11.732420+00:00",
+    "events_total": 625,
     "countries": 115,
     "categories": [
       "health",
@@ -14,9 +14,9 @@
     ],
     "schema": "1.0",
     "fetch_health": {
-      "ok": 42,
-      "failed": 1,
-      "fail_rate": 0.023,
+      "ok": 38,
+      "failed": 5,
+      "fail_rate": 0.116,
       "degraded": false
     }
   },
@@ -50,6 +50,34 @@
       "is_new": true
     },
     {
+      "id": "evt_33d5cdac6a05",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Myanmar Military Launches Three Hour Airstrike on AA-Controlled Ann - Narinjara News",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 16.9,
+        "lng": 96.1,
+        "place": "Myanmar",
+        "country": "MM",
+        "admin1": null
+      },
+      "country": "MM",
+      "first_seen": "2026-05-26T18:00:58+00:00",
+      "last_updated": "2026-05-26T18:00:58+00:00",
+      "lead_time_hours": 0,
+      "source_count": 2,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9Xd1M0SHk5dXpWc0lCTzk4X1NqMWJyUnd0MTllMFcxVkxtNk1HVVZkTG1CbXhibHMwSC1rZW5GVWY1S2QxTmVlalhCdjJfZ0hESGNFaF92WVkyb2Y1QUk3WFVibDBsR3ZKTFdyNW54QQ?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_d664c5aa0b78",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -75,34 +103,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQNjBJM3lpLXdMR3RWWTBEM3Uta3hPRHFWbVhIT2owUGRsRmd2ajVvWl9SWHZOTy1BekRLcXlxS1NpdXVvNDg4NENqQTJJc0NKcmNOQkdmOU1Nci1FUlVYSFloaXJMTXZOS0hDQXA1cHJnRW1VaFV2N3V2YmNVTHJVNlBRa3NxTDBRSThTZng5Vmx0OWRJNnpNZlgxZFRWeVk5a0wzMQ?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_ed6c6343eebc",
-      "category": "conflict",
-      "type": "armed_clash",
-      "headline": "Israel to intensify Lebanon offensive to ‘crush’ Hezbollah - Al Jazeera",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 33.9,
-        "lng": 35.5,
-        "place": "Hezbollah",
-        "country": "LB",
-        "admin1": null
-      },
-      "country": "LB",
-      "first_seen": "2026-05-26T04:48:31+00:00",
-      "last_updated": "2026-05-26T04:48:31+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNaUJmbHdxbjc5cXFya043WlBaajNxNG5QbmppMWE1cUdSQ3ZvOGlaanFadERyNVJMQWdHUnNnUS1mdzhaSFRxRHpQWm5sMTRWTTZFQU1sbjdUeE9za1l2RFJaOU12T2h4eHNFYlRnY0haSWRjaWxXZWlRbzgyR3BiY2s3MFN3azRxUThfWU52TDNITXV1TWNoZll2SElMa081TWw2eV9ib9IBrAFBVV95cUxPX1F2Q2E1Mk1qZVo5QTFzODdBLTJDcjMxU0xwZnRvYmtJY3paeWZWb1psc09Hb19fQ3NsWGI1LUJ2X3R5TmRmbkQ5cHJUc2h3Z256NWowMTFQalpyNXp1SldYSEpISFRRa2Z4VUc5a1VQQ0d3MFBLNE5ScFhnTnEyZ3Z5Zi13Q0FBMUVSWUZDVzFWdmlha21fS281MFVRV2pjU3NSZUJpMzdSVXB4?oc=5",
       "is_new": true
     },
     {
@@ -187,6 +187,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNOWsxMjNlVHdsSWFEbjRXLVBic013QWxiTlBuajN2dHV1ZDgxMGJFZUdQYlZZWklUdE9HNWh4Y3B1aGltUFV6LVFKZTFBUEVUSC1ITjVTLU9qZlBpdUhqWVBLT2pycnMyc1cwWTctQ1ZjbTFUTktjbEdFNktkOExNUWQ3ZmRZci14djFEcEVMYW84OTNJSkk4RjVGZ3NZblNVSUY4bTB1NWVDY2xzVm92V1B4LS1IOWx2Tl9BQkQ2RmZqcnRsWXFfSmxWNUI0NXRSQTBvUDBRUWtiZnNNQ00wc1p4cVBIcGhfUWMzTFYwNjNDLV9uV3RJ?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_4ad0a737f605",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas says Israeli air strikes killed its new military leader in Gaza - BreakingNews.ie",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T17:31:24+00:00",
+      "last_updated": "2026-05-27T17:31:24+00:00",
+      "lead_time_hours": 0,
+      "source_count": 3,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNSV9PczhNS3RLb0lKMmNHTjc0OHJqeHdxY2tFY0IwUGN5Sm1BcHBWWkkxYzNNZXJ4bWhFeEY3VjY0NV9OWHdSVEg3RDhSM1RoQV9uM3ZfOUdudWMxRmZ1U0VzRXNhUTdsdUpUS0pzTnBYbE5LaUkxYVc5S0xXeXM4YVFUTlFoQWZLSWMwWEVWQ1gtaHpjd3ZGOUliSmk5ZDRRZWtUZ0RiMHQ0UFJtV1ZFV183R2pBWHc?oc=5",
       "is_new": true
     },
     {
@@ -806,34 +834,6 @@
       "is_new": true
     },
     {
-      "id": "evt_a7b210621054",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Russia deploys hypersonic Oreshnik missile in attack on Kyiv, resulting in casualties - MSN",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 61.5,
-        "lng": 105.3,
-        "place": "Russia",
-        "country": "RU",
-        "admin1": null
-      },
-      "country": "RU",
-      "first_seen": "2026-05-25T13:54:09+00:00",
-      "last_updated": "2026-05-25T13:54:09+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMilgNBVV95cUxNYk1JdURaMk1DQ2FOczA4a2xnbjhsb0ZTcGlfTG15TENUUGV0YjhZMXR6MVkxM1NZV0pkdzJGNks5dkNnNHNzREV5M0tUNVE0RTJ0RmJ4YUFkSWdpOHVxNFFrZjBrRnpxNVpSMnVFUUlYWU9hSjVkZDE0UlhSTUlUMnFtd0hacFRvR0NDZ1FBYTVTRlRPUDNneS1vUkx1Y0paTDl0SkNTWm9FME5Xc0RMLWlPbWRFa3c0OG9wSkRxOHFZZ0VGSWc3ejBDOXNvUjlCYklMblJiOUJmSVZlRVhRZC1OdXRXcUNTSGwwNzlWRlV2V3pRN1hrSmJXZVBnM1dqcWFiZm1EeWk3OXNqQlJNaW5YbGxXWXB6aFBXUkJqbU9YNmx2WGtZY2NHU01xOFIwUlF4LW1XWGx2a0JNVnJjMWJwV0VOV2pwR21heUxReDVsNlRFZW9uMEpCa215Y2wxeTJ4ckZYSGNKazBwdmN3ZWRhV254RGVQY0xKNm1McmhrTlYzNkx1cTJDLUR0UUI2Y0VxWU53?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_1441aa2ab7d2",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1103,14 +1103,14 @@
         "admin1": null
       },
       "country": "IR",
-      "first_seen": "2026-05-26T13:04:12+00:00",
-      "last_updated": "2026-05-26T13:04:12+00:00",
+      "first_seen": "2026-05-27T01:34:42+00:00",
+      "last_updated": "2026-05-27T01:34:42+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxOMjVIY2VaaDBBY09tSlZOM1NabThqT2hFNi1oaWg4UmhjTUpqRTlVZjZnQjJMeFFsVUg4NUdHZ1J5OUZfdnlSOFFMdWtiOWdNN0RKZUYwU2tUZlhES3hSNXJGNm0zR2RXU3VlSGtrZzlBUzU4LTg1VWZYN1Q4ZXkxRWlnWENLUV9CYjZrWnlWekc2dTBtQ3VJdGxNRVpDQ3JlRDRvek9EUGE5X05xX1pxSURsOHRNeU8wUFI3aGUxMlJyeVlfSmNodGhJQ19zU0EyS0NXSjEwd3ppSU1naFV2YQ?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxNUDZpU29iQ3pxUThId05LcGEwQ2F1cXV2QmEzM2U1M0l6aktfUUZLcDZ2eGwzVi10XzVCNm56VERFTFB6R3hhTEpYRUUxQkJVdF8tczkyMVVJSHBqbllaYTNZTzVrckZrTkhKRnZPWnJqUERLamgzVzFVRjlkRHF0bzlaWGpCc05RaFl6ZUhwajBrakxUSUdoVVFtdGc4dk9kYThZX2VrcjlEXzVhNmRINUVqcDRxTWN2d1FnLTBRemVoSWFsS25lNndYR0Iyc09nVTA4bE1NeS04STJYVFE5UUVZbDQzTlRURmpOUUxCZ04?oc=5",
       "is_new": true
     },
     {
@@ -1195,34 +1195,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMihAJBVV95cUxNTmJENF9FUVI4SHo2aGZwakduSmRkU1k1RU52NTRONXVxU2JIQkpDS09KbjhhQmZmTTVaOXQzTS1VREYycUNHeXF3UzVRb1Bob1pHSXNmQ0JxSjc4cHI3dS1nTUFTYnhhbV9PeXZTcEFVM1l5T2xub3hfVVg1VkU3LW0xZEpMT25tX01ld3VZZVBoRDVwQzhBMFhYWm5VMkZnMmJQdWdaa3pudlhBZ3AxSUZUbmNRZDZwSHV3b2pqTFNmNkZucG9kc2ZxQmduWGhGWGt4MlR5YkdES1B6QnN4WlZ6cEd2dWZIZlVsQl9mOHF4a0NLOWNjZThGd1FRSFgya1hRSw?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_6f2435784b81",
-      "category": "conflict",
-      "type": "insurgent_attack",
-      "headline": "13 US service members have died in the war with Iran . Here are their stories",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "yff4.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "20260525T173000Z",
-      "last_updated": "20260525T173000Z",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "gdelt"
-      ],
-      "url": "https://www.wyff4.com/article/us-service-members-killed-iran-war/71401493",
       "is_new": true
     },
     {
@@ -1330,7 +1302,7 @@
       "first_seen": "2026-05-27T15:12:02+00:00",
       "last_updated": "2026-05-27T15:12:02+00:00",
       "lead_time_hours": 0,
-      "source_count": 8,
+      "source_count": 7,
       "sources": [
         "google_news"
       ],
@@ -1363,34 +1335,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNbTh1NmdDNkl4dEdSNmN2ZzE4WmZ2Q05hRVhhMkJFaTNjZWpjdlplc1dHUkhLU3RpaHl3MFl2bmc1aFpPb0I1SUw1dnR5RDZGV3VxOERqS1plRUtFdlpzVnVfYkJJRG8yVzhqMWhQUUV3Q0JFcWpOSGk4YTdobGRvNkx1QVV4bldaV0hnYjVta3dXaE55S0FndzAzeGh6dUdQVG9fbWFFbm5XY3dmUWhyZ2VMM0ozY2NUeS1CT3FueVlIaEFDZGlFTkEzYXhXOGI2YUg4eUZCdDNvaVBGOWtybzYyWG00UTZaa2ZDRmotMFFsZFhMMGZ0UmRld1dfdw?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_a20d4850036c",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "A Palestinian woman and a young girl were killed in an Israeli airstrike in Gaza, officials say - AP News",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-25T18:43:00+00:00",
-      "last_updated": "2026-05-25T18:43:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 2,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPU0tfQXMyUUhxNnJybDZZdEExeVZDU1M1ZGpZMHQzdk9NUnNKbi14bDB3Vm9Vc2dLUVdMcWlrLWNsVDRVMHNMZHFsRG5lZnBoREx3TGJ4RUpFVHpRbnQtRmVhcm4wUUFSNDBNQzNlcExNZ3JPV0dlcF9Cd0N4NDFySk5wY3RYWGc4Wi1tWEFPWW5oNkd0ZnM1TElB?oc=5",
       "is_new": true
     },
     {
@@ -1478,6 +1422,62 @@
       "is_new": true
     },
     {
+      "id": "evt_47a768f82bec",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "IDF Conducts Airstrike In Northern Gaza, Targeting Hamas Terrorists - i24NEWS",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T19:56:17+00:00",
+      "last_updated": "2026-05-27T19:56:17+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOYTFUNFpSMzN0dG5HNTlfWmZ1c0Fibk9lQWc4UTFUUm45cjFucGFYdk00V3cwQXQ1N0duTjgyQUNwWDByTEFTQkNUM01wTjE5am9yX044NlZPOGQtMWFHQ0dWRHVZWnh0WU1obU1saFpOOEFCamZGMzhvUFBCLVY0M0l6MEpoS0JIT0Nqb2FMbk9SRTgtUmtBbVcxN1FkYll0Z2IzaGQ4Q292aVF3dFVaVUZlM3VnRjY4OEZCT00zSVoxTkNqVV9ZTW0yemRlRnZOTDhLY2RLaw?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_a20d4850036c",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "A Palestinian woman and a young girl were killed in an Israeli airstrike in Gaza, officials say - New Haven Register",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-25T07:00:00+00:00",
+      "last_updated": "2026-05-25T07:00:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOYVc1Sll5amZFYm4zbkJ6VjY0cjR6aC12M2g3eUZmaUpQU3YtNmVTYmhLOFItdlZwQmNXdWNXZDBjSmJVNVZKQ1ZTemUyeDRJNnQyUVM1TlhDTXVnYkFzVmhqVFE1UGZnLXloT2ZBQzdHSG02MS1wVXJKZHRxaDFPUm1mTXM4NDY4SW8wWF9Bb2xSMXk2SWFLVm9hMDlMekJuZXpIUXlBbERUU1U?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_35770aab6394",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1562,6 +1562,62 @@
       "is_new": true
     },
     {
+      "id": "evt_088fb1e2f560",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas says Israeli airstrikes killed its new military leader in Gaza - Messenger-Inquirer",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T14:33:18+00:00",
+      "last_updated": "2026-05-27T14:33:18+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxPQmJjb3J3UEtqXzdMNHk4V21QWHgxWndROVpkQjVLQXJaXzl4VTU1QVBnWjZiZ1ZIOWg2YUVqTThWdzZjanBZMzJ2bGhySDN0NXJWeThaa0E0RXFyWFRJRzZHak53S2NzOXdIX2NGM29OTTFMT2tvRExzOFRtZWtkaTE2M3dyX2dOWXJwdkNBY3RvWllUWmlPbkNSUmRfQ3g0YUJqaGxNaWJTWjVSd1pVLWtmdHpRR0hNRXd1T2FEUGhxOTlJRjhYQzh6azkyRWVPem1PZXNyV0h3Q0Y3OUV2b0pBdzhhRHY4VTdpd1JKcDYzY24xTWFueEZB?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_52d105693527",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas confirms that Israeli airstrikes killed its new military leader in Gaza City - Messenger-Inquirer",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T21:46:08+00:00",
+      "last_updated": "2026-05-27T21:46:08+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMijAJBVV95cUxPTkF6LTBaT184TEU5ZzZJWllscDRCNmp4NmVIcUdyNUZuemJ4X2o4dTJfemt1WExvMXY0SWdBTzRDMG41NmwzR0gxTnVES0dReTdHbFREY2FHeFIyb0N5X2lQY3FOX1BpcndjVTVnOE5Hc1VHMDM3VFp5Q3lua0U3UWpXLUs2Mzg1N1p0V2Jod0hMMVFjdjBscEpKbnN4RjhxNkpLN1REWDVjaDl2TVhLU3B3X3hhVVVZcmh2cDkwaEhNOEZfWWt0c1RMYndNME5Wcm5ZQTQxWGRiYXhzY0ZaZ1Utbk4zS2c2RTBVdkVwRDZKem1oS1VpYmVOOEVrNWJDdHRkZDlKQU9PMmdf?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_6324d57b275c",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1618,6 +1674,34 @@
       "is_new": true
     },
     {
+      "id": "evt_e3ea48457d31",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas confirms that Israeli airstrikes killed its new military leader in Gaza - Messenger-Inquirer",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T21:02:03+00:00",
+      "last_updated": "2026-05-27T21:02:03+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMihgJBVV95cUxQRXVHa2ZwSTZFeDJyYVpQdWtlNWNOb3d6NDctMkRSNWxtQmNQbFpxSDNNVjczX1U2V3F3MVpvcEpFLWQ5bldRbnhvLTR1aDRwMlhIVEZMd29CZ05EMnVfMFVKclVqQW5zOGwxNGJzbGdPUFN2aWJ0SWhHOXBGZ2NBbE9EWFItb1hTLWdxbU1QOS16YVpaT19vcFd2MnRKV0VLVENGTjJ2Y0RWd0tJczJtamVFZUVhZzhnc2YzZXA2R1hQR3N6dkdnMUVJNFdTbkhhcmY0dnhES2k0cE5fM0VtV3VpdERHcTNNbTRTVHNrLXFicE16RDkycDdHME43N1dTLWRQQ2ln?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_c59fc8dc0fe7",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1643,6 +1727,62 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPOVpFR0ZqT1hfNVhlUUpwSVJXV1V5NHRuOTNJQ1Y3amZwTWZsU3M5RUVCSFVPYmlpbE9hTVJlNHNBWjlJRlFCWDNrTTRMMmEzZTg0VXNzc2Nub1c4SmlZMmk4OGhQd3ZoRk9XLXlpYWhZWXZEOWM1Q2FxMDNZcEo2bkNWT0dRQXhKZDRLREFlV05xVFhiYkFsc1RhZjdBQQ?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_9cc73e1846db",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas confirms that Israeli airstrikes killed its new military leader in Gaza City - Rocky Mount Telegram",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T21:46:08+00:00",
+      "last_updated": "2026-05-27T21:46:08+00:00",
+      "lead_time_hours": 0,
+      "source_count": 3,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMijgJBVV95cUxOZ0JxZjByWDZRamRrbWkyajhPeENxSC1hbmxwcTUwdlVQS3FvYXhyUUFSbDR1M0JpRndBNFR3T1J2MHIxUlFiSW1JTFJESVRWQUNjZW9PUGFqbXF5V29wcTRueDZleGI2ei1hUmpBRG53V3AtMHRUaWVELVlwY3lYNkdQUkkyeVNzaVVzQmJrY29XU3hYS0NNcjRkREVCa2FNeWp1X05VYUVTeldpOFNjVWdyUTZVLVlRcV9UUmNFV0psQnQzSGFNR1VtVlJyT1ZVV1MwZmFXV0pIQXNfQzNPaFVuWGFKTUU5aHNfdnptdDhhQWVPMHFPUEY1cUpCcmN6WGhwWm1jUmNaQU5UZmc?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_7cec3b7d48b8",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Hamas confirms that Israeli airstrikes killed its new military leader in Gaza - couriernews.com",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T21:02:03+00:00",
+      "last_updated": "2026-05-27T21:02:03+00:00",
+      "lead_time_hours": 0,
+      "source_count": 3,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxOaTJwWG84LXNMS3VxQlcxTnNPMkNGLUREUmJpWkRjcUVCNS1KZm9uWnhhR2xUeEtwazdXWEFFZ2FzTjBVd1dGS2VEaFF5a0YtRmozczROQmNOQU1fZG54MHlYTkZ4cDhNX0xHZVZjaDFibk4zZjc1eDBGVTVQTWlBMEdQZkE5M0NuZHkwZnNJVFV4N0R5OVhfVER2RTFENF9TV2xCeGotTVIyWGhFSi1qLW8wenp6ODBpNDAtZF9xbFpSaW5pOG1kQjRsbFpQc0ZjWnc2dUotcnhIY1pzLVlyd3lhcWlKT3hOdnp1MXZGejRqVGpfRGxKc1hR?oc=5",
       "is_new": true
     },
     {
@@ -1814,34 +1954,6 @@
       "is_new": true
     },
     {
-      "id": "evt_c1ff91e80f8b",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Tragedy Strikes Gaza: Airstrike Claims Lives Amid Tense Ceasefire - Devdiscourse",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-25T18:58:28+00:00",
-      "last_updated": "2026-05-25T18:58:28+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQQ1haNEZtUktZUmk5aUxBMUhWSkx5ZWhvUGFuY0FzRnhjWDVxZWpOeTc3QUdlUGZZNXU2WFZEU3ZoZEEzMUJBdFdtOElOWmNlaHhCLW1tYXI2UXd2cVpDTklJa0RsRXc2cU1rb1gtNTQwQU1ZV2RGUXNNZ3F6QlVTQ2toYmswUWhHRmczV0xuQm9uYkhOUnBLUENwR0V1ZUNjSE5pNDZvdFlidzcxdUwtaTVvOVljMDc0aXfSAb8BQVVfeXFMTVVyT2ExOUIzZnN3U0xJQi1kQmZNVVF4bXR4VGNJb2RYdDVjYVFSREg4OVBIcGI0QXB1R0xmN2NfeXRxdF9ObGhGRWo0ZHgxbTJ1ci1fZTZaUUJwUmtHOWNTaTkwbTQtbVlES0hDOThfVjIzdE9ydzRVMDB3d2Y2QjlWYWJRcXNZQlBNY1RTWHFlLTF1WFVMekNjbUZ0TDZfQzRtV2RHdTlCZEs2ZDU0Ym52eHdaRjJDUEU5cFQ3SHM?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_86d191925659",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -1867,34 +1979,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOdEV3eTVER2Y3UzRVQXMzWkQ4Qk14aE1GTVNabjJJSkl1T3p1SjY5TEhzUkhtbS1raGNyY2dqTGptOVVESXlZZmhweEJ0M1JFb2dhc0todDZVdUpSVlNGSmlVVElOVlJLZjBOSU9XeUJ4WDFfRWFudlJIU2pqNFliUVNpMHhHd1lIUWlUTzZITmltSnBtV002eGxCMEhwT1h6T3p6TUo1V0RzelJHOE1lSjA1YUl0ZFdUdWRGVdIBwwFBVV95cUxPeDhIV1RPTXVzS1R2TFk2OVc2a1psZmZQWVNVX0lNd0tuaUl1eXlQc0Z6MjlkWFR1V0h2a1pjSGM5ZTNrcHdDQ0VwZ0hmMWRzbGFBbUNaWVotRVFNbU5jTW1XT0JjLVB1RG9UbllKeVJrRHZRcEJ4ZjlmY0tXOFUwdGV3SFM1MURIRktBU3ZqeEZMdkdrNUdMeHlkWkI4VjctN3lGNUJNZm02MURkdVhveGNYTkpzYnRudndUdHFWdm94WDQ?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_18dc5e1c07c4",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Israeli Airstrike Claims Lives of Two in Gaza - Oz Arab Media",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-25T23:00:57+00:00",
-      "last_updated": "2026-05-25T23:00:57+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFA3OTM4cE5tajNZc19kWk81NFZrZldEdVVQTXdlNENzcXZYOGxYbDFlbU4tWlZkcWVwZ0gtVWZ5QnZSQkp4YzZ1YnluRUVFOE5tek1FX0xtQkV1ekpNQ3RLVjdKcE52Ykw1MzRaOFg4b1Q3Rmt0MkE?oc=5",
       "is_new": true
     },
     {
@@ -2066,6 +2150,34 @@
       "is_new": true
     },
     {
+      "id": "evt_0fbedf8d4ebc",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Israel says new head of Hamas’s military wing killed in Gaza airstrikes - ABC media",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T08:16:30+00:00",
+      "last_updated": "2026-05-27T08:16:30+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9CR3l1dmFyaks3NzBSUmR1Wm44dTQyMERXaTZlVkRuekxTbW8wWkwtb3BvZTZyM2RJS2dubU9tZ1RiM2sxMkVicmF0MA?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_710b0e1bf626",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -2178,62 +2290,6 @@
       "is_new": true
     },
     {
-      "id": "evt_4ad0a737f605",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Hamas says Israeli air strikes killed its new military leader in Gaza - Belfast Telegraph",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-27T10:17:26+00:00",
-      "last_updated": "2026-05-27T10:17:26+00:00",
-      "lead_time_hours": 0,
-      "source_count": 2,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxOc1JTd1lvSmxwQVlBNG1TVEtvYS1wNjl5RVBOQ1dvcFFheXBBUUhOc0UzZ3VWYmNYN3NaR0xWcEhHeEdOMm5ucXlwQU42OGhTYnhuM0dvbHVhQjB3SkhSMmY1VHFQSFF1ZGJIanhTUEZzYVBYLWM1bHRxQlJvNTZsU0JYWWh4QlFWaDNqWW5KUEFPMXpNeDRoSGl2MDhJaHNPOTlTWXUyVHFKSGozS3JydDVwRm5sTmlCanY2UFFybzktVnlrckY4NkV3SThZUzFWNDdr?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_cc4efdc13657",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Palestinian woman young girl killed in Israeli airstrike in Gaza officials - theweek.in",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-25T19:09:25+00:00",
-      "last_updated": "2026-05-25T19:09:25+00:00",
-      "lead_time_hours": 0,
-      "source_count": 2,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNSDVIZ0tpNGl0SGVmNE5ac2s4OU9kbWdzUzdyS1A1MXBMdGZwcWdfZUU0dVBtbWtjY3FSM1dHUVNEcUw3SlhTelp0YnM2SGZDX2NiUURzbDBsUXlDT21waEE0eXZSQXBiWmNmMDNOVzh5SHJUMlpIb1c5T0ZLcElCRVczbWxUZURZeXltWExCSTl3Ni1icGRGT0RGRE54QllMYVdoVTN0UEprVUlCa184REZFZUVmSHU1U2psNFNGZGVFaU5MbGZsVU1kaWI3QWZIWlBFSEZldHB0OHhU0gHcAUFVX3lxTE1INUhnS2k0aXRIZWY0Tlpzazg5T2RtZ3NTN3JLUDUxcEx0ZnBxZ19lRTR1UG1ta2NjcVIzV0dRU0RxTDdKWFN6WnRiczZIZkNfY2JRRHNsMGxReUNPbXBoQTR5dlJBcGJaY2YwM05XOHlIclQyWkhvVzlPRktwSUJFVzNtbFRlRFl5eW1YTEJJOXc2LWJwZEZPREZETnhCWUxhV2hVM3RQSmtVSUJrXzhERkVlRWZIdTVTamw0U0ZkZUVpTkxsZmxVTWRpYjdBZkhaUEVIRmV0cHQ4eFQ?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_70ea3991479f",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -2287,6 +2343,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE43X29wenVZN3FSN3NhcGw3MHVrZG00V3BvOGg2dVNxQlExSXpfdXcybDc5WmF2T3ZGZ0tDOWN2UUhqOEFtNkNTbGFybDZnbms?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_34a725418514",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Gaza Eid: Airstrikes &amp; Hunger Shadow Gaza's Eid-Al Adha - WION",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T05:16:00+00:00",
+      "last_updated": "2026-05-27T05:16:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPMFRpM0FTVzR3RVd2R0oxekMzUVkxYmN2c2dqb0VfLWFST3hrMmxleGJNN2ItRHE1Yk9JeHM1R0xPZ29HUXJjZHAzcnA5XzhTX1R1ZzNEYWlTNElWdE9OcW5EWHBqcVBVSTJYdGxNWUxmTlprcFNfYUxLcGNRX1VjazNmVjhTWjk4ZjdwV09uS3J5N3dlQVhRQXNLSnBYZ9IBowFBVV95cUxQdzhjTmxfZXNTM0piOVI0R1VzaW51d1RlQy14M0JvTGYyS25VQjdRcUt5LW80dFlyTHdHN2wyanVoTEZCM0NXcUpjQzdKem9LVGd3Tk1UQXNVbFBmT3UyX0drY0ZLUG9oX1J5TEs4T0FiLVA0SUt5VDU1ZnZQcHYzSmRqTHRPa19xZS1sS09MbGp0LUVJQUZiUnJhN1Y1ck1HdXBB?oc=5",
       "is_new": true
     },
     {
@@ -2374,6 +2458,62 @@
       "is_new": true
     },
     {
+      "id": "evt_974d3c9fe7a3",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Four Palestinians Killed in Israeli Airstrike in Gaza City - qna.org.qa",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-27T21:13:08+00:00",
+      "last_updated": "2026-05-27T21:13:08+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPYndMa0JuWTlURExRRnJDSDI0SDJLTkZENHE5RXZ3d1lDTjFlQXR3UlA4SDBlR2RzQXdfUW1RSy1zbngyNHFVdG5SalFxTTBTNlZCUThJMlRjR1I1dVNhaUxUS0RzMTJpcDRTUkZLczVsVC1NbkZWSnIzLU82Y3YwUzZhbW0xSzhGWEJPUWgxY0taVHJlYU1nTnVpd1lJQzFiNV81WEVoZTE?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_f3ccb4a7efa8",
+      "category": "conflict",
+      "type": "armed_clash",
+      "headline": "US-Iran talks: Trump convenes cabinet meeting. Israel accelerates offensive in Lebanon. Hamas military leader killed in Gaza. - lamilano.it",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-26T20:02:11+00:00",
+      "last_updated": "2026-05-26T20:02:11+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOd3N4YTNncjFaa003NG9BNnlBaER4a0l2Wm50UmZ4SEpaVkRXNjZxcjE4TFVpU21UZjJlTkQ5a3p1b0huV0hEU1NuUWVKenpnWmh0eW5WQXk1djlzUVNWMkIzN0QtSWlQNUx0bUIxNWZnTi1iSzZwczA3eWxjbktPdE1rLUNPbGtXTFluMnY2TGlEbjc0VHBKc3E0Y2Y1MjQza2JGSWRyNWotckdPUDZUeU56Snd5a0cxc2NUdnZRN0dJd3RaQnpSNFc2SFNHbEloS3ctNTZiMUxzdw?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_f3507725b27c",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -2399,6 +2539,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNT2NrWWZaUHhFWjFWdTVkV3V1ckZmT21OMGdGWlNRZGdrblFEQXFfN2k5NUt5WTNlY1A5TGhSZVgyN1RhUS10akdWTHAyV1YtVV9memIyRlk5UjVCLXROSmo0SDhIVVRkWW81cG9iRnZLdnkyaURFMG5ES2JXanVLLS1uM3lNT2dPYVI2WjFjb1p1Wk16V2VtYTJMWlR1Yjg?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_e7ad2054b5bf",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Israeli airstrike on southern Gaza damages tents and water pipeline - MSN",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-21T00:41:35+00:00",
+      "last_updated": "2026-05-21T00:41:35+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQSm40ZFd2ak94UlZrcm9LOENhRnQyc1J6LVZLVWtfT05yVFdfeFdqeTIzQnZPRHZJaU5NaUh3T3ItcURZZXkwVVMwb0FxSnhLOGF1N2hwWXcyU0c3SlhyeUpWd3J3dTBhQlhuMW93N19vOF9PWHlwN2lyUk44Y2JhcFZ1MUVmUy1kYTBHRFUwRWxqYTBlNldyaUROa00xLVdBWUVFT3h1Z0trU1ZVU0xNWFJhMVRvZlRQUHVDQ2RjaEtUVHc?oc=5",
       "is_new": true
     },
     {
@@ -2514,10 +2682,10 @@
       "is_new": true
     },
     {
-      "id": "evt_c28d324eec0d",
+      "id": "evt_8dfd95497c66",
       "category": "conflict",
       "type": "kinetic_strike",
-      "headline": "Gaza Conflict: Israeli Airstrike Kills Woman and Child, Ceasefire Stability Questioned - zoomnews.in",
+      "headline": "Israel conducts airstrikes in Gaza, targeting new Hamas leader amid ongoing conflict - MSN",
       "severity": 5,
       "confidence": 0.9,
       "source_verification": "media_ai_signal",
@@ -2531,42 +2699,42 @@
         "admin1": null
       },
       "country": "PS",
-      "first_seen": "2026-05-26T02:52:24+00:00",
-      "last_updated": "2026-05-26T02:52:24+00:00",
+      "first_seen": "2026-05-27T05:08:30+00:00",
+      "last_updated": "2026-05-27T05:08:30+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOLTUxdUxNZVBHY1NNeUl6VkxZWnpKcXdPdmYwWmZxNnhlYjMzTm13bjVMY3Q2MHZvR0NhZ1pWVU44MkY5b2ZGRmphLTIzSEZlTFNvdDYyZ1JrWk5GYTJHbUpXSDFQT2FnaS1JTDNOOEd0ckFqeEMwMDE2YzFHZ3hQd0hDN1M4dVZ4QXNlSHU0am9HQTdLaUVZbFdDWllVdXBJM0tfa1ZxeS1Db2dzOVFpSEdGZG5GZ2dSa1hOTEs5dzNtTVg3WWkw0gHMAUFVX3lxTE5NXzNRNFBsc1pRcHpIMThwVW5JZnpENmNhVTQ5RHpnMEpNZ3hBcG9kQ1V5Wk00Rld6OHU3U3ZaTkhkNG9vSmdvdkhIX1F0T2Q4Q2FNOWJnYnlGWnhNd1ZYS25VSTEzM19NMjBubUdPQnFJaFdqMTI2ZEdETXluM2VTb2pIYXg4aktyVVdVY0NYQzZ2OWlBZHB2bVdLZ0wtZlNhYmJXLVVYbFZlMjc1TDdKcFREdXhZUjBMWXdNREotR25xY3FPbkZwb28zdg?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQUUxpeWhhY3JKRUdQN3lfdFhibllZaUVrS0xONlFscHJVVHl1bi1Wb2NYc05OZHhlUlE5Q0l0VW5RdzJFYVZfREdwRVRCai1PbWd2SUlzTzNMWVVpOXh3V2lRN0t4LVJoS2FaR3NnZkdzR1dMOU1NMm1kLVZFVnJ6RHNPMmg0U3Y5aXBfTDNjZ2p4Z2pidXhoaUp2Q200NzdEeGJJSzJSenRnN2RMUnZHQzNCOS1WVGM1VkZuR19nR1VnQ2R3VlV3T0h2YkYwNFlPbUlOVXQ2a0hTLU5YRjVFVw?oc=5",
       "is_new": true
     },
     {
-      "id": "evt_33d5cdac6a05",
+      "id": "evt_02798fc2285b",
       "category": "conflict",
       "type": "kinetic_strike",
-      "headline": "Myanmar Military Launches Three Hour Airstrike on AA-Controlled Ann - Narinjara News",
+      "headline": "The media in Gaza report a great loss for Hamas: the movement's new supreme commander was killed in an Israeli airstrike - lnginnorthernbc.ca",
       "severity": 5,
       "confidence": 0.9,
       "source_verification": "media_ai_signal",
       "source_class": "tier4_media",
       "source_name": "news.google.com",
       "geo": {
-        "lat": 16.9,
-        "lng": 96.1,
-        "place": "Myanmar",
-        "country": "MM",
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
         "admin1": null
       },
-      "country": "MM",
-      "first_seen": "2026-05-26T18:00:58+00:00",
-      "last_updated": "2026-05-26T18:00:58+00:00",
+      "country": "PS",
+      "first_seen": "2026-05-27T05:49:48+00:00",
+      "last_updated": "2026-05-27T05:49:48+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9Xd1M0SHk5dXpWc0lCTzk4X1NqMWJyUnd0MTllMFcxVkxtNk1HVVZkTG1CbXhibHMwSC1rZW5GVWY1S2QxTmVlalhCdjJfZ0hESGNFaF92WVkyb2Y1QUk3WFVibDBsR3ZKTFdyNW54QQ?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxOYnBhdnk1Rm0wbE1KZHNyd1QxVXViUk9ISlR6aDlrZEtKaEFzV016enl1OFIyRi1rc0hWc1dNMXdTS0Y2bDFvRUtmYWF1NUs1ZUNsd0djRzA3Y0dXTjQ0cjJkMGpOQWJOSWVrZ3lRNnJKcFBfTWNCMThOejVPZU9WZVJVUER0NVNxTlNGWkNmbFFHZkpvX1Z1OVNaNXJzUWJIOHdXZWZ2aVRhM0hROFNfWTRpQ2dGeDZTSEVJNmZiX0xCUUp2Ykc2c1pOTE0ycFJVenRvX00yUVl3MkM4STFrV2ZaYnd3TXY1TVJBRG5R?oc=5",
       "is_new": true
     },
     {
@@ -2794,6 +2962,34 @@
       "is_new": true
     },
     {
+      "id": "evt_192aac47d96a",
+      "category": "conflict",
+      "type": "armed_clash",
+      "headline": "Netanyahu Vows Intensified Offensive Action Against Hezbollah - WION",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 33.9,
+        "lng": 35.5,
+        "place": "Hezbollah",
+        "country": "LB",
+        "admin1": null
+      },
+      "country": "LB",
+      "first_seen": "2026-05-26T12:01:00+00:00",
+      "last_updated": "2026-05-26T12:01:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOMHFIZlI5Z29BYXJNVXd6NGlxczk3LXgwajJLMDlJVVJuVjRuUWdEakdFZ1d5dDJEWWdDU2RqeDlxeEpGcElSTFdxTWxRRmtyN3RDOTd5OGMwdTJaOFZfa3g4ODZWLV9NQ3pkRjMyOW9FSkFQdVQ1S0pSY0lyTWhfeGdvMzZjNDI3NWVOZE83UjZTUnpzZ3U3Vll4TFYzY2ZySlNYMkROVl9USmFHUVhJ0gGvAUFVX3lxTE4wcUhmUjlnb0Fhck1Vd3o0aXFzOTcteDBqMkswOUlVUm5WNG5RZ0RqR0VnV3l0MkRZZ0NTZGp4OXF4SkZwSVJMV3FNbFFGa3I3dEM5N3k4YzB1Mlo4Vl9reDg4NlYtX01DemRGMzI5b0VKQVB1VDVLSlJjSXJNaF94Z28zNmM0Mjc1ZU5kTzdSNlNSenNndTdWWXhMVjNjZnJKU1gyRE5WX1RKYUdRWEk?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_7786cfe711c2",
       "category": "conflict",
       "type": "armed_clash",
@@ -2906,34 +3102,6 @@
       "is_new": true
     },
     {
-      "id": "evt_229991cf8c8b",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "UN Envoy Condemns Deadly Missile Strike on Civilians in Yemen’s Hajjah - Yemen Online",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 15.6,
-        "lng": 48.5,
-        "place": "Yemen",
-        "country": "YE",
-        "admin1": null
-      },
-      "country": "YE",
-      "first_seen": "2026-05-24T23:37:33+00:00",
-      "last_updated": "2026-05-24T23:37:33+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5ROHNiRzRqSU9fazhJMm1tMDVNaGtTWFc0SWFHcjU1RWFlM3dsZlJxN2FLeV9GQ3Q2VS1Hd3NhckE1YVI1WXJlay1HRTMzcDNJSGFjVFlKRV9lbThxRWdlT29MSlhIcXdu?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_8bbf3ada2750",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -2962,34 +3130,6 @@
       "is_new": true
     },
     {
-      "id": "evt_9ea8ca2d7de7",
-      "category": "conflict",
-      "type": "armed_clash",
-      "headline": "Houthi drone strikes an Israeli airport as Israel steps up Gaza City offensive - MSN",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 15.4,
-        "lng": 44.2,
-        "place": "Houthi",
-        "country": "YE",
-        "admin1": null
-      },
-      "country": "YE",
-      "first_seen": "2026-05-23T03:56:55+00:00",
-      "last_updated": "2026-05-23T03:56:55+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNRVM4THdjeUlZOXNqMEFSOUtHMFdxRmxEVk1Fdl9SdlBvNjJvdC04NDZSVFdEckJvcTN3dVJNX1VTMGlJTXFKLXNQcGhKUk1YdUVrcy1EakR4QXhPUHU5NlFCUjVaYzV1eWkwLUl0WmtrUEdiMW9hbFFQcWI4OTBNVDlHVGozcWV1YUhmc0JlRWhIVWowUXIta3hpOFB5T2V1M0FDR3NfNkVHLUJRU0ZwN25HWVNFSm5uNEl3MkpDY3UteFpub0xNei1qcGVMS3pCMF8yYmpnb2VyZjVrcHhSYUwzWXJpY0l4NHBGN2NvdWs1TWU2N0xlWUNoTFdHVHQyU0FXWDV3TVBpY1ROd000cXRCOWFqcDYteGFRUUlOYnlTNUJIS0RXMk9nRURxTlMwTnFCV2QwOWRSQVpmcDFfMEROYXRHamNpOXBWZVBzMTNGandtQWZSZEY1Ynk?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_571478640c0c",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -3015,34 +3155,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQRWlnRExtMGhxcEdGRG5jTUk2bmhQR3ZDdk1vd0ZtQU5abVE0QUFmVEF1UlRGdzFLYWthNllDWG5qZ3pFRmtZQ1R0djVMR2dnbmxnMVNZdzRfQlRvUVl6NzROSkljN0JzeWUyMTdhWFlZTHhEM0VMWE5yTXZCODdJeU1mRm9FMjZNWFJQaU1raHRVX0hKWllUZzBkVkl6ZTNZS2VwYmVFRXYtWUV3MWtVWXYxeGtpSl9r0gG4AUFVX3lxTFBFaWdETG0waHFwR0ZEbmNNSTZuaFBHdkN2TW93Rm1BTlptUTRBQWZUQXVSVEZ3MUtha2E2WUNYbmpnekVGa1lDVHR2NUxHZ2dubGcxU1l3NF9CVG9RWXo3NE5KSWM3QnN5ZTIxN2FYWVlMeEQzRUxYTnJNdkI4N0l5TWZGb0UyNk1YUlBpTWtodFVfSEpaWVRnMGRWSXplM1lLZXBiZUVFdi1ZRXcxa1VZdjF4a2lKX2s?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_35caab37e874",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Israeli airstrikes pound Yemen’s capital Sanaa after Houthi cluster missile fired at Israel - MSN",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 15.6,
-        "lng": 48.5,
-        "place": "Yemen",
-        "country": "YE",
-        "admin1": null
-      },
-      "country": "YE",
-      "first_seen": "2026-05-25T11:41:58+00:00",
-      "last_updated": "2026-05-25T11:41:58+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMigwNBVV95cUxQeThLUENDTXhLSTg4NUVCbVl2T3N5SEwwdml3SC10NTF2Sk1yaXJiWExONW1wdzEzUVBTN3RwbFZxZUNQaVZDOE43VlRwX0xyN0NBZVhNbjR3ajFmTEtLQUdMSU5kTjhQU1l3MDFvMkI1UElZVDNNUl8xNE1NcXBnMmVpUl8yZ282VnpDU3VKeE45NWVWM2tIUGFuUkFuYnc5aEQ0emllNWdHYXlTSjgzaUlKeE04UVZIXzdNWkRWM21vTndkU0NpVmkzVU9ZQTNlakhSWEZDeDRsQXVBY2dYdVdDb2pGX0lfYTdQdlF0NlhyNnhwSG05a29yYzJFbkcxc1BxMndOT1Rhdkg0dHR6SVNyUENFUVJpbThtbnE0bXl0aFFLTnZZclJHMnBUcFVhSWxrcnV4S096VDF0NUZlVHR5ZmU2aDBIY3AtLUx6MjFPT0FWYTB0cFUxQTdNX1JTMWFXV242LW5CbEthWk5UN2lLNnVLSTVjbEF6NnM5Wk9IMHM?oc=5",
       "is_new": true
     },
     {
@@ -3242,34 +3354,6 @@
       "is_new": true
     },
     {
-      "id": "evt_9773f6849c49",
-      "category": "civil_unrest",
-      "type": "emergency_declared",
-      "headline": "Myanmar’s military-backed government imposes martial law in 60 townships - DD News",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 16.9,
-        "lng": 96.1,
-        "place": "Myanmar",
-        "country": "MM",
-        "admin1": null
-      },
-      "country": "MM",
-      "first_seen": "2026-05-25T05:37:00+00:00",
-      "last_updated": "2026-05-25T05:37:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQdlVQeEZYUWtFM1ZKMDA1alpvT01maVh2VjE5Zmhtd3dldU9EX1ltTHUwaU9PT0ZDS0hfdjMzVkhQclE1QmphM0pKTVpRbVdGVlk2TFJ6WlFzMU1qbERoQUNEWDQ3Z2tqMU43aGJTSDAzYjhkRlA5LXVjUUZIWnE0Z2V3QmxpWlg0M3RiVF9kbV9TMmx6LVBaNmczajloZw?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_c0652af65502",
       "category": "civil_unrest",
       "type": "mass_protest",
@@ -3435,34 +3519,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOcHFGUlFKaDZ4M216Qm5VNTNfQ2ZwRFRxaTRTSk9nMVN3dC1zenlmalRqS0paNkZ0aUdIRVYzRVFDNDZfYzkzdFppeWNoNEhldjNqc1I1bUFZYXdTYTY0NHp5TDZMZWpnTU9kSzNGZXcza3dJSm12bXRwUWx6djFrZ1NCYktqZ2JOTUVINkxLTUxZaFo2TDJkcXpFbGF6QnBGWEJIRHhDSWowOW1hRDB1RE5aaTl1M1FsVEh5SEFPeXZJNnpJa0J5ZXN6MjdJbmtoVmE1Q0VpWVDSAd4BQVVfeXFMTkZvRXdWYUhJN1VhNEhpZjBBU2VIclJCT0I3U1otTFU1TENYREVOVzBJRlRtclc5bDhPbzZEd1BrNkl5R29FQWVaRGM4bnNua05sQmhfcF9qY1FHNmNfTW9MbDBxOGJKSVYzcUpzRnZhTW9SZHBscnBPUEQ3VXEtYWpWNWFZb2R4VDZseFJXX3FCUXhPZjBjaFR6eUMzTkl1WFIwZS1GWk1JS1oyVDZDR3E0dklGdWZJUm5GQ05ZV1ZYV0w3cGt0Q24yUG55Y1FCSWg1akdsTGZzT2QxcUR3?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_b54bb94c74f4",
-      "category": "civil_unrest",
-      "type": "protest",
-      "headline": "Rooftop protest at Venezuela prison - The Telegraph",
-      "severity": 2,
-      "confidence": 0.69,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 6.4,
-        "lng": -66.6,
-        "place": "Venezuela",
-        "country": "VE",
-        "admin1": null
-      },
-      "country": "VE",
-      "first_seen": "2026-05-25T23:10:00+00:00",
-      "last_updated": "2026-05-25T23:10:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNcVpIWWNFOC11ZFNBRkZZYXJJbkY5cTBHZDl4ZC1zdy1tZ3Y3Z0ZDM0NhOVVmbnp5Y25sWVd6ZVotNWNYTS1KMjl0SkRKODlScFJiZExMZFp1OWVQWEJpRzgxd2w3Z2tMdk1lTGNqbXJyUFhQLXlMVXdJZXBVVDdYUWV0ZEhPdkFuakE?oc=5",
       "is_new": true
     },
     {
@@ -3914,34 +3970,6 @@
       "is_new": true
     },
     {
-      "id": "evt_bbd821c9adf3",
-      "category": "transport",
-      "type": "transport_strike",
-      "headline": "RMT Rail Strikes Wreak Havoc July 27: Southern, Great Northern &amp; Thameslink Hit with Severe Delays and Cancellations - uknip.co.uk",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 55.4,
-        "lng": -3.4,
-        "place": "Uk",
-        "country": "GB",
-        "admin1": null
-      },
-      "country": "GB",
-      "first_seen": "2026-05-25T07:00:00+00:00",
-      "last_updated": "2026-05-25T07:00:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNWGxMM0ZWQjh5Z1VqS3dsbElpWFRFYjV6LTZtS2YtbHFEcVVNd0hSWjlnZUszQ3RibWdCMXFRd1A3RDRBN25qVnN5SThBcEVCY0Y0ZGE2cnhjc0pBUm04U3l2cmx0bmtCQ3UyZGdvOEVzbFJKaFhIOHlid01wUjkweE1PMkxJUVVCenEwZVdQMVp3X2cyN04wUzNBZ2ZmbHhIcml4ODlIUHVaZFlTZ1FoVldYTlUzeE81aXVudVZBMXVxVVlxTThBcjg2SWZvWlJ0SnhrVEFCWWxSOG1nSGg2Y0lUUmhtTHpa?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_ad0670dba670",
       "category": "transport",
       "type": "transport_strike",
@@ -4026,34 +4054,6 @@
       "is_new": true
     },
     {
-      "id": "evt_1f77e6416e59",
-      "category": "border",
-      "type": "entry_restriction",
-      "headline": "Canada enforces 90-day entry ban, 21-day quarantine over Ebola - MSN",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 56.1,
-        "lng": -106.3,
-        "place": "Canada",
-        "country": "CA",
-        "admin1": null
-      },
-      "country": "CA",
-      "first_seen": "2026-05-27T01:48:05+00:00",
-      "last_updated": "2026-05-27T01:48:05+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxNSE93WFpuZWxSZm1XNHhVa2RYUmFuTjhZU3l0bU54YXFYZ3ZsbUc5eVdJUExjbU9zOUNqVk41YS12V253eVlzWHhPMHFhY1Y3WmRyU0lBZmtyWG5IN2stZ0lhVEVmcWFBbnVoUzFuTXpWRFMwdjNlX0tkOFF5bmd2alNDRkdEdUlVX21HZ1pmYTBDbDZtQ0x0a1R3eDhoSmhScFBFal9QcG9GOXBaX01PLXp1b1ZvYU1hMlAwOW5xUWs5dmxUM1U1VkNnNWxHcVZGUHU4R0ZYWDVKaGFQX2RsY0VHM3BiMjg?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_d9ae3229d788",
       "category": "border",
       "type": "entry_restriction",
@@ -4110,31 +4110,31 @@
       "is_new": true
     },
     {
-      "id": "evt_f78aeabbc12e",
+      "id": "evt_5c644b873c79",
       "category": "infrastructure",
       "type": "utility_outage",
-      "headline": "Iran Restoring Internet, With Limits, After 88-Day Blackout - Radio Free Europe/Radio Liberty",
+      "headline": "Power outage affects 57,000+ customers across US, Georgia hit hardest - eciks.org",
       "severity": 3,
       "confidence": 0.76,
       "source_verification": "media_ai_signal",
       "source_class": "tier4_media",
       "source_name": "news.google.com",
       "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
+        "lat": 42.3,
+        "lng": 43.4,
+        "place": "Georgia",
+        "country": "GE",
         "admin1": null
       },
-      "country": "IR",
-      "first_seen": "2026-05-27T02:15:00+00:00",
-      "last_updated": "2026-05-27T02:15:00+00:00",
+      "country": "GE",
+      "first_seen": "2026-05-23T05:56:19+00:00",
+      "last_updated": "2026-05-23T05:56:19+00:00",
       "lead_time_hours": 0,
-      "source_count": 2,
+      "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQWnhyaS1tS3NVV19VeVRlS1RUeUhFblVCTkRCWmg2Z2YwTW1uR051ZFctc3F2eEcyN29hbkJkLUY3THpPVzVaYVRlcTRybGlrTGVsX3ZvTFJyQmRELVNHckg3Nk9uOUw3V2RyN2lZY0dIMW1jLWVQSUVTdXBTZGpuVE55cDBQcG01?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNNk1SYWgzYVNoejMtWl9rZWRkNVRpTjFBbTJuYXA0ZE00V2tVUmZELWJweXh2WGpKNmRqZElpWG9zYjFIaFUzU0p2YzlfVURIeGZObUZYUldad1FjbVNXUFJsYVRnbF9wQ1BHRndGWFYzMHczRklPS2ptVE8tV3RqMDhQTWs2SlRpaWJ3MmpQVWxhMGRtcE1iT01kaDQ?oc=5",
       "is_new": true
     },
     {
@@ -4278,6 +4278,34 @@
       "is_new": true
     },
     {
+      "id": "evt_7583f6b626e0",
+      "category": "infrastructure",
+      "type": "utility_outage",
+      "headline": "Iran begins restoring internet access after record 2093-hour blackout - Бабель",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-26T15:15:56+00:00",
+      "last_updated": "2026-05-26T15:15:56+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQRERLVFN0R0o0NWp2UnNZalJXbjd6c0hBQ096QVhpTXZ3NTVEWFJXc0VzdUtvS3FjNDFXQmVmUEpxMnp1VG56bktLUmZ5dTdIdW16MWlaRjgtUnd5U056MWgtbEgxQ2JaZWFPRXAzLUsxeXlUZ3FuQ19QN2lUSnUwYy1RanBiQmpVbXNWdXdyZVRUeDBlbW9tQTFPOUtzMFJPMmNN0gGoAUFVX3lxTE11d1h2d1VtWXhTQ2piNDZHYUVtdU1CdTNEVHZLT0ludXF2bmh5TTY5aHlGTlNKSmNKaVpFUXpxcE1wSVBRenB3WXRIVGxrUFJKcGYzXzFpSFFsQ1NqUWpuMlBleUNPdzd5dDIyakp4VVVUbGFDMks5d1JGVUFrN2tDYzdQeW9tek9Kcm1ZR194X1hHVVpjV1lQRVJuSVJVNzhfclN2azRqaw?oc=5",
+      "is_new": true
+    },
+    {
       "id": "evt_6c8741471643",
       "category": "infrastructure",
       "type": "utility_outage",
@@ -4334,62 +4362,6 @@
       "is_new": true
     },
     {
-      "id": "evt_7583f6b626e0",
-      "category": "infrastructure",
-      "type": "utility_outage",
-      "headline": "Iran begins restoring internet access after record 2093-hour blackout - Бабель",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "2026-05-26T15:15:56+00:00",
-      "last_updated": "2026-05-26T15:15:56+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQRERLVFN0R0o0NWp2UnNZalJXbjd6c0hBQ096QVhpTXZ3NTVEWFJXc0VzdUtvS3FjNDFXQmVmUEpxMnp1VG56bktLUmZ5dTdIdW16MWlaRjgtUnd5U056MWgtbEgxQ2JaZWFPRXAzLUsxeXlUZ3FuQ19QN2lUSnUwYy1RanBiQmpVbXNWdXdyZVRUeDBlbW9tQTFPOUtzMFJPMmNN0gGoAUFVX3lxTE11d1h2d1VtWXhTQ2piNDZHYUVtdU1CdTNEVHZLT0ludXF2bmh5TTY5aHlGTlNKSmNKaVpFUXpxcE1wSVBRenB3WXRIVGxrUFJKcGYzXzFpSFFsQ1NqUWpuMlBleUNPdzd5dDIyakp4VVVUbGFDMks5d1JGVUFrN2tDYzdQeW9tek9Kcm1ZR194X1hHVVpjV1lQRVJuSVJVNzhfclN2azRqaw?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_f7018b7ae133",
-      "category": "infrastructure",
-      "type": "utility_outage",
-      "headline": "Internet starts coming back in Iran after months-long blackout - daily-sun.com",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "2026-05-26T17:49:01+00:00",
-      "last_updated": "2026-05-26T17:49:01+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQcUF0a0JtLUppbndoZVlIZWdKMno1Y3BYQ29EM2F0WThqZlZKMFVLYjZ6S2M2RHY4TFZlYUs3eU5qcVhnUUFud0RSWXRaOFpwTjBUMnRLMGdVWng3d0hsNUo1a18tNmNxYU5JTlQyR3RwMHk3VTM0ZUF6OFlhckZvSHhjdkh2ZHQxM1lZSTM0MGlwUGo3eUtRVVZHa0JXYndqZVE?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_e8d9dfdf00ce",
       "category": "infrastructure",
       "type": "comms_outage",
@@ -4418,31 +4390,31 @@
       "is_new": true
     },
     {
-      "id": "evt_876efa90a0cc",
+      "id": "evt_27c25bcf6754",
       "category": "infrastructure",
       "type": "comms_outage",
-      "headline": "Iraq’s reduced internet shutdown during exams sparks debate over effectiveness - شفق نيوز",
+      "headline": "Iran announces end to brutal 88-day internet blackout as Tehran enters new panic - AOL.com",
       "severity": 4,
       "confidence": 0.83,
       "source_verification": "media_ai_signal",
       "source_class": "tier4_media",
       "source_name": "news.google.com",
       "geo": {
-        "lat": 33.2,
-        "lng": 43.7,
-        "place": "Iraq",
-        "country": "IQ",
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
         "admin1": null
       },
-      "country": "IQ",
-      "first_seen": "2026-05-21T18:21:29+00:00",
-      "last_updated": "2026-05-21T18:21:29+00:00",
+      "country": "IR",
+      "first_seen": "2026-05-26T12:52:16+00:00",
+      "last_updated": "2026-05-26T12:52:16+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPeTJyVHByMmNRdVpQMUQzQWRPcUxwQzRBanJzeEZCcE1KWm56Mm91TExkTXlDbHlwbkNTeTNBc1NHVlVRNWthaHBKMHYwWW14WUNQMTNYa0d6RmpfS0dZMDcwakV1QlNBTHNENW5XUTFFTDJIX0ItMng1MmJSU1NGaHJUSHQyZlpza2VqN19MckRmc1hzWlpqamJ4cVNhc3NqMzZrdk1SRG1BX1Ut?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE44V1dEbWpNQjlVZVpZalBUU0l2LTYtd0xfd1lOdE8tcG8tYmtvNEt3cUhFZmQzMThVU2EzYUJYc08tanE0enlydDlsSWIyczBBQlFkMVJqWmtZQmNjNlpmQkJJUmpGcWlxWENtTFVVSDhyVVVTcHNGcEFZbGI?oc=5",
       "is_new": true
     },
     {
@@ -4502,38 +4474,10 @@
       "is_new": true
     },
     {
-      "id": "evt_a6488aa445af",
+      "id": "evt_f78aeabbc12e",
       "category": "infrastructure",
       "type": "utility_outage",
-      "headline": "Gurgaon goes dark: Power outage hits 8 substations, ACs fail, lifts stop, metro commuters forced to walk - The Times of India",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 20.6,
-        "lng": 78.9,
-        "place": "India",
-        "country": "IN",
-        "admin1": null
-      },
-      "country": "IN",
-      "first_seen": "2026-05-23T01:22:00+00:00",
-      "last_updated": "2026-05-23T01:22:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPSWlMWmVBU2VSZ1hNMTV5bmJPeHRnUWFJWmprX3hEUnR5dHNOYUE4OE55SFo5TDlBSDZUaDFJZHQxa2NqV2RqcmZZVDlFTmI0UTI1Rno4cllhRGZGTWk1RmN3UlhtWjVicDdIbjROOFRrQ05rdHgtNHpmMEhzOXRhaUNiNHZQMXZWUXpSQ3ByQ0Y5ajJFMzh0TGVJaWF5b1ViVEVGRUJGMlF0TzdCMEhyb2owWXBNQ29pLV8xbURwZU9odlpnc0Mzal9zZ0lOWDNob1pIVzhQT0VXZ3V50gHiAUFVX3lxTE9aVUtqcVZLb3NmRDB2d0RMbG5QSHdGTDJZcUNfdldWV181LXZUeHE1U0xvYk41QnhEbTRTNXBmSDRfZlFUeld5a0NhRE5IWnJ2dEJ3aVpPWkd4Y01fMTd3N044Zm5NRjFWSVA3ZUt5WkEzbjdZcDhIYXo1Q3g0TVB3ckxDSHRIbGg3N0QzV0JCbkhWeDR1N1h3UnpOdElPeWVWVGJhZEtSRE1oamJrNUFyZWV3RlZvVElySGJCZjN6TndoNWRraWE2eFNIcEhqZ0JWTDJvVjdSQm1ZaHdtOWJrR2c?oc=5",
-      "is_new": true
-    },
-    {
-      "id": "evt_bf7ef737ed85",
-      "category": "infrastructure",
-      "type": "utility_outage",
-      "headline": "Iran begins restoring internet after long blackout, denounces recent US military action as show of 'bad faith' - nktv.in",
+      "headline": "Iran Restoring Internet, With Limits, After 88-Day Blackout - Big News Network.com",
       "severity": 3,
       "confidence": 0.76,
       "source_verification": "media_ai_signal",
@@ -4547,14 +4491,14 @@
         "admin1": null
       },
       "country": "IR",
-      "first_seen": "2026-05-27T11:40:06+00:00",
-      "last_updated": "2026-05-27T11:40:06+00:00",
+      "first_seen": "2026-05-26T04:15:00+00:00",
+      "last_updated": "2026-05-26T04:15:00+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPX04yNTRGYjcxMW9EZTVtWVpzWnQzSUhqZVF0aVR0ZGZ5MndibHJoTlEwVlB5UndjQUNqcW5WOFNOcGlBcTRNZE5YYWlTNWZaa0hLRk9qd0xESGl3Q0hMeXRoTlR3MzM5RnRCUVoxeHlHOVFLXzI2R0VTOTBacExET0RBX1k0QTNuQ18zdTJKcmhSZ2hsNGVWOXo2LW5CVW9UZzJkc3lmMHcyRkU1UTRHbHlkRzlUOE42NnBtOUtJNkZldk5uZU5F?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNdkR5blRJTnpmdEFyODR0bU13Z2xyV1hKVi1taW1CTm9aS3JQTWNoazFCQmRRTGM1bUhCTzI5T0FZc0QwdzJUalkwaDhHRUdUNGFZamlnb3hLU3h3cTZ4Q3YxUUFRdmdrbmFpd3BXS29JcnhybWJ5Q0hOZ2tnWlRnUXJjRnd0eXZCa2NUVEdrZ3UyTms0cjE4bW84aG5JZnRPbDRjTmdn?oc=5",
       "is_new": true
     },
     {
@@ -4603,14 +4547,14 @@
         "admin1": null
       },
       "country": "CU",
-      "first_seen": "2026-05-23T16:25:39+00:00",
-      "last_updated": "2026-05-23T16:25:39+00:00",
+      "first_seen": "2026-05-26T12:16:14+00:00",
+      "last_updated": "2026-05-26T12:16:14+00:00",
       "lead_time_hours": 0,
       "source_count": 2,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMirwNBVV95cUxQcG9ncEZLX1l2NGg1X1dVMV81TG5xa2VhSmhoNUt6MXlveXBtVlR5cEYtLVZYQllzS0MtQmpyYTd3SHNDaGx3N252ZVItN1F5UU1mOW5RdHZGYzVPSkVmVFNXZHIyRFZsMlo3TVJIOHc3Q3FiYWNNcHVBXzRnYjZkUGxYMjZFUHl2YjRFMEYxSHN2UkJXMjJNTXFiT2xrX3VVcHVLQlBZTE9CVHJRS1FSZjNCZnY3SlVRaHVHV3FGWFZodUhJUnJ1NjdWNDVQSi1hQnpEMGZ4ZmR0VGtaV0ZUNURtRWtKWHgydjlqMVl2LXRHOFVpb2VoeFptRG1ubEYwNjBBNUNiZ09zZzFaYUcwRGR4amoyOFEyT0NqRFI2UVZxV3ktZ0VUeFBwaUZEczQ0SGZ4SjUxYXJENkphUVJadHhlVzZ0RjU5cjJ4VHBOWVJIdURsRjdfdjFKZkJXU0EzRnhjZ1YxVVFIRnQ1QmxpV3h3MlRQd0tlWTliQzdGWDBCR0ZxZ0J1Nm9KdlhWUXRCX1hUYmZDQzd2M21TOTFoYXR6RkhmRU1hSEtxVldLUQ?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQemtPaWNJUlBFWVJGNFVJa25MN2lJQWhWb3lyaUIyeGw0Um9nWElsVVpGbnZQdlRFVlRBUzhlUWZQVXZqZURzcFhqM0ZyX0Npd2NvS3VZbVBfY29RSlpFQ3BIM3JKWVVCVGhVR1N3T2x5WlVTOVNSRno5LU5CTXVJMkVkMFktSFYxSmVoNDhUeVpFekE2dkRFa3lUaGQ5VDU0OTN6RGFYMUh4UEFBZ0RYeml5dl9oMHluM1FiMzExeEhOSDJrdkMwbnR3cWlUWG5pa0hYRG5oWE5EM3VicTNWR3FtN1J5MFk?oc=5",
       "is_new": true
     },
     {
@@ -4687,14 +4631,14 @@
         "admin1": null
       },
       "country": "CU",
-      "first_seen": "2026-05-27T08:48:14+00:00",
-      "last_updated": "2026-05-27T08:48:14+00:00",
+      "first_seen": "2026-05-25T10:23:53+00:00",
+      "last_updated": "2026-05-25T10:23:53+00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "google_news"
       ],
-      "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNWFdCVHc2UjR1NERodGdqalBqSVMwUVV1MzBLNDFzY0VhZmc5MVpTMTJrU1ktRFJlQlF6dFN1TWRlbjZ6T3VGbUhBTU53MjViR2RsVzdiU1B4dTY2S2hydHR6Q0pwbTZpeTk1cXFUSXhlNXFwTWdXWlFkTXVMcjlnU3U1N0VzaWl5RHUwM0tpeTFJYW5qZ0NNNXVmTnFMOUhsWU14bDdiS1VqdUFFSlZPRmluUDdaNUgycUhJMlRoNDltUHM4SXBKeUhBWkk3N21m?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMi9wJBVV95cUxNWnFlczk2NVJDamM4U2xPdmVSLW5hZEJfQVJnY19DWnpKZGlMdVVmN2JScGgtLTZVak56MXp1MGo3R0xDcWk5SzZUZUdnNmQ2RnA5T0dXWWlhOVk3MnRmZVNoSWJ2NDk2Qm15WHBVUmY2a3IzQ3d5bmY2U0J5Y2VjcHlGZVdSalBDYkpmdkM4WVdadWhFamxmQjF3dExQRVo4bXAtdkZ1QUhWdG10YWpVWHZQME1MU0RhbXQxVFl0dlNsUmV2S0p1eHhfQ3Q4RG1Sam5ZZTk5WF9zbDdIX19tMWYzUkV0VW1NTk4td0FOd3ItZ3c0TGRuTkZDNHVxTWF2Q3VzVloxQ3NxdlhFbmJCQTN5QVRueWJRRUtUNHZlTGotZ0RacEhGRjJuNldaN3hGak1FXzM1WXY5ekVrMHNOUGJwX1VJM3R5ejlrRHdrTVBKc2NFSWlqX2VrWnlYSV9CTTVYLWw2Z3NsQlBnTVpVWG5wTlMtT3c?oc=5",
       "is_new": true
     },
     {
@@ -4751,6 +4695,34 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOcDE3NjZBMGtPS2EySTd4TE1pVVdzMlhwRWxiaDRqdVA2ZHhabXZ6dW53UlhWampENDNBajdDQWhJOFFVN2RSZ2wxS1NyOUdFcHgyV1c1M0VRSzI0RFAwZVhCNWRpbWZVTlQtOWxHektmOEFObmlGXy1rQnNPZEZtUUFydEU2U0tZaTloYnRhVU8tV2Q5S3BadHBwSQ?oc=5",
+      "is_new": true
+    },
+    {
+      "id": "evt_8ec23d736256",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Schools evacuated as magnitude 5.6 quake hits eastern Turkey - ET Education",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 38.9,
+        "lng": 35.2,
+        "place": "Turkey",
+        "country": "TR",
+        "admin1": null
+      },
+      "country": "TR",
+      "first_seen": "2026-05-21T06:56:00+00:00",
+      "last_updated": "2026-05-21T06:56:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQMjU4ckRHLWxjZWRTUFBXYlNOMG01MEtrX0RGV3NQWHRyQkowTFlhbmpVTFUyVU12RTE4LUhiLWZ1Sy0zeXRnWTlacW02WlY5Yi1sbW5wTVl1N2dqLXFMdWR3dDhFWllybkFkdnVmblVnb1pUcUNzMnpYdGlMUjBPenRNdGJBQmxldlIwVHY3a3FPSWFxUUxoVTIxSlV5S0tJWXdMQ1RmdmR5WGowN0VjTzkxRzFQTU1KNFRJZHFmbnN3NDdTREd6SFNSUFpqdEJrSDZvT3BEYUZ0V0NzNi0yNtIB5gFBVV95cUxPZEFwTkFSOW1vUlZwLVFSbTVGdzZuR2FYall5c01YbFlGUU91Yy1OQWY0Y3lORlZxQ1NzMHdmQ1l3QVNCT0l3SEFkU0hGMjlqemFPVzQ3VlVtNF9OR0xCalBraE9KTlNWNDhSbEd2T2ZqZ2I1VkNnc1VxcUVBWkNxTzFwTzVXNlRITGlyeVZhbGFOc1ZXNnZfUmc5WG9PNkVPSFZMQk9sNlVYSmFlV3p0MmxpQk5HNkxCNFVFak1mRFdkN05mR09OcHFMeVctQ09qX0JVMWNGUVplU3Z2VnZRNy03ZkJpdw?oc=5",
       "is_new": true
     },
     {
@@ -4978,34 +4950,6 @@
       "is_new": true
     },
     {
-      "id": "evt_e049c8438af8",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Earthquake Today in Japan: 5.9 Magnitude Quake Strikes Okinawa on Wednesday, May 20 - Check Epicentre, Tsunami, Affected Areas, &amp; More - Dailyhunt",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 36.2,
-        "lng": 138.3,
-        "place": "Japan",
-        "country": "JP",
-        "admin1": null
-      },
-      "country": "JP",
-      "first_seen": "2026-05-20T20:31:11+00:00",
-      "last_updated": "2026-05-20T20:31:11+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiwgJBVV95cUxNUU9KYnZ3bkkyeDdzeXVYM3hMelB2MmhHNVlMUnZQN0Zsd0dXSjAzVXlzU0hEeEN6Q21kVWVJcEZZRUpzN0VDY0JWbTJlUjgxZlFGUnFCSVVpMENJcW9wYTNZdFUybGtRakFPVkR2S0VKcVp1Xy04UzVvU3JDZVdjMjNfY2VNUTJhTndSQWJvTHh5SXZIZGRDbGZZX01Cb1liWnFTM0R0eklMU3VVU0hXZDFpcGJQd1dDZVlvekZBa2wxelYyaElMdWFjOXBubFNqNE9MNE1KU3JrenkyVFEtdEQtNzNHbWlhR1lweERaZThIU2I4NFVHYTU0ZUNjQWxRejlJWUlZZFZrXzkxbW50YjdQTTRGczBDdHBpbERELUZEQm5kbU9tRUtTeGQxOWVYc01EcmhvblRiSnJHOEV5dW1R?oc=5",
-      "is_new": true
-    },
-    {
       "id": "evt_2c4510626add",
       "category": "climate",
       "type": "earthquake",
@@ -5062,15 +5006,15 @@
       "is_new": true
     },
     {
-      "id": "evt_h_sig-2a6182fcaf",
+      "id": "evt_h_sig-53015e01d0",
       "category": "health",
       "type": "Ebola virus disease",
       "headline": "I just got back from Uganda. No one checked me for Ebola - The Hill",
-      "severity": 3,
+      "severity": 4,
       "confidence": 0.46,
       "source_verification": "official_agency",
       "source_class": "tier1_official",
-      "source_name": "who_don",
+      "source_name": "reliefweb",
       "geo": {
         "lat": 1.4,
         "lng": 32.3,
@@ -5082,23 +5026,22 @@
       "first_seen": "2026-05-27T15:54:02.506317+00:00",
       "last_updated": "2026-05-27T15:54:02.506317+00:00",
       "lead_time_hours": 48,
-      "source_count": 25,
+      "source_count": 24,
       "sources": [
-        "who_don",
-        "google_news",
-        "east_africa",
-        "philippines_doh",
-        "reddit",
-        "cdc_mmwr",
         "reliefweb",
+        "east_africa",
+        "google_news",
         "africa_cdc",
-        "hk_chp"
+        "cdc_mmwr",
+        "who_don",
+        "philippines_doh",
+        "reddit"
       ],
       "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNX3p6MlFOem0tUWdxcTV4V05pS2RpQnAxcG1tRzVKUnFkRkwwWm5yeUxtTEpCemxueTFNamVWak5xMXZmeWczZE13UWVwdVdybENSdUVPY3VZY3VUMHpTaVdJaXpwN2hDODRGYlpTdm5xRjBTbVE5VDRvNm5tdVh3cVNDbUtrR21pTFc2QtIBkgFBVV95cUxNN2ttcXJ6Z0hvOHNqVlRwckFWdktWM1JxdEtQZnFOWlY2SUdCVlo0ckJWZjRuX3I0UzM5QndyUEJVRXV5a0VJckhqbzQzSVl5eVpiVHlNdzFyTmNNSUJCN1FQOHVMaURTQko3ajlZeW55TzJPVGVxTnhIVzJ4anRQYk1kclF6ZkhyZHhqZmltdlMwdw?oc=5",
-      "is_new": false
+      "is_new": true
     },
     {
-      "id": "evt_h_sig-cf5ef3eccd",
+      "id": "evt_h_sig-cad277f432",
       "category": "health",
       "type": "Ebola virus disease",
       "headline": "Ebola-hit DR Congo faces 'catastrophic collision' of disease and conflict, WHO warns - BBC",
@@ -5106,7 +5049,7 @@
       "confidence": 0.46,
       "source_verification": "official_agency",
       "source_class": "tier1_official",
-      "source_name": "who_afro",
+      "source_name": "nigeria_ncdc",
       "geo": {
         "lat": -4.0,
         "lng": 21.7,
@@ -5118,25 +5061,25 @@
       "first_seen": "2026-05-27T15:54:02.402928+00:00",
       "last_updated": "2026-05-27T15:54:02.402928+00:00",
       "lead_time_hours": 48,
-      "source_count": 102,
+      "source_count": 96,
       "sources": [
+        "nigeria_ncdc",
+        "reliefweb",
+        "east_africa",
         "who_afro",
         "google_news",
-        "google_news_zh",
-        "rospotrebnadzor",
-        "nigeria_ncdc",
-        "medrxiv",
-        "east_africa",
-        "reddit",
         "google_news_ru",
-        "cdc_mmwr",
-        "reliefweb",
         "africa_cdc",
+        "google_news_zh",
+        "hk_chp",
         "who_ihr",
-        "hk_chp"
+        "cdc_mmwr",
+        "rospotrebnadzor",
+        "reddit",
+        "medrxiv"
       ],
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5Mem1JQTZTZnhoLW9VeDM1Y2NvNkVNSHlzNGdIVkt1WmI4M2lMQmpCRGliQzdQVTEtMmo0Z2haZE5JdjN2T2Q4eFNSMml1LVJyQ3VHV0VrX1E3UQ?oc=5",
-      "is_new": false
+      "is_new": true
     },
     {
       "id": "evt_h_sig-17fe18fee3",
@@ -5185,8 +5128,8 @@
         "admin1": null
       },
       "country": "TH",
-      "first_seen": "2026-05-27T20:29:38.160873+00:00",
-      "last_updated": "2026-05-27T20:29:38.160877+00:00",
+      "first_seen": "2026-05-27T22:48:58.319485+00:00",
+      "last_updated": "2026-05-27T22:48:58.319489+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5215,8 +5158,8 @@
         "admin1": null
       },
       "country": "ID",
-      "first_seen": "2026-05-27T20:29:38.160888+00:00",
-      "last_updated": "2026-05-27T20:29:38.160890+00:00",
+      "first_seen": "2026-05-27T22:48:58.319500+00:00",
+      "last_updated": "2026-05-27T22:48:58.319502+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5245,8 +5188,8 @@
         "admin1": null
       },
       "country": "PH",
-      "first_seen": "2026-05-27T20:29:38.160897+00:00",
-      "last_updated": "2026-05-27T20:29:38.160899+00:00",
+      "first_seen": "2026-05-27T22:48:58.319511+00:00",
+      "last_updated": "2026-05-27T22:48:58.319513+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5275,8 +5218,8 @@
         "admin1": null
       },
       "country": "BD",
-      "first_seen": "2026-05-27T20:29:38.160904+00:00",
-      "last_updated": "2026-05-27T20:29:38.160906+00:00",
+      "first_seen": "2026-05-27T22:48:58.319519+00:00",
+      "last_updated": "2026-05-27T22:48:58.319521+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5305,8 +5248,8 @@
         "admin1": null
       },
       "country": "MX",
-      "first_seen": "2026-05-27T20:29:38.160911+00:00",
-      "last_updated": "2026-05-27T20:29:38.160913+00:00",
+      "first_seen": "2026-05-27T22:48:58.319526+00:00",
+      "last_updated": "2026-05-27T22:48:58.319528+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -5335,8 +5278,8 @@
         "admin1": null
       },
       "country": "NG",
-      "first_seen": "2026-05-27T20:29:38.160918+00:00",
-      "last_updated": "2026-05-27T20:29:38.160920+00:00",
+      "first_seen": "2026-05-27T22:48:58.319534+00:00",
+      "last_updated": "2026-05-27T22:48:58.319535+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5365,8 +5308,8 @@
         "admin1": null
       },
       "country": "NG",
-      "first_seen": "2026-05-27T20:29:38.160924+00:00",
-      "last_updated": "2026-05-27T20:29:38.160926+00:00",
+      "first_seen": "2026-05-27T22:48:58.319540+00:00",
+      "last_updated": "2026-05-27T22:48:58.319541+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -5377,26 +5320,26 @@
       "predictive": true
     },
     {
-      "id": "evt_clim_dengue_CD",
+      "id": "evt_clim_dengue_ET",
       "category": "health",
       "type": "dengue_climate_lead",
       "headline": "Climate-elevated Dengue fever suitability (elevated) — model leading indicator, ~10d ahead of reports",
       "severity": 2,
-      "confidence": 0.49,
+      "confidence": 0.48,
       "source_verification": "model",
       "source_class": "tier3_pro",
       "source_name": "Vigilo climate model",
       "geo": {
-        "lat": -4.0,
-        "lng": 21.7,
+        "lat": 9.1,
+        "lng": 40.5,
         "geo_precision": "country_centroid",
-        "place": "CD",
-        "country": "CD",
+        "place": "ET",
+        "country": "ET",
         "admin1": null
       },
-      "country": "CD",
-      "first_seen": "2026-05-27T20:29:38.160930+00:00",
-      "last_updated": "2026-05-27T20:29:38.160932+00:00",
+      "country": "ET",
+      "first_seen": "2026-05-27T22:48:58.319546+00:00",
+      "last_updated": "2026-05-27T22:48:58.319548+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5425,8 +5368,8 @@
         "admin1": null
       },
       "country": "PK",
-      "first_seen": "2026-05-27T20:29:38.160937+00:00",
-      "last_updated": "2026-05-27T20:29:38.160939+00:00",
+      "first_seen": "2026-05-27T22:48:58.319553+00:00",
+      "last_updated": "2026-05-27T22:48:58.319555+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5455,8 +5398,8 @@
         "admin1": null
       },
       "country": "EG",
-      "first_seen": "2026-05-27T20:29:38.160946+00:00",
-      "last_updated": "2026-05-27T20:29:38.160948+00:00",
+      "first_seen": "2026-05-27T22:48:58.319560+00:00",
+      "last_updated": "2026-05-27T22:48:58.319561+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5485,8 +5428,8 @@
         "admin1": null
       },
       "country": "YE",
-      "first_seen": "2026-05-27T20:29:38.160952+00:00",
-      "last_updated": "2026-05-27T20:29:38.160954+00:00",
+      "first_seen": "2026-05-27T22:48:58.319566+00:00",
+      "last_updated": "2026-05-27T22:48:58.319567+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5515,8 +5458,8 @@
         "admin1": null
       },
       "country": "YE",
-      "first_seen": "2026-05-27T20:29:38.160958+00:00",
-      "last_updated": "2026-05-27T20:29:38.160959+00:00",
+      "first_seen": "2026-05-27T22:48:58.319571+00:00",
+      "last_updated": "2026-05-27T22:48:58.319573+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -5545,8 +5488,8 @@
         "admin1": null
       },
       "country": "HT",
-      "first_seen": "2026-05-27T20:29:38.160967+00:00",
-      "last_updated": "2026-05-27T20:29:38.160968+00:00",
+      "first_seen": "2026-05-27T22:48:58.319581+00:00",
+      "last_updated": "2026-05-27T22:48:58.319583+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -5575,8 +5518,8 @@
         "admin1": null
       },
       "country": "SD",
-      "first_seen": "2026-05-27T20:29:38.160973+00:00",
-      "last_updated": "2026-05-27T20:29:38.160974+00:00",
+      "first_seen": "2026-05-27T22:48:58.319587+00:00",
+      "last_updated": "2026-05-27T22:48:58.319589+00:00",
       "lead_time_hours": 336,
       "source_count": 1,
       "sources": [
@@ -5605,38 +5548,8 @@
         "admin1": null
       },
       "country": "MM",
-      "first_seen": "2026-05-27T20:29:38.160979+00:00",
-      "last_updated": "2026-05-27T20:29:38.160980+00:00",
-      "lead_time_hours": 240,
-      "source_count": 1,
-      "sources": [
-        "climate_model"
-      ],
-      "url": "",
-      "is_new": false,
-      "predictive": true
-    },
-    {
-      "id": "evt_clim_dengue_KH",
-      "category": "health",
-      "type": "dengue_climate_lead",
-      "headline": "Climate-elevated Dengue fever suitability (severe) — model leading indicator, ~10d ahead of reports",
-      "severity": 3,
-      "confidence": 0.57,
-      "source_verification": "model",
-      "source_class": "tier3_pro",
-      "source_name": "Vigilo climate model",
-      "geo": {
-        "lat": 12.6,
-        "lng": 104.9,
-        "geo_precision": "country_centroid",
-        "place": "KH",
-        "country": "KH",
-        "admin1": null
-      },
-      "country": "KH",
-      "first_seen": "2026-05-27T20:29:38.160985+00:00",
-      "last_updated": "2026-05-27T20:29:38.161003+00:00",
+      "first_seen": "2026-05-27T22:48:58.319593+00:00",
+      "last_updated": "2026-05-27T22:48:58.319595+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -5664,8 +5577,8 @@
         "admin1": null
       },
       "country": "AE",
-      "first_seen": "2026-05-27T20:29:38.161009+00:00",
-      "last_updated": "2026-05-27T20:29:38.161011+00:00",
+      "first_seen": "2026-05-27T22:48:58.319601+00:00",
+      "last_updated": "2026-05-27T22:48:58.319602+00:00",
       "lead_time_hours": 240,
       "source_count": 1,
       "sources": [
@@ -6050,21 +5963,21 @@
       "source_class": "tier1_official",
       "source_name": "GDACS",
       "geo": {
-        "lat": 10.3,
-        "lng": 137.2,
+        "lat": 11.7,
+        "lng": 136.7,
         "place": "Japan",
         "country": "JP",
         "admin1": null
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6086,13 +5999,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6114,13 +6027,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6142,13 +6055,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6170,13 +6083,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6198,13 +6111,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6226,13 +6139,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6254,13 +6167,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6282,13 +6195,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6310,13 +6223,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6338,13 +6251,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6366,13 +6279,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6394,13 +6307,75 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
+      "is_new": false
+    },
+    {
+      "id": "evt_gdacs_1001272_TC",
+      "category": "climate",
+      "type": "tropical_cyclone",
+      "headline": "Green Tropical Cyclone JANGMI-26 in Japan from: 27 May 2026  to: 27 May 2026 .",
+      "severity": 2,
+      "confidence": 0.9,
+      "source_verification": "official_agency",
+      "source_class": "tier1_official",
+      "source_name": "GDACS",
+      "geo": {
+        "lat": 36.2,
+        "lng": 138.3,
+        "place": "Japan",
+        "country": "JP",
+        "admin1": null
+      },
+      "country": "JP",
+      "first_seen": "2026-05-27T06:00:00",
+      "last_updated": "2026-05-27T18:00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "GDACS"
+      ],
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
+      "is_new": false
+    },
+    {
+      "id": "evt_gdacs_1001272_TC",
+      "category": "climate",
+      "type": "tropical_cyclone",
+      "headline": "Green Tropical Cyclone JANGMI-26 in Japan from: 27 May 2026  to: 27 May 2026 .",
+      "severity": 2,
+      "confidence": 0.9,
+      "source_verification": "official_agency",
+      "source_class": "tier1_official",
+      "source_name": "GDACS",
+      "geo": {
+        "lat": [
+          128.7,
+          27.0
+        ],
+        "lng": [
+          129.2,
+          23.5
+        ],
+        "place": "Japan",
+        "country": "JP",
+        "admin1": null
+      },
+      "country": "JP",
+      "first_seen": "2026-05-27T06:00:00",
+      "last_updated": "2026-05-27T18:00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "GDACS"
+      ],
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6416,11 +6391,11 @@
       "geo": {
         "lat": [
           129.2,
-          24.8
+          23.5
         ],
         "lng": [
-          129.7,
-          21.5
+          130.4,
+          20.3
         ],
         "place": "Japan",
         "country": "JP",
@@ -6428,13 +6403,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6449,12 +6424,12 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          129.7,
-          21.5
+          130.4,
+          20.3
         ],
         "lng": [
-          131.2,
-          18.4
+          132.4,
+          17.3
         ],
         "place": "Japan",
         "country": "JP",
@@ -6462,13 +6437,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6483,12 +6458,12 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          131.2,
-          18.4
+          132.4,
+          17.3
         ],
         "lng": [
-          133.5,
-          15.6
+          133.9,
+          15.9
         ],
         "place": "Japan",
         "country": "JP",
@@ -6496,13 +6471,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6517,7 +6492,7 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          136.6,
+          136.7,
           11.7
         ],
         "lng": [
@@ -6530,13 +6505,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6564,13 +6539,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6585,12 +6560,12 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          133.5,
-          15.6
+          133.9,
+          15.9
         ],
         "lng": [
-          134.8,
-          14.4
+          135.1,
+          14.6
         ],
         "place": "Japan",
         "country": "JP",
@@ -6598,13 +6573,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6619,12 +6594,12 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          134.8,
-          14.4
+          135.1,
+          14.6
         ],
         "lng": [
-          135.9,
-          13.1
+          136.1,
+          13.3
         ],
         "place": "Japan",
         "country": "JP",
@@ -6632,13 +6607,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6653,11 +6628,11 @@
       "source_name": "GDACS",
       "geo": {
         "lat": [
-          135.9,
-          13.1
+          136.1,
+          13.3
         ],
         "lng": [
-          136.6,
+          136.7,
           11.7
         ],
         "place": "Japan",
@@ -6666,13 +6641,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -6694,13 +6669,13 @@
       },
       "country": "JP",
       "first_seen": "2026-05-27T06:00:00",
-      "last_updated": "2026-05-27T12:00:00",
+      "last_updated": "2026-05-27T18:00:00",
       "lead_time_hours": 0,
       "source_count": 1,
       "sources": [
         "GDACS"
       ],
-      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=2&eventtype=TC",
+      "url": "https://www.gdacs.org/report.aspx?eventid=1001272&episodeid=3&eventtype=TC",
       "is_new": false
     },
     {
@@ -7208,6 +7183,538 @@
       "is_new": false
     },
     {
+      "id": "evt_ed6c6343eebc",
+      "category": "conflict",
+      "type": "armed_clash",
+      "headline": "Israel to intensify Lebanon offensive to ‘crush’ Hezbollah - Al Jazeera",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 33.9,
+        "lng": 35.5,
+        "place": "Hezbollah",
+        "country": "LB",
+        "admin1": null
+      },
+      "country": "LB",
+      "first_seen": "2026-05-26T04:48:31+00:00",
+      "last_updated": "2026-05-26T04:48:31+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNaUJmbHdxbjc5cXFya043WlBaajNxNG5QbmppMWE1cUdSQ3ZvOGlaanFadERyNVJMQWdHUnNnUS1mdzhaSFRxRHpQWm5sMTRWTTZFQU1sbjdUeE9za1l2RFJaOU12T2h4eHNFYlRnY0haSWRjaWxXZWlRbzgyR3BiY2s3MFN3azRxUThfWU52TDNITXV1TWNoZll2SElMa081TWw2eV9ib9IBrAFBVV95cUxPX1F2Q2E1Mk1qZVo5QTFzODdBLTJDcjMxU0xwZnRvYmtJY3paeWZWb1psc09Hb19fQ3NsWGI1LUJ2X3R5TmRmbkQ5cHJUc2h3Z256NWowMTFQalpyNXp1SldYSEpISFRRa2Z4VUc5a1VQQ0d3MFBLNE5ScFhnTnEyZ3Z5Zi13Q0FBMUVSWUZDVzFWdmlha21fS281MFVRV2pjU3NSZUJpMzdSVXB4?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_a7b210621054",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Russia deploys hypersonic Oreshnik missile in attack on Kyiv, resulting in casualties - MSN",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 61.5,
+        "lng": 105.3,
+        "place": "Russia",
+        "country": "RU",
+        "admin1": null
+      },
+      "country": "RU",
+      "first_seen": "2026-05-25T13:54:09+00:00",
+      "last_updated": "2026-05-25T13:54:09+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMilgNBVV95cUxNYk1JdURaMk1DQ2FOczA4a2xnbjhsb0ZTcGlfTG15TENUUGV0YjhZMXR6MVkxM1NZV0pkdzJGNks5dkNnNHNzREV5M0tUNVE0RTJ0RmJ4YUFkSWdpOHVxNFFrZjBrRnpxNVpSMnVFUUlYWU9hSjVkZDE0UlhSTUlUMnFtd0hacFRvR0NDZ1FBYTVTRlRPUDNneS1vUkx1Y0paTDl0SkNTWm9FME5Xc0RMLWlPbWRFa3c0OG9wSkRxOHFZZ0VGSWc3ejBDOXNvUjlCYklMblJiOUJmSVZlRVhRZC1OdXRXcUNTSGwwNzlWRlV2V3pRN1hrSmJXZVBnM1dqcWFiZm1EeWk3OXNqQlJNaW5YbGxXWXB6aFBXUkJqbU9YNmx2WGtZY2NHU01xOFIwUlF4LW1XWGx2a0JNVnJjMWJwV0VOV2pwR21heUxReDVsNlRFZW9uMEpCa215Y2wxeTJ4ckZYSGNKazBwdmN3ZWRhV254RGVQY0xKNm1McmhrTlYzNkx1cTJDLUR0UUI2Y0VxWU53?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_6f2435784b81",
+      "category": "conflict",
+      "type": "insurgent_attack",
+      "headline": "13 US service members have died in the war with Iran . Here are their stories",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "yff4.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "20260525T173000Z",
+      "last_updated": "20260525T173000Z",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "gdelt"
+      ],
+      "url": "https://www.wyff4.com/article/us-service-members-killed-iran-war/71401493",
+      "is_new": false
+    },
+    {
+      "id": "evt_c1ff91e80f8b",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Tragedy Strikes Gaza: Airstrike Claims Lives Amid Tense Ceasefire - Devdiscourse",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-25T18:58:28+00:00",
+      "last_updated": "2026-05-25T18:58:28+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQQ1haNEZtUktZUmk5aUxBMUhWSkx5ZWhvUGFuY0FzRnhjWDVxZWpOeTc3QUdlUGZZNXU2WFZEU3ZoZEEzMUJBdFdtOElOWmNlaHhCLW1tYXI2UXd2cVpDTklJa0RsRXc2cU1rb1gtNTQwQU1ZV2RGUXNNZ3F6QlVTQ2toYmswUWhHRmczV0xuQm9uYkhOUnBLUENwR0V1ZUNjSE5pNDZvdFlidzcxdUwtaTVvOVljMDc0aXfSAb8BQVVfeXFMTVVyT2ExOUIzZnN3U0xJQi1kQmZNVVF4bXR4VGNJb2RYdDVjYVFSREg4OVBIcGI0QXB1R0xmN2NfeXRxdF9ObGhGRWo0ZHgxbTJ1ci1fZTZaUUJwUmtHOWNTaTkwbTQtbVlES0hDOThfVjIzdE9ydzRVMDB3d2Y2QjlWYWJRcXNZQlBNY1RTWHFlLTF1WFVMekNjbUZ0TDZfQzRtV2RHdTlCZEs2ZDU0Ym52eHdaRjJDUEU5cFQ3SHM?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_18dc5e1c07c4",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Israeli Airstrike Claims Lives of Two in Gaza - Oz Arab Media",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-25T23:00:57+00:00",
+      "last_updated": "2026-05-25T23:00:57+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFA3OTM4cE5tajNZc19kWk81NFZrZldEdVVQTXdlNENzcXZYOGxYbDFlbU4tWlZkcWVwZ0gtVWZ5QnZSQkp4YzZ1YnluRUVFOE5tek1FX0xtQkV1ekpNQ3RLVjdKcE52Ykw1MzRaOFg4b1Q3Rmt0MkE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_cc4efdc13657",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Palestinian woman young girl killed in Israeli airstrike in Gaza officials - theweek.in",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-25T19:09:25+00:00",
+      "last_updated": "2026-05-25T19:09:25+00:00",
+      "lead_time_hours": 0,
+      "source_count": 2,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNSDVIZ0tpNGl0SGVmNE5ac2s4OU9kbWdzUzdyS1A1MXBMdGZwcWdfZUU0dVBtbWtjY3FSM1dHUVNEcUw3SlhTelp0YnM2SGZDX2NiUURzbDBsUXlDT21waEE0eXZSQXBiWmNmMDNOVzh5SHJUMlpIb1c5T0ZLcElCRVczbWxUZURZeXltWExCSTl3Ni1icGRGT0RGRE54QllMYVdoVTN0UEprVUlCa184REZFZUVmSHU1U2psNFNGZGVFaU5MbGZsVU1kaWI3QWZIWlBFSEZldHB0OHhU0gHcAUFVX3lxTE1INUhnS2k0aXRIZWY0Tlpzazg5T2RtZ3NTN3JLUDUxcEx0ZnBxZ19lRTR1UG1ta2NjcVIzV0dRU0RxTDdKWFN6WnRiczZIZkNfY2JRRHNsMGxReUNPbXBoQTR5dlJBcGJaY2YwM05XOHlIclQyWkhvVzlPRktwSUJFVzNtbFRlRFl5eW1YTEJJOXc2LWJwZEZPREZETnhCWUxhV2hVM3RQSmtVSUJrXzhERkVlRWZIdTVTamw0U0ZkZUVpTkxsZmxVTWRpYjdBZkhaUEVIRmV0cHQ4eFQ?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_c28d324eec0d",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Gaza Conflict: Israeli Airstrike Kills Woman and Child, Ceasefire Stability Questioned - zoomnews.in",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 31.5,
+        "lng": 34.5,
+        "place": "Gaza",
+        "country": "PS",
+        "admin1": null
+      },
+      "country": "PS",
+      "first_seen": "2026-05-26T02:52:24+00:00",
+      "last_updated": "2026-05-26T02:52:24+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOLTUxdUxNZVBHY1NNeUl6VkxZWnpKcXdPdmYwWmZxNnhlYjMzTm13bjVMY3Q2MHZvR0NhZ1pWVU44MkY5b2ZGRmphLTIzSEZlTFNvdDYyZ1JrWk5GYTJHbUpXSDFQT2FnaS1JTDNOOEd0ckFqeEMwMDE2YzFHZ3hQd0hDN1M4dVZ4QXNlSHU0am9HQTdLaUVZbFdDWllVdXBJM0tfa1ZxeS1Db2dzOVFpSEdGZG5GZ2dSa1hOTEs5dzNtTVg3WWkw0gHMAUFVX3lxTE5NXzNRNFBsc1pRcHpIMThwVW5JZnpENmNhVTQ5RHpnMEpNZ3hBcG9kQ1V5Wk00Rld6OHU3U3ZaTkhkNG9vSmdvdkhIX1F0T2Q4Q2FNOWJnYnlGWnhNd1ZYS25VSTEzM19NMjBubUdPQnFJaFdqMTI2ZEdETXluM2VTb2pIYXg4aktyVVdVY0NYQzZ2OWlBZHB2bVdLZ0wtZlNhYmJXLVVYbFZlMjc1TDdKcFREdXhZUjBMWXdNREotR25xY3FPbkZwb28zdg?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_229991cf8c8b",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "UN Envoy Condemns Deadly Missile Strike on Civilians in Yemen’s Hajjah - Yemen Online",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 15.6,
+        "lng": 48.5,
+        "place": "Yemen",
+        "country": "YE",
+        "admin1": null
+      },
+      "country": "YE",
+      "first_seen": "2026-05-24T23:37:33+00:00",
+      "last_updated": "2026-05-24T23:37:33+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5ROHNiRzRqSU9fazhJMm1tMDVNaGtTWFc0SWFHcjU1RWFlM3dsZlJxN2FLeV9GQ3Q2VS1Hd3NhckE1YVI1WXJlay1HRTMzcDNJSGFjVFlKRV9lbThxRWdlT29MSlhIcXdu?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_9ea8ca2d7de7",
+      "category": "conflict",
+      "type": "armed_clash",
+      "headline": "Houthi drone strikes an Israeli airport as Israel steps up Gaza City offensive - MSN",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 15.4,
+        "lng": 44.2,
+        "place": "Houthi",
+        "country": "YE",
+        "admin1": null
+      },
+      "country": "YE",
+      "first_seen": "2026-05-23T03:56:55+00:00",
+      "last_updated": "2026-05-23T03:56:55+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNRVM4THdjeUlZOXNqMEFSOUtHMFdxRmxEVk1Fdl9SdlBvNjJvdC04NDZSVFdEckJvcTN3dVJNX1VTMGlJTXFKLXNQcGhKUk1YdUVrcy1EakR4QXhPUHU5NlFCUjVaYzV1eWkwLUl0WmtrUEdiMW9hbFFQcWI4OTBNVDlHVGozcWV1YUhmc0JlRWhIVWowUXIta3hpOFB5T2V1M0FDR3NfNkVHLUJRU0ZwN25HWVNFSm5uNEl3MkpDY3UteFpub0xNei1qcGVMS3pCMF8yYmpnb2VyZjVrcHhSYUwzWXJpY0l4NHBGN2NvdWs1TWU2N0xlWUNoTFdHVHQyU0FXWDV3TVBpY1ROd000cXRCOWFqcDYteGFRUUlOYnlTNUJIS0RXMk9nRURxTlMwTnFCV2QwOWRSQVpmcDFfMEROYXRHamNpOXBWZVBzMTNGandtQWZSZEY1Ynk?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_35caab37e874",
+      "category": "conflict",
+      "type": "kinetic_strike",
+      "headline": "Israeli airstrikes pound Yemen’s capital Sanaa after Houthi cluster missile fired at Israel - MSN",
+      "severity": 5,
+      "confidence": 0.9,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 15.6,
+        "lng": 48.5,
+        "place": "Yemen",
+        "country": "YE",
+        "admin1": null
+      },
+      "country": "YE",
+      "first_seen": "2026-05-25T11:41:58+00:00",
+      "last_updated": "2026-05-25T11:41:58+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMigwNBVV95cUxQeThLUENDTXhLSTg4NUVCbVl2T3N5SEwwdml3SC10NTF2Sk1yaXJiWExONW1wdzEzUVBTN3RwbFZxZUNQaVZDOE43VlRwX0xyN0NBZVhNbjR3ajFmTEtLQUdMSU5kTjhQU1l3MDFvMkI1UElZVDNNUl8xNE1NcXBnMmVpUl8yZ282VnpDU3VKeE45NWVWM2tIUGFuUkFuYnc5aEQ0emllNWdHYXlTSjgzaUlKeE04UVZIXzdNWkRWM21vTndkU0NpVmkzVU9ZQTNlakhSWEZDeDRsQXVBY2dYdVdDb2pGX0lfYTdQdlF0NlhyNnhwSG05a29yYzJFbkcxc1BxMndOT1Rhdkg0dHR6SVNyUENFUVJpbThtbnE0bXl0aFFLTnZZclJHMnBUcFVhSWxrcnV4S096VDF0NUZlVHR5ZmU2aDBIY3AtLUx6MjFPT0FWYTB0cFUxQTdNX1JTMWFXV242LW5CbEthWk5UN2lLNnVLSTVjbEF6NnM5Wk9IMHM?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_9773f6849c49",
+      "category": "civil_unrest",
+      "type": "emergency_declared",
+      "headline": "Myanmar’s military-backed government imposes martial law in 60 townships - DD News",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 16.9,
+        "lng": 96.1,
+        "place": "Myanmar",
+        "country": "MM",
+        "admin1": null
+      },
+      "country": "MM",
+      "first_seen": "2026-05-25T05:37:00+00:00",
+      "last_updated": "2026-05-25T05:37:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQdlVQeEZYUWtFM1ZKMDA1alpvT01maVh2VjE5Zmhtd3dldU9EX1ltTHUwaU9PT0ZDS0hfdjMzVkhQclE1QmphM0pKTVpRbVdGVlk2TFJ6WlFzMU1qbERoQUNEWDQ3Z2tqMU43aGJTSDAzYjhkRlA5LXVjUUZIWnE0Z2V3QmxpWlg0M3RiVF9kbV9TMmx6LVBaNmczajloZw?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_b54bb94c74f4",
+      "category": "civil_unrest",
+      "type": "protest",
+      "headline": "Rooftop protest at Venezuela prison - The Telegraph",
+      "severity": 2,
+      "confidence": 0.69,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 6.4,
+        "lng": -66.6,
+        "place": "Venezuela",
+        "country": "VE",
+        "admin1": null
+      },
+      "country": "VE",
+      "first_seen": "2026-05-25T23:10:00+00:00",
+      "last_updated": "2026-05-25T23:10:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNcVpIWWNFOC11ZFNBRkZZYXJJbkY5cTBHZDl4ZC1zdy1tZ3Y3Z0ZDM0NhOVVmbnp5Y25sWVd6ZVotNWNYTS1KMjl0SkRKODlScFJiZExMZFp1OWVQWEJpRzgxd2w3Z2tMdk1lTGNqbXJyUFhQLXlMVXdJZXBVVDdYUWV0ZEhPdkFuakE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_bbd821c9adf3",
+      "category": "transport",
+      "type": "transport_strike",
+      "headline": "RMT Rail Strikes Wreak Havoc July 27: Southern, Great Northern &amp; Thameslink Hit with Severe Delays and Cancellations - uknip.co.uk",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 55.4,
+        "lng": -3.4,
+        "place": "Uk",
+        "country": "GB",
+        "admin1": null
+      },
+      "country": "GB",
+      "first_seen": "2026-05-25T07:00:00+00:00",
+      "last_updated": "2026-05-25T07:00:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNWGxMM0ZWQjh5Z1VqS3dsbElpWFRFYjV6LTZtS2YtbHFEcVVNd0hSWjlnZUszQ3RibWdCMXFRd1A3RDRBN25qVnN5SThBcEVCY0Y0ZGE2cnhjc0pBUm04U3l2cmx0bmtCQ3UyZGdvOEVzbFJKaFhIOHlid01wUjkweE1PMkxJUVVCenEwZVdQMVp3X2cyN04wUzNBZ2ZmbHhIcml4ODlIUHVaZFlTZ1FoVldYTlUzeE81aXVudVZBMXVxVVlxTThBcjg2SWZvWlJ0SnhrVEFCWWxSOG1nSGg2Y0lUUmhtTHpa?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_1f77e6416e59",
+      "category": "border",
+      "type": "entry_restriction",
+      "headline": "Canada enforces 90-day entry ban, 21-day quarantine over Ebola - MSN",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 56.1,
+        "lng": -106.3,
+        "place": "Canada",
+        "country": "CA",
+        "admin1": null
+      },
+      "country": "CA",
+      "first_seen": "2026-05-27T01:48:05+00:00",
+      "last_updated": "2026-05-27T01:48:05+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxNSE93WFpuZWxSZm1XNHhVa2RYUmFuTjhZU3l0bU54YXFYZ3ZsbUc5eVdJUExjbU9zOUNqVk41YS12V253eVlzWHhPMHFhY1Y3WmRyU0lBZmtyWG5IN2stZ0lhVEVmcWFBbnVoUzFuTXpWRFMwdjNlX0tkOFF5bmd2alNDRkdEdUlVX21HZ1pmYTBDbDZtQ0x0a1R3eDhoSmhScFBFal9QcG9GOXBaX01PLXp1b1ZvYU1hMlAwOW5xUWs5dmxUM1U1VkNnNWxHcVZGUHU4R0ZYWDVKaGFQX2RsY0VHM3BiMjg?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_f7018b7ae133",
+      "category": "infrastructure",
+      "type": "utility_outage",
+      "headline": "Internet starts coming back in Iran after months-long blackout - daily-sun.com",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-26T17:49:01+00:00",
+      "last_updated": "2026-05-26T17:49:01+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQcUF0a0JtLUppbndoZVlIZWdKMno1Y3BYQ29EM2F0WThqZlZKMFVLYjZ6S2M2RHY4TFZlYUs3eU5qcVhnUUFud0RSWXRaOFpwTjBUMnRLMGdVWng3d0hsNUo1a18tNmNxYU5JTlQyR3RwMHk3VTM0ZUF6OFlhckZvSHhjdkh2ZHQxM1lZSTM0MGlwUGo3eUtRVVZHa0JXYndqZVE?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_876efa90a0cc",
+      "category": "infrastructure",
+      "type": "comms_outage",
+      "headline": "Iraq’s reduced internet shutdown during exams sparks debate over effectiveness - شفق نيوز",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 33.2,
+        "lng": 43.7,
+        "place": "Iraq",
+        "country": "IQ",
+        "admin1": null
+      },
+      "country": "IQ",
+      "first_seen": "2026-05-21T18:21:29+00:00",
+      "last_updated": "2026-05-21T18:21:29+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPeTJyVHByMmNRdVpQMUQzQWRPcUxwQzRBanJzeEZCcE1KWm56Mm91TExkTXlDbHlwbkNTeTNBc1NHVlVRNWthaHBKMHYwWW14WUNQMTNYa0d6RmpfS0dZMDcwakV1QlNBTHNENW5XUTFFTDJIX0ItMng1MmJSU1NGaHJUSHQyZlpza2VqN19MckRmc1hzWlpqamJ4cVNhc3NqMzZrdk1SRG1BX1Ut?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_a6488aa445af",
+      "category": "infrastructure",
+      "type": "utility_outage",
+      "headline": "Gurgaon goes dark: Power outage hits 8 substations, ACs fail, lifts stop, metro commuters forced to walk - The Times of India",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 20.6,
+        "lng": 78.9,
+        "place": "India",
+        "country": "IN",
+        "admin1": null
+      },
+      "country": "IN",
+      "first_seen": "2026-05-23T01:22:00+00:00",
+      "last_updated": "2026-05-23T01:22:00+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPSWlMWmVBU2VSZ1hNMTV5bmJPeHRnUWFJWmprX3hEUnR5dHNOYUE4OE55SFo5TDlBSDZUaDFJZHQxa2NqV2RqcmZZVDlFTmI0UTI1Rno4cllhRGZGTWk1RmN3UlhtWjVicDdIbjROOFRrQ05rdHgtNHpmMEhzOXRhaUNiNHZQMXZWUXpSQ3ByQ0Y5ajJFMzh0TGVJaWF5b1ViVEVGRUJGMlF0TzdCMEhyb2owWXBNQ29pLV8xbURwZU9odlpnc0Mzal9zZ0lOWDNob1pIVzhQT0VXZ3V50gHiAUFVX3lxTE9aVUtqcVZLb3NmRDB2d0RMbG5QSHdGTDJZcUNfdldWV181LXZUeHE1U0xvYk41QnhEbTRTNXBmSDRfZlFUeld5a0NhRE5IWnJ2dEJ3aVpPWkd4Y01fMTd3N044Zm5NRjFWSVA3ZUt5WkEzbjdZcDhIYXo1Q3g0TVB3ckxDSHRIbGg3N0QzV0JCbkhWeDR1N1h3UnpOdElPeWVWVGJhZEtSRE1oamJrNUFyZWV3RlZvVElySGJCZjN6TndoNWRraWE2eFNIcEhqZ0JWTDJvVjdSQm1ZaHdtOWJrR2c?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_bf7ef737ed85",
+      "category": "infrastructure",
+      "type": "utility_outage",
+      "headline": "Iran begins restoring internet after long blackout, denounces recent US military action as show of 'bad faith' - nktv.in",
+      "severity": 3,
+      "confidence": 0.76,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 32.4,
+        "lng": 53.7,
+        "place": "Iran",
+        "country": "IR",
+        "admin1": null
+      },
+      "country": "IR",
+      "first_seen": "2026-05-27T11:40:06+00:00",
+      "last_updated": "2026-05-27T11:40:06+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPX04yNTRGYjcxMW9EZTVtWVpzWnQzSUhqZVF0aVR0ZGZ5MndibHJoTlEwVlB5UndjQUNqcW5WOFNOcGlBcTRNZE5YYWlTNWZaa0hLRk9qd0xESGl3Q0hMeXRoTlR3MzM5RnRCUVoxeHlHOVFLXzI2R0VTOTBacExET0RBX1k0QTNuQ18zdTJKcmhSZ2hsNGVWOXo2LW5CVW9UZzJkc3lmMHcyRkU1UTRHbHlkRzlUOE42NnBtOUtJNkZldk5uZU5F?oc=5",
+      "is_new": false
+    },
+    {
+      "id": "evt_e049c8438af8",
+      "category": "climate",
+      "type": "earthquake",
+      "headline": "Earthquake Today in Japan: 5.9 Magnitude Quake Strikes Okinawa on Wednesday, May 20 - Check Epicentre, Tsunami, Affected Areas, &amp; More - Dailyhunt",
+      "severity": 4,
+      "confidence": 0.83,
+      "source_verification": "media_ai_signal",
+      "source_class": "tier4_media",
+      "source_name": "news.google.com",
+      "geo": {
+        "lat": 36.2,
+        "lng": 138.3,
+        "place": "Japan",
+        "country": "JP",
+        "admin1": null
+      },
+      "country": "JP",
+      "first_seen": "2026-05-20T20:31:11+00:00",
+      "last_updated": "2026-05-20T20:31:11+00:00",
+      "lead_time_hours": 0,
+      "source_count": 1,
+      "sources": [
+        "google_news"
+      ],
+      "url": "https://news.google.com/rss/articles/CBMiwgJBVV95cUxNUU9KYnZ3bkkyeDdzeXVYM3hMelB2MmhHNVlMUnZQN0Zsd0dXSjAzVXlzU0hEeEN6Q21kVWVJcEZZRUpzN0VDY0JWbTJlUjgxZlFGUnFCSVVpMENJcW9wYTNZdFUybGtRakFPVkR2S0VKcVp1Xy04UzVvU3JDZVdjMjNfY2VNUTJhTndSQWJvTHh5SXZIZGRDbGZZX01Cb1liWnFTM0R0eklMU3VVU0hXZDFpcGJQd1dDZVlvekZBa2wxelYyaElMdWFjOXBubFNqNE9MNE1KU3JrenkyVFEtdEQtNzNHbWlhR1lweERaZThIU2I4NFVHYTU0ZUNjQWxRejlJWUlZZFZrXzkxbW50YjdQTTRGczBDdHBpbERELUZEQm5kbU9tRUtTeGQxOWVYc01EcmhvblRiSnJHOEV5dW1R?oc=5",
+      "is_new": false
+    },
+    {
       "id": "evt_c82587ec8a6b",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -7376,34 +7883,6 @@
       "is_new": false
     },
     {
-      "id": "evt_088fb1e2f560",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Hamas says Israeli airstrikes killed its new military leader in Gaza - Messenger-Inquirer",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-27T14:33:18+00:00",
-      "last_updated": "2026-05-27T14:33:18+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxPQmJjb3J3UEtqXzdMNHk4V21QWHgxWndROVpkQjVLQXJaXzl4VTU1QVBnWjZiZ1ZIOWg2YUVqTThWdzZjanBZMzJ2bGhySDN0NXJWeThaa0E0RXFyWFRJRzZHak53S2NzOXdIX2NGM29OTTFMT2tvRExzOFRtZWtkaTE2M3dyX2dOWXJwdkNBY3RvWllUWmlPbkNSUmRfQ3g0YUJqaGxNaWJTWjVSd1pVLWtmdHpRR0hNRXd1T2FEUGhxOTlJRjhYQzh6azkyRWVPem1PZXNyV0h3Q0Y3OUV2b0pBdzhhRHY4VTdpd1JKcDYzY24xTWFueEZB?oc=5",
-      "is_new": false
-    },
-    {
       "id": "evt_d0187b81dda7",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -7432,34 +7911,6 @@
       "is_new": false
     },
     {
-      "id": "evt_34a725418514",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Gaza Eid: Airstrikes &amp; Hunger Shadow Gaza's Eid-Al Adha - WION",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-27T05:17:50+00:00",
-      "last_updated": "2026-05-27T05:17:50+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPMFRpM0FTVzR3RVd2R0oxekMzUVkxYmN2c2dqb0VfLWFST3hrMmxleGJNN2ItRHE1Yk9JeHM1R0xPZ29HUXJjZHAzcnA5XzhTX1R1ZzNEYWlTNElWdE9OcW5EWHBqcVBVSTJYdGxNWUxmTlprcFNfYUxLcGNRX1VjazNmVjhTWjk4ZjdwV09uS3J5N3dlQVhRQXNLSnBYZ9IBowFBVV95cUxQdzhjTmxfZXNTM0piOVI0R1VzaW51d1RlQy14M0JvTGYyS25VQjdRcUt5LW80dFlyTHdHN2wyanVoTEZCM0NXcUpjQzdKem9LVGd3Tk1UQXNVbFBmT3UyX0drY0ZLUG9oX1J5TEs4T0FiLVA0SUt5VDU1ZnZQcHYzSmRqTHRPa19xZS1sS09MbGp0LUVJQUZiUnJhN1Y1ck1HdXBB?oc=5",
-      "is_new": false
-    },
-    {
       "id": "evt_9faf42ab2f97",
       "category": "conflict",
       "type": "kinetic_strike",
@@ -7485,118 +7936,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOWnZ1WHlmSkR3VmpoZE9odjB4cEMtcV82YV9lbEFtT1EwZVFJMW0xZUZ5eUdxTk1rTlFUZm80SjBsUFpSN0hubWRjejAzU1pQelVpR1dwcjBOdE4zMnN0aWJTTHZYUE9hY1NnS3VVV2FBdmFmUHVwNnZYUWlaZUlJeXlqSXlqbjF1Smc4VHBUQTRudW9vdDRaTFF6RFFNNGtmMlhMbFFOQkNOVU40azFHUk5PLWhDcHlMMWlkRlJCWDNqeXPSAcgBQVVfeXFMUGI0S0VvMXBGZzd0YkRJZC1jakx0ZDRqaXFtTlZYSHVrUi0xNlJVQno0TzZBM25GbkhzSXVBdEhLbUpnTnY4V1dhMm4wTXVwMmF4ZlI3TTNPUWx4WFZyTVpMZVNzWlEySlM5allKYS1lN2dpZy1BUmRObEFKVHN0Z3l0NmN3ZXVIa1pLWWlzM0hNVWV1U0tpSG1FQ3BEWHBtdmd5b3hocnZGUnJUam4wSjFHaVNLODlLOTlDVTdjLXBxeGltYXlzcUk?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_e7ad2054b5bf",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Israeli airstrike on southern Gaza damages tents and water pipeline - MSN",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-21T00:41:35+00:00",
-      "last_updated": "2026-05-21T00:41:35+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQSm40ZFd2ak94UlZrcm9LOENhRnQyc1J6LVZLVWtfT05yVFdfeFdqeTIzQnZPRHZJaU5NaUh3T3ItcURZZXkwVVMwb0FxSnhLOGF1N2hwWXcyU0c3SlhyeUpWd3J3dTBhQlhuMW93N19vOF9PWHlwN2lyUk44Y2JhcFZ1MUVmUy1kYTBHRFUwRWxqYTBlNldyaUROa00xLVdBWUVFT3h1Z0trU1ZVU0xNWFJhMVRvZlRQUHVDQ2RjaEtUVHc?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_f3ccb4a7efa8",
-      "category": "conflict",
-      "type": "armed_clash",
-      "headline": "US-Iran talks: Trump convenes cabinet meeting. Israel accelerates offensive in Lebanon. Hamas military leader killed in Gaza. - lamilano.it",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 32.4,
-        "lng": 53.7,
-        "place": "Iran",
-        "country": "IR",
-        "admin1": null
-      },
-      "country": "IR",
-      "first_seen": "2026-05-26T20:02:11+00:00",
-      "last_updated": "2026-05-26T20:02:11+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPNjl5LXQ0VjlCQ2o2ME9GYTRQelNEcHBwcFlON3BpVzBHR1E2VS1EMHdYODkyXzUyZUo2cExZcWtEUjdDcDVFUE1GaWV3WThQYXl5ZVBqeVhVNHhhUHlUeld5dmFqZ1JyeUtaX283WGdBaGZUNHRPbmFNbW1WVE5zUTkyZzVZRVMwX19sd3hiaVpiODNMVmRRQkxlbGdUNUd3YmZ6LWFVYlktUkZ4VGNLcUFOQUpxcVRjVFRSV1dLRy1ZR2xYdEh0WDBDanNZWEFYaDY3dExUWXBleFhpM3ZJ?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_8dfd95497c66",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "Israel conducts airstrikes in Gaza, targeting new Hamas leader amid ongoing conflict - MSN",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-27T05:08:30+00:00",
-      "last_updated": "2026-05-27T05:08:30+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQUUxpeWhhY3JKRUdQN3lfdFhibllZaUVrS0xONlFscHJVVHl1bi1Wb2NYc05OZHhlUlE5Q0l0VW5RdzJFYVZfREdwRVRCai1PbWd2SUlzTzNMWVVpOXh3V2lRN0t4LVJoS2FaR3NnZkdzR1dMOU1NMm1kLVZFVnJ6RHNPMmg0U3Y5aXBfTDNjZ2p4Z2pidXhoaUp2Q200NzdEeGJJSzJSenRnN2RMUnZHQzNCOS1WVGM1VkZuR19nR1VnQ2R3VlV3T0h2YkYwNFlPbUlOVXQ2a0hTLU5YRjVFVw?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_02798fc2285b",
-      "category": "conflict",
-      "type": "kinetic_strike",
-      "headline": "The media in Gaza report a great loss for Hamas: the movement's new supreme commander was killed in an Israeli airstrike - lnginnorthernbc.ca",
-      "severity": 5,
-      "confidence": 0.9,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 31.5,
-        "lng": 34.5,
-        "place": "Gaza",
-        "country": "PS",
-        "admin1": null
-      },
-      "country": "PS",
-      "first_seen": "2026-05-27T05:49:48+00:00",
-      "last_updated": "2026-05-27T05:49:48+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxOYnBhdnk1Rm0wbE1KZHNyd1QxVXViUk9ISlR6aDlrZEtKaEFzV016enl1OFIyRi1rc0hWc1dNMXdTS0Y2bDFvRUtmYWF1NUs1ZUNsd0djRzA3Y0dXTjQ0cjJkMGpOQWJOSWVrZ3lRNnJKcFBfTWNCMThOejVPZU9WZVJVUER0NVNxTlNGWkNmbFFHZkpvX1Z1OVNaNXJzUWJIOHdXZWZ2aVRhM0hROFNfWTRpQ2dGeDZTSEVJNmZiX0xCUUp2Ykc2c1pOTE0ycFJVenRvX00yUVl3MkM4STFrV2ZaYnd3TXY1TVJBRG5R?oc=5",
       "is_new": false
     },
     {
@@ -7653,34 +7992,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPQmJ6Wlc3QklCRmR4OTM1Z1hCbVZuald2cG10LUdFdGhxUHZHd3M2bHhIRVVtQkswZ21VYjZtN1FrSHpYcXM2U3FlcDZTRV8tRTVsR2hCcDV6MjE4TkZrNnp4akNWRXV2ajA2RnUzNDAxczhuRVlZU05QV21BbElPSGs1VkE5N2Qzc3NUczgxZ0hIODNrRzJjZUJCbDJnUQ?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_5c644b873c79",
-      "category": "infrastructure",
-      "type": "utility_outage",
-      "headline": "Power outage affects 57,000+ customers across US, Georgia hit hardest - eciks.org",
-      "severity": 3,
-      "confidence": 0.76,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 42.3,
-        "lng": 43.4,
-        "place": "Georgia",
-        "country": "GE",
-        "admin1": null
-      },
-      "country": "GE",
-      "first_seen": "2026-05-23T05:56:19+00:00",
-      "last_updated": "2026-05-23T05:56:19+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNNk1SYWgzYVNoejMtWl9rZWRkNVRpTjFBbTJuYXA0ZE00V2tVUmZELWJweXh2WGpKNmRqZElpWG9zYjFIaFUzU0p2YzlfVURIeGZObUZYUldad1FjbVNXUFJsYVRnbF9wQ1BHRndGWFYzMHczRklPS2ptVE8tV3RqMDhQTWs2SlRpaWJ3MmpQVWxhMGRtcE1iT01kaDQ?oc=5",
       "is_new": false
     },
     {
@@ -7793,34 +8104,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOVjlTNTZ0Z1poQlNhRE45dy1vcnhoRVc0N05CaWJjcGdWcGc2X05HRHZwaHdjUUw3bXBqeXdOd292bGxwR1FwQ1pjSUtmVGlMUGlpTEFudnBmNUNFcndFT3A3WFJxZE9Pd3VaYWtmVFVMdTVSUWZZakgwT3ZnWlBmNU91Y283b3hwV05COHF3ZEE5VzJDSS1vOEdHSG9sSWY1?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_8ec23d736256",
-      "category": "climate",
-      "type": "earthquake",
-      "headline": "Schools evacuated as magnitude 5.6 quake hits eastern Turkey - ET Education",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 38.9,
-        "lng": 35.2,
-        "place": "Turkey",
-        "country": "TR",
-        "admin1": null
-      },
-      "country": "TR",
-      "first_seen": "2026-05-21T06:56:00+00:00",
-      "last_updated": "2026-05-21T06:56:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQMjU4ckRHLWxjZWRTUFBXYlNOMG01MEtrX0RGV3NQWHRyQkowTFlhbmpVTFUyVU12RTE4LUhiLWZ1Sy0zeXRnWTlacW02WlY5Yi1sbW5wTVl1N2dqLXFMdWR3dDhFWllybkFkdnVmblVnb1pUcUNzMnpYdGlMUjBPenRNdGJBQmxldlIwVHY3a3FPSWFxUUxoVTIxSlV5S0tJWXdMQ1RmdmR5WGowN0VjTzkxRzFQTU1KNFRJZHFmbnN3NDdTREd6SFNSUFpqdEJrSDZvT3BEYUZ0V0NzNi0yNtIB5gFBVV95cUxPZEFwTkFSOW1vUlZwLVFSbTVGdzZuR2FYall5c01YbFlGUU91Yy1OQWY0Y3lORlZxQ1NzMHdmQ1l3QVNCT0l3SEFkU0hGMjlqemFPVzQ3VlVtNF9OR0xCalBraE9KTlNWNDhSbEd2T2ZqZ2I1VkNnc1VxcUVBWkNxTzFwTzVXNlRITGlyeVZhbGFOc1ZXNnZfUmc5WG9PNkVPSFZMQk9sNlVYSmFlV3p0MmxpQk5HNkxCNFVFak1mRFdkN05mR09OcHFMeVctQ09qX0JVMWNGUVplU3Z2VnZRNy03ZkJpdw?oc=5",
       "is_new": false
     },
     {
@@ -9893,34 +10176,6 @@
         "google_news"
       ],
       "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPa2pIRVUzOG1ndU9GYTdtYmhCWDdSc1hCUjRXZnh3bnRYUE9xMUpwQ0RzUm15NGFvcUo4RTR4QUhSNHpnRzdNWVJ2SWdIOGJJb0lLVE1ZWE9HMWlmZVBpZFg1V1R4U0JTZThNbHpCWjZEUFFyVS1SRUhiR09uR1h3d1dSSkx2MnFXcVhxNUlXY01wZFBzT0Jfb0IxRnpRWTBZZnNJT2JfWVA?oc=5",
-      "is_new": false
-    },
-    {
-      "id": "evt_192aac47d96a",
-      "category": "conflict",
-      "type": "armed_clash",
-      "headline": "Netanyahu Vows Intensified Offensive Action Against Hezbollah - WION",
-      "severity": 4,
-      "confidence": 0.83,
-      "source_verification": "media_ai_signal",
-      "source_class": "tier4_media",
-      "source_name": "news.google.com",
-      "geo": {
-        "lat": 33.9,
-        "lng": 35.5,
-        "place": "Hezbollah",
-        "country": "LB",
-        "admin1": null
-      },
-      "country": "LB",
-      "first_seen": "2026-05-26T12:01:00+00:00",
-      "last_updated": "2026-05-26T12:01:00+00:00",
-      "lead_time_hours": 0,
-      "source_count": 1,
-      "sources": [
-        "google_news"
-      ],
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOMHFIZlI5Z29BYXJNVXd6NGlxczk3LXgwajJLMDlJVVJuVjRuUWdEakdFZ1d5dDJEWWdDU2RqeDlxeEpGcElSTFdxTWxRRmtyN3RDOTd5OGMwdTJaOFZfa3g4ODZWLV9NQ3pkRjMyOW9FSkFQdVQ1S0pSY0lyTWhfeGdvMzZjNDI3NWVOZE83UjZTUnpzZ3U3Vll4TFYzY2ZySlNYMkROVl9USmFHUVhJ0gGvAUFVX3lxTE4wcUhmUjlnb0Fhck1Vd3o0aXFzOTcteDBqMkswOUlVUm5WNG5RZ0RqR0VnV3l0MkRZZ0NTZGp4OXF4SkZwSVJMV3FNbFFGa3I3dEM5N3k4YzB1Mlo4Vl9reDg4NlYtX01DemRGMzI5b0VKQVB1VDVLSlJjSXJNaF94Z28zNmM0Mjc1ZU5kTzdSNlNSenNndTdWWXhMVjNjZnJKU1gyRE5WX1RKYUdRWEk?oc=5",
       "is_new": false
     },
     {
