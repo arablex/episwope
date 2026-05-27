@@ -390,7 +390,10 @@ def extract_free(title: str, description: str) -> dict:
         return None
 
     country_name = iso = lat = lng = region = None
+    # Split on " - " / " — ": segments[0] is the headline, segments[1+] are often source names.
+    # Google News format: "Headline - Source Name Country" — we must not geo-match the source part.
     segments = re.split(r"\s[–—\-]\s", title)
+    # Try explicit segment match first (e.g. "Ebola outbreak - Uganda")
     for seg in segments[1:]:
         seg_clean = re.sub(r"\s*[–—\-].*$", "", seg.strip()).lower()
         seg_clean = re.sub(r"\s*\(.*?\)", "", seg_clean).strip()
@@ -399,8 +402,12 @@ def extract_free(title: str, description: str) -> dict:
             country_name = seg.strip().split("–")[0].split("—")[0].strip().title()
             break
     if not country_name:
+        # Full-text scan — use only the headline part (segments[0]) to avoid geo-matching
+        # news outlet names like "Yahoo News Canada" or "Reuters Africa".
+        headline = segments[0] if segments else title
+        headline_lower = headline.lower()
         for cname, (c_iso, c_lat, c_lng, c_reg) in COUNTRY_DB.items():
-            if re.search(r'\b' + re.escape(cname) + r'\b', text, re.I):
+            if re.search(r'\b' + re.escape(cname) + r'\b', headline_lower, re.I):
                 country_name = cname.title()
                 iso, lat, lng, region = c_iso, c_lat, c_lng, c_reg
                 break

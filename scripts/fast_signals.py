@@ -665,8 +665,30 @@ def detect_disease(text: str) -> tuple[str | None, str]:
     return None, "monitoring"
 
 
+# News outlet names that contain country/region words — must NOT be used for geolocation.
+# Pattern: "[word] News [Country]" or known outlet names with embedded geo terms.
+_OUTLET_STRIP_RE = re.compile(
+    r"\s*[-–—|]\s*"
+    r"(?:Yahoo|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
+    r"Deutsche Welle|Al Jazeera|CGTN|NHK|RT|Sputnik|"
+    r"The Guardian|The Times|Le Monde|Der Spiegel|"
+    r"Xinhua|TASS|Interfax|RIA|Kyodo|Yonhap|"
+    r"Voice of America|Radio Free|"
+    r"Globe and Mail|Toronto Star|National Post|"
+    r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|Press|Today|Online))"
+    r"[^-–—|]*$",
+    re.IGNORECASE,
+)
+
+def _strip_outlet_suffix(title: str) -> str:
+    """Remove trailing '- Source Name' from Google News / RSS titles."""
+    return _OUTLET_STRIP_RE.sub("", title).strip()
+
+
 def detect_country(text: str) -> tuple[str | None, str | None, float | None, float | None]:
     """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables."""
+    # Strip news outlet suffixes so "- Yahoo News Canada" doesn't tag the event as Canada
+    text = _strip_outlet_suffix(text)
     lower = text.lower()
     # Merge all country dicts, longer names first (specificity)
     all_dbs = [
