@@ -1085,8 +1085,13 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
             best_admin1 = (score, name_len, entry["name"], iso_a2, entry["lat"], entry["lng"])
 
     if best_admin1:
-        _, _, rname, iso, lat, lng = best_admin1
-        return rname, iso, lat, lng
+        b_score, _, rname, iso, lat, lng = best_admin1
+        # If we already have a country match, only use admin1 when it's from
+        # the SAME country (score=2). A score=1 admin1 in a different country
+        # (e.g. "Eastern Province" Zambia matching "eastern Turkey") must lose
+        # to the explicit country match.
+        if country_match is None or iso == country_match[1]:
+            return rname, iso, lat, lng
 
     # Return country-level match as final fallback
     return country_match if country_match else (None, None, None, None)

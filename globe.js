@@ -3686,8 +3686,8 @@ function addGLMarkers(){
     type: 'geojson',
     data: buildGeoJSON(),
     cluster: true,
-    clusterMaxZoom: 5,
-    clusterRadius: 45,
+    clusterMaxZoom: 7,   // zoom>7 → individual markers; zoom≤7 → cluster bubbles
+    clusterRadius: 50,
     clusterProperties: {
       epidemic_n:     ['+', ['case', ['==',['get','type'],'epidemic'],     1, 0]],
       disaster_n:     ['+', ['case', ['==',['get','type'],'disaster'],     1, 0]],
@@ -4836,9 +4836,12 @@ const COUNTRY_COORDS = {
 };
 
 function resolveCoords(ev){
-  // Already has coords → use them
+  // Top-level lat/lng (events.json format)
   if(ev.lat && ev.lng) return { lat:ev.lat, lng:ev.lng, isoNum: ISO2_NUM[ev.iso?.toUpperCase()] || null };
-  // Look up by country name
+  // Nested geo object (risk_events.json format: {geo:{lat,lng}})
+  const g = ev.geo || {};
+  if(g.lat && g.lng) return { lat:g.lat, lng:g.lng, isoNum: ISO2_NUM[(ev.iso||g.iso||'')?.toUpperCase()] || null };
+  // Fallback: country centroid lookup
   const key = (ev.country||'').toLowerCase().trim();
   const c = COUNTRY_COORDS[key];
   if(c) return { lat:c.lat, lng:c.lng, isoNum:c.num };
