@@ -3661,40 +3661,13 @@ function refreshCountryRiskFill(){
 }
 
 function buildGeoJSON(){
-  const raw = OUTBREAKS
+  const features = OUTBREAKS
     .filter(o => { const lon = o.lon ?? o.lng; return typeof lon === 'number' && typeof o.lat === 'number'; })
     .map(o => ({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [o.lon ?? o.lng, o.lat] },
       properties: { id: o.id, sev: o.sev || 'monitoring', type: o.type || 'epidemic', cases: Number(o.cases) || 0 }
     }));
-
-  // Spread stacked markers: when multiple events share the same coordinates
-  // (e.g. country centroid fallback), spiral them out so each is clickable.
-  // MAX_JITTER caps spread so markers never bleed into neighbouring countries.
-  const JITTER_R   = 1.8;  // base degrees
-  const MAX_JITTER = 2.5;  // hard cap — Gaza stays near Gaza, Kyiv near Kyiv
-  const groups = {};
-  raw.forEach((f, i) => {
-    const [lng, lat] = f.geometry.coordinates;
-    const key = `${(lat).toFixed(1)},${(lng).toFixed(1)}`;
-    (groups[key] = groups[key] || []).push(i);
-  });
-  const features = raw.map(f => ({ ...f, geometry: { ...f.geometry, coordinates: [...f.geometry.coordinates] } }));
-  Object.values(groups).forEach(ids => {
-    if (ids.length < 2) return;
-    const [baseLng, baseLat] = raw[ids[0]].geometry.coordinates;
-    ids.forEach((fi, pos) => {
-      if (pos === 0) return;
-      const angle = (pos * 137.508) * Math.PI / 180;  // golden angle → uniform spiral
-      const r = Math.min(JITTER_R * Math.sqrt(pos), MAX_JITTER);
-      features[fi].geometry.coordinates = [
-        baseLng + r * Math.cos(angle),
-        Math.max(-85, Math.min(85, baseLat + r * Math.sin(angle)))
-      ];
-    });
-  });
-
   return { type: 'FeatureCollection', features };
 }
 
@@ -3705,11 +3678,69 @@ function addGLMarkers(){
   const existing = map.getSource('outbreaks');
   if(existing){ existing.setData(buildGeoJSON()); applyGLFilters(); return; }
 
-  map.addSource('outbreaks', { type: 'geojson', data: buildGeoJSON() });
+  // Clustering: nearby markers merge into a bubble with count.
+  // clusterMaxZoom=5 → above zoom 5 all individual markers visible.
+  // No coordinate jitter needed — markers stay at their exact location.
+  map.addSource('outbreaks', {
+    type: 'geojson',
+    data: buildGeoJSON(),
+    cluster: true,
+    clusterMaxZoom: 5,
+    clusterRadius: 45,
+  });
+
+  // ── Cluster bubble ───────────────────────────────────────────────────────
+  map.addLayer({
+    id: 'outbreaks-cluster', type: 'circle', source: 'outbreaks',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': [
+        'step', ['get', 'point_count'],
+        '#E67E22',   4,
+        '#E74C3C',  12,
+        '#C0392B'
+      ],
+      'circle-radius': ['step', ['get', 'point_count'], 18, 4, 24, 12, 30],
+      'circle-opacity': 0.88,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': 'rgba(255,255,255,0.55)',
+      'circle-pitch-alignment': 'map',
+      'circle-pitch-scale': 'map',
+    }
+  });
+
+  map.addLayer({
+    id: 'outbreaks-cluster-count', type: 'symbol', source: 'outbreaks',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+      'text-size': 13,
+    },
+    paint: { 'text-color': '#fff' }
+  });
+
+  // Click cluster → zoom in to expand
+  map.on('click', 'outbreaks-cluster', (e) => {
+    _markerClicked = true;
+    const f = e.features[0];
+    map.getSource('outbreaks').getClusterExpansionZoom(
+      f.properties.cluster_id, (err, zoom) => {
+        if(err) return;
+        map.easeTo({ center: f.geometry.coordinates, zoom: zoom + 0.5 });
+      }
+    );
+  });
+  map.on('mouseenter', 'outbreaks-cluster', () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', 'outbreaks-cluster', () => { map.getCanvas().style.cursor = ''; });
+
+  // ── Unclustered individual markers ───────────────────────────────────────
+  const UNCLUST = ['!', ['has', 'point_count']];
 
   // Gradient halo: 3 stacked rings for soft fade effect
   map.addLayer({
     id: 'outbreaks-halo-outer', type: 'circle', source: 'outbreaks',
+    filter: UNCLUST,
     paint: {
       'circle-radius': ['case', ['==', ['get','type'],'air'], 40, 34],
       'circle-color': SEV_COLOR_EXPR,
@@ -3721,6 +3752,7 @@ function addGLMarkers(){
   });
   map.addLayer({
     id: 'outbreaks-halo-mid', type: 'circle', source: 'outbreaks',
+    filter: UNCLUST,
     paint: {
       'circle-radius': ['case', ['==', ['get','type'],'air'], 28, 23],
       'circle-color': SEV_COLOR_EXPR,
@@ -3732,6 +3764,7 @@ function addGLMarkers(){
   });
   map.addLayer({
     id: 'outbreaks-halo', type: 'circle', source: 'outbreaks',
+    filter: UNCLUST,
     paint: {
       'circle-radius': ['case', ['==', ['get','type'],'air'], 18, 15],
       'circle-color': SEV_COLOR_EXPR,
@@ -3745,6 +3778,7 @@ function addGLMarkers(){
   // Inner dot
   map.addLayer({
     id: 'outbreaks-dot', type: 'circle', source: 'outbreaks',
+    filter: UNCLUST,
     paint: {
       'circle-radius': ['case', ['==', ['get','type'],'air'], 9, 7],
       'circle-color': SEV_COLOR_EXPR,
@@ -3812,15 +3846,17 @@ function applyGLFilters(){
       ? ['in', ['get','sev'], ['literal', ['warning','low']]]
       : ['==', ['get','sev'], state.filter];
 
-  const baseFilter = ['all', catFilter, sevFilter];
+  // Unclustered markers: apply category + severity filter (also exclude cluster features)
+  const UNCLUST = ['!', ['has', 'point_count']];
+  const baseFilter = ['all', UNCLUST, catFilter, sevFilter];
   map.setFilter('outbreaks-halo-outer', baseFilter);
   map.setFilter('outbreaks-halo-mid',   baseFilter);
   map.setFilter('outbreaks-halo',       baseFilter);
   map.setFilter('outbreaks-dot',        baseFilter);
 
   const selId = state.selectedId || '';
-  map.setFilter('outbreaks-sel-halo', ['all', ['==', ['get','id'], selId], catFilter, sevFilter]);
-  map.setFilter('outbreaks-sel-dot',  ['all', ['==', ['get','id'], selId], catFilter, sevFilter]);
+  map.setFilter('outbreaks-sel-halo', ['all', UNCLUST, ['==', ['get','id'], selId], catFilter, sevFilter]);
+  map.setFilter('outbreaks-sel-dot',  ['all', UNCLUST, ['==', ['get','id'], selId], catFilter, sevFilter]);
 }
 
 /* (Canvas rendering removed — Mapbox handles globe rendering & resize) */
