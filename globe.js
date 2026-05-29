@@ -4374,8 +4374,10 @@ function renderPanel(){
       srcLink.textContent = (LANG === 'ru' ? 'Открыть источник' : 'Open source')
         + (domain ? ' · ' + domain : '');
       srcLink.style.display = 'block';
+      srcLink.onclick = e => e.stopPropagation(); // prevent panel swallowing the click
     } else {
       srcLink.style.display = 'none';
+      srcLink.onclick = null;
     }
   }
 
