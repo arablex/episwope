@@ -2189,9 +2189,19 @@ def fetch_euromomo() -> list[Article]:
 # ---------------------------------------------------------------------------
 
 TELEGRAM_CHANNELS = [
+    # Official Russian health authorities
     ("https://t.me/s/minzdrav_ru",               "minzdrav_ru"),
     ("https://t.me/s/rospotrebnadzor_official",  "rospotrebnadzor_official"),
     ("https://t.me/s/rosminzdrav",               "rosminzdrav"),
+    # Emergency / incident channels — ЧП early indicators
+    ("https://t.me/s/mchs_official",             "tg_mchs"),      # МЧС official (@112 has no web preview)
+    ("https://t.me/s/coolnews1",                 "tg_coolnews"),  # fires/accidents short format
+    ("https://t.me/s/shot_shot",                 "tg_shot"),      # incidents photo/video
+    # International reliable sources
+    ("https://t.me/s/ReutersWorldChannel",       "tg_reuters"),
+    ("https://t.me/s/BBCRussian",                "tg_bbc_ru"),
+    # OSINT / conflict-zone health risk
+    ("https://t.me/s/CITeam",                    "tg_cit"),
 ]
 
 def fetch_telegram_ru() -> list[Article]:
@@ -3228,6 +3238,16 @@ def build_signals(
                 "drug_shortages":    0.65,
                 "github_epi":        0.68,
                 "telegram_ru":       0.65,
+                # Telegram channels — scored individually
+                "minzdrav_ru":       0.78,  # official MoH
+                "rospotrebnadzor_official": 0.78,
+                "rosminzdrav":       0.75,
+                "tg_mchs":           0.80,  # МЧС official emergencies
+                "tg_coolnews":       0.60,  # ЧП shorts, unverified
+                "tg_shot":           0.55,  # incidents, photo/video, unverified
+                "tg_reuters":        0.85,  # Reuters wire
+                "tg_bbc_ru":         0.82,  # BBC Russian
+                "tg_cit":            0.72,  # OSINT analytics
                 # Tier 4 — geographic gap coverage (0.60-0.65)
                 "indonesia_moh":     0.65,
                 "philippines_doh":   0.65,
