@@ -2837,7 +2837,7 @@ const state = {
   query: '',
   selectedId: null,
   selectedCountry: null,
-  cats: { epidemic:true, disaster:true, air:false, food:false, humanitarian:false, blackout:false },
+  cats: { epidemic:true, disaster:true, air:false, food:false, humanitarian:true, blackout:true },
   hoveredId: null,
   countries: [],
   t: 0,
@@ -3680,13 +3680,22 @@ function addGLMarkers(){
 
   // Clustering: nearby markers merge into a bubble with count.
   // clusterMaxZoom=5 → above zoom 5 all individual markers visible.
-  // No coordinate jitter needed — markers stay at their exact location.
+  // clusterProperties: track per-type counts so the cluster layer can be
+  // filtered consistently with the individual-marker catFilter.
   map.addSource('outbreaks', {
     type: 'geojson',
     data: buildGeoJSON(),
     cluster: true,
     clusterMaxZoom: 5,
     clusterRadius: 45,
+    clusterProperties: {
+      epidemic_n:     ['+', ['case', ['==',['get','type'],'epidemic'],     1, 0]],
+      disaster_n:     ['+', ['case', ['==',['get','type'],'disaster'],     1, 0]],
+      air_n:          ['+', ['case', ['==',['get','type'],'air'],          1, 0]],
+      food_n:         ['+', ['case', ['==',['get','type'],'food'],         1, 0]],
+      humanitarian_n: ['+', ['case', ['==',['get','type'],'humanitarian'], 1, 0]],
+      blackout_n:     ['+', ['case', ['==',['get','type'],'blackout'],     1, 0]],
+    },
   });
 
   // ── Cluster bubble ───────────────────────────────────────────────────────
@@ -3845,6 +3854,17 @@ function applyGLFilters(){
     : state.filter === 'warning'
       ? ['in', ['get','sev'], ['literal', ['warning','low']]]
       : ['==', ['get','sev'], state.filter];
+
+  // Cluster layer: show only when at least one enabled category is present.
+  // Uses clusterProperties counts (e.g. humanitarian_n) instead of 'type'
+  // (cluster features don't have a 'type' — they have point_count etc.)
+  const clusterCatFilter = activeCats.length
+    ? ['any', ...activeCats.map(cat => ['>', ['get', `${cat}_n`], 0])]
+    : ['boolean', false];
+  if(map.getLayer('outbreaks-cluster'))
+    map.setFilter('outbreaks-cluster',       ['all', ['has','point_count'], clusterCatFilter]);
+  if(map.getLayer('outbreaks-cluster-count'))
+    map.setFilter('outbreaks-cluster-count', ['all', ['has','point_count'], clusterCatFilter]);
 
   // Unclustered markers: apply category + severity filter (also exclude cluster features)
   const UNCLUST = ['!', ['has', 'point_count']];
