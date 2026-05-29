@@ -4286,7 +4286,7 @@ function renderList(){
   });
 }
 
-function sevClass(s){ return 's' + SEV[s].idx; }
+function sevClass(s){ return 's' + (SEV[s] || SEV.monitoring).idx; }
 function fmtNum(n){
   if(n == null || isNaN(n)) return '—';
   if(n>=1_000_000) return (n/1_000_000).toFixed(n>=10_000_000?0:1)+'M';
@@ -4394,7 +4394,7 @@ function renderPanel(){
   if(panelScroll && _panelDetailHTML !== null && !document.getElementById('panEy')){
     panelScroll.innerHTML = _panelDetailHTML;
   }
-  const sev = SEV[o.sev];
+  const sev = SEV[o.sev] || SEV.monitoring;
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
   document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
@@ -4407,7 +4407,7 @@ function renderPanel(){
   } else {
     document.getElementById('panName').innerHTML = breakName(diseaseName(o));
   }
-  document.getElementById('panLoc').textContent = `${countryName(o.place) || o.place} · ${regionName(o.region)}`;
+  document.getElementById('panLoc').textContent = `${countryName(o.place) || o.place || ''} · ${regionName(o.region)}`;
   document.getElementById('panPin').style.background = sev.color;
   const ps = document.getElementById('panStatus');
   ps.style.background = grad;
@@ -4490,6 +4490,10 @@ function renderPanel(){
   // sparkline
   const w = 280, h = 64, pad = 4;
   const tr = o.trend;
+  const sparkEl = document.getElementById('spark');
+  if(!tr || tr.length < 2){
+    sparkEl.innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${pad}" x2="${w-pad}" y1="${h/2}" y2="${h/2}" stroke="${sev.color}" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/></svg>`;
+  } else {
   const mx = Math.max(...tr);
   const mn = Math.min(...tr);
   const sx = i => pad + (i/(tr.length-1)) * (w-pad*2);
@@ -4498,7 +4502,7 @@ function renderPanel(){
   let area = `M ${sx(0)} ${h-pad} L ${sx(0)} ${sy(tr[0])}`;
   for(let i=1;i<tr.length;i++){ line += ` L ${sx(i)} ${sy(tr[i])}`; area += ` L ${sx(i)} ${sy(tr[i])}`; }
   area += ` L ${sx(tr.length-1)} ${h-pad} Z`;
-  document.getElementById('spark').innerHTML = `
+  sparkEl.innerHTML = `
     <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
       <defs>
         <linearGradient id="g${o.id}" x1="0" y1="0" x2="0" y2="1">
@@ -4512,6 +4516,7 @@ function renderPanel(){
       ${tr.map((v,i)=>`<circle cx="${sx(i)}" cy="${sy(v)}" r="${i===tr.length-1?2.6:0}" fill="${sev.color}"/>`).join('')}
       ${tr.map((v,i)=>i===tr.length-1?`<circle cx="${sx(i)}" cy="${sy(v)}" r="5" fill="${sev.color}" opacity="0.18"/>`:'').join('')}
     </svg>`;
+  }
   document.getElementById('sparkBig').textContent = fmtNum(o.cases);
   const delta = tr[tr.length-1] - tr[tr.length-8] || 0;
   const trendEl = document.getElementById('sparkTrend');
@@ -4548,8 +4553,11 @@ function renderPanel(){
   }
 
   // primary action button color
-  document.querySelector('.btn.primary').style.background = grad;
-  document.querySelector('.btn.primary').style.boxShadow = `0 8px 20px -10px ${hexA(sev.color,0.55)}, inset 0 1px 0 rgba(255,255,255,0.18)`;
+  const _primaryBtn = document.querySelector('.btn.primary');
+  if(_primaryBtn){
+    _primaryBtn.style.background = grad;
+    _primaryBtn.style.boxShadow = `0 8px 20px -10px ${hexA(sev.color,0.55)}, inset 0 1px 0 rgba(255,255,255,0.18)`;
+  }
 
   // events
   const ev = document.getElementById('events');
@@ -4631,7 +4639,7 @@ function breakName(name){
 
 function renderPopup(){
   const o = currentSel(); if(!o) return;
-  const sev = SEV[o.sev];
+  const sev = SEV[o.sev] || SEV.monitoring;
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
   document.getElementById('popBar').style.background = sev.color;
   document.getElementById('popId').textContent = `${o.code} · WHO/${o.region}`;
@@ -4906,10 +4914,10 @@ const COUNTRY_COORDS = {
 
 function resolveCoords(ev){
   // Top-level lat/lng (events.json format)
-  if(ev.lat && ev.lng) return { lat:ev.lat, lng:ev.lng, isoNum: ISO2_NUM[ev.iso?.toUpperCase()] || null };
+  if(typeof ev.lat === 'number' && typeof ev.lng === 'number') return { lat:ev.lat, lng:ev.lng, isoNum: ISO2_NUM[ev.iso?.toUpperCase()] || null };
   // Nested geo object (risk_events.json format: {geo:{lat,lng}})
   const g = ev.geo || {};
-  if(g.lat && g.lng) return { lat:g.lat, lng:g.lng, isoNum: ISO2_NUM[(ev.iso||g.iso||'')?.toUpperCase()] || null };
+  if(typeof g.lat === 'number' && typeof g.lng === 'number') return { lat:g.lat, lng:g.lng, isoNum: ISO2_NUM[(ev.iso||g.iso||'')?.toUpperCase()] || null };
   // Fallback: country centroid lookup
   const key = (ev.country||'').toLowerCase().trim();
   const c = COUNTRY_COORDS[key];
@@ -4923,9 +4931,9 @@ function resolveCoords(ev){
 
 // ISO numeric lookup table (alpha-2 → numeric) for the most common outbreak countries
 const ISO2_NUM = {
-  CD:180, NG:566, SD:729, US:840, TZ:834, BR:76, PK:586, AF:4,
-  HT:332, IT:380, DE:276, AF:4, SO:706, ET:231, YE:887, IN:356,
-  VN:704, SL:694, NE:562, MZ:508, KZ:398, UG:800, AO:24, MG:450,
+  CD:180, NG:566, SD:729, US:840, BR:76, PK:586, AF:4,
+  HT:332, IT:380, DE:276, SO:706, ET:231, YE:887, IN:356,
+  VN:704, SL:694, NE:562, MZ:508, KZ:398, AO:24, MG:450,
   CM:120, CF:140, GN:324, LR:430, ML:466, SN:686, GH:288, CI:384,
   ZA:710, KE:404, RW:646, BD:50, MM:104, PH:608, ID:360, CN:156,
   JP:392, RU:643, FR:250, GB:826, ES:724, PT:620, GR:300, TR:792,

@@ -194,7 +194,9 @@ COUNTRY_DB = {
     "kyrgyzstan":       ("KG", 41.2,  74.8,  "EURO"),
     "turkmenistan":     ("TM", 40.0,  59.5,  "EURO"),
     "belarus":          ("BY", 53.7,  28.0,  "EURO"),
-    "georgia":          ("GE", 42.3,  43.4,  "EURO"),
+    # "georgia" removed from COUNTRY_DB — ambiguous with US state Georgia.
+    # The Caucasus country is still caught by LANDMARK_DB ("tbilisi", etc.)
+    # and explicit "Republic of Georgia" / "Georgian" headlines.
     "azerbaijan":       ("AZ", 40.1,  47.6,  "EURO"),
     "armenia":          ("AM", 40.1,  45.0,  "EURO"),
     "moldova":          ("MD", 47.4,  28.4,  "EURO"),
@@ -997,11 +999,13 @@ def detect_disease(text: str) -> tuple[str | None, str]:
 # Pattern: "[word] News [Country]" or known outlet names with embedded geo terms.
 _OUTLET_STRIP_RE = re.compile(
     r"\s*[-–—|]\s*"
-    r"(?:Yahoo|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
-    r"Deutsche Welle|Al Jazeera|CGTN|NHK|RT|Sputnik|"
+    r"(?:Yahoo(?:\s+News)?(?:\s+\w+)?|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
+    r"Deutsche Welle|Al Jazeera|Al Arabiya(?:\s+English)?|France\s+(?:24|3|2|Info)|"
+    r"CGTN|NHK|RT|Sputnik|"
     r"The Guardian|The Times|Le Monde|Der Spiegel|"
     r"Xinhua|TASS|Interfax|RIA|Kyodo|Yonhap|"
-    r"Voice of America|Radio Free|"
+    r"Voice of America|Radio Free\w*|Breitbart|"
+    r"Free Malaysia Today|Daily Mail|Daily Express|Sky News|"
     r"Globe and Mail|Toronto Star|National Post|"
     r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|Press|Today|Online)|"
     r"[A-Za-z0-9][A-Za-z0-9\-]*\.[a-z]{2,6}(?:\.[a-z]{2})?)"  # domain suffix: lbc.co.uk, bbc.com
@@ -1055,11 +1059,23 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
 
     # ── Tier 3: ADMIN1_DB (Natural Earth world regions / states / oblasts) ─
     # Try all region names; prefer matches that agree with country_match ISO.
+    # Bare directional words (Eastern, Western, Northern, Southern, Central) are
+    # ambiguous region names shared across dozens of countries (Rwanda, Sierra
+    # Leone, Zambia, Ghana, Kenya…). Without an explicit country_match context
+    # these produce false assignments (e.g. "northern Chile" → SL/Northern).
+    # Only accept them when country_match is already set (score=2 guaranteed).
+    _AMBIGUOUS_ADMIN1 = frozenset({
+        'eastern', 'western', 'northern', 'southern', 'central',
+        'north', 'south', 'east', 'west',
+    })
     best_admin1 = None
     for key, entry in ADMIN1_DB.items():
         region_name  = entry["name"].lower()
         region_local = (entry.get("name_local") or "").lower()
         iso_a2       = entry["iso"]
+        # Skip bare directional names when there is no country context
+        if region_name in _AMBIGUOUS_ADMIN1 and country_match is None:
+            continue
         # Match by name or local name (handles Cyrillic, CJK)
         matched = False
         if any(ord(c) > 127 for c in region_name):

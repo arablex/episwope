@@ -237,10 +237,21 @@ def _source_class(domain: str, source: str) -> tuple[str, str]:
     return "tier4_media", "media_ai_signal"
 
 
+_ENTERTAINMENT_RE = re.compile(
+    r"lineup|festival|music fest|concert|band|headliner|tour\b|"
+    r"performers?|setlist|ticket sales|album release|world tour",
+    re.IGNORECASE,
+)
+
 def _classify(text: str, rules: list) -> tuple[str | None, int]:
     low = text.lower()
     for pat, typ, sev in rules:
         if re.search(pat, low):
+            # Suppress civil_unrest false positives from music festival news
+            # ("Riot Fest lineup", "Rock Festival", etc.)
+            if typ in ("violent_unrest", "mass_protest", "protest") and \
+               _ENTERTAINMENT_RE.search(text):
+                continue
             return typ, sev
     return None, 0
 
@@ -348,10 +359,12 @@ def collect_events() -> list[dict]:
 
         for a in arts:
             text = f"{a.title} {a.body}"
-            # Strip source domain from text so "lbc.co.uk" doesn't tag event as UK
-            # when the article is actually about Gaza, Ukraine, etc.
+            # Strip source domain and outlet name from text so "lbc.co.uk",
+            # "France 24", "Yahoo News UK" don't contaminate detect_country.
             if a.domain:
                 text = text.replace(a.domain, " ")
+            if a.source:
+                text = text.replace(a.source, " ")
             typ, sev = _classify(text, cfg["rules"])
             if not typ:
                 continue
@@ -589,6 +602,7 @@ def fetch_gdacs_climate() -> list[dict]:
     Authoritative (UN/EC), free, no key, precise coords + ISO — supplements
     the noisy news-derived climate signal and fixes its mis-geocoding."""
     out = []
+    seen_gdacs_ids: set = set()
     try:
         raw = fetch_url("https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP",
                         retries=1)
@@ -614,6 +628,11 @@ def fetch_gdacs_climate() -> list[dict]:
         if not iso:
             continue
         eid = f"evt_gdacs_{p.get('eventid', '')}_{et}"
+        # GDACS API can return the same event multiple times (multi-country events).
+        # Dedup by event ID — keep the first occurrence.
+        if eid in seen_gdacs_ids:
+            continue
+        seen_gdacs_ids.add(eid)
         out.append({
             "id": eid,
             "category": cat,
