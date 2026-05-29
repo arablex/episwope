@@ -3661,13 +3661,39 @@ function refreshCountryRiskFill(){
 }
 
 function buildGeoJSON(){
-  const features = OUTBREAKS
-    .filter(o => { const lon = o.lon ?? o.lng; return typeof lon === 'number' && typeof o.lat === 'number'; })
-    .map(o => ({
+  const valid = OUTBREAKS.filter(o => {
+    const lon = o.lon ?? o.lng;
+    return typeof lon === 'number' && typeof o.lat === 'number';
+  });
+
+  // Detect same-coordinate stacks and apply tiny deterministic circular offset
+  // so Mapbox clustering can eventually separate them at high zoom.
+  // Radius 0.018° ≈ 2 km — invisible at country scale, separates at city zoom.
+  const coordGroups = {};
+  valid.forEach(o => {
+    const lon = o.lon ?? o.lng;
+    const key = `${lon.toFixed(3)},${o.lat.toFixed(3)}`;
+    (coordGroups[key] = coordGroups[key] || []).push(o);
+  });
+
+  const features = valid.map(o => {
+    const lon = o.lon ?? o.lng;
+    const key = `${lon.toFixed(3)},${o.lat.toFixed(3)}`;
+    const grp = coordGroups[key];
+    let finalLon = lon, finalLat = o.lat;
+    if (grp.length > 1) {
+      const idx = grp.indexOf(o);
+      const angle = (2 * Math.PI * idx) / grp.length;
+      const r = 0.08; // ~9km — separates visually at zoom 10+
+      finalLon = lon + r * Math.cos(angle);
+      finalLat = o.lat + r * Math.sin(angle);
+    }
+    return ({
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [o.lon ?? o.lng, o.lat] },
+      geometry: { type: 'Point', coordinates: [finalLon, finalLat] },
       properties: { id: o.id, sev: o.sev || 'monitoring', type: o.type || 'epidemic', cases: Number(o.cases) || 0 }
-    }));
+    });
+  });
   return { type: 'FeatureCollection', features };
 }
 
@@ -3729,16 +3755,37 @@ function addGLMarkers(){
     paint: { 'text-color': '#fff' }
   });
 
-  // Click cluster → zoom in to expand
+  // Click cluster → fitBounds по всем точкам кластера, чтобы все были видны
   map.on('click', 'outbreaks-cluster', (e) => {
     _markerClicked = true;
     const f = e.features[0];
-    map.getSource('outbreaks').getClusterExpansionZoom(
-      f.properties.cluster_id, (err, zoom) => {
-        if(err) return;
-        map.easeTo({ center: f.geometry.coordinates, zoom: zoom + 0.5 });
+    const clusterId = f.properties.cluster_id;
+    const src = map.getSource('outbreaks');
+
+    src.getClusterLeaves(clusterId, Infinity, 0, (err, leaves) => {
+      if (err || !leaves || !leaves.length) return;
+
+      if (leaves.length === 1) {
+        map.easeTo({ center: leaves[0].geometry.coordinates, zoom: 10 });
+        return;
       }
-    );
+
+      const lngs = leaves.map(l => l.geometry.coordinates[0]);
+      const lats = leaves.map(l => l.geometry.coordinates[1]);
+      const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+      const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+
+      // Если все точки в буквально одной точке (нет jitter) — expansion zoom
+      if (maxLng - minLng < 0.001 && maxLat - minLat < 0.001) {
+        src.getClusterExpansionZoom(clusterId, (err2, zoom) => {
+          if (err2) return;
+          map.easeTo({ center: f.geometry.coordinates, zoom: Math.min(zoom + 1, 13) });
+        });
+        return;
+      }
+
+      map.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 100, maxZoom: 10 });
+    });
   });
   map.on('mouseenter', 'outbreaks-cluster', () => { map.getCanvas().style.cursor = 'pointer'; });
   map.on('mouseleave', 'outbreaks-cluster', () => { map.getCanvas().style.cursor = ''; });
