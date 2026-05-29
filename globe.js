@@ -3683,10 +3683,14 @@ function buildGeoJSON(){
     let finalLon = lon, finalLat = o.lat;
     if (grp.length > 1) {
       const idx = grp.indexOf(o);
-      const angle = (2 * Math.PI * idx) / grp.length;
-      const r = 0.08; // ~9km — separates visually at zoom 10+
-      finalLon = lon + r * Math.cos(angle);
-      finalLat = o.lat + r * Math.sin(angle);
+      if (idx > 0) {
+        // golden angle spiral: organic scatter, not a ring
+        // first event (idx=0) stays at exact centroid
+        const angle = idx * 2.39996; // golden angle 137.5° in radians
+        const r = 0.028 * Math.sqrt(idx); // sqrt gives even density, not crowded center
+        finalLon = lon + r * Math.cos(angle);
+        finalLat = o.lat + r * Math.sin(angle);
+      }
     }
     return ({
       type: 'Feature',
