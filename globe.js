@@ -3661,16 +3661,39 @@ function refreshCountryRiskFill(){
 }
 
 function buildGeoJSON(){
-  return {
-    type: 'FeatureCollection',
-    features: OUTBREAKS
-      .filter(o => { const lon = o.lon ?? o.lng; return typeof lon === 'number' && typeof o.lat === 'number'; })
-      .map(o => ({
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [o.lon ?? o.lng, o.lat] },
-        properties: { id: o.id, sev: o.sev || 'monitoring', type: o.type || 'epidemic', cases: Number(o.cases) || 0 }
-      }))
-  };
+  const raw = OUTBREAKS
+    .filter(o => { const lon = o.lon ?? o.lng; return typeof lon === 'number' && typeof o.lat === 'number'; })
+    .map(o => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [o.lon ?? o.lng, o.lat] },
+      properties: { id: o.id, sev: o.sev || 'monitoring', type: o.type || 'epidemic', cases: Number(o.cases) || 0 }
+    }));
+
+  // Spread stacked markers: when multiple events share the same coordinates
+  // (e.g. country centroid fallback), spiral them out so each is clickable.
+  const JITTER_R = 1.8;  // degrees — works for large countries; barely visible for small ones
+  const groups = {};
+  raw.forEach((f, i) => {
+    const [lng, lat] = f.geometry.coordinates;
+    const key = `${(lat).toFixed(1)},${(lng).toFixed(1)}`;
+    (groups[key] = groups[key] || []).push(i);
+  });
+  const features = raw.map(f => ({ ...f, geometry: { ...f.geometry, coordinates: [...f.geometry.coordinates] } }));
+  Object.values(groups).forEach(ids => {
+    if (ids.length < 2) return;
+    const [baseLng, baseLat] = raw[ids[0]].geometry.coordinates;
+    ids.forEach((fi, pos) => {
+      if (pos === 0) return;
+      const angle = (pos * 137.508) * Math.PI / 180;  // golden angle → uniform spiral
+      const r = JITTER_R * Math.sqrt(pos);
+      features[fi].geometry.coordinates = [
+        baseLng + r * Math.cos(angle),
+        Math.max(-85, Math.min(85, baseLat + r * Math.sin(angle)))
+      ];
+    });
+  });
+
+  return { type: 'FeatureCollection', features };
 }
 
 function addGLMarkers(){
