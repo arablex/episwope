@@ -51,6 +51,7 @@ INDEX_OUT   = OUTPUT_DIR / "risk_index.json"
 SIGNALS_IN  = OUTPUT_DIR / "signals.json"
 
 HISTORY_DAYS = 21  # rolling event retention
+MAX_EVENTS_PER_ISO_CAT = 8  # max globe markers per (iso, category) — prevents Gaza/UA marker flood
 
 # ── Risk taxonomy ────────────────────────────────────────────────────────
 # Each category: GDELT DOC queries + a keyword→(type,severity) classifier.
@@ -758,6 +759,22 @@ def main() -> int:
     # Persist prior news events within the retention window (real history)
     events = merge_persist(events)
     log(f"[risk] total events after persistence merge: {len(events)}")
+
+    # Cap per (iso, category) to prevent hundreds of near-duplicate news articles
+    # turning into a marker flood on the globe (e.g. 146 Gaza conflict events).
+    # Keep the MAX_EVENTS_PER_ISO_CAT highest-severity (then newest) events.
+    from collections import defaultdict
+    _bucket: dict[tuple, list] = defaultdict(list)
+    for ev in events:
+        iso_key = ev.get("country") or (ev.get("geo") or {}).get("country") or "??"
+        _bucket[(iso_key, ev.get("category", "??"))].append(ev)
+    events_capped: list = []
+    for evs in _bucket.values():
+        top = sorted(evs, key=lambda e: (-e.get("severity", 0), str(e.get("first_seen", ""))))
+        events_capped.extend(top[:MAX_EVENTS_PER_ISO_CAT])
+    before_cap = len(events)
+    events = events_capped
+    log(f"[risk] events after per-(iso,cat) cap ({MAX_EVENTS_PER_ISO_CAT}): {len(events)} (was {before_cap})")
 
     index = build_index(events)
     log(f"[risk] countries scored: {len(index)}")

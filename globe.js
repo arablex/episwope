@@ -3671,7 +3671,9 @@ function buildGeoJSON(){
 
   // Spread stacked markers: when multiple events share the same coordinates
   // (e.g. country centroid fallback), spiral them out so each is clickable.
-  const JITTER_R = 1.8;  // degrees — works for large countries; barely visible for small ones
+  // MAX_JITTER caps spread so markers never bleed into neighbouring countries.
+  const JITTER_R   = 1.8;  // base degrees
+  const MAX_JITTER = 2.5;  // hard cap — Gaza stays near Gaza, Kyiv near Kyiv
   const groups = {};
   raw.forEach((f, i) => {
     const [lng, lat] = f.geometry.coordinates;
@@ -3685,7 +3687,7 @@ function buildGeoJSON(){
     ids.forEach((fi, pos) => {
       if (pos === 0) return;
       const angle = (pos * 137.508) * Math.PI / 180;  // golden angle → uniform spiral
-      const r = JITTER_R * Math.sqrt(pos);
+      const r = Math.min(JITTER_R * Math.sqrt(pos), MAX_JITTER);
       features[fi].geometry.coordinates = [
         baseLng + r * Math.cos(angle),
         Math.max(-85, Math.min(85, baseLat + r * Math.sin(angle)))
