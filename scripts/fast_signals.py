@@ -54,6 +54,19 @@ OUTPUT_DIR  = SCRIPT_DIR.parent / "public"
 SIGNALS_OUT = OUTPUT_DIR / "signals.json"
 HISTORY_OUT = OUTPUT_DIR / "signals_history.json"
 
+# ── World admin-1 regions (Natural Earth, 4784 entries) ──────────────────────
+# Loaded once at startup — provides sub-national centroid fallback for any
+# region/state/province not in LANDMARK_DB.
+def _load_admin1() -> dict:
+    path = SCRIPT_DIR / "_data" / "admin1_regions.json"
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+ADMIN1_DB: dict = _load_admin1()   # key: "{iso_lower}_{slug}" → {iso, name, lat, lng}
+
 HISTORY_WINDOW_DAYS  = 30   # rolling baseline window
 DEDUP_WINDOW_HOURS   = 6    # suppress re-emitting same (iso, disease) signal
 SIGNAL_PERSIST_HOURS = 48   # keep signal active in output for N hours after detection
@@ -1001,11 +1014,18 @@ def _strip_outlet_suffix(title: str) -> str:
 
 
 def detect_country(text: str) -> tuple[str | None, str | None, float | None, float | None]:
-    """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables."""
+    """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables.
+
+    Lookup order (most specific wins):
+      1. COUNTRY_DB / COUNTRY_DB_RU / COUNTRY_DB_ZH  — country-level
+      2. LANDMARK_DB                                  — curated cities & actors
+      3. ADMIN1_DB (Natural Earth, 4784 regions)      — states / oblasts / provinces
+    """
     # Strip news outlet suffixes so "- Yahoo News Canada" doesn't tag the event as Canada
     text = _strip_outlet_suffix(text)
     lower = text.lower()
-    # Merge all country dicts, longer names first (specificity)
+
+    # ── Tier 1: country names ────────────────────────────────────────────
     all_dbs = [
         (cname, *COUNTRY_DB[cname])       for cname in COUNTRY_DB
     ] + [
@@ -1013,22 +1033,63 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
     ] + [
         (cname, *COUNTRY_DB_ZH[cname])    for cname in COUNTRY_DB_ZH
     ]
+    country_match = None
     for entry in sorted(all_dbs, key=lambda x: len(x[0]), reverse=True):
         cname, iso, lat, lng, _ = entry
-        # Use word-boundary for ASCII; substring match for CJK/Cyrillic
         if any(ord(c) > 127 for c in cname):
             if cname in lower:
-                return cname, iso, lat, lng
+                country_match = (cname, iso, lat, lng); break
         else:
             if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
-                return cname.title(), iso, lat, lng
-    # Fallback: landmark / city / actor names (e.g. "El Fasher" → SD).
-    # Checked AFTER country names so an explicit country always wins.
+                country_match = (cname.title(), iso, lat, lng); break
+
+    # ── Tier 2: LANDMARK_DB (curated cities, actors, conflict zones) ─────
     for cname in sorted(LANDMARK_DB, key=len, reverse=True):
         iso, lat, lng, _ = LANDMARK_DB[cname]
         if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
-            return cname.title(), iso, lat, lng
-    return None, None, None, None
+            # Only prefer landmark over country if it's more specific
+            # (i.e. landmark's ISO matches country match or no country match)
+            if country_match is None or iso == country_match[1]:
+                return cname.title(), iso, lat, lng
+
+    # ── Tier 3: ADMIN1_DB (Natural Earth world regions / states / oblasts) ─
+    # Try all region names; prefer matches that agree with country_match ISO.
+    best_admin1 = None
+    for key, entry in ADMIN1_DB.items():
+        region_name  = entry["name"].lower()
+        region_local = (entry.get("name_local") or "").lower()
+        iso_a2       = entry["iso"]
+        # Match by name or local name (handles Cyrillic, CJK)
+        matched = False
+        if any(ord(c) > 127 for c in region_name):
+            # Region name itself is non-ASCII (Cyrillic/CJK stored as name)
+            matched = region_name in lower
+        else:
+            # Region name is ASCII (Latin) — use word boundary
+            matched = bool(re.search(r"\b" + re.escape(region_name) + r"\b", lower, re.I))
+        # Check local name (handles cases where name is Latin but local is Cyrillic)
+        if not matched and region_local:
+            matched = region_local in lower
+        # Prefix fallback for Cyrillic declension (works regardless of name encoding)
+        # e.g. "Калининградской области" → prefix "калинин" found in "калининградской"
+        if not matched:
+            prefixes = [p for p in (entry.get("search_prefixes") or []) if len(p) >= 6]
+            if prefixes:
+                matched = prefixes[0] in lower
+        if not matched:
+            continue
+        # Prefer region that matches already-detected country
+        score = 2 if (country_match and iso_a2 == country_match[1]) else 1
+        name_len = len(region_name)
+        if best_admin1 is None or score > best_admin1[0] or (score == best_admin1[0] and name_len > best_admin1[1]):
+            best_admin1 = (score, name_len, entry["name"], iso_a2, entry["lat"], entry["lng"])
+
+    if best_admin1:
+        _, _, rname, iso, lat, lng = best_admin1
+        return rname, iso, lat, lng
+
+    # Return country-level match as final fallback
+    return country_match if country_match else (None, None, None, None)
 
 
 def make_signal_id(disease: str, iso: str) -> str:
