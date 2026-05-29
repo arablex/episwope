@@ -4363,6 +4363,22 @@ function renderPanel(){
   ps.style.boxShadow = `0 8px 20px -10px ${hexA(sev.color, 0.55)}, inset 0 1px 0 rgba(255,255,255,0.14)`;
   ps.querySelector('.v').textContent = translateWho(o.who);
 
+  // Source link button — visible whenever we have a URL
+  const srcLink = document.getElementById('panSrcLink');
+  if (srcLink) {
+    const url = o._link || '';
+    if (url) {
+      let domain = '';
+      try { domain = new URL(url).hostname.replace(/^www\./, ''); } catch(e) {}
+      srcLink.href = url;
+      srcLink.textContent = (LANG === 'ru' ? 'Открыть источник' : 'Open source')
+        + (domain ? ' · ' + domain : '');
+      srcLink.style.display = 'block';
+    } else {
+      srcLink.style.display = 'none';
+    }
+  }
+
   // ── Risk events render through the health panel: relabel everything
   //    to risk-appropriate, localised copy (no medical metrics). ──
   const RISK_DOMAIN = {
@@ -4922,7 +4938,7 @@ async function loadLiveData(){
         blurb_ru: ev.summary_ru || ev.summary || '',
         events: [],
         _live: true,
-        _link: ev.link,
+        _link: ev.url || ev.link || '',
       });
 
       if(coords.isoNum) HIGHLIGHT_ISO.add(coords.isoNum);
