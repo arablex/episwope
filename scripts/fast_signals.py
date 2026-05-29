@@ -2202,6 +2202,8 @@ TELEGRAM_CHANNELS = [
     ("https://t.me/s/BBCRussian",                "tg_bbc_ru"),
     # OSINT / conflict-zone health risk
     ("https://t.me/s/CITeam",                    "tg_cit"),
+    # International breaking news
+    ("https://t.me/s/rtnews",                    "tg_rt"),
 ]
 
 def fetch_telegram_ru() -> list[Article]:
@@ -3248,6 +3250,7 @@ def build_signals(
                 "tg_reuters":        0.85,  # Reuters wire
                 "tg_bbc_ru":         0.82,  # BBC Russian
                 "tg_cit":            0.72,  # OSINT analytics
+                "tg_rt":             0.58,  # RT — fast but needs corroboration
                 # Tier 4 — geographic gap coverage (0.60-0.65)
                 "indonesia_moh":     0.65,
                 "philippines_doh":   0.65,
