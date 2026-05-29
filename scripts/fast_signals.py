@@ -1003,7 +1003,8 @@ _OUTLET_STRIP_RE = re.compile(
     r"Xinhua|TASS|Interfax|RIA|Kyodo|Yonhap|"
     r"Voice of America|Radio Free|"
     r"Globe and Mail|Toronto Star|National Post|"
-    r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|Press|Today|Online))"
+    r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|Press|Today|Online)|"
+    r"[A-Za-z0-9][A-Za-z0-9\-]*\.[a-z]{2,6}(?:\.[a-z]{2})?)"  # domain suffix: lbc.co.uk, bbc.com
     r"[^-–—|]*$",
     re.IGNORECASE,
 )

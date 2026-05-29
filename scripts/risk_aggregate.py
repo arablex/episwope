@@ -348,6 +348,10 @@ def collect_events() -> list[dict]:
 
         for a in arts:
             text = f"{a.title} {a.body}"
+            # Strip source domain from text so "lbc.co.uk" doesn't tag event as UK
+            # when the article is actually about Gaza, Ukraine, etc.
+            if a.domain:
+                text = text.replace(a.domain, " ")
             typ, sev = _classify(text, cfg["rules"])
             if not typ:
                 continue
