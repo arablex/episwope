@@ -562,6 +562,15 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         prior = json.loads(EVENTS_OUT.read_text(encoding="utf-8")).get("events", [])
     except Exception:
         return new_events
+    # Known bad fallback centroids produced by geocoding bugs.
+    # Events carried forward with these coords are stale artifacts from
+    # the pre-fix pipeline; purge them on next merge so they don't persist
+    # for 21 days after the geocoding fix ships.
+    _BAD_CENTROIDS = {
+        (-1.798, 30.365),   # RW/Eastern province — was matched by bare "Eastern"
+        (8.857, -12.175),   # SL/Northern province — was matched by bare "Northern"
+    }
+
     carried = 0
     for e in prior:
         eid = e.get("id", "")
@@ -570,6 +579,19 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         if eid.startswith("evt_h_") or eid.startswith("evt_clim_") \
            or eid.startswith("evt_ioda_") or eid.startswith("evt_gdacs_"):
             continue                                  # source owns retention
+        # Drop events with known bad fallback centroid coords — these were
+        # geocoded wrong by the old pipeline and should not persist.
+        geo = e.get("geo") or {}
+        elat = geo.get("lat")
+        elng = geo.get("lng")
+        if elat is not None and elng is not None:
+            if any(abs(elat - blat) < 0.01 and abs(elng - blng) < 0.01
+                   for blat, blng in _BAD_CENTROIDS):
+                continue
+        # Drop entertainment false positives (music festival "riot" etc.)
+        headline_lc = (e.get("headline") or "").lower()
+        if e.get("category") == "civil_unrest" and _ENTERTAINMENT_RE.search(headline_lc):
+            continue
         # Carry forward only if the date is parseable AND within the window.
         # An unparseable first_seen would otherwise count as age 0 (fresh) and
         # never age out — a dateless orphan would persist forever.
