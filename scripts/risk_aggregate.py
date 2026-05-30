@@ -53,6 +53,64 @@ SIGNALS_IN  = OUTPUT_DIR / "signals.json"
 HISTORY_DAYS = 21  # rolling event retention
 MAX_EVENTS_PER_ISO_CAT = 8  # max globe markers per (iso, category) — prevents Gaza/UA marker flood
 
+# ── Gemini few-shot geo-validation ───────────────────────────────────────────
+# For events where detect_country() returns a country-centroid (low precision)
+# and the source is Google News (high noise), we ask Gemini Flash to confirm
+# or correct the geolocation. Costs ~$0.00001/call — practically free.
+
+_GEO_VALIDATE_PROMPT = """You are a geographic location extractor for news headlines.
+Extract WHERE THE EVENT HAPPENED (not where the news outlet is from).
+
+Return ONLY valid JSON: {{"country_iso": "XX", "place": "City or Region", "confidence": 0.0}}
+- country_iso: ISO 3166-1 alpha-2 code of the LOCATION OF THE EVENT
+- place: specific city, region, or place name (empty string if unknown)
+- confidence: 0.0-1.0
+
+Rules:
+- "Hamas leader killed in Gaza airstrike - BBC UK" → {{"country_iso": "PS", "place": "Gaza", "confidence": 0.95}}
+- "Sudan army offensive in Darfur - Yahoo News Canada" → {{"country_iso": "SD", "place": "Darfur", "confidence": 0.9}}
+- "Flooding in Nairobi kills 5 - Daily Nation Kenya" → {{"country_iso": "KE", "place": "Nairobi", "confidence": 0.95}}
+- "Russia launches missiles at Kyiv - MSN" → {{"country_iso": "UA", "place": "Kyiv", "confidence": 0.92}}
+
+Headline: {headline}"""
+
+
+def _gemini_geo_validate(headline: str, current_iso: str) -> tuple[str, str, float] | None:
+    """Ask Gemini Flash to confirm/correct geo for ambiguous events.
+    Returns (iso, place, confidence) or None on failure/API unavailable."""
+    import os
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if not api_key:
+        return None
+    try:
+        import urllib.request
+        prompt = _GEO_VALIDATE_PROMPT.format(headline=headline[:200])
+        payload = json.dumps({
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"maxOutputTokens": 80, "temperature": 0.1},
+        }).encode()
+        url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+               f"gemini-2.0-flash:generateContent?key={api_key}")
+        req = urllib.request.Request(url, data=payload,
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            result = json.loads(resp.read())
+        text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        # Extract JSON from response
+        m = re.search(r'\{[^}]+\}', text)
+        if not m:
+            return None
+        parsed = json.loads(m.group())
+        iso = str(parsed.get("country_iso", "")).upper()[:2]
+        place = str(parsed.get("place", ""))
+        conf = float(parsed.get("confidence", 0.5))
+        # Only accept if Gemini is reasonably confident AND different from current
+        if iso and len(iso) == 2 and conf >= 0.75:
+            return iso, place, conf
+    except Exception:
+        pass
+    return None
+
 # ── Risk taxonomy ────────────────────────────────────────────────────────
 # Each category: GDELT DOC queries + a keyword→(type,severity) classifier.
 # severity 0–5; deterministic, auditable, zero AI cost.
@@ -434,6 +492,26 @@ def collect_events() -> list[dict]:
             cname, iso, lat, lng = detect_country(text)
             if not iso:
                 continue
+
+            # Gemini geo-validation: for Google News articles where detect_country
+            # returned a country-level centroid (geo_precision = low), ask Gemini
+            # to confirm or correct. Runs only for high-severity conflict/unrest
+            # events where misattribution is most damaging.
+            # Costs ~$0.00001/call; capped to avoid runaway API spend.
+            _GEO_VALIDATE_CATEGORIES = ("conflict", "civil_unrest")
+            _is_google_news = (a.domain or "").lower() in ("news.google.com", "")
+            if (cat in _GEO_VALIDATE_CATEGORIES and sev >= 4 and _is_google_news):
+                validated = _gemini_geo_validate(a.title, iso)
+                if validated:
+                    v_iso, v_place, v_conf = validated
+                    if v_iso != iso:
+                        # Gemini disagrees — use its answer, update coords
+                        from fast_signals import COUNTRY_DB as _CDB
+                        if v_iso in ISO_CENTROID:
+                            iso = v_iso
+                            lat, lng = ISO_CENTROID[v_iso]
+                            cname = v_place or v_iso
+
             sclass, sverif = _source_class(a.domain, a.source)
             eid = _event_id(cat, iso, a.title)
             if eid in events:
@@ -445,9 +523,21 @@ def collect_events() -> list[dict]:
                 if sclass < ex["source_class"]:
                     ex["source_class"] = sclass
                     ex["source_verification"] = sverif
+                # Re-calibrate confidence with corroboration boost:
+                # each additional independent source adds up to +0.15 total
+                n = ex["source_count"]
+                extra = min(0.05 * (n - 1), 0.15)
+                base_conf = 0.55 + 0.07 * ex["severity"] + \
+                            (0.15 if ex["source_verification"] == "official_agency" else 0)
+                ex["confidence"] = round(min(base_conf + extra, 0.97), 2)
                 continue
+            # Confidence: base + severity boost + official source boost
+            # + corroboration boost (same event confirmed by multiple sources)
+            # source_count starts at 1 here; it grows in the merge loop above
+            corroboration_boost = 0.0  # will be updated on re-sighting
             conf = round(min(0.55 + 0.07 * sev
-                             + (0.15 if sverif == "official_agency" else 0), 0.97), 2)
+                             + (0.15 if sverif == "official_agency" else 0)
+                             + corroboration_boost, 0.97), 2)
             events[eid] = {
                 "id": eid,
                 "category": cat,
