@@ -243,6 +243,16 @@ _ENTERTAINMENT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Sports context — "offensive" in football/soccer context should not trigger conflict.
+_SPORTS_RE = re.compile(
+    r"\b(?:world cup|copa\s+\w+|premier\s+league|bundesliga|serie\s+a|la\s+liga|"
+    r"champions\s+league|uefa|fifa|nfl|nba|nhl|mlb|nba|rugby|cricket|"
+    r"offensive\s+(?:firepower|line|player|strategy|play|midfielder|forward)|"
+    r"dark\s+horse|football|soccer|match|squad|tournament|championship\s+(?:game|final)|"
+    r"score[sd]?\s+\d|goal[sd]?\b|striker\b|midfielder\b|defender\b)\b",
+    re.IGNORECASE,
+)
+
 # Finance/tech context patterns — "Riot" in these contexts is a company ticker
 # or product name, not civil unrest (e.g. "Riot Platforms surfs AI wave").
 _FINANCE_TECH_RE = re.compile(
@@ -263,12 +273,17 @@ def _classify(text: str, rules: list) -> tuple[str | None, int]:
     low = text.lower()
     for pat, typ, sev in rules:
         if re.search(pat, low):
-            # Suppress civil_unrest false positives from entertainment news
+            # Suppress civil_unrest/conflict false positives from entertainment news
             if typ in ("violent_unrest", "mass_protest", "protest") and \
                _ENTERTAINMENT_RE.search(text):
                 continue
             # Suppress "Riot Platforms", "Riot Games" → civil_unrest
             if typ in ("violent_unrest",) and _FINANCE_TECH_RE.search(text):
+                continue
+            # Suppress conflict/civil_unrest from sports articles
+            # ("Colombia's Offensive Firepower" → conflict is wrong)
+            if typ in ("violent_unrest", "mass_protest", "protest", "kinetic_strike") and \
+               _SPORTS_RE.search(text):
                 continue
             return typ, sev
     return None, 0
@@ -397,8 +412,14 @@ def collect_events() -> list[dict]:
             # or "Outlet Name: article text". Strip the leading outlet byline
             # so "France 24 — Israel pounds Lebanon" doesn't tag as France.
             body_clean = re.sub(
-                r"^[A-Z][A-Za-z0-9 \-]{1,35}(?:\s+\d{1,2})?\s*[-–—:]\s*",
+                r"^[A-Z][A-Za-z0-9 \-]{1,40}(?:\s+\d{1,2})?\s*[-–—:]\s*",
                 " ", (a.body or ""), count=1,
+            )
+            # Also strip title patterns like "- Latest news from Azerbaijan"
+            # "Latest news from {country}" is an outlet suffix pattern
+            body_clean = re.sub(
+                r"\s*[-–—]\s*[Ll]atest\s+news\s+from\s+\w[\w\s]{1,25}$",
+                "", body_clean,
             )
             text = f"{a.title} {body_clean}"
             # Strip source domain and outlet name from text so "lbc.co.uk",

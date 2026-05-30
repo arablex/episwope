@@ -1046,7 +1046,7 @@ def detect_disease(text: str) -> tuple[str | None, str]:
 # Pattern: "[word] News [Country]" or known outlet names with embedded geo terms.
 _OUTLET_STRIP_RE = re.compile(
     r"\s*[-–—|]\s*"
-    r"(?:Yahoo(?:\s+News)?(?:\s+\w+)?|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
+    r"(?:Yahoo(?:\s+News)?(?:\s+\w[\w\s]{0,20})?|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
     r"Deutsche Welle|Al Jazeera|Al Arabiya(?:\s+English)?|France\s+(?:24|3|2|Info)|"
     r"CGTN|NHK|RT|Sputnik|MSN|"
     r"The Guardian|The Times|Le Monde|Der Spiegel|"
