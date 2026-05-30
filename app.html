@@ -743,6 +743,17 @@
   }
   .sig-detail-link:hover{text-decoration:underline}
 
+  /* ── Section headers (Flash / Rising / Monitoring) ── */
+  .sig-section-h{
+    display:flex; align-items:center; gap:6px;
+    font-size:9px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); padding:10px 14px 4px;
+  }
+  .sig-section-h i{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .sig-section-h.flash i { background:#E8590C; }
+  .sig-section-h.rising i{ background:#D97706; }
+  .sig-section-h.monitor i{ background:#9CA3AF; }
+
   /* ── Trend direction & category badges ────────────── */
   .sig-trend-arrow{
     font-size:10px; font-weight:800; padding:1px 5px;
@@ -3842,54 +3853,63 @@ function _renderSignals(sigs, meta) {
       </div>`;
   };
 
-  // ── Merge and rank ──────────────────────────────────────────
-  // Health: prioritise by change — new signals and worsening ones first
-  const healthScore = s => {
-    const newBoost = s.is_new ? 2.0 : 1.0;
-    const momBoost = (s.momentum || 1) > 1.05 ? (s.momentum || 1) : 0.8;
-    return _ti(s) * newBoost * momBoost;
-  };
+  // ── Three-section feed: FLASH / RISING / MONITORING ────────
 
-  // "Active" health = alert/urgent OR (watch + worsening)
-  const activeHealth = sigs
-    .filter(s => s.level !== 'watch' || (s.momentum || 1) > 1.05)
-    .sort((a, b) => healthScore(b) - healthScore(a))
+  const _sc  = s => s.source_count || 0;
+  const _mom = s => s.momentum || 1;
+
+  // FLASH — sudden conflict escalations this week (from risk_history delta)
+  const flashItems = _buildTrendItems().slice(0, 3);
+
+  // RISING — sustained health threats: high coverage + worsening momentum
+  // Score caps source_count at 150 so US COVID (485 src) doesn't dominate
+  const risingItems = sigs
+    .filter(s =>
+      s.level === 'alert' ||
+      (s.level === 'watch' && _sc(s) > 30 && _mom(s) > 1.0)
+    )
+    .sort((a, b) => (Math.min(_sc(b),150) * _mom(b)) - (Math.min(_sc(a),150) * _mom(a)))
     .slice(0, 5);
 
-  const watchHealth = sigs
-    .filter(s => s.level === 'watch' && (s.momentum || 1) <= 1.05)
+  // MONITORING — early indicators, watch-level, not already in RISING
+  const risingSet = new Set(risingItems.map(s => s.id));
+  const watchItems = sigs
+    .filter(s => s.level === 'watch' && !risingSet.has(s.id))
     .sort((a, b) => _ti(b) - _ti(a))
     .slice(0, 3);
 
-  const trendItems = _buildTrendItems().slice(0, 3);
-
-  // Interleave: active health items + trend items, sorted by unified score
-  // Trend items get a base score of 45 to compete with mid-tier health signals
-  const allActive = [
-    ...activeHealth.map(s => ({ _render: () => renderHealthItem(s), _score: healthScore(s) })),
-    ...trendItems.map(t => ({ _render: () => renderTrendItem(t), _score: 45 * t.trendScore })),
-  ].sort((a, b) => b._score - a._score).slice(0, 7);
-
-  // Headline count: alert/urgent health + trend items with significant delta
-  const headlineCount = sigs.filter(s => s.level !== 'watch').length + trendItems.length;
+  // Badge count = FLASH items + alert-level RISING items
+  const headlineCount = flashItems.length + risingItems.filter(s => s.level !== 'watch').length;
   if (countEl) {
     countEl.textContent = headlineCount;
     countEl.classList.toggle('zero', headlineCount === 0);
   }
 
-  if (allActive.length > 0) {
-    list.innerHTML = allActive.map(item => item._render()).join('')
-      + (watchHealth.length
-        ? `<div class="sig-watch-h">${TR('Also monitoring','Под наблюдением')}</div>`
-          + watchHealth.map(renderHealthItem).join('')
-        : '');
-  } else if (watchHealth.length > 0) {
-    list.innerHTML =
-      `<div class="sig-note">${TR('No urgent signals. Engine is tracking these early indicators:','Срочных сигналов нет. Отслеживаются ранние индикаторы:')}</div>`
-      + watchHealth.map(renderHealthItem).join('');
-  } else {
-    list.innerHTML = `<div class="feed-empty">${TR('All clear — scanning 50+ sources.','Спокойно — сканируется 50+ источников.')}</div>`;
+  const secH = (cls, label) =>
+    `<div class="sig-section-h ${cls}"><i></i>${label}</div>`;
+
+  let html = '';
+
+  if (flashItems.length) {
+    html += secH('flash', TR('Flash — erupted this week','Вспышка — этой недели'));
+    html += flashItems.map(renderTrendItem).join('');
   }
+
+  if (risingItems.length) {
+    html += secH('rising', TR('Rising — sustained threat','Нарастает — устойчивая угроза'));
+    html += risingItems.map(renderHealthItem).join('');
+  }
+
+  if (watchItems.length) {
+    html += secH('monitor', TR('Also monitoring','Под наблюдением'));
+    html += watchItems.map(renderHealthItem).join('');
+  }
+
+  if (!html) {
+    html = `<div class="feed-empty">${TR('All clear — scanning 50+ sources.','Спокойно — сканируется 50+ источников.')}</div>`;
+  }
+
+  list.innerHTML = html;
 
   // Updated time
   if (upd && meta && meta.generated_at) {
