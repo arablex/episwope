@@ -67,6 +67,19 @@ def _load_admin1() -> dict:
 
 ADMIN1_DB: dict = _load_admin1()   # key: "{iso_lower}_{slug}" → {iso, name, lat, lng}
 
+# World cities DB — 143 k entries from GeoNames cities15000.txt.
+# Format: { "city_name_lower": ["ISO2", lat, lng] }
+# Loaded once; used in detect_country() as Tier 2.5 (after LANDMARK_DB, before ADMIN1_DB).
+def _load_cities_db() -> dict:
+    path = SCRIPT_DIR / "_data" / "world_cities.json"
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+CITIES_DB: dict = _load_cities_db()  # { "paris": ["FR", 48.853, 2.349], ... }
+
 HISTORY_WINDOW_DAYS  = 30   # rolling baseline window
 DEDUP_WINDOW_HOURS   = 6    # suppress re-emitting same (iso, disease) signal
 SIGNAL_PERSIST_HOURS = 48   # keep signal active in output for N hours after detection
@@ -1057,6 +1070,76 @@ def _is_aggressor(country_name: str, lower: str) -> bool:
     return bool(pat.search(lower))
 
 
+# Matches one or more consecutive Title-Case words (proper noun phrases):
+# "Kyiv", "Tel Aviv", "Kryvyi Rih", "São Paulo" etc.
+# Minimum 3 chars per word to skip "A", "An", "In" etc.
+_TITLE_PHRASE_RE = re.compile(r'\b[A-Z][a-z]{2,}(?:[\s-][A-Z][a-z]{2,})*\b')
+
+
+def _lookup_in_cities(
+    orig_text: str,
+    country_match: tuple | None,
+    country_is_aggressor: bool,
+) -> tuple[str, str, float, float] | None:
+    """Fast O(phrases) lookup against CITIES_DB.
+
+    Extracts Title-Case phrases from the original (non-lowered) text, tries
+    the full phrase first, then falls back to individual words within it.
+    Direct dict lookups only — no iteration over 143 k entries.
+    Returns (city_name, iso, lat, lng) or None.
+    """
+    if not CITIES_DB:
+        return None
+
+    phrases = _TITLE_PHRASE_RE.findall(orig_text)
+    if not phrases:
+        return None
+
+    # Build a de-duplicated candidate set: try full phrase AND each word
+    # so "Kathmandu Nepal" → tries "kathmandu nepal", then "kathmandu", "nepal"
+    # Prefer longer matches (more specific).
+    candidates: list[str] = []
+    seen: set[str] = set()
+    for phrase in phrases:
+        key = phrase.lower()
+        if key not in seen:
+            seen.add(key)
+            candidates.append(key)
+        # Also try individual words for multi-word phrases
+        if " " in key:
+            for word in key.split():
+                if word not in seen:
+                    seen.add(word)
+                    candidates.append(word)
+
+    best: tuple | None = None  # (phrase_len, city_name, iso, lat, lng)
+
+    for key in sorted(candidates, key=len, reverse=True):
+        entry = CITIES_DB.get(key)
+        if not entry:
+            continue
+        iso, lat, lng = entry[0], entry[1], entry[2]
+
+        # Normal attribution rule: city wins when it's in the same country
+        # as the Tier-1 match, or when there is no Tier-1 match at all.
+        if country_match is None or iso == country_match[1]:
+            plen = len(key)
+            if best is None or plen > best[0]:
+                best = (plen, key.title(), iso, lat, lng)
+            continue
+
+        # Aggressor override: country is the attacker → victim city wins.
+        if country_is_aggressor and iso != country_match[1]:
+            plen = len(key)
+            if best is None or plen > best[0]:
+                best = (plen, key.title(), iso, lat, lng)
+
+    if best is None:
+        return None
+    _, city_name, iso, lat, lng = best
+    return city_name, iso, lat, lng
+
+
 def detect_country(text: str) -> tuple[str | None, str | None, float | None, float | None]:
     """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables.
 
@@ -1110,6 +1193,16 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
             # Example: "Russia strikes Kyiv" → Kyiv (UA) wins over Russia (RU)
             if country_is_aggressor and iso != country_match[1]:
                 return cname.title(), iso, lat, lng
+
+    # ── Tier 2.5: CITIES_DB (GeoNames 143 k world cities) ───────────────────
+    # Fast O(words) lookup: only match Title-Case tokens to avoid matching
+    # common English words that happen to share a name with a city
+    # (e.g. "nice" in "have a nice day" vs "Nice" the French city).
+    # We collect all Title-Case phrases found in the original text, then do a
+    # direct dict lookup — no 143 k regex iterations.
+    city_result = _lookup_in_cities(text, country_match, country_is_aggressor)
+    if city_result is not None:
+        return city_result
 
     # ── Tier 3: ADMIN1_DB (Natural Earth world regions / states / oblasts) ─
     # Try all region names; prefer matches that agree with country_match ISO.
