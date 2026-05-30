@@ -590,13 +590,6 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
     news-derived events (conflict/unrest/transport/border/infra/disaster)
     are persisted, with the fresh version winning on re-sighting."""
     now = _now()
-    new_by_id = {e["id"]: e for e in new_events}
-    if not EVENTS_OUT.exists():
-        return new_events
-    try:
-        prior = json.loads(EVENTS_OUT.read_text(encoding="utf-8")).get("events", [])
-    except Exception:
-        return new_events
     # Known bad fallback centroids produced by geocoding bugs.
     # Events carried forward with these coords are stale artifacts from
     # the pre-fix pipeline; purge them on next merge so they don't persist
@@ -608,8 +601,8 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
 
     # Explicit purge set — events confirmed to have wrong country attribution
     # due to aggressor-vs-victim bug (pre-fix pipeline tagged Russia instead of
-    # Ukraine). Purged here so they don't persist 21 days; the aggressor fix
-    # ensures new fetches produce correct attribution.
+    # Ukraine). Removed from BOTH new_events and carry-forward so GNews re-fetch
+    # doesn't keep re-injecting them with wrong geocoding.
     _PURGE_IDS = {
         "evt_973d0cae1c75",  # Russia launched missile strike on Kryvyi Rih → should be UA
         "evt_828d95031113",  # Russia launched missile strike on Dnipro → should be UA
@@ -620,6 +613,20 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         "evt_6cfad1e41a59",  # Russia strikes Kyiv with ballistic missiles → should be UA
         "evt_c4c9457760fa",  # Russia launches missile/drone strikes on Kyiv → should be UA
     }
+
+    # Remove purge targets from incoming new_events too — GNews may re-fetch
+    # old articles still in its index; without this, they bypass carry-forward
+    # purge via the "eid in new_by_id → fresh wins" shortcut.
+    new_events = [e for e in new_events if e.get("id") not in _PURGE_IDS]
+
+    if not EVENTS_OUT.exists():
+        return new_events
+    try:
+        prior = json.loads(EVENTS_OUT.read_text(encoding="utf-8")).get("events", [])
+    except Exception:
+        return new_events
+
+    new_by_id = {e["id"]: e for e in new_events}
 
     carried = 0
     for e in prior:
