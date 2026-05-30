@@ -304,12 +304,22 @@ _ENTERTAINMENT_RE = re.compile(
 # Sports context — "offensive" in football/soccer context should not trigger conflict.
 _SPORTS_RE = re.compile(
     r"\b(?:world cup|copa\s+\w+|premier\s+league|bundesliga|serie\s+a|la\s+liga|"
-    r"champions\s+league|uefa|fifa|nfl|nba|nhl|mlb|nba|rugby|cricket|"
+    r"champions\s+league|uefa|fifa|nfl|nba|nhl|mlb|rugby|cricket|"
     r"offensive\s+(?:firepower|line|player|strategy|play|midfielder|forward)|"
-    r"dark\s+horse|football|soccer|match|squad|tournament|championship\s+(?:game|final)|"
+    r"dark\s+horses?|football\s+index|football|soccer|match|squad|tournament|"
+    r"championship\s+(?:game|final|race)|"
+    r"la\s+vuelta|giro\s+d|tour\s+de|cycling\s+race|grand\s+prix|formula\s+1|"
     r"score[sd]?\s+\d|goal[sd]?\b|striker\b|midfielder\b|defender\b)\b",
     re.IGNORECASE,
 )
+
+# Sports/entertainment domains that should never produce conflict/unrest events
+_SPORTS_DOMAINS = frozenset({
+    "worldfootballindex.com", "goal.com", "espn.com", "skysports.com",
+    "bbc.co.uk/sport", "sport.es", "marca.com", "as.com", "transfermarkt",
+    "footballtransfers.com", "bleacherreport.com", "theathletic.com",
+    "cyclingnews.com", "velonews.com", "procyclingstats.com",
+})
 
 # Finance/tech context patterns — "Riot" in these contexts is a company ticker
 # or product name, not civil unrest (e.g. "Riot Platforms surfs AI wave").
@@ -339,9 +349,13 @@ def _classify(text: str, rules: list) -> tuple[str | None, int]:
             if typ in ("violent_unrest",) and _FINANCE_TECH_RE.search(text):
                 continue
             # Suppress conflict/civil_unrest from sports articles
-            # ("Colombia's Offensive Firepower" → conflict is wrong)
-            if typ in ("violent_unrest", "mass_protest", "protest", "kinetic_strike") and \
-               _SPORTS_RE.search(text):
+            # ("Colombia's Offensive Firepower" → armed_clash is wrong)
+            # ("La Vuelta protests" → civil_unrest is wrong)
+            _is_sports_domain = any(d in (a.domain or "") for d in _SPORTS_DOMAINS)
+            if typ in ("violent_unrest", "mass_protest", "protest",
+                       "kinetic_strike", "armed_clash", "insurgent_attack",
+                       "military_buildup", "escalation") and \
+               (_SPORTS_RE.search(text) or _is_sports_domain):
                 continue
             return typ, sev
     return None, 0
