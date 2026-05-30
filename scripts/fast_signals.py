@@ -1033,14 +1033,18 @@ _OUTLET_STRIP_RE = re.compile(
     r"\s*[-–—|]\s*"
     r"(?:Yahoo(?:\s+News)?(?:\s+\w+)?|Reuters|AFP|AP|BBC|CNN|NBC|CBS|ABC|Fox|Sky|"
     r"Deutsche Welle|Al Jazeera|Al Arabiya(?:\s+English)?|France\s+(?:24|3|2|Info)|"
-    r"CGTN|NHK|RT|Sputnik|"
+    r"CGTN|NHK|RT|Sputnik|MSN|"
     r"The Guardian|The Times|Le Monde|Der Spiegel|"
     r"Xinhua|TASS|Interfax|RIA|Kyodo|Yonhap|"
     r"Voice of America|Radio Free\w*|Breitbart|"
     r"Free Malaysia Today|Daily Mail|Daily Express|Sky News|"
     r"Globe and Mail|Toronto Star|National Post|"
-    r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|Press|Today|Online)|"
-    r"[A-Za-z0-9][A-Za-z0-9\-]*\.[a-z]{2,6}(?:\.[a-z]{2})?)"  # domain suffix: lbc.co.uk, bbc.com
+    r"Washington Examiner|Washington Post|Washington Times|"
+    r"H[uü]rriyet|Sabah|Anadolu|"            # Turkish outlets
+    r"Arab News|Gulf News|Al Monitor|Middle East Eye|"
+    r"[A-Z][A-Za-z ]{1,25}(?:News|Times|Post|Tribune|Herald|Gazette|Wire|"
+    r"Press|Today|Online|Examiner|Observer|Review|Report|Monitor)|"
+    r"[A-Za-z0-9][A-Za-z0-9\-]*\.[a-z]{2,6}(?:\.[a-z]{2})?)"  # domain: lbc.co.uk
     r"[^-–—|]*$",
     re.IGNORECASE,
 )
@@ -1256,6 +1260,26 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
             # from a DIFFERENT country, the landmark (victim location) wins.
             # Example: "Russia strikes Kyiv" → Kyiv (UA) wins over Russia (RU)
             if country_is_aggressor and iso != country_match[1]:
+                return cname.title(), iso, lat, lng
+            # Locative override: landmark is clearly the geographic location
+            # of the event — either after a preposition ("in Lebanon", "near
+            # Gaza") or before a conflict noun ("Lebanon offensive", "Gaza
+            # campaign"). Works without attack verbs.
+            # Example: "Israel calls up troops in Lebanon as strikes escalate"
+            # Example: "Israel expands Lebanon offensive as 31 killed"
+            _LOC_PRE_RE = re.compile(
+                r"\b(?:in|on|near|across|at|inside|within|around|over|targeting|against)\s+"
+                + re.escape(cname) + r"\b",
+                re.IGNORECASE,
+            )
+            _LOC_POST_RE = re.compile(
+                r"\b" + re.escape(cname) + r"\b\s+"
+                r"(?:offensive|operation|campaign|conflict|war|crisis|front|"
+                r"strikes?|airstrikes?|bombardment|siege|shelling|clashes?)",
+                re.IGNORECASE,
+            )
+            if ((_LOC_PRE_RE.search(lower) or _LOC_POST_RE.search(lower))
+                    and iso != country_match[1]):
                 return cname.title(), iso, lat, lng
 
     # ── Tier 2.5: CITIES_DB (GeoNames 143 k world cities) ───────────────────

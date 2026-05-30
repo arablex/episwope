@@ -393,7 +393,14 @@ def collect_events() -> list[dict]:
                 except Exception:
                     pass
 
-            text = f"{a.title} {a.body}"
+            # GNews RSS body typically starts with "Outlet Name — article text"
+            # or "Outlet Name: article text". Strip the leading outlet byline
+            # so "France 24 — Israel pounds Lebanon" doesn't tag as France.
+            body_clean = re.sub(
+                r"^[A-Z][A-Za-z0-9 \-]{1,35}(?:\s+\d{1,2})?\s*[-–—:]\s*",
+                " ", (a.body or ""), count=1,
+            )
+            text = f"{a.title} {body_clean}"
             # Strip source domain and outlet name from text so "lbc.co.uk",
             # "France 24", "Yahoo News UK" don't contaminate detect_country.
             if a.domain:
