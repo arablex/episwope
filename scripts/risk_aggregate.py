@@ -493,11 +493,36 @@ def collect_events() -> list[dict]:
             if not iso:
                 continue
 
-            # Gemini geo-validation: for Google News articles where detect_country
-            # returned a country-level centroid (geo_precision = low), ask Gemini
-            # to confirm or correct. Runs only for high-severity conflict/unrest
-            # events where misattribution is most damaging.
-            # Costs ~$0.00001/call; capped to avoid runaway API spend.
+            # ── Rule-based geo correction (always runs, no API needed) ──
+            # Catches the most common misattribution pattern: outlets from
+            # country X reporting on events in country Y. The source domain's
+            # home country should NEVER be the sole basis for geo-attribution.
+            _hl_lower = a.title.lower()
+
+            # Pattern 1: Israel/Hamas/Gaza conflict reported by non-regional outlets
+            _IL_TERMS = re.compile(
+                r'\bisrael[i]?\b|\bhamas\b|\bhezbollah\b|\bgaza\b|\bnetanyahu\b'
+                r'|\bidf\b|\bwest bank\b|\brafah\b|\btel aviv\b|\bgolan\b', re.I)
+            _IL_VALID = {'IL', 'PS', 'LB', 'SY', 'JO', 'EG', 'YE', 'IQ', 'IR', 'SA'}
+            if _IL_TERMS.search(a.title) and iso not in _IL_VALID:
+                # Outlet from iso wrote about Israel/Middle East — redirect to IL
+                _new_iso = 'IL'
+                if _new_iso in ISO_CENTROID:
+                    iso, lat, lng = _new_iso, *ISO_CENTROID[_new_iso]
+                    cname = 'Israel'
+
+            # Pattern 2: Ukraine/Russia conflict reported by unrelated outlets
+            _UA_TERMS = re.compile(
+                r'\bukraine\b|\bkyiv\b|\bzelensky\b|\bkharkiv\b|\bkherson\b'
+                r'|\bzaporizhzhia\b|\bmariupol\b', re.I)
+            _UA_VALID = {'UA', 'RU', 'BY', 'PL', 'MD', 'GE', 'AM', 'AZ'}
+            if _UA_TERMS.search(a.title) and iso not in _UA_VALID:
+                _new_iso = 'UA'
+                if _new_iso in ISO_CENTROID:
+                    iso, lat, lng = _new_iso, *ISO_CENTROID[_new_iso]
+                    cname = 'Ukraine'
+
+            # ── Gemini geo-validation (runs when API key available, higher precision) ──
             _GEO_VALIDATE_CATEGORIES = ("conflict", "civil_unrest")
             _is_google_news = (a.domain or "").lower() in ("news.google.com", "")
             if (cat in _GEO_VALIDATE_CATEGORIES and sev >= 4 and _is_google_news):
@@ -505,7 +530,6 @@ def collect_events() -> list[dict]:
                 if validated:
                     v_iso, v_place, v_conf = validated
                     if v_iso != iso:
-                        # Gemini disagrees — use its answer, update coords
                         from fast_signals import COUNTRY_DB as _CDB
                         if v_iso in ISO_CENTROID:
                             iso = v_iso
