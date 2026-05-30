@@ -3631,8 +3631,10 @@ let _pushSub = null;
 const SIGNALS_URL  = '/public/signals.json';
 const HISTORY_URL  = '/public/risk_history.json';
 const RISK_IDX_URL = '/public/risk_index.json';
+const RISK_EVT_URL = '/public/risk_events.json';
 let _riskHistory   = null;   // {ISO: [{d,c,cd,cc},...]}
 let _riskIdx       = null;   // risk_index.json index object
+let _riskEvtById   = null;   // {evt_id: event} — indexed for O(1) lookup
 
 async function _loadTrendData() {
   const p = [];
@@ -3646,6 +3648,18 @@ async function _loadTrendData() {
     fetch(RISK_IDX_URL + '?_=' + Date.now())
       .then(r => r.ok ? r.json() : null)
       .then(j => { if (j) _riskIdx = j.index || {}; })
+      .catch(() => {})
+  );
+  if (!_riskEvtById) p.push(
+    fetch(RISK_EVT_URL + '?_=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        if (!j) return;
+        const evts = j.events || j;
+        const arr  = Array.isArray(evts) ? evts : Object.values(evts);
+        _riskEvtById = {};
+        arr.forEach(e => { if (e.id) _riskEvtById[e.id] = e; });
+      })
       .catch(() => {})
   );
   if (p.length) await Promise.all(p);
@@ -3942,6 +3956,34 @@ function _onTrendClick(t) {
     thEl.style.display = 'none';
   }
 
+  // ── Top headlines from risk_events ────────────────────────
+  const hlEl = document.getElementById('sigDetailHeadline');
+  if (hlEl && _riskEvtById && _riskIdx && _riskIdx[t.iso]) {
+    const ids = (_riskIdx[t.iso].event_ids || []);
+    const evts = ids
+      .map(id => _riskEvtById[id])
+      .filter(e => e && e.headline)
+      .sort((a, b) => (b.severity || 0) - (a.severity || 0) || (b.confidence || 0) - (a.confidence || 0))
+      .slice(0, 3);
+    if (evts.length) {
+      hlEl.innerHTML = evts.map(e => {
+        const date = e.first_seen ? e.first_seen.slice(5, 10) : '';
+        const type = e.type ? `<span style="font-size:9px;color:var(--muted);margin-right:4px">${e.type.replace(/_/g,' ')}</span>` : '';
+        const link = e.url
+          ? `<a href="${_esc(e.url)}" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:none">${_esc(e.headline)}</a>`
+          : _esc(e.headline);
+        return `<div style="padding:6px 0;border-bottom:1px solid var(--line-2);font-size:11.5px;line-height:1.45">
+          ${type}<span style="font-size:9px;color:var(--muted);float:right">${date}</span>${link}
+        </div>`;
+      }).join('');
+      hlEl.style.display = '';
+    } else {
+      hlEl.style.display = 'none';
+    }
+  } else if (hlEl) {
+    hlEl.style.display = 'none';
+  }
+
   // ── Score trajectory (text sparkline) ─────────────────────
   const aiEl = document.getElementById('sigDetailAI');
   const series = _riskHistory && _riskHistory[t.iso];
@@ -3960,9 +4002,7 @@ function _onTrendClick(t) {
     aiEl.style.display = 'none';
   }
 
-  // ── Headline — hide (no headlines for risk trends) ─────────
-  const hlEl = document.getElementById('sigDetailHeadline');
-  if (hlEl) hlEl.style.display = 'none';
+  // hlEl handled above in headlines section
 
   // ── Sources ────────────────────────────────────────────────
   const sourcesEl = document.getElementById('sigDetailSources');
