@@ -3888,10 +3888,96 @@ function _renderSignals(sigs, meta) {
 }
 
 function _onTrendClick(t) {
-  // Open country panel on the globe for risk trend items
-  if (typeof selectCountry === 'function') {
-    selectCountry(t.country || t.iso);
+  const detail = document.getElementById('sigDetail');
+  const widget = document.getElementById('sigWidget');
+  if (!detail || !widget) return;
+
+  // ── Badge + title ──────────────────────────────────────────
+  const badge = document.getElementById('sigDetailBadge');
+  badge.className = `sig-badge ${t.level}`;
+  badge.textContent = TR('rising','рост');
+
+  const arrow = `<span class="sig-trend-arrow up" style="font-size:13px;margin-left:4px">↑</span>`;
+  document.getElementById('sigDetailDisease').innerHTML =
+    `<span class="sig-cat ${t.catCls}" style="font-size:10px">${_esc(t.catLabel)}</span> ${_esc(t.country)}${arrow}`;
+
+  // ── Meta row: delta + days ─────────────────────────────────
+  document.getElementById('sigDetailMeta').innerHTML =
+    `<span>${_SVG(ICONS.rising)} +${t.delta} ${TR('score this week','за неделю')}</span>`+
+    `<span>${_SVG(ICONS.spike)} ${t.from.toFixed(1)} → ${t.to.toFixed(1)}</span>`+
+    `<span>${_SVG(ICONS.src)} ${t.days}${TR('d window','д окно')}</span>`;
+
+  // ── Category breakdown (reuses sig-threat block) ───────────
+  const thEl = document.getElementById('sigDetailThreat');
+  if (thEl && _riskIdx && _riskIdx[t.iso]) {
+    const cb = _riskIdx[t.iso].category_breakdown || {};
+    const CATS = ['conflict','civil_unrest','health','climate','border','infrastructure','transport'];
+    const CAT_LABELS_EN = {
+      conflict:'Conflict', civil_unrest:'Unrest', health:'Health',
+      climate:'Climate', border:'Border', infrastructure:'Infra', transport:'Transport'
+    };
+    const rows = CATS
+      .map(k => ({ k, v: cb[k] }))
+      .filter(r => r.v && r.v.score > 0)
+      .sort((a, b) => b.v.score - a.v.score)
+      .slice(0, 5);
+
+    const maxScore = rows[0] ? rows[0].v.score : 1;
+    const rowsHTML = rows.map(r => {
+      const pct = Math.round((r.v.score / Math.max(maxScore, 1)) * 100);
+      const threat = r.v.top_threat ? ` · ${r.v.top_threat.replace(/_/g,' ')}` : '';
+      const evts = r.v.active_events ? ` (${r.v.active_events})` : '';
+      return `<div style="margin-bottom:7px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+          <span style="color:var(--ink);font-weight:600">${_esc(CAT_LABELS_EN[r.k]||r.k)}${_esc(evts)}</span>
+          <span style="color:var(--muted)">${r.v.score.toFixed(1)}${_esc(threat)}</span>
+        </div>
+        <div class="sig-threat-bar" style="margin-bottom:0"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join('');
+
+    thEl.innerHTML = `<div style="font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:9px">${TR('Risk breakdown','Разбивка риска')}</div>${rowsHTML}`;
+    thEl.style.display = '';
+  } else if (thEl) {
+    thEl.style.display = 'none';
   }
+
+  // ── Score trajectory (text sparkline) ─────────────────────
+  const aiEl = document.getElementById('sigDetailAI');
+  const series = _riskHistory && _riskHistory[t.iso];
+  if (aiEl && series && series.length >= 2) {
+    const BLOCKS = ['▁','▂','▃','▄','▅','▆','▇','█'];
+    const vals = series.map(r => r.c);
+    const hi = Math.max(...vals, 0.1);
+    const spark = vals.map(v => BLOCKS[Math.min(7, Math.round((v/hi)*7))]).join('');
+    const firstDate = series[0].d.slice(5);   // MM-DD
+    const lastDate  = series[series.length-1].d.slice(5);
+    aiEl.innerHTML =
+      `<span style="font-family:monospace;letter-spacing:2px;font-size:14px">${spark}</span>`+
+      `<span style="font-size:10px;color:var(--muted);margin-left:6px">${firstDate} → ${lastDate}</span>`;
+    aiEl.style.display = '';
+  } else if (aiEl) {
+    aiEl.style.display = 'none';
+  }
+
+  // ── Headline — hide (no headlines for risk trends) ─────────
+  const hlEl = document.getElementById('sigDetailHeadline');
+  if (hlEl) hlEl.style.display = 'none';
+
+  // ── Sources ────────────────────────────────────────────────
+  const sourcesEl = document.getElementById('sigDetailSources');
+  if (sourcesEl) {
+    sourcesEl.innerHTML = `<b>${TR('Data:','Данные:')}</b> risk_index · risk_history · GDELT · Google News`;
+  }
+
+  const linkEl = document.getElementById('sigDetailLink');
+  if (linkEl) linkEl.style.display = 'none';
+
+  // ── Expand widget into detail mode ─────────────────────────
+  widget.classList.remove('is-collapsed');
+  widget.classList.add('is-detail');
+  const head = document.getElementById('sigwHead');
+  if (head) head.setAttribute('aria-expanded', 'true');
 }
 
 function _esc(s) {
