@@ -743,6 +743,28 @@
   }
   .sig-detail-link:hover{text-decoration:underline}
 
+  /* ── Trend direction & category badges ────────────── */
+  .sig-trend-arrow{
+    font-size:10px; font-weight:800; padding:1px 5px;
+    border-radius:4px; margin-left:4px; vertical-align:middle;
+  }
+  .sig-trend-arrow.up   { color:#C05621; background:rgba(192,86,33,.10); }
+  .sig-trend-arrow.down { color:#6B7280; background:rgba(107,114,128,.09); }
+  .sig-cat{
+    font-size:9px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    padding:1px 5px; border-radius:3px; margin-right:4px;
+    background:var(--line); color:var(--muted);
+  }
+  .sig-cat.health  { background:rgba(74,144,226,.1);  color:#2563EB; }
+  .sig-cat.conflict{ background:rgba(192,86,33,.1);   color:#9A3412; }
+  .sig-cat.unrest  { background:rgba(124,58,237,.1);  color:#6D28D9; }
+  .sig-cat.climate { background:rgba(5,150,105,.1);   color:#065F46; }
+  /* Trend item — slightly tinted row */
+  .sig-item.sig-item--trend { background:rgba(20,18,14,.015); }
+  .sig-item.sig-item--trend:hover { background:rgba(20,18,14,.045); }
+  /* Empty-state note in feed */
+  .sig-note{ font-size:11px; color:var(--muted); padding:10px 14px 6px; line-height:1.5; }
+
   /* ── Live News Ticker ───────────────────────────── */
   #newsTicker{
     position:absolute;bottom:0;left:0;right:0;height:32px;
@@ -3607,6 +3629,91 @@ let _pushSub = null;
 // ── Early Warning Signals ─────────────────────────────────────────────────
 
 const SIGNALS_URL  = '/public/signals.json';
+const HISTORY_URL  = '/public/risk_history.json';
+const RISK_IDX_URL = '/public/risk_index.json';
+let _riskHistory   = null;   // {ISO: [{d,c,cd,cc},...]}
+let _riskIdx       = null;   // risk_index.json index object
+
+async function _loadTrendData() {
+  const p = [];
+  if (!_riskHistory) p.push(
+    fetch(HISTORY_URL + '?_=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j) _riskHistory = j; })
+      .catch(() => {})
+  );
+  if (!_riskIdx) p.push(
+    fetch(RISK_IDX_URL + '?_=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j) _riskIdx = j.index || {}; })
+      .catch(() => {})
+  );
+  if (p.length) await Promise.all(p);
+}
+
+// Build conflict/risk trend items from risk_history deltas.
+// Returns items sorted by trend score, capped for merge.
+function _buildTrendItems() {
+  if (!_riskHistory) return [];
+  const items = [];
+
+  // Dominant-category → readable label + CSS class
+  const CAT = {
+    conflict:     { label: 'Conflict', cls: 'conflict' },
+    civil_unrest: { label: 'Unrest',   cls: 'unrest'   },
+    climate:      { label: 'Climate',  cls: 'climate'  },
+    health:       { label: 'Health',   cls: 'health'   },
+  };
+
+  for (const [iso, series] of Object.entries(_riskHistory)) {
+    if (series.length < 2) continue;
+    const prev  = series[0];
+    const curr  = series[series.length - 1];
+    const delta = curr.c - prev.c;
+    const days  = Math.max(1,
+      (new Date(curr.d) - new Date(prev.d)) / 86400000);
+
+    // Only surface NEW escalations — was quiet, now elevated
+    if (delta < 0.8)   continue;   // not a meaningful change
+    if (prev.c > 1.5)  continue;   // was already elevated — not "new"
+    if (curr.c < 1.0)  continue;   // current level too low to matter
+
+    // Score: sharper delta from lower baseline = more noteworthy
+    const trendScore = (delta / days) * (1.6 - prev.c);
+
+    const ri   = _riskIdx ? _riskIdx[iso] : null;
+    const dom  = (ri && ri.composite_risk && ri.composite_risk.dominant_category) || 'conflict';
+    const band = (ri && ri.composite_risk && ri.composite_risk.band) || 'elevated';
+    const cat  = CAT[dom] || CAT.conflict;
+    const name = (typeof countryName === 'function') ? countryName(iso) : iso;
+
+    // Top threat for subtitle
+    const cb   = ri && ri.category_breakdown;
+    const topThreat = (cb && cb[dom] && cb[dom].top_threat)
+      ? cb[dom].top_threat.replace(/_/g, ' ')
+      : '';
+
+    items.push({
+      _type:      'risk',
+      _id:        'trend-' + iso,
+      iso,
+      country:    name,
+      delta:      Math.round(delta * 10) / 10,
+      from:       prev.c,
+      to:         curr.c,
+      days:       Math.round(days),
+      trendScore,
+      level:      curr.c >= 3 ? 'alert' : 'watch',
+      band,
+      dom,
+      catLabel:   cat.label,
+      catCls:     cat.cls,
+      topThreat,
+    });
+  }
+
+  return items.sort((a, b) => b.trendScore - a.trendScore).slice(0, 4);
+}
 const SIGNALS_POLL = 5 * 60 * 1000;  // 5 minutes
 let _lastSignalIds = new Set();
 let _signalTimer   = null;
@@ -3617,9 +3724,13 @@ const _SIG_COLOR = { urgent:'#c0392b', alert:'var(--s3)', watch:'var(--muted)' }
 
 async function loadSignals() {
   try {
-    const r = await fetch(SIGNALS_URL + '?_=' + Date.now());
-    if (!r.ok) return;
-    const data = await r.json();
+    // Load signals + trend data in parallel (trend data cached after first load)
+    const [sigRes] = await Promise.all([
+      fetch(SIGNALS_URL + '?_=' + Date.now()),
+      _loadTrendData(),
+    ]);
+    if (!sigRes.ok) return;
+    const data = await sigRes.json();
     const sigs  = data.signals || [];
 
     // Identify new high-priority signals since last fetch
@@ -3664,56 +3775,106 @@ function _renderSignals(sigs, meta) {
   const liveEl  = document.getElementById('sigwLiveTxt');
   if (!widget || !list) return;
 
-  if (titleEl) titleEl.textContent = TR('Early signals','Ранние сигналы');
+  if (titleEl) titleEl.textContent = TR('Trending now','Тренды');
   if (liveEl)  liveEl.textContent  = TR('LIVE','В ЭФИРЕ');
 
-  // Rank by Threat Index, then confidence. Urgent/alert are headline signals;
-  // watch-level are early indicators below the alert threshold — shown muted so
-  // the widget proves the engine is working instead of looking dead at "0".
-  const _ti = s => (typeof s.threat_index === 'number' ? s.threat_index : s.confidence*60);
-  const rank = arr => arr.sort((a,b) => _ti(b) - _ti(a) || b.confidence - a.confidence);
-  const urgent = rank(sigs.filter(s => s.level !== 'watch')).slice(0, 8);
-  const watch  = rank(sigs.filter(s => s.level === 'watch')).slice(0, 5);
+  // ── Health signal rendering ─────────────────────────────────
+  const _ti = s => (typeof s.threat_index === 'number' ? s.threat_index : s.confidence * 60);
 
-  // Headline count = urgent/alert only (stays honest).
-  if (countEl) {
-    countEl.textContent = urgent.length;
-    countEl.classList.toggle('zero', urgent.length === 0);
-  }
+  // Trend arrow for health signals based on momentum
+  const _trendArrow = s => {
+    const m = s.momentum || 1;
+    if (m >= 1.08) return `<span class="sig-trend-arrow up">↑</span>`;
+    if (m <= 0.93) return `<span class="sig-trend-arrow down">↓</span>`;
+    return '';
+  };
 
-  const renderItem = s => {
-    const spike    = s.spike_ratio ? `${s.spike_ratio}×` : '';
-    const srcs     = (s.sources || []).length;
-    const country  = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
-    const hasAI    = s.ai_processed || (s.hours_ahead_estimate > 0);
-    const aiBadge  = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
-    const tiBadge  = (typeof s.threat_index === 'number')
+  const renderHealthItem = s => {
+    const srcs    = (s.sources || []).length;
+    const country = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
+    const hasAI   = s.ai_processed || (s.hours_ahead_estimate > 0);
+    const aiBadge = hasAI ? `<span class="sig-ai">${_SVG(ICONS.bolt)} ${s.hours_ahead_estimate || ''}${TR('h early','ч раньше')}</span>` : '';
+    const tiBadge = (typeof s.threat_index === 'number')
       ? `<span class="sig-ti tt-${s.threat_tier||'monitoring'}">TI ${s.threat_index}</span>` : '';
-    const srcLbl   = TR(`${srcs} src`, `${srcs} ист.`);
+    const srcLbl  = TR(`${srcs} src`, `${srcs} ист.`);
+    const arrow   = _trendArrow(s);
+    const newBadge = s.is_new ? `<span class="sig-cat health">${TR('new','новое')}</span>` : `<span class="sig-cat health">health</span>`;
     return `
       <div class="sig-item" onclick="_openSignal(${JSON.stringify(s).replace(/"/g, '&quot;')})">
         <div class="sig-pulse ${s.level}"></div>
         <div class="sig-body">
-          <div class="sig-title">${_esc(locDisease(s.disease))} · ${_esc(country)}</div>
-          <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${spike} ${aiBadge}</div>
+          <div class="sig-title">${newBadge}${_esc(locDisease(s.disease))} · ${_esc(country)}${arrow}</div>
+          <div class="sig-meta">${tiBadge} ${_SVG(ICONS.src)}${srcLbl} · ${_SVG(ICONS.spike)}${s.spike_ratio ? s.spike_ratio+'×' : ''} ${aiBadge}</div>
         </div>
         <span class="sig-badge ${s.level}">${locLevel(s.level)}</span>
       </div>`;
   };
 
-  if (urgent.length > 0) {
-    // Headline urgent/alert signals, plus any watch-level ones under a divider.
-    list.innerHTML = urgent.map(renderItem).join('')
-      + (watch.length
-          ? `<div class="sig-watch-h">${TR('Also monitoring','Под наблюдением')}</div>` + watch.map(renderItem).join('')
-          : '');
-  } else if (watch.length > 0) {
-    // No urgent signals — surface the early indicators the engine is tracking.
+  // ── Risk/conflict trend item rendering ──────────────────────
+  const renderTrendItem = t => {
+    const deltaLbl = `+${t.delta} ${TR('this week','за неделю')}`;
+    const sub = t.topThreat
+      ? `${deltaLbl} · ${_esc(t.topThreat)}`
+      : deltaLbl;
+    const name = _esc(t.country || t.iso);
+    return `
+      <div class="sig-item sig-item--trend" onclick="_onTrendClick(${JSON.stringify(t).replace(/"/g, '&quot;')})">
+        <div class="sig-pulse ${t.level}"></div>
+        <div class="sig-body">
+          <div class="sig-title"><span class="sig-cat ${t.catCls}">${_esc(t.catLabel)}</span>${name}<span class="sig-trend-arrow up">↑</span></div>
+          <div class="sig-meta">${_SVG(ICONS.rising)}${sub}</div>
+        </div>
+        <span class="sig-badge ${t.level}">${TR('rising','рост')}</span>
+      </div>`;
+  };
+
+  // ── Merge and rank ──────────────────────────────────────────
+  // Health: prioritise by change — new signals and worsening ones first
+  const healthScore = s => {
+    const newBoost = s.is_new ? 2.0 : 1.0;
+    const momBoost = (s.momentum || 1) > 1.05 ? (s.momentum || 1) : 0.8;
+    return _ti(s) * newBoost * momBoost;
+  };
+
+  // "Active" health = alert/urgent OR (watch + worsening)
+  const activeHealth = sigs
+    .filter(s => s.level !== 'watch' || (s.momentum || 1) > 1.05)
+    .sort((a, b) => healthScore(b) - healthScore(a))
+    .slice(0, 5);
+
+  const watchHealth = sigs
+    .filter(s => s.level === 'watch' && (s.momentum || 1) <= 1.05)
+    .sort((a, b) => _ti(b) - _ti(a))
+    .slice(0, 3);
+
+  const trendItems = _buildTrendItems().slice(0, 3);
+
+  // Interleave: active health items + trend items, sorted by unified score
+  // Trend items get a base score of 45 to compete with mid-tier health signals
+  const allActive = [
+    ...activeHealth.map(s => ({ _render: () => renderHealthItem(s), _score: healthScore(s) })),
+    ...trendItems.map(t => ({ _render: () => renderTrendItem(t), _score: 45 * t.trendScore })),
+  ].sort((a, b) => b._score - a._score).slice(0, 7);
+
+  // Headline count: alert/urgent health + trend items with significant delta
+  const headlineCount = sigs.filter(s => s.level !== 'watch').length + trendItems.length;
+  if (countEl) {
+    countEl.textContent = headlineCount;
+    countEl.classList.toggle('zero', headlineCount === 0);
+  }
+
+  if (allActive.length > 0) {
+    list.innerHTML = allActive.map(item => item._render()).join('')
+      + (watchHealth.length
+        ? `<div class="sig-watch-h">${TR('Also monitoring','Под наблюдением')}</div>`
+          + watchHealth.map(renderHealthItem).join('')
+        : '');
+  } else if (watchHealth.length > 0) {
     list.innerHTML =
-      `<div class="sig-note">${TR('No urgent signals right now. The engine is tracking these early indicators, below the alert threshold:','Срочных сигналов нет. Движок отслеживает ранние индикаторы — пока ниже порога тревоги:')}</div>`
-      + watch.map(renderItem).join('');
+      `<div class="sig-note">${TR('No urgent signals. Engine is tracking these early indicators:','Срочных сигналов нет. Отслеживаются ранние индикаторы:')}</div>`
+      + watchHealth.map(renderHealthItem).join('');
   } else {
-    list.innerHTML = `<div class="feed-empty">${TR('All clear — no early signals above noise. The engine keeps scanning 50+ sources.','Спокойно — ранних сигналов выше шума нет. Движок продолжает сканировать 50+ источников.')}</div>`;
+    list.innerHTML = `<div class="feed-empty">${TR('All clear — scanning 50+ sources.','Спокойно — сканируется 50+ источников.')}</div>`;
   }
 
   // Updated time
@@ -3723,6 +3884,13 @@ function _renderSignals(sigs, meta) {
     upd.textContent = mins < 2 ? TR('Updated just now','Обновлено только что')
       : mins < 60 ? TR(`Updated ${mins}m ago`,`Обновлено ${mins} мин назад`)
       : TR('Updated ','Обновлено ') + dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }
+}
+
+function _onTrendClick(t) {
+  // Open country panel on the globe for risk trend items
+  if (typeof selectCountry === 'function') {
+    selectCountry(t.country || t.iso);
   }
 }
 
