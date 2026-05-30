@@ -249,6 +249,18 @@ LANDMARK_DB = {
     "zaporizhzhia":  ("UA", 47.8, 35.2, "EURO"),
     "odesa":         ("UA", 46.5, 30.7, "EURO"),
     "odessa":        ("UA", 46.5, 30.7, "EURO"),
+    "dnipro":        ("UA", 48.5, 35.0, "EURO"),
+    "kryvyi rih":    ("UA", 47.9, 33.4, "EURO"),
+    "lviv":          ("UA", 49.8, 24.0, "EURO"),
+    "mykolaiv":      ("UA", 46.9, 32.0, "EURO"),
+    "sumy":          ("UA", 50.9, 34.8, "EURO"),
+    "poltava":       ("UA", 49.6, 34.6, "EURO"),
+    "chernihiv":     ("UA", 51.5, 31.3, "EURO"),
+    "vinnytsia":     ("UA", 49.2, 28.5, "EURO"),
+    "izium":         ("UA", 49.2, 37.3, "EURO"),
+    "avdiivka":      ("UA", 48.1, 37.8, "EURO"),
+    "chasiv yar":    ("UA", 48.6, 37.8, "EURO"),
+    "kreminna":      ("UA", 49.1, 38.2, "EURO"),
     # Gaza / Palestine
     "gaza":          ("PS", 31.5, 34.5, "EMRO"),
     "rafah":         ("PS", 31.3, 34.2, "EMRO"),
@@ -1018,6 +1030,33 @@ def _strip_outlet_suffix(title: str) -> str:
     return _OUTLET_STRIP_RE.sub("", title).strip()
 
 
+# Attack-verb pattern: words that indicate a country is the AGGRESSOR (subject),
+# not the location of the event. Used to override Tier-1 country match.
+_ATTACK_VERB_RE = re.compile(
+    r"(?:strikes?|attacks?|bombs?|shelling|shells?|pounds?|invades?|"
+    r"fires?\s+(?:\w+\s+){0,2}(?:missiles?|rockets?|drones?)|"
+    r"launched?\s+(?:\w+\s+){0,3}(?:airstrikes?|strikes?|attacks?|offensive|bombardment|invasion)|"
+    r"launches?\s+(?:\w+\s+){0,3}(?:airstrikes?|strikes?|attacks?|drones?|missiles?|offensive|bombardment)|"
+    r"hits?\s+(?:\w+\s+){0,3}with|targets?\s+(?:\w+\s+){0,3}with|raids?|"
+    r"conducts?\s+(?:\w+\s+){0,2}(?:airstrikes?|strikes?|attacks?))",
+    re.IGNORECASE,
+)
+
+
+def _is_aggressor(country_name: str, lower: str) -> bool:
+    """Return True if country_name appears as the grammatical SUBJECT of an
+    attack verb — meaning it's the attacker, not the location of the event.
+    Pattern: "[country] [optional words] [attack verb]"
+    """
+    pat = re.compile(
+        r"\b" + re.escape(country_name.lower()) + r"\b"
+        r"(?:\s+\S+){0,5}\s+"  # up to 5 words gap
+        + _ATTACK_VERB_RE.pattern,
+        re.IGNORECASE,
+    )
+    return bool(pat.search(lower))
+
+
 def detect_country(text: str) -> tuple[str | None, str | None, float | None, float | None]:
     """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables.
 
@@ -1025,6 +1064,10 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
       1. COUNTRY_DB / COUNTRY_DB_RU / COUNTRY_DB_ZH  — country-level
       2. LANDMARK_DB                                  — curated cities & actors
       3. ADMIN1_DB (Natural Earth, 4784 regions)      — states / oblasts / provinces
+
+    Special case: if Tier-1 country is acting as aggressor (grammatical subject of
+    an attack verb), a LANDMARK from a different country (the attack target) wins.
+    This prevents "Russia strikes Kyiv" from being tagged RU instead of UA.
     """
     # Strip news outlet suffixes so "- Yahoo News Canada" doesn't tag the event as Canada
     text = _strip_outlet_suffix(text)
@@ -1048,13 +1091,24 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
             if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
                 country_match = (cname.title(), iso, lat, lng); break
 
+    # Detect if country_match is an aggressor (subject of attack verb).
+    # If so, LANDMARK_DB from a different country (the target/victim) can override.
+    country_is_aggressor = (
+        country_match is not None
+        and _is_aggressor(country_match[0], lower)
+    )
+
     # ── Tier 2: LANDMARK_DB (curated cities, actors, conflict zones) ─────
     for cname in sorted(LANDMARK_DB, key=len, reverse=True):
         iso, lat, lng, _ = LANDMARK_DB[cname]
         if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
-            # Only prefer landmark over country if it's more specific
-            # (i.e. landmark's ISO matches country match or no country match)
+            # Normal: landmark wins if same country or no country found
             if country_match is None or iso == country_match[1]:
+                return cname.title(), iso, lat, lng
+            # Aggressor override: if country is the attacker and landmark is
+            # from a DIFFERENT country, the landmark (victim location) wins.
+            # Example: "Russia strikes Kyiv" → Kyiv (UA) wins over Russia (RU)
+            if country_is_aggressor and iso != country_match[1]:
                 return cname.title(), iso, lat, lng
 
     # ── Tier 3: ADMIN1_DB (Natural Earth world regions / states / oblasts) ─
