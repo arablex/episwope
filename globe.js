@@ -4518,9 +4518,14 @@ function renderPanel(){
     </svg>`;
   }
   document.getElementById('sparkBig').textContent = fmtNum(o.cases);
-  const delta = tr[tr.length-1] - tr[tr.length-8] || 0;
   const trendEl = document.getElementById('sparkTrend');
-  trendEl.innerHTML = `${delta>=0?'+':'−'}${fmtNum(Math.abs(delta))} · 7d`;
+  if(tr && tr.length >= 2){
+    const lookback = Math.min(7, tr.length - 1);
+    const delta = tr[tr.length-1] - tr[tr.length-1-lookback];
+    trendEl.innerHTML = `${delta>=0?'+':'−'}${fmtNum(Math.abs(delta))} · ${lookback}d`;
+  } else {
+    trendEl.innerHTML = `— · —`;
+  }
   trendEl.style.background = sev.color;
 
   // AI card — accent border follows severity, dark bg stays from CSS
@@ -5100,13 +5105,15 @@ async function loadLiveData(){
 
     if(injected > 0){
       console.log(`[Vigilo] Injected ${injected} live events`);
-      renderList();
-      renderPanel();
-      renderPopup();
       addGLMarkers();
+      renderList();
       renderCatLists();
       updateMobPeek();
     }
+    // Always re-render open panel/popup so risk index + signals updates
+    // are reflected even when no new events were injected this cycle.
+    renderPanel();
+    renderPopup();
   } catch(e){
     console.warn('[Vigilo] Live data unavailable:', e.message);
   }

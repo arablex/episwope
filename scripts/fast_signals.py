@@ -1060,20 +1060,53 @@ def _is_aggressor(country_name: str, lower: str) -> bool:
     """Return True if country_name appears as the grammatical SUBJECT of an
     attack verb — meaning it's the attacker, not the location of the event.
     Pattern: "[country] [optional words] [attack verb]"
+
+    Guard against false positives:
+    - Future-tense hedges: "Russia says it will attack..." → not a live attack
+    - Infinitive constructs: "says will attack", "threatened to attack"
     """
+    # Hedge verbs that indicate a statement/threat, not an actual attack
+    _HEDGE_RE = re.compile(
+        r"\b(?:says?|said|claims?|claimed|vows?|vowed|threatens?|threatened|"
+        r"warns?|warned|pledges?|pledged|promises?|promised|plans?\s+to|"
+        r"will\s+(?:not\s+)?(?:attack|strike)|considering|mulls?)\b",
+        re.IGNORECASE,
+    )
     pat = re.compile(
         r"\b" + re.escape(country_name.lower()) + r"\b"
-        r"(?:\s+\S+){0,5}\s+"  # up to 5 words gap
+        r"(?:\s+\S+){0,4}\s+"  # up to 4 words gap (was 5)
         + _ATTACK_VERB_RE.pattern,
         re.IGNORECASE,
     )
-    return bool(pat.search(lower))
+    m = pat.search(lower)
+    if not m:
+        return False
+    # Check if a hedging verb appears between the country name and the attack verb
+    segment = lower[lower.find(country_name.lower()):m.end()]
+    if _HEDGE_RE.search(segment):
+        return False
+    return True
 
 
 # Matches one or more consecutive Title-Case words (proper noun phrases):
 # "Kyiv", "Tel Aviv", "Kryvyi Rih", "São Paulo" etc.
 # Minimum 3 chars per word to skip "A", "An", "In" etc.
 _TITLE_PHRASE_RE = re.compile(r'\b[A-Z][a-z]{2,}(?:[\s-][A-Z][a-z]{2,})*\b')
+
+# Short single-word city names that are also common English words or adjectives.
+# When country_match is None these produce false positives if they appear at the
+# start of a sentence / after punctuation (where capitalisation is grammatical,
+# not geographic).  Require at least one of these co-conditions to be met before
+# accepting the match:
+#   – city appears as part of a multi-word phrase ("Nice weather" fails, "Nice airport" passes)
+#   – country_match is already set (context anchor)
+#   – aggressor override is active
+# We simply skip them in the "country_match is None" path.
+_AMBIGUOUS_CITY_NAMES: frozenset = frozenset({
+    "nice", "bath", "reading", "wells", "troy", "york", "banks", "lima",
+    "roma", "lyon", "male", "oman", "tyre", "sur", "ora", "bar",
+    "new", "old", "van", "ran", "man", "can", "may",
+})
 
 
 def _lookup_in_cities(
@@ -1119,6 +1152,14 @@ def _lookup_in_cities(
         if not entry:
             continue
         iso, lat, lng = entry[0], entry[1], entry[2]
+
+        # Skip ambiguous short words when there is no country anchor.
+        # e.g. "Reading: New dengue cases..." → "Reading" is capitalised
+        # for grammatical reasons, not because it refers to Reading, UK.
+        # When country_match IS set (or aggressor override active) these
+        # words are fine as a same-country refinement.
+        if key in _AMBIGUOUS_CITY_NAMES and country_match is None:
+            continue
 
         # Normal attribution rule: city wins when it's in the same country
         # as the Tier-1 match, or when there is no Tier-1 match at all.
