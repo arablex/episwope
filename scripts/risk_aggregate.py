@@ -243,14 +243,32 @@ _ENTERTAINMENT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Finance/tech context patterns — "Riot" in these contexts is a company ticker
+# or product name, not civil unrest (e.g. "Riot Platforms surfs AI wave").
+_FINANCE_TECH_RE = re.compile(
+    r"\b(?:platforms?|technologies|corp|inc\b|ltd\b|nasdaq|nyse|stock|shares?|"
+    r"investors?|earnings|revenue|ai\s+infra|blockchain|crypto|bitcoin|mining\s+co|"
+    r"surfing\s+the|infrastructure\s+wave|market\s+cap|ipo\b|ticker)\b",
+    re.IGNORECASE,
+)
+
+# Encyclopedic / reference domains — articles about historical events
+# (Britannica, Wikipedia, etc.) should not appear in a live threat feed.
+_ENCYCLOPEDIC_DOMAINS = frozenset({
+    "britannica.com", "wikipedia.org", "en.wikipedia.org",
+    "britannica-", "encyclopedia", "history.com", "thoughtco.com",
+})
+
 def _classify(text: str, rules: list) -> tuple[str | None, int]:
     low = text.lower()
     for pat, typ, sev in rules:
         if re.search(pat, low):
-            # Suppress civil_unrest false positives from music festival news
-            # ("Riot Fest lineup", "Rock Festival", etc.)
+            # Suppress civil_unrest false positives from entertainment news
             if typ in ("violent_unrest", "mass_protest", "protest") and \
                _ENTERTAINMENT_RE.search(text):
+                continue
+            # Suppress "Riot Platforms", "Riot Games" → civil_unrest
+            if typ in ("violent_unrest",) and _FINANCE_TECH_RE.search(text):
                 continue
             return typ, sev
     return None, 0
@@ -358,6 +376,23 @@ def collect_events() -> list[dict]:
         log(f"[risk]   {cat}: {len(arts)} raw articles")
 
         for a in arts:
+            # Skip encyclopedic / reference sources — they surface historical
+            # events from 2011, 2015 etc. as "current" threats (Britannica,
+            # Wikipedia, History.com articles about past earthquakes/outbreaks).
+            domain_lc = (a.domain or "").lower()
+            if any(enc in domain_lc for enc in _ENCYCLOPEDIC_DOMAINS):
+                continue
+            # Skip articles older than 30 days — stale content that slipped
+            # through the GNews time filter (e.g. 2023 measles case reports).
+            if a.pub_date:
+                try:
+                    from email.utils import parsedate_to_datetime as _pdt
+                    age_days = (_now() - _pdt(a.pub_date).replace(tzinfo=None)).days
+                    if age_days > 30:
+                        continue
+                except Exception:
+                    pass
+
             text = f"{a.title} {a.body}"
             # Strip source domain and outlet name from text so "lbc.co.uk",
             # "France 24", "Yahoo News UK" don't contaminate detect_country.

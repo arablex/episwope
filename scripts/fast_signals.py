@@ -325,6 +325,13 @@ LANDMARK_DB = {
     "kabul":         ("AF", 34.5, 69.2, "EMRO"),
     "kandahar":      ("AF", 31.6, 65.7, "EMRO"),
     "taliban":       ("AF", 34.5, 69.2, "EMRO"),
+    # ── USA — Washington DC monuments (prevent monument→country misattribution)
+    "vietnam veterans memorial": ("US", 38.89, -77.05, "AMRO"),
+    "vietnam memorial":          ("US", 38.89, -77.05, "AMRO"),
+    "lincoln memorial":          ("US", 38.88, -77.05, "AMRO"),
+    "national mall":             ("US", 38.89, -77.03, "AMRO"),
+    "capitol hill":              ("US", 38.89, -77.01, "AMRO"),
+    "white house":               ("US", 38.89, -77.03, "AMRO"),
     # ── USA — states ─────────────────────────────────────────────────────
     "california":    ("US", 36.78, -119.42, "AMRO"),
     "texas":         ("US", 31.97, -99.90,  "AMRO"),
@@ -1103,9 +1110,25 @@ _TITLE_PHRASE_RE = re.compile(r'\b[A-Z][a-z]{2,}(?:[\s-][A-Z][a-z]{2,})*\b')
 #   – aggressor override is active
 # We simply skip them in the "country_match is None" path.
 _AMBIGUOUS_CITY_NAMES: frozenset = frozenset({
+    # Common English words that exist as city names and cause false positives
+    # when they appear capitalised at the start of a sentence or after punctuation.
+    # Short words
+    "the", "hit", "bay", "bar", "sur", "ora", "ran", "van", "man", "can", "may",
+    # City/place words that are also ordinary English words
     "nice", "bath", "reading", "wells", "troy", "york", "banks", "lima",
-    "roma", "lyon", "male", "oman", "tyre", "sur", "ora", "bar",
-    "new", "old", "van", "ran", "man", "can", "may",
+    "roma", "lyon", "male", "oman", "tyre",
+    "hall",     # Hall, Germany (DE)  — e.g. "Delaney Hall" NJ event → DE
+    "dawn",     # Dawn, Singapore (SG) — "Dawn newspaper" → SG
+    "center",   # Center, Hungary (HU) — "The Center Post-Dispatch" → HU
+    "springs",  # Springs, South Africa (ZA) — "Silver Springs NV" → ZA
+    "port",     # Port, Réunion (RE)  — various English headlines
+    "falls",    # various "falls" places
+    "ford",     # various "ford" places
+    "grove",    # various "grove" places
+    "park",     # various "park" places
+    "bay",      # Bay, Romania (RO) — many English headlines
+    "memorial", # "Vietnam Memorial" → Vietnam — prevent monument→country bug
+    "new", "old",
 })
 
 
