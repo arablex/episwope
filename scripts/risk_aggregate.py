@@ -571,11 +571,28 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         (8.857, -12.175),   # SL/Northern province — was matched by bare "Northern"
     }
 
+    # Explicit purge set — events confirmed to have wrong country attribution
+    # due to aggressor-vs-victim bug (pre-fix pipeline tagged Russia instead of
+    # Ukraine). Purged here so they don't persist 21 days; the aggressor fix
+    # ensures new fetches produce correct attribution.
+    _PURGE_IDS = {
+        "evt_973d0cae1c75",  # Russia launched missile strike on Kryvyi Rih → should be UA
+        "evt_828d95031113",  # Russia launched missile strike on Dnipro → should be UA
+        "evt_6ac4bf1985f6",  # Russia strikes residential area (Kyiv) → should be UA
+        "evt_20d0ee47b469",  # Russia launches drone/missile attack on Kyiv → should be UA
+        "evt_3c938e8ad99e",  # Missile strikes pound Kyiv → should be UA
+        "evt_eda3eb0c83c4",  # Russia Strikes Kyiv with Missiles → should be UA
+        "evt_6cfad1e41a59",  # Russia strikes Kyiv with ballistic missiles → should be UA
+        "evt_c4c9457760fa",  # Russia launches missile/drone strikes on Kyiv → should be UA
+    }
+
     carried = 0
     for e in prior:
         eid = e.get("id", "")
         if eid in new_by_id:
             continue                                  # re-seen → fresh wins
+        if eid in _PURGE_IDS:
+            continue                                  # explicit purge: wrong attribution
         if eid.startswith("evt_h_") or eid.startswith("evt_clim_") \
            or eid.startswith("evt_ioda_") or eid.startswith("evt_gdacs_"):
             continue                                  # source owns retention
