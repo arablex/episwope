@@ -172,6 +172,14 @@ COUNTRY_DB = {
     "iraq":             ("IQ", 33.2,  43.7,  "EMRO"),
     "syria":            ("SY", 34.8,  38.9,  "EMRO"),
     "yemen":            ("YE", 15.6,  48.5,  "EMRO"),
+    "israel":           ("IL", 31.0,  34.9,  "EMRO"),
+    "palestine":        ("PS", 31.9,  35.2,  "EMRO"),
+    "lebanon":          ("LB", 33.9,  35.5,  "EMRO"),
+    "kuwait":           ("KW", 29.3,  47.7,  "EMRO"),
+    "bahrain":          ("BH", 26.2,  50.6,  "EMRO"),
+    "oman":             ("OM", 21.5,  55.9,  "EMRO"),
+    "uae":              ("AE", 23.4,  53.8,  "EMRO"),
+    "qatar":            ("QA", 25.4,  51.2,  "EMRO"),
     "egypt":            ("EG", 26.8,  30.8,  "EMRO"),
     "saudi arabia":     ("SA", 24.0,  45.0,  "EMRO"),
     "jordan":           ("JO", 31.0,  36.5,  "EMRO"),
@@ -229,6 +237,13 @@ COUNTRY_DB = {
     "netherlands":      ("NL", 52.3,   5.3,  "EURO"),
     "belgium":          ("BE", 50.5,   4.5,  "EURO"),
     "austria":          ("AT", 47.5,  14.6,  "EURO"),
+    "greece":           ("GR", 39.1,  21.8,  "EURO"),
+    "serbia":           ("RS", 44.0,  21.0,  "EURO"),
+    "croatia":          ("HR", 45.1,  15.2,  "EURO"),
+    "bosnia":           ("BA", 44.2,  17.9,  "EURO"),
+    "kosovo":           ("XK", 42.6,  20.9,  "EURO"),
+    "democratic republic of congo": ("CD", -4.0, 21.7, "AFRO"),
+    "democratic republic of the congo": ("CD", -4.0, 21.7, "AFRO"),
 }
 
 # ── Landmark / city / actor → country ───────────────────────────────────
@@ -1172,9 +1187,23 @@ def _lookup_in_cities(
                     seen.add(word)
                     candidates.append(word)
 
+    # Build a set of COUNTRY_DB keys to skip — CITIES_DB sometimes has a
+    # city/town with the same name as a country (e.g. "lebanon" = Lebanon, TN).
+    # COUNTRY_DB must win because it's curated and Tier-1 runs first.
+    # In practice Tier-1 already handles country-names, but a miss there
+    # (e.g. "israel" recently added) would fall through to CITIES_DB.
+    _country_keys: set = (
+        set(COUNTRY_DB.keys()) |
+        set(COUNTRY_DB_RU.keys()) |
+        set(COUNTRY_DB_ZH.keys())
+    )
+
     best: tuple | None = None  # (phrase_len, city_name, iso, lat, lng)
 
     for key in sorted(candidates, key=len, reverse=True):
+        # Never let a CITIES_DB entry shadow a country-level DB key
+        if key in _country_keys:
+            continue
         entry = CITIES_DB.get(key)
         if not entry:
             continue

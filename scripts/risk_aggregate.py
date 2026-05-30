@@ -871,6 +871,22 @@ def main() -> int:
     events = merge_persist(events)
     log(f"[risk] total events after persistence merge: {len(events)}")
 
+    # Secondary cross-source dedup: catch the same earthquake/disaster reported
+    # by GNews, GDELT AND GDACS simultaneously (different IDs, near-identical
+    # headlines). Deduplicate by (country, category, normalised-headline[:50]).
+    _seen_headlines: set = set()
+    events_deduped: list = []
+    for ev in sorted(events, key=lambda e: -(e.get("confidence", 0))):
+        h = re.sub(r"\W+", " ", (ev.get("headline") or "").lower()).strip()[:50]
+        key = (ev.get("country", ""), ev.get("category", ""), h)
+        if key in _seen_headlines:
+            continue
+        _seen_headlines.add(key)
+        events_deduped.append(ev)
+    before_dedup = len(events)
+    events = events_deduped
+    log(f"[risk] events after headline dedup: {len(events)} (was {before_dedup})")
+
     # Cap per (iso, category) to prevent hundreds of near-duplicate news articles
     # turning into a marker flood on the globe (e.g. 146 Gaza conflict events).
     # Keep the MAX_EVENTS_PER_ISO_CAT highest-severity (then newest) events.
