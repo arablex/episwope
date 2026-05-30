@@ -327,6 +327,7 @@ const ALL_COUNTRIES = [
   { en:'Pakistan',                     ru:'Пакистан',              iso2:'PK', num:586, lat:30.38, lng:69.35 },
   { en:'Palau',                        ru:'Палау',                 iso2:'PW', num:585, lat:7.51, lng:134.58 },
   { en:'Palestine',                    ru:'Палестина',             iso2:'PS', num:275, lat:31.95, lng:35.23 },
+  { en:'Palestinian Territories',      ru:'Палестинские территории', iso2:'PS', num:275, lat:31.95, lng:35.23 },
   { en:'Panama',                       ru:'Панама',                iso2:'PA', num:591, lat:8.54, lng:-80.78 },
   { en:'Papua New Guinea',             ru:'Папуа — Новая Гвинея',  iso2:'PG', num:598, lat:-6.31, lng:143.96 },
   { en:'Paraguay',                     ru:'Парагвай',              iso2:'PY', num:600, lat:-23.44, lng:-58.44 },
@@ -510,7 +511,12 @@ function trendDirection(trend){
 }
 
 function countryTravelRisk(country){
-  const threats = OUTBREAKS.filter(o => o.country === country);
+  // Only use epidemic/health events for travel advisory calculation.
+  // Risk-signal events (_risk) are news-derived and often mis-attributed to
+  // the media source's country rather than the event location — including them
+  // was producing "Avoid non-essential travel" for US, GB, DE, FR because
+  // of Gaza/Hamas headlines published by American/British outlets.
+  const threats = OUTBREAKS.filter(o => o.country === country && !o._risk);
   if(!threats.length) return 'low';
   const maxIdx = Math.max(...threats.map(o => SEV[o.sev]?.idx ?? 0));
   if(maxIdx >= 4) return 'high';
@@ -4397,7 +4403,13 @@ function renderPanel(){
   const sev = SEV[o.sev] || SEV.monitoring;
   const grad = `linear-gradient(160deg, ${sev.light}, ${sev.color} 55%, ${sev.dark})`;
 
-  document.getElementById('panEy').textContent = `${T('outbreak')} · ${o.code}`;
+  // Model/forecast events badge — show "Forecast" label so enterprise users
+  // can distinguish model-derived signals from verified news/official data.
+  const isModel = (o.source_verification === 'model' || o.predictive === true);
+  const eyLabel = isModel
+    ? `${LANG==='ru'?'Прогноз':'Forecast'} · ${o.code}`
+    : `${T('outbreak')} · ${o.code}`;
+  document.getElementById('panEy').textContent = eyLabel;
   // Risk/news events: short localised label big + full headline small (was a
   // giant raw English headline). Epidemics keep their short disease name.
   if(o._risk){
@@ -4517,6 +4529,12 @@ function renderPanel(){
       ${tr.map((v,i)=>i===tr.length-1?`<circle cx="${sx(i)}" cy="${sy(v)}" r="5" fill="${sev.color}" opacity="0.18"/>`:'').join('')}
     </svg>`;
   }
+  // Hide the entire case-curve / sparkline section for risk-signal events
+  // (conflicts, transport, civil unrest) — they have no case count or
+  // meaningful 14-day trend, so showing a flat chart + "+0 · 7d" misleads.
+  const sparkWrap = document.getElementById('sparkBig')?.closest('.panel-section');
+  if(sparkWrap) sparkWrap.style.display = o._risk ? 'none' : '';
+
   document.getElementById('sparkBig').textContent = fmtNum(o.cases);
   const trendEl = document.getElementById('sparkTrend');
   if(tr && tr.length >= 2){
@@ -4533,9 +4551,14 @@ function renderPanel(){
   ai.style.borderLeftColor = sev.color;
   document.getElementById('aiText').textContent = (LANG === 'ru' && o.blurb_ru) ? o.blurb_ru : o.blurb;
 
-  // Risk block
+  // Risk block — only meaningful for epidemic events; conflicts/transport
+  // use computeRisk() which matches disease patterns and returns the generic
+  // low/medium default for non-epidemic events, misleading users.
   const riskEl = document.getElementById('riskBlock');
-  if(riskEl){
+  if(riskEl && o._risk){
+    riskEl.style.display = 'none';
+  } else if(riskEl){
+    riskEl.style.display = '';
     const risk = computeRisk(o);
     const riskColor = {low:'#3D8B5C', medium:'#C87B00', high:'#C92A2A'};
     const riskBg    = {low:'rgba(61,139,92,0.10)', medium:'rgba(200,123,0,0.10)', high:'rgba(201,42,42,0.10)'};
@@ -4555,7 +4578,7 @@ function renderPanel(){
         </div>`).join('')}
       <div class="risk-note">${T('riskNote')}</div>
     `;
-  }
+  } // end risk block
 
   // primary action button color
   const _primaryBtn = document.querySelector('.btn.primary');
@@ -4597,7 +4620,7 @@ function renderPanel(){
     const trend = trendDirection(o.trend);
     const tLbl  = (TREND_LABELS[lang] || TREND_LABELS.en)[trend];
     const tClr  = {rising:'#C92A2A', stable:'#807E76', falling:'#3D8B5C'}[trend];
-    const others = OUTBREAKS.filter(x => x.country === o.country && x.id !== o.id && !x._live);
+    const others = OUTBREAKS.filter(x => x.country === o.country && x.id !== o.id);
     const othersHtml = others.length ? `
       <div class="travel-others">
         <span class="travel-others-lbl">${T('otherThreats')} ${o.country}:</span>
