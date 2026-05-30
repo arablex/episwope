@@ -44,6 +44,7 @@ RELIEFWEB_APPNAME = "episcope-ownalex-9yimg"
 # Local analytics modules (literature params + signal-derived dynamics)
 sys.path.insert(0, str(Path(__file__).parent))
 from epi_analytics import enrich_signal  # noqa: E402
+from pathogen_params import get_params as _get_pathogen_params
 
 # ---------------------------------------------------------------------------
 # Config
@@ -3941,6 +3942,24 @@ def build_signals(
             confidence = max(new_confidence, stored_conf)
         else:
             confidence = new_confidence
+
+        # Critical-pathogen floor: for known Ebola/Marburg/Plague-class outbreaks
+        # that are sustained (spike_ratio normalized to ~1.0), the spike_ratio_score
+        # collapses to near-zero even though the threat is real. Apply an alert-level
+        # floor when official surveillance sources corroborate the outbreak.
+        _OFFICIAL_SOURCES = frozenset({
+            "who_afro", "who_ihr", "who_don", "who_emro", "who_wpro",
+            "who_euro", "who_searo", "africa_cdc", "cdc_mmwr", "promed",
+            "paho", "ecdc_cdtr", "rki", "ncbi_genomics",
+        })
+        _pathogen = _get_pathogen_params(disease)
+        if (
+            _pathogen and _pathogen.get("tier") == "critical"
+            and spike_ratio >= 1.0
+            and len(source_names) >= 3
+            and any(s in _OFFICIAL_SOURCES for s in source_names)
+        ):
+            confidence = max(confidence, 0.62)  # → alert minimum for confirmed critical outbreak
 
         if confidence < CONFIDENCE_EMIT_LOW:
             record_mention(history, iso, disease, current_count)
