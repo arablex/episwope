@@ -73,7 +73,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800;900&display=swap">
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
 <style>
   :root{
@@ -113,8 +113,9 @@
       0 6px 18px -8px rgba(28,24,18,0.07),
       inset 0 1px 0 rgba(255,255,255,0.82);
 
-    --sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-    --display: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    --display: "Bricolage Grotesque", "Hanken Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono: "Geist Mono", "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
     --online: #19A463;
     --online-bg: rgba(25,164,99,0.10);
 
@@ -482,8 +483,8 @@
     padding:14px 14px 16px;
   }
   .stat-num{
-    font-size:30px; font-weight:900; letter-spacing:-0.04em; line-height:1;
-    font-family:var(--display);
+    font-size:30px; font-weight:600; letter-spacing:-0.03em; line-height:1;
+    font-family:var(--mono);
     font-variant-numeric:tabular-nums;
   }
   .stat-num.s2{ color:var(--s2); }
@@ -1274,7 +1275,7 @@
     border:1px solid var(--line);
   }
   .metric .k{ font-size:10px; font-weight:500; color:var(--muted); letter-spacing:0;}
-  .metric .v{ font-size:26px; font-weight:900; letter-spacing:-0.035em; margin-top:6px; font-variant-numeric:tabular-nums;}
+  .metric .v{ font-size:26px; font-weight:600; letter-spacing:-0.02em; margin-top:6px; font-variant-numeric:tabular-nums; font-family:var(--mono);}
   .metric .delta{ font-size:10px; font-weight:700; margin-top:4px;}
   .metric .delta.up{ color:var(--s3);}
   .metric .delta.dn{ color:#19A463;}
@@ -1375,7 +1376,7 @@
   .cp-advisory{ padding:8px 14px; border-radius:var(--r-md); font-size:13px; font-weight:600; display:inline-block; }
   .cp-stats-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--line); border-bottom:1px solid var(--line); }
   .cp-stat{ background:var(--glass-bg); padding:14px 12px; text-align:center; }
-  .cp-stat-val{ font-size:20px; font-weight:800; letter-spacing:-0.03em; }
+  .cp-stat-val{ font-size:20px; font-weight:600; letter-spacing:-0.02em; font-family:var(--mono); font-variant-numeric:tabular-nums; }
   .cp-stat-lbl{ font-size:10px; color:var(--muted); margin-top:2px; }
   .cp-section{ padding:14px 18px; border-bottom:1px solid var(--line); }
   .cp-section-title{ font-size:10px; font-weight:700; letter-spacing:0; color:var(--muted); margin-bottom:10px; }
@@ -2509,7 +2510,7 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
   plausible.init()
 </script>
-<style>/* brand wordmark — Inter */.brand,.fbrand,.brand-name,.sb-brand,.auth-logo{font-family:'Inter',var(--sans),ui-sans-serif,system-ui,sans-serif!important;letter-spacing:-.04em}</style>
+<style>/* brand wordmark — Bricolage Grotesque (display) */.brand,.fbrand,.brand-name,.sb-brand,.auth-logo{font-family:'Bricolage Grotesque',var(--display),ui-sans-serif,system-ui,sans-serif!important;letter-spacing:-.04em}</style>
 </head>
 <body>
 
