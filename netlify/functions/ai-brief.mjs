@@ -74,13 +74,17 @@ export default async (req) => {
     lang: _lang, sentences: 3,
   });
 
+  const _debug = new URL(req.url).searchParams.get('debug') === '1';
   let summary;
   try {
     summary = await runAnalysis(prompt, { maxTokens: 220 });
     if (!summary) throw new Error('Empty response');
   } catch (e) {
     console.error(`ai-brief ${provider} error:`, e);
-    return new Response(JSON.stringify({ error: 'AI unavailable' }), { status: 502, headers: CORS });
+    const errBody = _debug
+      ? { error: 'AI unavailable', provider, detail: String(e && e.message || e).slice(0, 400) }
+      : { error: 'AI unavailable' };
+    return new Response(JSON.stringify(errBody), { status: 502, headers: CORS });
   }
 
   // ── Cache result ───────────────────────────────────────────────────────
