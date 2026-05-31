@@ -819,6 +819,8 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
                       "military_buildup", "escalation", "mass_protest", "protest") and \
            (_SPORTS_RE.search(_e_hl) or _is_sports_dom):
             continue
+        # (Geo re-validation moved to a single final pass in main() — it
+        # RELABELS to the correct country instead of dropping, so no data loss.)
         # Carry forward only if the date is parseable AND within the window.
         # An unparseable first_seen would otherwise count as age 0 (fresh) and
         # never age out — a dateless orphan would persist forever.
@@ -1031,6 +1033,39 @@ def main() -> int:
     # Persist prior news events within the retention window (real history)
     events = merge_persist(events)
     log(f"[risk] total events after persistence merge: {len(events)}")
+
+    # ── Final geo re-validation (systemic) ──────────────────────────────────
+    # Re-run the geocoder on each event's HEADLINE alone (cleaner signal than
+    # title+body, which is often contaminated by the outlet name e.g. "Yahoo
+    # News UK"). If it confidently resolves to a different country, RELABEL the
+    # event to the correct country + centroid. This is the single chokepoint
+    # that fixes ALL geo-misattribution classes — fresh and carried, any
+    # category — instead of per-country patches. News events only; official
+    # health/climate/disaster feeds (evt_h_, evt_clim_, evt_gdacs_, evt_ioda_)
+    # carry authoritative coords and are left untouched.
+    _relabeled = 0
+    for ev in events:
+        eid = ev.get("id", "")
+        if eid.startswith(("evt_h_", "evt_clim_", "evt_gdacs_", "evt_ioda_")):
+            continue
+        hl = ev.get("headline") or ""
+        cur_iso = ev.get("country") or ""
+        if not hl or not cur_iso:
+            continue
+        try:
+            cname, new_iso, new_lat, new_lng = detect_country(hl)
+        except Exception:
+            continue
+        if new_iso and new_iso != cur_iso and new_lat is not None:
+            ev["country"] = new_iso
+            geo = ev.get("geo") or {}
+            geo["country"] = new_iso
+            geo["lat"] = new_lat
+            geo["lng"] = new_lng
+            ev["geo"] = geo
+            _relabeled += 1
+    if _relabeled:
+        log(f"[risk] geo re-validation relabeled {_relabeled} events")
 
     # Secondary cross-source dedup: catch the same earthquake/disaster reported
     # by GNews, GDELT AND GDACS simultaneously (different IDs, near-identical

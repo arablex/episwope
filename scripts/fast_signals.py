@@ -1149,6 +1149,17 @@ _AMBIGUOUS_CITY_NAMES: frozenset = frozenset({
     "bay",      # Bay, Romania (RO) — many English headlines
     "memorial", # "Vietnam Memorial" → Vietnam — prevent monument→country bug
     "new", "old",
+    # Common nouns that are also real GeoNames cities — frequent false positives
+    "city",     # City of London (GB) — "the strategic city" → GB
+    "border",   # Border, various — "Ethiopian border" → wrong
+    "union",    # Union, US/various
+    "industry", "capital", "state", "central", "national", "republic",
+    "victory", "liberty", "freedom", "harmony", "progress", "general",
+    "summit",   # "climate summit" → place
+    "college", "university", "hospital", "airport", "market", "valley",
+    "river", "lake", "hill", "mount", "point", "bridge", "garden",
+    "eden", "hope", "faith", "grace", "joy", "mercy",  # name-words = places
+    "best", "first", "last", "north", "south", "east", "west",
 })
 
 
@@ -1238,6 +1249,53 @@ def _lookup_in_cities(
     return city_name, iso, lat, lng
 
 
+# Demonyms / nationality adjectives → country key in COUNTRY_DB.
+# Catches the huge class of "foreign outlet reports on event in country X"
+# where the headline names the nationality but not the country
+# (e.g. "Sudanese army on a counter-offensive" → SD, not the outlet's GB).
+# Only unambiguous, conflict/news-relevant demonyms — keep precise.
+_DEMONYM_TO_COUNTRY: dict[str, str] = {
+    "sudanese": "sudan", "ethiopian": "ethiopia", "serbian": "serbia",
+    "ukrainian": "ukraine", "russian": "russia", "israeli": "israel",
+    "palestinian": "palestine", "lebanese": "lebanon", "syrian": "syria",
+    "yemeni": "yemen", "iraqi": "iraq", "iranian": "iran", "afghan": "afghanistan",
+    "pakistani": "pakistan", "indian": "india", "chinese": "china",
+    "nigerian": "nigeria", "kenyan": "kenya", "somali": "somalia",
+    "egyptian": "egypt", "libyan": "libya", "malian": "mali",
+    "congolese": "democratic republic of the congo", "rwandan": "rwanda",
+    "colombian": "colombia", "venezuelan": "venezuela", "mexican": "mexico",
+    "haitian": "haiti", "myanmar": "myanmar", "burmese": "myanmar",
+    "armenian": "armenia", "azerbaijani": "azerbaijan", "georgian": "georgia",
+    "turkish": "turkey", "greek": "greece", "moldovan": "moldova",
+    "burkinabe": "burkina faso", "nigerien": "niger", "chadian": "chad",
+    "cameroonian": "cameroon", "mozambican": "mozambique",
+    # European/other demonyms that are reliably LOCATIONAL (the event is in
+    # that country). Deliberately excludes "British"/"American" — those are
+    # usually actors abroad ("British tourists stranded in X"), not locations.
+    "spanish": "spain", "french": "france", "italian": "italy",
+    "german": "germany", "polish": "poland", "romanian": "romania",
+    "portuguese": "portugal", "dutch": "netherlands", "belgian": "belgium",
+    "swedish": "sweden", "norwegian": "norway", "finnish": "finland",
+    "bulgarian": "bulgaria", "croatian": "croatia", "hungarian": "hungary",
+    "indonesian": "indonesia", "filipino": "philippines", "thai": "thailand",
+    "vietnamese": "vietnam", "bangladeshi": "bangladesh", "nepali": "nepal",
+    "brazilian": "brazil", "argentine": "argentina", "chilean": "chile",
+    "peruvian": "peru", "ecuadorian": "ecuador", "bolivian": "bolivia",
+}
+
+
+def _demonym_country(lower: str):
+    """Return (cname, iso, lat, lng) if a known demonym appears in text, else None.
+    First demonym wins (usually the grammatical subject / primary actor)."""
+    for demo, ckey in _DEMONYM_TO_COUNTRY.items():
+        if re.search(r"\b" + demo + r"\b", lower):
+            entry = COUNTRY_DB.get(ckey)
+            if entry:
+                iso, lat, lng = entry[0], entry[1], entry[2]
+                return (ckey.title(), iso, lat, lng)
+    return None
+
+
 def detect_country(text: str) -> tuple[str | None, str | None, float | None, float | None]:
     """Return (country_name, iso, lat, lng) scanning EN, RU, and ZH name tables.
 
@@ -1271,6 +1329,16 @@ def detect_country(text: str) -> tuple[str | None, str | None, float | None, flo
         else:
             if re.search(r"\b" + re.escape(cname) + r"\b", lower, re.I):
                 country_match = (cname.title(), iso, lat, lng); break
+
+    # ── Tier 1.5: demonyms ("Sudanese", "Ethiopian") act as a country anchor ─
+    # If no explicit country name matched, a nationality adjective is a strong
+    # signal of the event's country. This blocks spurious city matches
+    # (e.g. "the strategic city" → City of London/GB) by giving Tier-2/2.5 a
+    # proper country_match to validate against.
+    if country_match is None:
+        demo = _demonym_country(lower)
+        if demo:
+            country_match = demo
 
     # Detect if country_match is an aggressor (subject of attack verb).
     # If so, LANDMARK_DB from a different country (the target/victim) can override.
