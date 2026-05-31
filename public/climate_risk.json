@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generated_at": "2026-05-31T19:28:24.203098+00:00",
-    "countries": 28,
+    "generated_at": "2026-05-31T22:11:42.875404+00:00",
+    "countries": 27,
     "model": "open-meteo climate anomaly → pathogen suitability",
     "note": "Model-derived leading hazard signal, not a case forecast."
   },
@@ -402,28 +402,6 @@
       },
       "asof": "2026-05-31"
     },
-    "HT": {
-      "dengue": {
-        "S": 0.314,
-        "band": "low",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.473,
-        "band": "moderate",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 21.4,
-        "zT": 0.99,
-        "p_recent": 7.57,
-        "zP": 0.28,
-        "thermal": 0.36
-      },
-      "asof": "2026-05-31"
-    },
     "SD": {
       "dengue": {
         "S": 0.421,
@@ -443,6 +421,28 @@
         "p_recent": 0.0,
         "zP": -0.12,
         "thermal": 0.59
+      },
+      "asof": "2026-05-31"
+    },
+    "MM": {
+      "dengue": {
+        "S": 0.623,
+        "band": "elevated",
+        "lead_days": 10,
+        "confidence": "model"
+      },
+      "cholera": {
+        "S": 0.13,
+        "band": "minimal",
+        "lead_days": 14,
+        "confidence": "model"
+      },
+      "drivers": {
+        "t_recent": 30.0,
+        "zT": -0.27,
+        "p_recent": 4.26,
+        "zP": 0.49,
+        "thermal": 1.0
       },
       "asof": "2026-05-31"
     },
@@ -574,29 +574,7 @@
         "zT": 2.65,
         "p_recent": 0.22,
         "zP": -0.4,
-        "thermal": 0.3
-      },
-      "asof": "2026-05-31"
-    },
-    "DE": {
-      "dengue": {
-        "S": 0.175,
-        "band": "minimal",
-        "lead_days": 10,
-        "confidence": "model"
-      },
-      "cholera": {
-        "S": 0.445,
-        "band": "moderate",
-        "lead_days": 14,
-        "confidence": "model"
-      },
-      "drivers": {
-        "t_recent": 16.8,
-        "zT": 2.74,
-        "p_recent": 2.54,
-        "zP": 0.17,
-        "thermal": 0.0
+        "thermal": 0.31
       },
       "asof": "2026-05-31"
     },
