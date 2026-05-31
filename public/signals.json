@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-31T08:57:23.891875+00:00",
+    "generated_at": "2026-05-31T11:08:48.327380+00:00",
     "sources_checked": [
       "gdelt",
       "gdelt_theme",
@@ -59,7 +59,7 @@
   },
   "signals": [
     {
-      "id": "sig-c13cb98de5",
+      "id": "sig-6451512156",
       "detected_at": "2026-05-31T04:11:34.911886+00:00",
       "disease": "COVID-19",
       "country": "But",
@@ -80,7 +80,7 @@
         "https://news.google.com/rss/articles/CBMitgFBVV95cUxNMFVxMVQ2QS0tSHpGMHJjVjhYdkFTeWF1WXljYk1sSm1xQVp5WkNEZHdwZWJDc0ZsRlZlT3QzR0hhRFp0OTZLSFBxMEJ2UHpTZEdRTXVqRVp1NGtpdEVXZTJLU1dyX0NXbFR2T1U2amVhNGJnR2pqaUxKRXlwZnlFR3pjM1NMMjk0dFlSdEhJVkhMajg0Z1dJQkI1bVdCYmxzeHczZkVKMXdxbl9yc2RfdWNtVERpdw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -92,22 +92,22 @@
         "source": "WHO; Lauer 2020; Rai 2022 (serial interval)",
         "literature_backed": true
       },
-      "momentum": 0.71,
-      "momentum_confidence": "low",
+      "momentum": 0.636,
+      "momentum_confidence": "high",
       "trend": "declining",
       "doubling_time_days": null,
-      "threat_index": 44.1,
+      "threat_index": 43.1,
       "threat_tier": "watch",
       "threat_tier_ru": "Внимание",
       "threat_components": {
         "load": 0.456,
         "cfr_term": 0.489,
-        "momentum_term": 0.376,
+        "momentum_term": 0.337,
         "r0_weight": 0.029
       }
     },
     {
-      "id": "sig-522b666d3b",
+      "id": "sig-1922f665bc",
       "detected_at": "2026-05-31T04:11:10.400262+00:00",
       "disease": "COVID-19",
       "country": "Uk",
@@ -116,14 +116,14 @@
       "lng": -3.4,
       "confidence": 0.668,
       "level": "alert",
-      "spike_ratio": 4.66,
+      "spike_ratio": 4.44,
       "source_count": 23,
       "sources": [
         "medrxiv",
         "biorxiv",
-        "google_news",
         "cdc_mmwr",
-        "who_ihr"
+        "who_ihr",
+        "google_news"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Covid inquiry: The UK pandemic in numbers - BBC",
@@ -136,7 +136,7 @@
         "https://tools.cdc.gov/api/embed/downloader/download.asp?m=342778&c=663826"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -148,10 +148,10 @@
         "source": "WHO; Lauer 2020; Rai 2022 (serial interval)",
         "literature_backed": true
       },
-      "momentum": 6.03,
+      "momentum": 6.776,
       "momentum_confidence": "high",
       "trend": "accelerating",
-      "doubling_time_days": 0.8,
+      "doubling_time_days": 0.7,
       "threat_index": 71.3,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
@@ -163,7 +163,7 @@
       }
     },
     {
-      "id": "sig-c31f9a74b0",
+      "id": "sig-c17e421856",
       "detected_at": "2026-05-31T04:11:34.120159+00:00",
       "disease": "COVID-19",
       "country": "Nigeria",
@@ -184,7 +184,7 @@
         "https://tools.cdc.gov/api/embed/downloader/download.asp?m=342778&c=418930"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -196,47 +196,48 @@
         "source": "WHO; Lauer 2020; Rai 2022 (serial interval)",
         "literature_backed": true
       },
-      "momentum": 0.269,
+      "momentum": 0.144,
       "momentum_confidence": "high",
       "trend": "fading",
       "doubling_time_days": null,
-      "threat_index": 33.6,
+      "threat_index": 32.9,
       "threat_tier": "watch",
       "threat_tier_ru": "Внимание",
       "threat_components": {
         "load": 0.395,
         "cfr_term": 0.489,
-        "momentum_term": 0.026,
+        "momentum_term": 0.0,
         "r0_weight": 0.029
       }
     },
     {
-      "id": "sig-f0f2a17a0e",
+      "id": "sig-382ad6f70b",
       "detected_at": "2026-05-31T04:10:15.674505+00:00",
       "disease": "Ebola virus disease",
-      "country": "Dr Congo",
+      "country": "Bunia",
       "iso": "CD",
-      "lat": -4.0,
-      "lng": 21.7,
+      "lat": 1.5594,
+      "lng": 30.2522,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.11,
-      "source_count": 109,
+      "spike_ratio": 1.1,
+      "source_count": 108,
       "sources": [
-        "hk_chp",
-        "cdc_mmwr",
-        "africa_cdc",
-        "rospotrebnadzor",
-        "google_news_ru",
-        "nigeria_ncdc",
         "medrxiv",
-        "reliefweb",
-        "google_news",
         "east_africa",
-        "who_afro",
-        "reddit",
+        "nigeria_ncdc",
+        "google_news_ru",
         "google_news_zh",
-        "who_ihr"
+        "cdc_mmwr",
+        "hk_chp",
+        "rospotrebnadzor",
+        "reddit",
+        "who_ihr",
+        "who_afro",
+        "google_news",
+        "africa_cdc",
+        "reliefweb",
+        "brazil_svs"
       ],
       "hours_ahead_estimate": 48,
       "headline": "Ebola spread in DR Congo 'deeply alarming', MSF warns - BBC",
@@ -249,7 +250,7 @@
         "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1zMHJiYnVRdjcyQndlWWx2RTVrR2JieEJrcnk4TnltWGRtLTRGOGtRdVhaRzJodzNoS3E3Zy1NbFZ6SGc5M1c5M2hpN2FBSnBZd2R2dzF3Yw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.8,
         "cfr": 0.5,
@@ -261,22 +262,22 @@
         "source": "WHO; WHO Ebola Response Team 2014 NEJM",
         "literature_backed": true
       },
-      "momentum": 1.123,
+      "momentum": 1.111,
       "momentum_confidence": "high",
       "trend": "plateau",
-      "doubling_time_days": 12.0,
-      "threat_index": 73.1,
+      "doubling_time_days": 13.2,
+      "threat_index": 73.0,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.542,
+        "momentum_term": 0.538,
         "r0_weight": 0.018
       }
     },
     {
-      "id": "sig-d0b71999cc",
+      "id": "sig-5c1887b13d",
       "detected_at": "2026-05-31T04:10:24.478019+00:00",
       "disease": "Ebola virus disease",
       "country": "XX",
@@ -286,33 +287,33 @@
       "confidence": 0.62,
       "level": "alert",
       "spike_ratio": 1.0,
-      "source_count": 56,
+      "source_count": 60,
       "sources": [
-        "africa_cdc",
-        "ecdc_cdtr",
-        "rospotrebnadzor",
-        "google_news_ru",
         "philippines_doh",
-        "rki",
-        "reliefweb",
-        "google_news",
         "east_africa",
-        "brazil_svs",
+        "google_news_ru",
+        "cdc_mmwr",
+        "rospotrebnadzor",
+        "ecdc_cdtr",
+        "google_news",
+        "rki",
+        "africa_cdc",
+        "reliefweb",
         "middleeast_who",
-        "cdc_mmwr"
+        "brazil_svs"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Ebola response puts Trump on collision course with global health body - Politico",
       "summary": "Ebola response puts Trump on collision course with global health body &nbsp;&nbsp; Politico",
       "links": [
         "https://news.google.com/rss/articles/CBMioAFBVV95cUxOaWpGeHJwVHFpMktESTNtTFE3dHRwck5ielU1d04zbGh1dmcwbi1FVks3ejM4Q01SQUtJRkhQdHhFTVpJWDNtS3cwbkFCQXFvRW9YRGF5LWg4Y20xMnQzeW9LbmhWUG14YzBRTkhFc3RaZktRVkRfa1A3ejFUbzVnekxPWGZUWG13ZWZyemFRRWo5VTVPTzRnSC1JMVBhQXBY?oc=5",
+        "https://news.google.com/rss/articles/CBMilgFBVV95cUxQaHh3TFlDZ05hYUNDR2swZzQxbWtjYnNBQ0tDTEcxT3NpRmtSR19zeTRsVFpuUVBJU2VpTXZFMjRIZlZTMzM5d25EZUFoR21EeVhGUXdYRVhIc3luMHVfd0NBOWJfWUZJbTlTMXZVUHdkTlZtTi1OdlV6Zlhhcy1OUWYyRjllUENBZVdXSEZkT3V1TG1mQ3c?oc=5",
         "https://news.google.com/rss/articles/CBMikAFBVV95cUxPX3dqUWplUFFGU0p6YlFvTlZySENzNHhCRk5EaGt1YTRxUkl2elI4QkN6WTU2Q0JiQmxmRVZvdE1QdngxTEZ2N0JNUzJEWm03OHBMQTlJSEI4WmlQSVV0WTlPYW1rSGFjUTdKMGxVUXhtcDZ5SG1hX2p4MXdaMXpJTUxvUnVVcHlta29MSFV0WFg?oc=5",
-        "https://news.google.com/rss/articles/CBMiigFBVV95cUxNeHJFYk5keEhweGgxcG9FSEE1eDlnZGlkSXRtTjhFak52QnNLOEJRMGhzdkI0bEExdWFaU2VYLW4xTG1SWERVRU5GY2tfeURjY0llc0hSZmhSQXBzQjlJcTdTbVU2Y3MyQ2lJOElwdnVuTW9OcXlCdF91LWh0SUNLcGJQa1BRWXBFcHfSAY8BQVVfeXFMT1JvQ3E5Tnl2TnNPNTY0aVZVNzhOdUtyUVc1TU5tRDh0WkEtNXpRQ25XZ1Y5TXloWWR2MmhYMHBqS2hab3hzczJzXzZrRW1GVjZqMU5PLXlCWjNMZks2S0xmend1RE5vOEtKT0E2VnlSZkR3bmxfeUpnTzkyaUQ1dlFidU1mb0FVOVFPNi1pMGc?oc=5",
         "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5TQmFYeF92NFNJOUNhT1dWZExpQUl1OUFEVHNTOHc5MWtrRTNPYmloTXJaZlBXNlAwY2VLbEs0QWt0Q3BkekppanNRc0hXRy1qa3BVRUtVZw?oc=5",
-        "https://news.google.com/rss/articles/CBMihwFBVV95cUxQRzgwS0N6LVN5VlhVb1hManFjZFdaU1dianMxY05nR0tjNTZBeUZad0J0N2o1cVN0T0hvdVhXREp6OHFOMnBiVG1FUktYODFEZVFubV9lWVZBUGRlaVdqeEtnZWRUZzBSeUJQQnZrSlVROC1LVm1OQllvLWdMd0VkUEVyMDliNlk?oc=5"
+        "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOMWlnRHhIR3Q3S0NOME5ad2M5Q1FLSjFPZTNHcnFNU0FyTVBub0ZEa3FoUmVKX1g1VUN1LWFydE5DMDd3XzRMaUZxYXl3UFBNSmYydnJmWFhhWWtBQ2tNSjhLMEhqUXZTOUJxUVV3enFEV2dDV002SVNvcHU5YUtwcG5zMFliTzd5OEE0NWRjd0twWC1vZjFIWW1mLTdtajhuSlk4ZmpFX2lZbkh3MTVQcnl0WGZLS2g3OHdfS1NoTDRIQQ?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.8,
         "cfr": 0.5,
@@ -324,22 +325,22 @@
         "source": "WHO; WHO Ebola Response Team 2014 NEJM",
         "literature_backed": true
       },
-      "momentum": 0.649,
+      "momentum": 0.608,
       "momentum_confidence": "high",
       "trend": "declining",
       "doubling_time_days": null,
-      "threat_index": 68.4,
+      "threat_index": 67.8,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.344,
+        "momentum_term": 0.321,
         "r0_weight": 0.018
       }
     },
     {
-      "id": "sig-e8b192fdb2",
+      "id": "sig-96c2cf3de2",
       "detected_at": "2026-05-31T04:10:24.494428+00:00",
       "disease": "Ebola virus disease",
       "country": "Bundibugyo",
@@ -348,18 +349,18 @@
       "lng": 30.0647,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.37,
+      "spike_ratio": 1.36,
       "source_count": 32,
       "sources": [
-        "who_don",
-        "hk_chp",
-        "africa_cdc",
         "philippines_doh",
         "medrxiv",
-        "reliefweb",
-        "google_news",
         "east_africa",
-        "cdc_mmwr"
+        "hk_chp",
+        "cdc_mmwr",
+        "who_don",
+        "google_news",
+        "africa_cdc",
+        "reliefweb"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Bundibugyo virus: Why this Ebola disease outbreak is different - Doctors Without Borders",
@@ -372,7 +373,7 @@
         "https://news.google.com/rss/articles/CBMixgFBVV95cUxOY2pkaVBnQ0pScEpsR0E2Z0p3bmVkdjR2eFdLbG1qUm5CM3l3SEQ4NjNnWUE2U3FHS0puSnV0eWFNVDQ5TVE4QjVWLVhxOWlmcDRLTEZ5LU0xUUdyYXNoR1RXSGZkOEdNVnduaXlrQWdqbS1rQjhCbjBpZHNib0tlQ2hSNlRfekVFdlY4UjNhZGxoNkdUaUlaR3ZyaFNGcVl2Tk1NLTJHVEtvRVgtNFltZVZvX0FkRVB2RktBZ2hCZjgzZEVVRHc?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.8,
         "cfr": 0.5,
@@ -384,7 +385,7 @@
         "source": "WHO; WHO Ebola Response Team 2014 NEJM",
         "literature_backed": true
       },
-      "momentum": 1.0,
+      "momentum": 0.995,
       "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
@@ -394,12 +395,12 @@
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.5,
+        "momentum_term": 0.498,
         "r0_weight": 0.018
       }
     },
     {
-      "id": "sig-ebf7d09de5",
+      "id": "sig-203062f2c5",
       "detected_at": "2026-05-31T04:10:31.713709+00:00",
       "disease": "Ebola virus disease",
       "country": "Africa",
@@ -408,27 +409,27 @@
       "lng": 11.0622,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.17,
-      "source_count": 19,
+      "spike_ratio": 1.23,
+      "source_count": 20,
       "sources": [
-        "africa_cdc",
-        "reliefweb",
-        "google_news",
         "east_africa",
-        "who_ihr"
+        "who_ihr",
+        "google_news",
+        "africa_cdc",
+        "reliefweb"
       ],
       "hours_ahead_estimate": 24,
-      "headline": "WHO Chief Visits Bunia—Epicenter Of Africa’s Ebola Outbreak (Live Updates) - Forbes",
-      "summary": "WHO Chief Visits Bunia—Epicenter Of Africa’s Ebola Outbreak (Live Updates) &nbsp;&nbsp; Forbes",
+      "headline": "Africa Centres for Disease Control and Prevention Holds Briefing on Ebola Outbreak - C-SPAN",
+      "summary": "Africa Centres for Disease Control and Prevention Holds Briefing on Ebola Outbreak &nbsp;&nbsp; C-SPAN",
       "links": [
-        "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOV2J6TDJmRE45LW11V3d5WDBVZHRES3NTOFR0WnN6YkMwUll3VXdqVVlxVkJNQTdVbXQ3dzh6czZ2Mmo2cWdBZUdUOEJUUGZ5RnloMjlUS004cnk4RzQ4UkRkdXd0TlhJREd3LWVGQno0d180bU5mQjB1NER6SFlvQlhudjJyVS1uRS1xN2czT18wYzhUbTFHR0V5c3dhZGREMkxIcEtBa3BSSm5HcEtaaS1fN1UxekNoNUZoWTdoMGwyYTQ?oc=5",
         "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOZ2VMbXU3Mm9jZXpDN1JQcUJNWDlzNkl5dkFETTRkNEttY2FBOUtrWWl0Q1hKUkhEMDk0MnlZbHk1S0c3SnVaamFRUWhNMmFEa1h1aHA0VGJHRDRPdjk2Y1pmUjNWREFoM090YXJ5TkRQNWRJNUY3LXg2cTk1czdrNldzQ3lTV08tWHlSLUlZbUxkZmV3Nm9WR2RNNXFuZXFLU3VwT2FvMTlXYUtoZTZGdUVsc3JIV19pT2wwMVBkOEhpU0N6OE9BQ0EyRDZ3TTlieFJ2RV9GRThsUQ?oc=5",
         "https://news.google.com/rss/articles/CBMiekFVX3lxTE81eFIxVFlfNlk5SFdGZDRyN0JjQ2RWVlB0Y2Q0VkJIaTUyWjV5TXVNbmUxRnJycVFSZ1VwMGl4SkhkS0FXT0ZWbkNSeTQxLVlSYTZvT29FWmFyeGhuRzd6WWhMbmJTMEJZZHE3elgwUkdFb0hGdEppdlFn?oc=5",
-        "https://news.google.com/rss/articles/CBMirgFBVV95cUxNakw5b0w2LTZkRHY0YVFTaE5XMGg4U3FfSEM0NllOSWhxQ2lleDJMSDVTV2FfTEFtdWlNS2p4Si14U2Vhenk2Y2dLVlZiOHNXNHBudzBjOUZPbk8ybDRTbTIyTlZmcUFHVGZyMWxkd2JlcmR6UFJEcTJQOWdlcjdNRm9tdUxyMjZHZTVhQnFUZkxrWnRyaTZVd3dmaGV1aWFNOWNURmt3dXdRMXNLWWc?oc=5",
-        "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQMUNENnhwSUZhWXc5YjlLWDBINUpIM3ZETjdDOE13YXdRN3JPZXB3UFNrTzNYdUhmbnBNZmV0SWxIbnQ2TVgtYV9iWGhoRFc5Y1dxbmdNWHdsM0JXb3ZTR3VGQmVIOTIybF9OTVJVOTE1NDhNbnl5emxzV2ZmaVI4LVRDRkVmQ1BaMGs0TUtiTDNzOTAwMmtvTUotMGU0Rmc3ZE1lSXVKYUJ6RlU?oc=5"
+        "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQMUNENnhwSUZhWXc5YjlLWDBINUpIM3ZETjdDOE13YXdRN3JPZXB3UFNrTzNYdUhmbnBNZmV0SWxIbnQ2TVgtYV9iWGhoRFc5Y1dxbmdNWHdsM0JXb3ZTR3VGQmVIOTIybF9OTVJVOTE1NDhNbnl5emxzV2ZmaVI4LVRDRkVmQ1BaMGs0TUtiTDNzOTAwMmtvTUotMGU0Rmc3ZE1lSXVKYUJ6RlU?oc=5",
+        "https://news.google.com/rss/articles/CBMivwFBVV95cUxNdmFEUTdqRnRTSGtzVzh1TDNGVVItdFUxdmVRYzItb0syVFhNbDNsY0VfNW5yaGUzaEJSWU1PVU5sSUE5OGFQc3VrZEtiRDhVQ0lRMk56Yk1iUGh6TVpDQXBHdjhyVkI4cFpocDlRZDQ2aGRBSmQ5eF9ldzJJczUzTE5sWUtZY1V1NlFPUHY5VExVMklYR1hzTXNtYXFFLTV6ZmdWOHhqNlR6MXk0dHg4dFpZNXhPWDIzd2UwdDFGTQ?oc=5",
+        "https://news.google.com/rss/articles/CBMitwFBVV95cUxPM0lTNEJ3QlplSXdrNkY1RGNXb0MwTXpaTGtOdDNNaFlRcGQ2VXhDeGY4WFMtWU40RF9WcEpDT0lDYWlSVWE0LWtZNGRmeGFoT1FEbkx6UEpJSkZ5SFloaTVTdXJMeGtTRzZDUTlHZHhsVG5pQ2xEUDhza1dwMGIydWNtY0tkQzV2dDJFWUo3QVplTTcwTFRPQkVDZ1N3UVNrSjNPdGNVRFlZcEgwUEZyQkFYb1ZVTUk?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.8,
         "cfr": 0.5,
@@ -440,23 +441,23 @@
         "source": "WHO; WHO Ebola Response Team 2014 NEJM",
         "literature_backed": true
       },
-      "momentum": 1.0,
-      "momentum_confidence": "low",
+      "momentum": 1.036,
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 72.1,
+      "threat_index": 72.4,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.5,
+        "momentum_term": 0.513,
         "r0_weight": 0.018
       }
     },
     {
-      "id": "sig-fb4aac1565",
-      "detected_at": "2026-05-30T22:11:29.957733+00:00",
+      "id": "sig-86b2991540",
+      "detected_at": "2026-05-31T08:56:31.957072+00:00",
       "disease": "Marburg virus disease",
       "country": "Ethiopia",
       "iso": "ET",
@@ -464,13 +465,13 @@
       "lng": 40.5,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.0,
-      "source_count": 24,
+      "spike_ratio": 1.08,
+      "source_count": 27,
       "sources": [
-        "reliefweb",
         "google_news",
-        "east_africa",
-        "africa_cdc"
+        "africa_cdc",
+        "reliefweb",
+        "east_africa"
       ],
       "hours_ahead_estimate": 24,
       "headline": "First Reported Outbreak Caused by Marburg Virus in Ethiopia | HAN - Centers for Disease Control and Prevention | CDC (.gov)",
@@ -480,10 +481,10 @@
         "https://news.google.com/rss/articles/CBMiogFBVV95cUxQQ3p0ckUxMUlsN3E1cmxQT3VJSzdiNnRGQkI5UDlNUUVfSzMyWFc5b2VlQlpidFUtbUJNaVpEX3BzanI0QmMwUnNDYmU2cEJYa3RFZ1JNazJUeDBZQTNpalJXSDFrU203dDNHcHBrUFdLS0NZOTJINWZwa2xjWGRxUVd3VUg4SlpnWmJVWmt6X0dUSkhjMk10elVnanJ6aGd6Mnc?oc=5",
         "https://news.google.com/rss/articles/CBMihgFBVV95cUxQaDJiZ3hMcGVidkNHRzhGckNVNXVualFSUHdUbm9uQVpVVWFzeldiQmJvRGJUM3hkZEEyR2dLdUstbUpiTFk2QmxpMGptZW9kV0pJXzE4UjB6NnJfMU1vRWZ3ektHbXhqdTBYUG9NWTVBUFlSNndHMnlGZjFlSUM1T2Nna3M1dw?oc=5",
         "https://news.google.com/rss/articles/CBMilgFBVV95cUxOTU96Yk5nRHgwU0VmdlowU0d1ekdjV0lQdUdpc1phQ0tJaTdrelVXckRlR0NlRGNKd0tLR3VsLU9nbkJMYmtZVGlyOGxSZGctQ1k0VDNYUzZqYkx6NFZxcTFyeFV6dDZ4TlRzRTBBQVdZVnNMRmdnMlBfRk9aZ2ZpSXhxajZTcFdWcWJRb2tEcm05OWFDdGfSAZsBQVVfeXFMUFV2eXBTcW5ZYkdFcnE3cUxmRTdSZjhRX3dGVENJMjhmZUNiR3EzYXMzOGowMDZjTzVnWkdCRDVMQ1BLYUg0Skc2aUt6dGJDV01DRVhPWmlud1lWVzUxVHJMdUtURkh1cHpPNTZ1S1ZfVnpsVWQtNUd3WlpPMHhtYXNkV2NLUG5jdGF4Tld1d2VuYmt5bG8zblNBVTQ?oc=5",
-        "https://news.google.com/rss/articles/CBMinAFBVV95cUxQS2lrZTV2TVpMb3pLT0gtX2tPLW1INVFXRWVYd1QzMTJlZ0RWaDRON2FOeFh3a1dRbGZBVkdBQnltcnIyck9MMk40bmZDNEhvc0ZaTzJpSlREdWtHTDhtUjN4VFp0VXE0UlBvaGY4SjcyU0NuVEFyS2Mza0tScHFzTG9oUmV5VDdWejhSYkVyVy16U3VVSzVZbzlWSWg?oc=5"
+        "https://news.google.com/rss/articles/CBMitAFBVV95cUxPM0tORlYxa1FpcjNiRXRUQlZiNUpvTVFBMURWb2Z5dWtfYXV1bFZHSnB3V053a0pXRjVhYUk2TGUtOHdhTXZrUVlRYmdkRWpGRzRFcmM3QkNxT1VWdzdIRlZ0UEMxWlZTRktjSHFKT3RYV2MwQ2hTY1pVZWtpTWFqNW9YTXRoWDdreE5CcGwteDFKT1dCMHViLTlZVEdlSGRTZlBacmJJOEFGdzZoTkJRV0lKQkHSAboBQVVfeXFMUG91X0FhQ0JIeHNSOTNOaHUzOTJzR0xSZG5nN3dxMnFic0pENmVQLTJXOXQ1SzRjUmRyVFU2VDhxVGdPbWlXbFNHRzhLWGpKbDVRMnNtSnkxbzdwcjl0Q2ZKUXJoak9lSVg4cDJYdmF2dXdFdE5WV1FWN0xfZkcwckdJNUZpWHJuSWw1ZWZhTnROQUF6dmZSdjBSQ2d1UFl4YzNDMGVPZWlKNHZnWnhRM3NRYnpMNWtYM0N3?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 1.4,
         "cfr": 0.5,
@@ -495,23 +496,23 @@
         "source": "WHO Marburg fact sheet",
         "literature_backed": true
       },
-      "momentum": 0.962,
+      "momentum": 0.97,
       "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 71.4,
+      "threat_index": 71.5,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.486,
+        "momentum_term": 0.489,
         "r0_weight": 0.014
       }
     },
     {
-      "id": "sig-bab4e1903d",
-      "detected_at": "2026-05-30T22:11:06.908507+00:00",
+      "id": "sig-1e25ba6605",
+      "detected_at": "2026-05-31T08:56:37.883955+00:00",
       "disease": "Avian influenza",
       "country": "XX",
       "iso": "XX",
@@ -522,12 +523,12 @@
       "spike_ratio": 1.0,
       "source_count": 47,
       "sources": [
+        "flunet",
         "paho",
         "fao_empres",
-        "flunet",
-        "google_news",
         "cidrap",
-        "who_wpro"
+        "who_wpro",
+        "google_news"
       ],
       "hours_ahead_estimate": 24,
       "headline": "A(H5) Bird Flu: Current Situation - Centers for Disease Control and Prevention | CDC (.gov)",
@@ -540,7 +541,7 @@
         "https://news.google.com/rss/articles/CBMivAFBVV95cUxQSC1taWtsajhJd1ZfbFBnMy1uQ0NGeDhvVk45cV84OUxMejJWT182QVNCcngwOXlpcUh4cEk2UmFaUjZIZUxvU09ZdXc2MFBPX05BamVVX0RjRUdWLVZLNEdoWDlSMVpITnJtODZEdTBRODh5MHlLVEJnZzBhdWh3Wm1IbmlpTVl2cjNGbkQ0cW94dk83YlY0QXNfSkdWVVc4aURCMVJpX3p4Y2VEeUd5QUI1UWxoZ285TkVVRQ?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 0.4,
         "cfr": 0.5,
@@ -552,22 +553,22 @@
         "source": "WHO H5N1 cumulative case data",
         "literature_backed": true
       },
-      "momentum": 0.553,
+      "momentum": 0.532,
       "momentum_confidence": "high",
       "trend": "declining",
       "doubling_time_days": null,
-      "threat_index": 65.6,
+      "threat_index": 65.3,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.286,
+        "momentum_term": 0.272,
         "r0_weight": 0.004
       }
     },
     {
-      "id": "sig-e6a719cb22",
+      "id": "sig-48991a455e",
       "detected_at": "2026-05-31T04:11:10.835414+00:00",
       "disease": "Nipah virus",
       "country": "Ireland",
@@ -576,12 +577,12 @@
       "lng": -72.6204,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 3.14,
+      "spike_ratio": 3.04,
       "source_count": 25,
       "sources": [
-        "flunet",
+        "cdc_mmwr",
         "google_news",
-        "cdc_mmwr"
+        "flunet"
       ],
       "hours_ahead_estimate": 24,
       "headline": "How Ireland dealt with 1951's deadly flu epidemic - Maynooth University",
@@ -594,7 +595,7 @@
         "https://news.google.com/rss/articles/CBMijwFBVV95cUxQZUFXSGd2LXpjSjJmUklPczRsRnl4YjBPdGVGOGM5dGZUbldMbmtVSmJuWkdtYTh2TWI3OU45dFI3RDcxdV83bXlLWXE4Y1lUdHNjRE1NeVltM3JRY1dqcmZmVFNsYnZhUWVBdnpGbGhRT3RwNkhsajkyWG54X3g5MHNKYWVLRTg5ZnQ2VGkyYw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 0.48,
         "cfr": 0.59,
@@ -606,23 +607,23 @@
         "source": "WHO; Nikolay et al. 2019",
         "literature_backed": true
       },
-      "momentum": 2.205,
+      "momentum": 2.071,
       "momentum_confidence": "high",
       "trend": "rising",
-      "doubling_time_days": 1.8,
-      "threat_index": 78.3,
+      "doubling_time_days": 1.9,
+      "threat_index": 77.7,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.943,
-        "momentum_term": 0.785,
+        "momentum_term": 0.763,
         "r0_weight": 0.005
       }
     },
     {
-      "id": "sig-795934d7ad",
-      "detected_at": "2026-05-30T22:11:29.964373+00:00",
+      "id": "sig-cf056735f7",
+      "detected_at": "2026-05-31T08:57:03.745133+00:00",
       "disease": "Nipah virus",
       "country": "West Bengal",
       "iso": "IN",
@@ -630,15 +631,15 @@
       "lng": 87.86,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.15,
-      "source_count": 22,
+      "spike_ratio": 1.0,
+      "source_count": 19,
       "sources": [
         "hk_chp",
-        "singapore_moh",
-        "google_news",
-        "india_idsp",
         "google_news_zh",
-        "who_ihr"
+        "who_ihr",
+        "india_idsp",
+        "google_news",
+        "singapore_moh"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Nipah virus in India: Five cases in West Bengal - Outbreak News Today",
@@ -651,7 +652,7 @@
         "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQWmlJb1p3a0pRSzRGNlh1V0V2UTVNSWdJYjJodFVZaUVQSHI0Tk1VR196M1RoVUlCYWU2ai1FbTNGR1c5cmF6VmxuRkJseWF5eXdWOVFzOFp0b3JNZ0Y5N1h4WXpRM0UxS3ZYM2JlanJoSURhZVBYNVRKOWJteXFYNG1fNVpvbDRya1RVUlplUzdZQloxMHZGcGNIVFlxSFNjdzJfdlFNMlFUUdIBrwFBVV95cUxNOWo4UWJkWHZ0ODFiWlFIM1hFRE4tVkdHb0o1TnZoV1poZlRmblF5T2ZBaDZUd3FrcVJNRmJvc2swVm9WNGQxbElDZWgyeTBYRGhDTzJ5X1VBUnp6WlhfVVhXMXlpRnlwZ0l3Rm9Hcm5LUUR5MWpsbVhZR3pZVU5zSGtiQW9hQS1NOEZyZFhETUJNVHpBTVpUNlE0QWFNODBlTnpEVndmUWo4d0J1ZFEw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 0.48,
         "cfr": 0.59,
@@ -663,22 +664,22 @@
         "source": "WHO; Nikolay et al. 2019",
         "literature_backed": true
       },
-      "momentum": 1.116,
+      "momentum": 1.102,
       "momentum_confidence": "high",
       "trend": "plateau",
-      "doubling_time_days": 12.6,
-      "threat_index": 72.4,
+      "doubling_time_days": 14.3,
+      "threat_index": 72.3,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.943,
-        "momentum_term": 0.54,
+        "momentum_term": 0.535,
         "r0_weight": 0.005
       }
     },
     {
-      "id": "sig-e2c5b1b4aa",
+      "id": "sig-80e9e5d5aa",
       "detected_at": "2026-05-31T04:11:10.842011+00:00",
       "disease": "Avian influenza",
       "country": "Colorado",
@@ -687,26 +688,26 @@
       "lng": -105.78,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 3.85,
-      "source_count": 43,
+      "spike_ratio": 3.78,
+      "source_count": 44,
       "sources": [
-        "flunet",
-        "outbreak_news_today",
+        "cdc_mmwr",
         "google_news",
-        "cdc_mmwr"
+        "flunet",
+        "outbreak_news_today"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Bird flu outbreak confirmed at Northern Colorado egg-laying facility - CBS News",
       "summary": "Bird flu outbreak confirmed at Northern Colorado egg-laying facility &nbsp;&nbsp; CBS News",
       "links": [
         "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQOXhHTHhmQWlrYmhYS2dXZlJQRkxYcUU2d25raFNyYmdvUXVNTVpaRXpZM0tjaW9JbnA4cXotZlAzdnN2RU9uTG9PaVd2ME5CTlZad1d4UWRjQVllaEVmWUVpZTVPVE54cURUalV5c2tJemV5cmJLZXpTNFdfU01ha1A1aUdZQU5XMFpvdGZVbFVuUHMwc2t2Q1dfYmFLR2VPd01BdFRmMmg3QQ?oc=5",
+        "https://news.google.com/rss/articles/CBMikwFBVV95cUxNa09sUWRURXZWTVBkYWNWb1Nab05lVmhrSkFPZU1HQjhEQXAtdGR0NG1JeWxRTGZheTM4dHRqeGc0TlAyNnNXclVYaWJfWVpsTWNfdlhtZEJXR0piU1V3ZU1GV3hYWWZCMnlnYnZHX3pnekl3VS02aU5OSmZCd2dNYmxzZTVvVDZTazlxQWJLMnluRFXSAZgBQVVfeXFMTjBXYzhTaHZ2Wl9yaER5ZnhieEJqV1lrQkU0b29vbWg3bVpJMW8teEFRbUpMOUppS2h5Z3dfbnZWb21aNC1udlVfbFZhNkRvUHVtMU9UOFZQc1FTdEJUamRiODNoMElnVHhJNkUzemQ4U2lxblhvUzljOE9aVVRoMVZIUlItZUJFYlh4V3hrdERsbDhlLVdfQmI?oc=5",
         "https://news.google.com/rss/articles/CBMickFVX3lxTE5iNmtkcm5YNXN1dWh3dkFWbUkwdW1BN00wYnhQWjZxaXVJbmlPcDNWYnVSTXBqcC1FVGtDQ2NwNkprQWRqRzROWnVfc1dzd3V5SER1UkZyNkt4cWJVLUpmckcxdi02X1pQZVdCYUMybWdLUQ?oc=5",
         "https://news.google.com/rss/articles/CBMihwFBVV95cUxQNjctZTBwU2dQcGFzMEpLMFJWekJBQW5iS0szNmxfdUk0VjNxd25pak1jMEVLakZVM2hsVUZNcG5Mb3lUU1RIVXBwR3FSa2loNnl4Vm8yMjhFR3NmN3BZWGVqRzdzdHBPazJ2Z3YzT0RZd2h6WUs4LUVyTC1ZM2w3ZnZUaVYxMms?oc=5",
-        "https://news.google.com/rss/articles/CBMisAFBVV95cUxNVnNBS19pYkZiWk1BRVRHUXRHdmtydFNpZlVfYW1QX2RXV1NHa3ZaaE5MWFBHS3hFWkF2dHFuRGZUNjh2VV93VUhOeHFUTnd2WjZSWGFITkZnNmVjcmJ3TExDZzhhaHJQWXlFRDNqVEJKUDdJTWljZ0JjdXRUMTVVcDZraWVVSnU2ODUxRDZpRnZxWWQzdE9EVDRZaHhIV0FQbVo2RWg5dTFueVZETmYtZ9IBtgFBVV95cUxON2ZUNmtVcml3ajRKZm5BWDBHRVkxWG5ob0dPcnVqMV91eDJ3U3hRSmVlNEJlckJua2FiRUhRbUZLSDhmZnJIam5Nb2o4NkpjbUx5MDNsUUU5dXVYY1oyVjc1Q3NCZXBCSTRZMURHekpLbWZEY0N2RG9XNlJMQ1gtS0RUSGdJVjJ0WWVCbjdGRTRpaDVCSTM3dGNrMWFMdWl0NjVWX0FiM1JudE15STRaRXRGb0xDdw?oc=5",
-        "https://news.google.com/rss/articles/CBMipgFBVV95cUxPSFhTSFhvdWprNXpWc2Zod2tsb1R0UHNkU29admJDSE03MTVuX3FTenRyUDdGRUFycVdwWkl2Z3RXbUtMdnRvbjRBdWFtRk9wSl8xVG92TWtNaFZIX0hQdnl4QXB3RW1pSHhZOFczY2k5a0JQaXlMcW9IYW1JNlFCb3h4X1VWNmh2OFc1bnhjSGdwTkptNkNVc0luZzcwV3FRM3FuV0VB?oc=5"
+        "https://news.google.com/rss/articles/CBMisAFBVV95cUxNVnNBS19pYkZiWk1BRVRHUXRHdmtydFNpZlVfYW1QX2RXV1NHa3ZaaE5MWFBHS3hFWkF2dHFuRGZUNjh2VV93VUhOeHFUTnd2WjZSWGFITkZnNmVjcmJ3TExDZzhhaHJQWXlFRDNqVEJKUDdJTWljZ0JjdXRUMTVVcDZraWVVSnU2ODUxRDZpRnZxWWQzdE9EVDRZaHhIV0FQbVo2RWg5dTFueVZETmYtZ9IBtgFBVV95cUxON2ZUNmtVcml3ajRKZm5BWDBHRVkxWG5ob0dPcnVqMV91eDJ3U3hRSmVlNEJlckJua2FiRUhRbUZLSDhmZnJIam5Nb2o4NkpjbUx5MDNsUUU5dXVYY1oyVjc1Q3NCZXBCSTRZMURHekpLbWZEY0N2RG9XNlJMQ1gtS0RUSGdJVjJ0WWVCbjdGRTRpaDVCSTM3dGNrMWFMdWl0NjVWX0FiM1JudE15STRaRXRGb0xDdw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 0.4,
         "cfr": 0.5,
@@ -718,22 +719,22 @@
         "source": "WHO H5N1 cumulative case data",
         "literature_backed": true
       },
-      "momentum": 2.531,
+      "momentum": 2.368,
       "momentum_confidence": "high",
-      "trend": "accelerating",
-      "doubling_time_days": 1.5,
-      "threat_index": 78.8,
+      "trend": "rising",
+      "doubling_time_days": 1.6,
+      "threat_index": 78.2,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.835,
+        "momentum_term": 0.811,
         "r0_weight": 0.004
       }
     },
     {
-      "id": "sig-64629b22e6",
+      "id": "sig-7812974329",
       "detected_at": "2026-05-31T04:11:13.642667+00:00",
       "disease": "Marburg virus disease",
       "country": "Marburg",
@@ -746,17 +747,19 @@
       "source_count": 3,
       "sources": [
         "google_news",
-        "east_africa"
+        "east_africa",
+        "nigeria_ncdc"
       ],
       "hours_ahead_estimate": 24,
-      "headline": "History of Marburg Outbreaks - Centers for Disease Control and Prevention | CDC (.gov)",
-      "summary": "History of Marburg Outbreaks &nbsp;&nbsp; Centers for Disease Control and Prevention | CDC (.gov)",
+      "headline": "Africa faces rising outbreaks of cholera, mpox, Marburg – CDC warns - Vanguard News",
+      "summary": "Africa faces rising outbreaks of cholera, mpox, Marburg – CDC warns &nbsp;&nbsp; Vanguard News",
       "links": [
-        "https://news.google.com/rss/articles/CBMiXEFVX3lxTE45Yjdib2xySTRLek5aY0lpcExsYzVKS0lPWUxPcWF6XzVpTy1zTTFxTzVuQXFOZVdXVHFQeFJ3Y2NhN2lmeHJkdHlKMUE3YV9ndnpGZmN4cE5kS0Fm?oc=5",
-        "https://news.google.com/rss/articles/CBMiogFBVV95cUxNOUU3VmZSVjRMbjVwZGUzNGhONTBGZ3ZNR1lndnhJN1pXOFB0ME5tbnRkS1BINkVkS185VkJidl9IVUR0VWQwMnAwSHozLUlJNUhaNzMyazZTYXBHSVd2c1B0Rnh6QloyME9ScmsxSWpYY3NrNmpCTk9DUzNmeE8yTGhXZTBiakpzcjIxajV1SERGQVhYdVR2REs2cG1pOEFOT2fSAacBQVVfeXFMTXpSd0F5M3h4ZWFaOU9QM054NU9KeXI0eVlDN1Y4NmpZUFdlWWRGbXZ1V2tyUzdxRUgzWlNVTTF4czAzZWdOWXVJbHFYZ0ktTk5ZalFtTXdGWVo1RkUwTjlBcmN6NUxwbFMxVjRJYml5My0yV1NFS2FDV2s5VjZWWjB4WGgzeGV4R2t6ekR4ZWpUMWI0azI1aVg3UEx6Y0ZRYzZwanQ4WTA?oc=5"
+        "https://news.google.com/rss/articles/CBMiogFBVV95cUxNOUU3VmZSVjRMbjVwZGUzNGhONTBGZ3ZNR1lndnhJN1pXOFB0ME5tbnRkS1BINkVkS185VkJidl9IVUR0VWQwMnAwSHozLUlJNUhaNzMyazZTYXBHSVd2c1B0Rnh6QloyME9ScmsxSWpYY3NrNmpCTk9DUzNmeE8yTGhXZTBiakpzcjIxajV1SERGQVhYdVR2REs2cG1pOEFOT2fSAacBQVVfeXFMTXpSd0F5M3h4ZWFaOU9QM054NU9KeXI0eVlDN1Y4NmpZUFdlWWRGbXZ1V2tyUzdxRUgzWlNVTTF4czAzZWdOWXVJbHFYZ0ktTk5ZalFtTXdGWVo1RkUwTjlBcmN6NUxwbFMxVjRJYml5My0yV1NFS2FDV2s5VjZWWjB4WGgzeGV4R2t6ekR4ZWpUMWI0azI1aVg3UEx6Y0ZRYzZwanQ4WTA?oc=5",
+        "https://news.google.com/rss/articles/CBMihAFBVV95cUxOWEJKZUZHNzZQRFdpVDdfNE92UmNhbjhQWHJ4TFE0M29CeE1CMWFCY1RzWlY2Y0wyRmpac0RhdTFMLXZFeElpeEthLXlxVHJQVTNPbzdTR2ZGaXh5dUQ1S21jYjVuSm9HSllNRDBuUVZ2ajVkSExKWmtjN3VSTW0xOU5IMG7SAYoBQVVfeXFMTkNDeVk1VW1OaWtkNUlqemk3SHljVmt6WDh2aGVPMWluVnA0ck5waW5kWlA4YWIyNThWYmhxYno2Y2hxX3VpU3VGemRDMnA1V3JkMW9Qb3diTFpJUjE5MllESTlsd2RzMlRiaXh2ZlNWVlRaTTRuLWNodHVDeU50U1p0WHRTeTM4ZWpB?oc=5",
+        "https://news.google.com/rss/articles/CBMiXEFVX3lxTE45Yjdib2xySTRLek5aY0lpcExsYzVKS0lPWUxPcWF6XzVpTy1zTTFxTzVuQXFOZVdXVHFQeFJ3Y2NhN2lmeHJkdHlKMUE3YV9ndnpGZmN4cE5kS0Fm?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.4,
         "cfr": 0.5,
@@ -768,23 +771,23 @@
         "source": "WHO Marburg fact sheet",
         "literature_backed": true
       },
-      "momentum": 0.867,
-      "momentum_confidence": "low",
+      "momentum": 0.857,
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 59.0,
+      "threat_index": 58.9,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.454,
         "cfr_term": 0.925,
-        "momentum_term": 0.449,
+        "momentum_term": 0.444,
         "r0_weight": 0.014
       }
     },
     {
-      "id": "sig-32f9d327a7",
-      "detected_at": "2026-05-30T22:11:32.348045+00:00",
+      "id": "sig-72980b3b29",
+      "detected_at": "2026-05-31T08:57:05.751803+00:00",
       "disease": "Nipah virus",
       "country": "XX",
       "iso": "XX",
@@ -795,10 +798,11 @@
       "spike_ratio": 1.0,
       "source_count": 14,
       "sources": [
-        "brazil_svs",
+        "philippines_doh",
+        "google_news_ru",
         "who_ihr",
         "rospotrebnadzor",
-        "google_news_ru"
+        "brazil_svs"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Вспышка смертельного вируса Нипах заставила страны Азии проверять прибывающих из Индии пассажиров - BBC",
@@ -808,10 +812,10 @@
         "https://news.google.com/rss/articles/CBMickFVX3lxTE5CeUNOMjF6RkdXQklLbjBoWDZDY0JNVjZxR0JtdGxSMmFETDFBUGRGbDEzRXdyc2c0Z2lnWURIbzBWNlllNnB0Vk51YllXaGN3ZEYtWFhnMExvTE9TQlRwYkNSa2RJTWxwYWRQU212WVQ1Zw?oc=5",
         "https://news.google.com/rss/articles/CBMiSkFVX3lxTE5vOS1QYTRaSVY5QTRfN0xlZEtwbWszMTZxb1A5ZEdraUZ6TXlRUmdSUzFmbnVpZ0o0S3FIQWFFV1NuY3V0QmpjOXNn?oc=5",
         "https://news.google.com/rss/articles/CBMiT0FVX3lxTE9IZWltMWdJQWN3dGJld2J5QVZ6Tk9QYzhRLWRSaU1NaTRYN0pnWXRyMjVhTUNpc25YUHhnVExmWFBfZGZGWFpiU2ZTTkxfSGPSAUtBVV95cUxOc0gtVzRzUWlyWnI2OHowcjlmRFFaOFZHZzdPR3h5bmItTHJvMlR5V3ZBbFdJd3dOcEpXQXNhakpLbGVNMFFLZGhYQTQ?oc=5",
-        "https://news.google.com/rss/articles/CBMiR0FVX3lxTE9RTEFXN056cEVwTl9XTEczZHpQRlpwMS1vLUZFc3ZvR1JpalpwVmMyS0dzdHNIT3VEMHlkMERFaGkwYnNLLVBZ?oc=5"
+        "https://news.google.com/rss/articles/CBMipwFBVV95cUxPS3lvVGNiMlI3NkMwUW51U2hPVXpEY1NJeUJqMmVEdXhzZ3dEazVnTnZSa2Ewb214eDYxelRVS1dEcU53RWhoM2pTb3ZwTUN4a0wzTDkwelkwbHAtNXZEZ2U2SklLTVcwMi11RmFaTFJDUXRXM25KLU92SzZsZGpWMlpXUXNmS2p3amowc2pHZ3BhelFTOVAxRGc2b0xCSVFLWFh1WHh6VQ?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 0.48,
         "cfr": 0.59,
@@ -823,23 +827,23 @@
         "source": "WHO; Nikolay et al. 2019",
         "literature_backed": true
       },
-      "momentum": 0.393,
+      "momentum": 0.395,
       "momentum_confidence": "high",
       "trend": "fading",
       "doubling_time_days": null,
-      "threat_index": 63.3,
+      "threat_index": 63.4,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.943,
-        "momentum_term": 0.163,
+        "momentum_term": 0.165,
         "r0_weight": 0.005
       }
     },
     {
-      "id": "sig-86b3f0c22d",
-      "detected_at": "2026-05-30T22:11:39.041905+00:00",
+      "id": "sig-8247909164",
+      "detected_at": "2026-05-31T08:57:13.266783+00:00",
       "disease": "Plague",
       "country": "XX",
       "iso": "XX",
@@ -848,7 +852,7 @@
       "confidence": 0.62,
       "level": "alert",
       "spike_ratio": 1.0,
-      "source_count": 9,
+      "source_count": 10,
       "sources": [
         "google_news_zh",
         "cdc_mmwr",
@@ -860,12 +864,12 @@
       "links": [
         "https://news.google.com/rss/articles/CBMiTEFVX3lxTE9RbzJadXdwTkdHUU81M0ZKOXhCYS1rREpVa0ExbFFxaTZSQURuUTZ3bjRuQUYyT2JrSXU0dDE5R1RTYW00WTRTZUZTcGM?oc=5",
         "https://news.google.com/rss/articles/CBMijgFBVV95cUxNc28zaV95cjBzNThEUnNFOGZ5eFRxazFhNXktZ1d3dlMyYzd1N3FZemJJelAwV0JiR1VkNUNMZnJobDluOTQyYlZYSEZhRVZWeFNlUDBSNmxrcWVYLVlESnZBMmFqX2lqNkdaOHJGOUNEd3hEZ0dRX0Jib2FqS28zUDNFcDVaRlhacGJDWUdB?oc=5",
+        "https://news.google.com/rss/articles/CBMirwFBVV95cUxNUW5mNXE5T2NHR184blJWeThYNjRmdG5WRFZuSGNoSXZhejJIX19lTUVUaWlkUDhiM3haQVhBWnhHQ2FKV2JydGV6T1ZHZmxLNDNrcnZRdjVnTzY4cXhwMFVBZDhOMjBfcVl0WFhmUWdhcjJxUmZpZnN4cVd3MXpNY0pXWVo2a3I2eGl3Zm5YZV9HNlVRWHlHOWRIczcwYUNOUHFrNXN6RFVlTE9BTGxz?oc=5",
         "https://news.google.com/rss/articles/CBMilwFBVV95cUxQM1Yyemg3LWVGNmNnem9DSC1KcW4zaEVic3h6NUhDRzB4aHIwT1ZvM1VoWlVZU09EbEx2dVNGeU1QeTl5YlFWMl92TWVhQ193eU1ZX3kxX1BYSjdTdF8ySmV3NXNhc3RIOFRVTC10aWsxQURqaWk3NDBUSktJeVFyYWNfdm80Rm5Hak5VVG9Oc0FXZnY2eUYw0gGIAUFVX3lxTE00NHA0MVc3YVF5Tjd5dzdrVWJPRjFkYU1hMHc0SWxEVTkyaFBMVkhIVEtzYXp3OUZJSGVOM2FJbTZxZ2N2UDhNUmp4bzRHdDV6UldXOHhpLTkzUHR5NFdHeUp2Y3Y4bjN5Yi1aZFkzSVFYNEQ5SERKZmhwdlp6ZE9ybm5YMXZkd1o?oc=5",
-        "https://news.google.com/rss/articles/CBMia0FVX3lxTE9NcGYxMzB6VWxRVFI3M0hTSWlpdDVaeDU1V0ZVRWt4NnZydmRvV0J1Y01XdzM1UXBlT2tWQTkwWnhxamtObWdMYlBsWVE2UzV6TWFBZzR0Uy1vTnM1RWVpZ3JycDlmWUVRNkdr?oc=5",
-        "https://news.google.com/rss/articles/CBMiggFBVV95cUxNcmFEREtqanNOTnd0WXlNN0pwNU53ZXBxVmp4Q3pBSjhOTUZmVzdoSUo5NnR6OTVkMFJQU1FtX2JtX3VIN0hfUjNmaXJjM0ZqcWhqOGdfSmxRbmNIcWt1YjFGajNSNC1jU3UtcHdqZ05oazNWQ2p4RFpMT0l2NkZkWVp30gGHAUFVX3lxTE5YY29KMHBaWFhPZ3h2OEJFbXAxa3VSLWtsLTk4NjFVeHhFWkU0QnN5Q1Z1VnA4S055Qm9iY0pIaTZ2ZTVUSG1mQ3FRQ0JtLWZoWHNrbFU1a3dvNklReWJIY1lQdWstOW5Jb0VhVHdFOGRGaXNZM19XY3o0c1JILXprUG5DRHJtYw?oc=5"
+        "https://news.google.com/rss/articles/CBMia0FVX3lxTE9NcGYxMzB6VWxRVFI3M0hTSWlpdDVaeDU1V0ZVRWt4NnZydmRvV0J1Y01XdzM1UXBlT2tWQTkwWnhxamtObWdMYlBsWVE2UzV6TWFBZzR0Uy1vTnM1RWVpZ3JycDlmWUVRNkdr?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 1.3,
         "cfr": 0.6,
@@ -877,23 +881,23 @@
         "source": "WHO plague fact sheet",
         "literature_backed": true
       },
-      "momentum": 0.724,
+      "momentum": 0.726,
       "momentum_confidence": "high",
       "trend": "declining",
       "doubling_time_days": null,
-      "threat_index": 65.7,
+      "threat_index": 67.0,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
-        "load": 0.679,
+        "load": 0.716,
         "cfr_term": 0.945,
-        "momentum_term": 0.384,
+        "momentum_term": 0.385,
         "r0_weight": 0.013
       }
     },
     {
-      "id": "sig-cb370b7d29",
-      "detected_at": "2026-05-30T22:11:40.367150+00:00",
+      "id": "sig-de488ae0b1",
+      "detected_at": "2026-05-31T08:57:14.601589+00:00",
       "disease": "Avian influenza",
       "country": "China",
       "iso": "CN",
@@ -901,11 +905,11 @@
       "lng": 104.2,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 1.0,
-      "source_count": 16,
+      "spike_ratio": 1.05,
+      "source_count": 17,
       "sources": [
-        "flunet",
         "who_don",
+        "flunet",
         "hk_chp"
       ],
       "hours_ahead_estimate": 24,
@@ -919,7 +923,7 @@
         "https://news.google.com/rss/articles/CBMinwFBVV95cUxQMlJVWlJLNVFxbF9aVktxdk9ROThVUzBmRmVyeGNibHhZQmtwenEtMDFsbkhLRkRwSk1KWU4zbUp4ZGdCNWV6MEduU1k1dUc3bHhlY3FWTzNROTFwZEV4MURTLUgwX2tnaTBOd1dTcmZTaFNSazlVcnlkVWVmQ1lfWVZkR2d6bnd5LVBWelF6NkhtRk5UVkFHNXpoc2hxb1E?oc=5"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 0.4,
         "cfr": 0.5,
@@ -931,23 +935,23 @@
         "source": "WHO H5N1 cumulative case data",
         "literature_backed": true
       },
-      "momentum": 1.049,
+      "momentum": 1.057,
       "momentum_confidence": "high",
       "trend": "plateau",
-      "doubling_time_days": null,
-      "threat_index": 71.1,
+      "doubling_time_days": 25.0,
+      "threat_index": 71.2,
       "threat_tier": "critical",
       "threat_tier_ru": "Критич.",
       "threat_components": {
         "load": 0.791,
         "cfr_term": 0.925,
-        "momentum_term": 0.517,
+        "momentum_term": 0.52,
         "r0_weight": 0.004
       }
     },
     {
-      "id": "sig-47462c0296",
-      "detected_at": "2026-05-31T08:57:18.058412+00:00",
+      "id": "sig-e1042e9d41",
+      "detected_at": "2026-05-31T08:57:18.058477+00:00",
       "disease": "Nipah virus",
       "country": "Cambridge",
       "iso": "GB",
@@ -955,12 +959,12 @@
       "lng": 0.1167,
       "confidence": 0.62,
       "level": "alert",
-      "spike_ratio": 3.0,
+      "spike_ratio": 1.0,
       "source_count": 3,
       "sources": [
+        "cdc_mmwr",
         "flunet",
-        "outbreak_news_today",
-        "cdc_mmwr"
+        "outbreak_news_today"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Bird flu viruses are resistant to fever, making them a major threat to humans - University of Cambridge",
@@ -971,7 +975,7 @@
         "https://outbreaknewstoday.com/uk-meningitis-outbreak-cases-climb-to-27-2-deaths-reported-604/"
       ],
       "ai_processed": false,
-      "is_new": true,
+      "is_new": false,
       "pathogen": {
         "r0": 0.48,
         "cfr": 0.59,
@@ -998,7 +1002,7 @@
       }
     },
     {
-      "id": "sig-20d683d8ee",
+      "id": "sig-671bef13f2",
       "detected_at": "2026-05-31T04:11:33.974095+00:00",
       "disease": "COVID-19",
       "country": "Canada",
@@ -1010,8 +1014,8 @@
       "spike_ratio": 1.0,
       "source_count": 11,
       "sources": [
-        "google_news",
-        "cdc_mmwr"
+        "cdc_mmwr",
+        "google_news"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Impacts of the COVID-19 pandemic in nursing and residential care facilities in Canada - Statistique Canada",
@@ -1024,7 +1028,7 @@
         "https://tools.cdc.gov/api/embed/downloader/download.asp?m=342778&c=492998"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -1036,22 +1040,22 @@
         "source": "WHO; Lauer 2020; Rai 2022 (serial interval)",
         "literature_backed": true
       },
-      "momentum": 1.0,
-      "momentum_confidence": "low",
+      "momentum": 1.013,
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 56.3,
+      "threat_index": 56.4,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.729,
         "cfr_term": 0.489,
-        "momentum_term": 0.5,
+        "momentum_term": 0.505,
         "r0_weight": 0.029
       }
     },
     {
-      "id": "sig-0596523988",
+      "id": "sig-7233f78a7d",
       "detected_at": "2026-05-31T04:11:33.810232+00:00",
       "disease": "COVID-19",
       "country": "Care",
@@ -1077,7 +1081,7 @@
         "https://tools.cdc.gov/api/embed/downloader/download.asp?m=342778&c=422061"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -1090,7 +1094,7 @@
         "literature_backed": true
       },
       "momentum": 1.0,
-      "momentum_confidence": "low",
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
       "threat_index": 52.4,
@@ -1152,7 +1156,7 @@
       }
     },
     {
-      "id": "sig-33045230d1",
+      "id": "sig-26771fffcf",
       "detected_at": "2026-05-31T04:10:26.040166+00:00",
       "disease": "Ebola virus disease",
       "country": "Costa Rica",
@@ -1164,8 +1168,8 @@
       "spike_ratio": 1.0,
       "source_count": 4,
       "sources": [
-        "reddit",
         "google_news",
+        "reddit",
         "brazil_svs"
       ],
       "hours_ahead_estimate": 48,
@@ -1178,7 +1182,7 @@
         "https://news.google.com/rss/articles/CBMipAFBVV95cUxOcG1lWlREU042Nm1tSzlCcE1sY1h4bkxGSmVlWlJpcE13RjhmTjhYOWZGSk1tZ0UwT0g5akpSS1JWN1I0UzNEQmNjZUhzVXpHOGdteTB0U0xjNGZzRDhaRGpfNmZMRkVPSzhIbUtNeEw2enhfRmYzSk9US1VOTVRRU2pWNWs4U3RuTlNuLXMwY0g0ZWUzU3p1ZjlZcWxGOVNIV1ZWTA?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.8,
         "cfr": 0.5,
@@ -1190,22 +1194,22 @@
         "source": "WHO; WHO Ebola Response Team 2014 NEJM",
         "literature_backed": true
       },
-      "momentum": 0.804,
-      "momentum_confidence": "low",
-      "trend": "plateau",
+      "momentum": 0.765,
+      "momentum_confidence": "high",
+      "trend": "declining",
       "doubling_time_days": null,
-      "threat_index": 57.7,
+      "threat_index": 57.3,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.423,
         "cfr_term": 0.925,
-        "momentum_term": 0.421,
+        "momentum_term": 0.403,
         "r0_weight": 0.018
       }
     },
     {
-      "id": "sig-f8be553136",
+      "id": "sig-7fa2e6161c",
       "detected_at": "2026-05-31T04:11:13.626027+00:00",
       "disease": "Mpox",
       "country": "Africa",
@@ -1231,7 +1235,7 @@
         "https://news.google.com/rss/articles/CBMiswFBVV95cUxON3A2TWZ0SzZTV2UzMjlyX2pvaF9TNlFhbzExQ2hpR0FDeVVnYWY3SGRJcG5DLXcySWU0d1I0eEhGRXVKQ0pZVkN3b2Q5Y1I3S0VVMjRPT0oyWk1EQ2NhUUxObjZScjhIRzFiSEtzVWlhZ0NuaUhmV0Z2VGpheXFZd3BmNFd2UkUtcWw3UU9hLUc4a0gzSjN4cXdQRzYyVnlNRWVjTDczRk8zVHNrNnNxbkxzYw?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 1.4,
         "cfr": 0.03,
@@ -1243,22 +1247,22 @@
         "source": "WHO mpox fact sheet 2024",
         "literature_backed": true
       },
-      "momentum": 1.0,
-      "momentum_confidence": "low",
+      "momentum": 1.005,
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 53.9,
+      "threat_index": 54.0,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.573,
         "cfr_term": 0.619,
-        "momentum_term": 0.5,
+        "momentum_term": 0.502,
         "r0_weight": 0.014
       }
     },
     {
-      "id": "sig-f740339992",
+      "id": "sig-539d74ba51",
       "detected_at": "2026-05-31T04:11:10.391381+00:00",
       "disease": "COVID-19",
       "country": "Washington",
@@ -1267,13 +1271,13 @@
       "lng": -120.45,
       "confidence": 0.469,
       "level": "watch",
-      "spike_ratio": 1.43,
+      "spike_ratio": 1.42,
       "source_count": 480,
       "sources": [
-        "medrxiv",
-        "cdc_wastewater",
+        "cdc_mmwr",
         "google_news",
-        "cdc_mmwr"
+        "cdc_wastewater",
+        "medrxiv"
       ],
       "hours_ahead_estimate": 24,
       "headline": "U.S. deaths soared in early weeks of pandemic, far exceeding number attributed to covid-19 - The Washington Post",
@@ -1286,7 +1290,7 @@
         "https://tools.cdc.gov/api/embed/downloader/download.asp?m=342778&c=756559"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.9,
         "cfr": 0.009,
@@ -1298,22 +1302,22 @@
         "source": "WHO; Lauer 2020; Rai 2022 (serial interval)",
         "literature_backed": true
       },
-      "momentum": 1.296,
+      "momentum": 1.277,
       "momentum_confidence": "high",
       "trend": "plateau",
-      "doubling_time_days": 5.3,
-      "threat_index": 57.8,
+      "doubling_time_days": 5.7,
+      "threat_index": 57.7,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.708,
         "cfr_term": 0.489,
-        "momentum_term": 0.594,
+        "momentum_term": 0.588,
         "r0_weight": 0.029
       }
     },
     {
-      "id": "sig-5cc4c0fe57",
+      "id": "sig-329b49b5ab",
       "detected_at": "2026-05-31T04:11:28.330908+00:00",
       "disease": "Cholera",
       "country": "Africa",
@@ -1322,11 +1326,11 @@
       "lng": 11.0622,
       "confidence": 0.458,
       "level": "watch",
-      "spike_ratio": 1.0,
-      "source_count": 8,
+      "spike_ratio": 1.02,
+      "source_count": 9,
       "sources": [
-        "east_africa",
-        "africa_cdc"
+        "africa_cdc",
+        "east_africa"
       ],
       "hours_ahead_estimate": 24,
       "headline": "Africa CDC Raises Alarm As Cholera Cases More Than Double Across the Continent - allAfrica.com",
@@ -1339,7 +1343,7 @@
         "https://news.google.com/rss/articles/CBMinAFBVV95cUxQMkxZajdMTFNfMTgzT1JKd1lKRXZwTkR3VHVjdHlhZHpYQUQ4eFFEdWlwSjdjVzFGVHBNWEZBTlZiNjR1RWhuOTBPYkh6eGhRLUU3UGRKb1huZUpNTU9EM24xS2N5eVlIb0FMWnlsR2RlZkRmeHFITEwwUm5XWDh2dXpoZjJ6Rk1aLS1vT2RUZVY2NzNEWm91TUExT2Q?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 2.0,
         "cfr": 0.02,
@@ -1351,17 +1355,17 @@
         "source": "WHO cholera fact sheet",
         "literature_backed": true
       },
-      "momentum": 1.06,
-      "momentum_confidence": "low",
+      "momentum": 1.063,
+      "momentum_confidence": "high",
       "trend": "plateau",
-      "doubling_time_days": 23.8,
-      "threat_index": 52.8,
+      "doubling_time_days": 22.7,
+      "threat_index": 54.1,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
-        "load": 0.552,
+        "load": 0.589,
         "cfr_term": 0.575,
-        "momentum_term": 0.521,
+        "momentum_term": 0.522,
         "r0_weight": 0.02
       }
     },
@@ -1418,7 +1422,7 @@
       }
     },
     {
-      "id": "sig-079c55a5a4",
+      "id": "sig-b7268ec1b7",
       "detected_at": "2026-05-31T04:10:26.022072+00:00",
       "disease": "Hantavirus",
       "country": "Andes",
@@ -1428,7 +1432,7 @@
       "confidence": 0.419,
       "level": "watch",
       "spike_ratio": 1.0,
-      "source_count": 6,
+      "source_count": 4,
       "sources": [
         "google_news"
       ],
@@ -1437,13 +1441,12 @@
       "summary": "Andes Virus Outbreak on a Cruise Ship: Current Situation | Hantavirus &nbsp;&nbsp; Centers for Disease Control and Prevention | CDC (.gov)",
       "links": [
         "https://news.google.com/rss/articles/CBMia0FVX3lxTE9RUThMc0pIYUVmdmh0VDhLd1J6Njk3T0Mzenppak14OWE4eWhrYjA5MEZGdDN6dnN3UzQ3aFVlNWNyeTJmQ18wU05XN2tQZjlQT09wdFRZc3VDTG4xamx2YWgyODVQaWVTUmw4?oc=5",
-        "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPamd6dTB2Q2QzNUF2SVpfaExYY2k2N21hRWxJOVd0WVNKTzUxUWdkZ25xaVpmYW5rdFBVbEVxMlRTNHY2VUdBanVkRHFQck03dkFDN1cyUXRYNl81YURCdVVtZFdBd3U2MlZ5NlQ4MmVLa2ZuMzE5RTRtUkZRMW40SlliNElXSTlHeTFvUkpLRDRkbEhBWEM3aUpGeWQ0TDUxeWQ1aDU3Q2dnc09rTGhfbXk1cnhDVm1a?oc=5",
         "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQSEMxc0xRLUxpQjBZOWFGT3FIdlpTNk1BUXgzVHJ1TS1JLTJhSWhJUkRPWk9vLVNJSG54ejJ2ZmtUbXo0S183WnU5bFIycjVzUFd6U3UyWU5lX1FWV0lZdGo5djd3Z19ZS3Fld3k0VjJkMHBnSlVzYU1kd0UyOWhwR0ZrRFV1MEZHQnNYb1BvTkRhbm9Mc2hGeWhrT3dUQlJYenRzaDJ5UHpydTA?oc=5",
         "https://news.google.com/rss/articles/CBMihwJBVV95cUxNRkpsX3BuVUlrYXhkWjhtUVBOQVo3ckpRQTM3bndJbjdoamk2TndFYUNDa3ZJQTBxaWc2ZUJfS09UQ09TLTVncTJITXRoXzN1OHlfYWtlSU9YcFdPaFdpZGREU3pkTGk4ZWxDNjNVcDFBY1VwUXVTbV85bHlXeWE1X2xvU0JBOUdIbWI4U3U3WnRqR0JtS1ZXOW5HRzJ4U1Zrc09ZQ1JyYWtSMncybldJcVRad3gxNmRlMnI5V3VBQ0tSTmRpc19JNTNCSlB6NzlWRU5hQ21PNEFNX2xnRTcydTF4WlotNGk2djR6b0lMclZPVXZ3RkVERFUxM3FLaEhiMVV2UFN6NNIBmwJBVV95cUxOQ0VLR0RrU1luVnJmR29UcFBtVXNUcUxwcUN0Wm9sd0ZXZUpJRl95RTl6SFNQWnB4TW40dUJCRHNoRnpoZDExQUdVVXdUNkJEUnhFNFJlWXR2N1FvU0Q2WUlLRV9HZm5SdTRBSjFKcmFUQ2pCUlR6bExKVndvN2ZMM3FhXzlWVlNSNkRLOFN4Q0RuQW9URkx2YllscGxDZDhPVGtHaUQ1WF9ydWVwSE9TNkRjdGFBUG1YRjdrVUhBdk96UUp1WG9KMHJFdk1YQU41NlVZMlBVNVZ2eGpZYzRvUVBKM1ZHYXdzaTk4VnBQWkp1SGRjbmJKeFowUzI0emU5bWN1ZUZ6QUR6dDZTTmxEbTY5WjE0MmwyWFl3?oc=5",
         "https://news.google.com/rss/articles/CBMigwFBVV95cUxPb1I3Ml9qckRLM1ZhRC13LWJ4ZWh3ZW9CRWNQUXh4Wjh1T3FuRVVYZXpkUTZwV3o1LXp4SlBhV0poNUt5Q25JcEVpcTNMdEliWDlVaVhLbjFBMUhDTWo5NzdHMGp3Z3psTnpBRFhCVWJFVDI4aFVvYzA4SkR6ZVctTFI5WQ?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": null,
         "cfr": 0.38,
@@ -1456,21 +1459,21 @@
         "literature_backed": true
       },
       "momentum": 1.0,
-      "momentum_confidence": "low",
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 60.9,
+      "threat_index": 58.4,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
-        "load": 0.455,
+        "load": 0.38,
         "cfr_term": 0.895,
         "momentum_term": 0.5,
         "r0_weight": 0.03
       }
     },
     {
-      "id": "sig-489dc51295",
+      "id": "sig-9e858ef5f7",
       "detected_at": "2026-05-31T04:11:10.380372+00:00",
       "disease": "Yellow fever",
       "country": "Pan",
@@ -1495,7 +1498,7 @@
         "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5pZ1l6aXl3UnhCdWJRWnJkRzYtUWVmaFJSc2FrMUo4bWVCYzQ4NU53UDctWjZ0Mi1zTVJPZlR4NzNVNFk3VTEtN1piTGhENE92dlNZaDhB?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": null,
         "cfr": 0.3,
@@ -1507,22 +1510,22 @@
         "source": "WHO yellow fever fact sheet",
         "literature_backed": true
       },
-      "momentum": 0.976,
-      "momentum_confidence": "low",
+      "momentum": 0.98,
+      "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
-      "threat_index": 59.8,
+      "threat_index": 59.9,
       "threat_tier": "alert",
       "threat_tier_ru": "Алерт",
       "threat_components": {
         "load": 0.455,
         "cfr_term": 0.869,
-        "momentum_term": 0.491,
+        "momentum_term": 0.493,
         "r0_weight": 0.03
       }
     },
     {
-      "id": "sig-5e13c5ef16",
+      "id": "sig-1c0072f972",
       "detected_at": "2026-05-31T04:11:24.092995+00:00",
       "disease": "Measles",
       "country": "孟加拉",
@@ -1543,7 +1546,7 @@
         "https://news.google.com/rss/articles/CBMimgJBVV95cUxOcFR1aEpnNTdnVW9mTlBfcWoxa1hPQnI1cUVZU3ZUWldGSWI3dXZkRTh2cnlaNXA3bTRScy00bi1zRUcwNE5lWWJ2V3Ayc19pc0NIMmtQbGRIUFlweWZDUzhDOUppRllfdjRFYlJna0FXWl8tSDdYRlFXamlfeVVWcGlFTVZNamo3LUtKYVFiZDk2TXA0WUtmVlRhM28zZnJmRHhWT1RWcmdCdnZTSmx5N3U5NzNzOXlTc1JoUnEwT29VbVFJNUw1dlZaR3RxNjNqcHNrZTdLTUVSQ3hwTzE2c0ZhX1JBMlhFODlLdVJmOU1ZU1VPOUNtYk1RY0xBM09od3k2ZGk5aG11TGRoVG9FS0lfQVdEZEVta3c?oc=5"
       ],
       "ai_processed": false,
-      "is_new": false,
+      "is_new": true,
       "pathogen": {
         "r0": 15.0,
         "cfr": 0.02,
@@ -1555,7 +1558,7 @@
         "source": "CDC Pink Book; WHO measles fact sheet",
         "literature_backed": true
       },
-      "momentum": 0.963,
+      "momentum": 0.966,
       "momentum_confidence": "high",
       "trend": "plateau",
       "doubling_time_days": null,
@@ -1565,7 +1568,7 @@
       "threat_components": {
         "load": 0.267,
         "cfr_term": 0.575,
-        "momentum_term": 0.486,
+        "momentum_term": 0.488,
         "r0_weight": 0.15
       }
     }
