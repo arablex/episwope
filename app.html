@@ -813,61 +813,82 @@
     border:none; cursor:pointer; width:100%;
   }
 
+  /* ── Brief view — prototype "Briefings" editorial layout ── */
   .brief-content{
-    max-width:720px; margin:0 auto;
-    padding:24px 20px 60px;
+    max-width:1000px; margin:0 auto;
+    padding:26px 22px 80px;
   }
-  .brief-section{ margin-bottom:32px; }
-  .brief-section-h{
-    font-size:9px; font-weight:800; letter-spacing:.08em;
-    text-transform:uppercase; color:var(--muted);
-    display:flex; align-items:center; gap:8px;
-    padding-bottom:10px;
-    border-bottom:1px solid var(--line);
-    margin-bottom:0;
+  /* Today's brief — glass hero */
+  .brief-hero{
+    background:var(--glass-bg); border:1px solid var(--glass-bd);
+    backdrop-filter:blur(16px) saturate(150%); -webkit-backdrop-filter:blur(16px) saturate(150%);
+    border-radius:20px; padding:22px; margin-bottom:18px;
+    box-shadow:var(--glass-shadow);
   }
-  .brief-section-h i{
-    width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  .brief-hero-head{ display:flex; align-items:center; gap:9px; margin-bottom:12px; }
+  .brief-hero-chip{
+    width:28px; height:28px; border-radius:8px; background:var(--chip-bg);
+    display:grid; place-items:center; color:var(--ink); flex-shrink:0;
   }
-  .brief-section-h.flash i { background:#F26A41; }
-  .brief-section-h.rising i{ background:#D97706; }
-  .brief-section-h.new    i{ background:#2563EB; }
+  .brief-hero-title{ font-size:14px; font-weight:700; color:var(--ink); font-family:var(--display); }
+  .brief-hero-meta{ margin-left:auto; font-size:11.5px; color:var(--muted-2); }
+  .brief-hero-body{
+    margin:0; font-size:16px; line-height:1.55; color:var(--ink);
+    max-width:760px; text-wrap:pretty;
+  }
+  .brief-hero-body b{ color:var(--accent); }
 
-  .brief-card{
-    display:flex; align-items:flex-start; gap:14px;
-    padding:14px 0;
-    border-bottom:1px solid var(--line-faint);
-    cursor:pointer; transition:background .12s;
+  /* Section label */
+  .brief-section-label{
+    font-size:10px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--muted-2); display:flex; align-items:center; gap:8px;
+    margin:24px 2px 12px;
   }
-  .brief-card:hover{ background:var(--hover-bg); margin:0 -12px; padding:14px 12px; border-radius:10px; border-color:transparent; }
-  .brief-card-dot{
-    width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px;
+  .brief-section-label i{ width:6px; height:6px; border-radius:50%; flex-shrink:0; background:var(--accent); }
+  .brief-section-label.rising i{ background:var(--muted); }
+
+  /* Card grid */
+  .brief-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:760px){ .brief-grid{ grid-template-columns:1fr; } }
+  /* Mobile: brief view fills the viewport (the stage column can exceed it) */
+  @media (max-width:980px){
+    .app.v-brief #view-brief{
+      position:fixed; left:0; right:0; top:56px; bottom:60px;
+      width:100vw; max-width:100vw; z-index:120;
+    }
+    .brief-content{ max-width:100%; padding:20px 16px 40px; }
   }
-  .brief-card-body{ flex:1; min-width:0; }
-  .brief-card-title{
-    font-size:14px; font-weight:700; letter-spacing:-.01em;
-    color:var(--ink); margin-bottom:3px;
-    display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+
+  .bcard{
+    background:var(--bg-card); border:1px solid var(--line);
+    border-radius:18px; padding:18px; cursor:pointer;
+    transition:border-color .15s, transform .12s;
   }
-  .brief-card-sub{
-    font-size:11.5px; color:var(--muted); margin-bottom:6px;
-    display:flex; align-items:center; gap:6px;
+  .bcard:hover{ border-color:var(--border-strong, var(--muted-2)); transform:translateY(-1px); }
+  .bcard.is-crit{ border-color:color-mix(in srgb, var(--accent) 32%, transparent); }
+  .bcard-head{ display:flex; align-items:center; gap:9px; margin-bottom:11px; }
+  .bcard-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .bcard-tag{
+    font-size:10px; font-weight:700; letter-spacing:.02em;
+    color:var(--ink-2); background:var(--chip-bg);
+    padding:3px 8px; border-radius:6px; text-transform:none;
   }
-  .brief-card-hl{
-    font-size:12px; color:var(--ink-2); line-height:1.4;
-    font-style:italic;
+  .bcard-age{ margin-left:auto; font-size:11.5px; color:var(--muted-2); }
+  .bcard-name{ font-size:16.5px; font-weight:600; color:var(--ink); letter-spacing:-0.2px; font-family:var(--display); }
+  .bcard-loc{ font-size:12.5px; color:var(--muted-2); margin-top:3px; display:flex; align-items:center; gap:6px; }
+  .bcard-text{
+    margin:12px 0 0; font-size:13px; line-height:1.5; color:var(--ink-2);
+    text-wrap:pretty; font-style:italic;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
-  .brief-card-badge{
-    flex-shrink:0; align-self:flex-start;
-    font-size:9px; font-weight:800; letter-spacing:.06em;
-    text-transform:uppercase; padding:3px 7px; border-radius:5px;
-  }
-  .brief-card-badge.alert  { background:rgba(201,42,42,.12); color:#E0512A; }
-  .brief-card-badge.watch  { background:rgba(232,89,12,.10); color:#C05621; }
-  .brief-card-badge.rising { background:rgba(217,119,6,.10);  color:#92400E; }
+  .bcard-divider{ margin-top:13px; height:1px; background:var(--line); }
+  .bcard-foot{ display:flex; align-items:center; gap:18px; margin-top:13px; }
+  .bcard-metric .k{ font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2); }
+  .bcard-metric .v{ font-size:17px; font-weight:600; color:var(--ink); font-family:var(--mono); font-variant-numeric:tabular-nums; margin-top:2px; }
+  .bcard-metric .v.accent{ color:var(--accent); }
+  .bcard-spark{ margin-left:auto; width:90px; height:32px; flex-shrink:0; }
   .brief-updated{
-    font-size:10px; color:var(--muted); text-align:center;
-    padding-top:16px;
+    font-size:10px; color:var(--muted); text-align:center; padding-top:20px;
   }
 
   /* ── Section headers (Flash / Rising / Monitoring) ── */
@@ -4242,6 +4263,20 @@ async function _openBriefPanel({ iso, country, category, catLabel, delta, days,
 }
 
 // ── Brief view renderer ────────────────────────────────────────────────────
+// Tiny inline SVG sparkline from a numeric series.
+function _briefSpark(vals, color) {
+  if (!vals || vals.length < 2) return '<div class="bcard-spark"></div>';
+  const w = 90, h = 32, pad = 3;
+  const mn = Math.min(...vals), mx = Math.max(...vals), rng = (mx - mn) || 1;
+  const pts = vals.map((v, i) => {
+    const x = pad + (i / (vals.length - 1)) * (w - 2 * pad);
+    const y = h - pad - ((v - mn) / rng) * (h - 2 * pad);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  return `<svg class="bcard-spark" viewBox="0 0 ${w} ${h}" fill="none" preserveAspectRatio="none">`
+       + `<polyline points="${pts}" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
 window.renderBriefView = function renderBriefView() {
   const el = document.getElementById('briefContent');
   if (!el) return;
@@ -4254,99 +4289,102 @@ window.renderBriefView = function renderBriefView() {
   const rising = sigs
     .filter(s => s.level === 'alert' || (s.level === 'watch' && _sc(s) > 30 && _mom(s) > 1.0))
     .sort((a, b) => (Math.min(_sc(b),150) * _mom(b)) - (Math.min(_sc(a),150) * _mom(a)))
-    .slice(0, 5);
+    .slice(0, 6);
 
-  const newSigs = sigs
-    .filter(s => s.is_new && !rising.find(r => r.id === s.id))
-    .sort((a, b) => (b.threat_index || 0) - (a.threat_index || 0))
-    .slice(0, 4);
+  const CORAL = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F26A41';
+  const SLATE = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#8E97A1';
 
-  const SEV_COLOR = { alert:'#E0512A', watch:'#F26A41', urgent:'#8B1A1A', monitoring:'#9CA3AF' };
+  const topEvtFor = iso => (_riskEvtById && _riskIdx && _riskIdx[iso])
+    ? (_riskIdx[iso].event_ids || []).map(id => _riskEvtById[id]).filter(e => e && e.headline)[0] : null;
+  const sparkFor = iso => (_riskHistory && _riskHistory[iso]) ? _riskHistory[iso].map(r => r.c) : null;
 
-  const secH = (cls, label) =>
-    `<div class="brief-section-h ${cls}"><i></i>${label}</div>`;
-
+  // ── Flash card (sudden escalation) ──
   const flashCard = t => {
-    const topEvt = _riskEvtById && _riskIdx && _riskIdx[t.iso]
-      ? (_riskIdx[t.iso].event_ids || []).map(id => _riskEvtById[id]).filter(e => e && e.headline)[0]
-      : null;
-    const hlHTML = topEvt
-      ? `<div class="brief-card-hl">"${_esc(topEvt.headline.substring(0,100))}"</div>`
-      : '';
-    return `<div class="brief-card" onclick="_openBriefPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
-      <div class="brief-card-dot" style="background:#F26A41"></div>
-      <div class="brief-card-body">
-        <div class="brief-card-title">
-          <span class="sig-cat ${t.catCls}" style="font-size:9px">${_esc(t.catLabel)}</span>
-          ${_esc(t.country)}
-          <span class="sig-trend-arrow up">+${t.delta} ${TR('this week','за нед.')}</span>
-        </div>
-        <div class="brief-card-sub">${_esc(t.topThreat || '')} · ${t.days}${TR('d window','д окно')}</div>
-        ${hlHTML}
+    const evt  = topEvtFor(t.iso);
+    const hl   = evt ? evt.headline : (t.topThreat || '');
+    const spk  = _briefSpark(sparkFor(t.iso), CORAL);
+    return `<div class="bcard is-crit" onclick="_openBriefPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+      <div class="bcard-head">
+        <span class="bcard-dot" style="background:${CORAL}"></span>
+        <span class="bcard-tag">${_esc(t.catLabel || 'Conflict')}</span>
+        <span class="bcard-age">+${t.delta} ${TR('this week','за нед.')}</span>
       </div>
-      <span class="brief-card-badge rising">${TR('Flash','Вспышка')}</span>
+      <div class="bcard-name">${_esc(t.country)}</div>
+      <div class="bcard-loc">${_esc(t.topThreat || '')} · ${t.days}${TR('d','д')}</div>
+      <p class="bcard-text">${_esc(hl)}</p>
+      <div class="bcard-divider"></div>
+      <div class="bcard-foot">
+        <div class="bcard-metric"><div class="k">${TR('Delta','Δ нед.')}</div><div class="v accent">+${t.delta}</div></div>
+        <div class="bcard-metric"><div class="k">${TR('Window','Окно')}</div><div class="v">${t.days}${TR('d','д')}</div></div>
+        ${spk}
+      </div>
     </div>`;
   };
 
+  // ── Rising card (sustained, worsening) ──
   const risingCard = s => {
     const country = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
-    const dot = SEV_COLOR[s.level] || '#9CA3AF';
-    const hlText = s.headline ? `<div class="brief-card-hl">"${_esc(s.headline.substring(0,100))}"</div>` : '';
-    const briefPayload = { iso: s.iso, country: (s.country||s.iso), category:'health', catLabel:'Health', delta: Math.round(((s.momentum||1)-1)*100)/100, days:7, topThreat:s.disease, level:s.level };
-    return `<div class="brief-card" onclick="_openBriefPanel(${JSON.stringify(briefPayload).replace(/"/g,'&quot;')})">
-      <div class="brief-card-dot" style="background:${dot}"></div>
-      <div class="brief-card-body">
-        <div class="brief-card-title">
-          <span class="sig-cat health" style="font-size:9px">health</span>
-          ${_esc(locDisease(s.disease))} · ${_esc(country)}
-        </div>
-        <div class="brief-card-sub">
-          ${_sc(s)} ${TR('sources','ист.')} · momentum ${_mom(s).toFixed(2)}
-          ${s.hours_ahead_estimate ? ` · ${s.hours_ahead_estimate}h ${TR('early','раньше')}` : ''}
-        </div>
-        ${hlText}
+    const crit = (s.level === 'alert' || s.level === 'urgent');
+    const dot  = crit ? CORAL : SLATE;
+    const hl   = s.headline || '';
+    const spk  = _briefSpark(sparkFor(s.iso), crit ? CORAL : SLATE);
+    const payload = { iso:s.iso, country:(s.country||s.iso), category:'health', catLabel:'Health', delta:Math.round(((s.momentum||1)-1)*100)/100, days:7, topThreat:s.disease, level:s.level };
+    return `<div class="bcard${crit?' is-crit':''}" onclick="_openBriefPanel(${JSON.stringify(payload).replace(/"/g,'&quot;')})">
+      <div class="bcard-head">
+        <span class="bcard-dot" style="background:${dot}"></span>
+        <span class="bcard-tag">${TR('Health','Здоровье')}</span>
+        <span class="bcard-age">${locLevel(s.level)}</span>
       </div>
-      <span class="brief-card-badge ${s.level}">${locLevel(s.level)}</span>
+      <div class="bcard-name">${_esc(locDisease(s.disease))}</div>
+      <div class="bcard-loc">${_esc(country)}</div>
+      <p class="bcard-text">${_esc(hl)}</p>
+      <div class="bcard-divider"></div>
+      <div class="bcard-foot">
+        <div class="bcard-metric"><div class="k">${TR('Sources','Источники')}</div><div class="v">${_sc(s)}</div></div>
+        <div class="bcard-metric"><div class="k">Momentum</div><div class="v${crit?' accent':''}">${_mom(s).toFixed(2)}</div></div>
+        ${spk}
+      </div>
     </div>`;
   };
 
-  let html = '';
-
-  if (flash.length) {
-    html += `<div class="brief-section">
-      ${secH('flash', TR('Flash — erupted this week','Вспышка — этой недели'))}
-      ${flash.map(flashCard).join('')}
-    </div>`;
-  }
-
-  if (rising.length) {
-    html += `<div class="brief-section">
-      ${secH('rising', TR('Rising — sustained threat','Нарастает — устойчивая угроза'))}
-      ${rising.map(risingCard).join('')}
-    </div>`;
-  }
-
-  if (newSigs.length) {
-    html += `<div class="brief-section">
-      ${secH('new', TR('New signals','Новые сигналы'))}
-      ${newSigs.map(risingCard).join('')}
-    </div>`;
-  }
-
-  if (!html) {
-    html = `<div style="text-align:center;color:var(--muted);padding:48px 0;font-size:13px">${TR('Loading signals…','Загрузка сигналов…')}</div>`;
-  }
-
-  const updTime = (() => {
-    const meta = window.VIGILO_SIGNALS_META;
-    if (!meta || !meta.generated_at) return '';
-    const mins = Math.round((Date.now() - new Date(meta.generated_at)) / 60000);
-    return mins < 60
-      ? TR(`Updated ${mins}m ago`, `Обновлено ${mins} мин назад`)
-      : TR('Updated today', 'Обновлено сегодня');
+  // ── Today's brief hero (synthesized from real data) ──
+  const critN = rising.filter(s => s.level==='alert'||s.level==='urgent').length + flash.length;
+  const topFlash = flash[0];
+  const topRise  = rising[0];
+  const heroBody = (() => {
+    const parts = [];
+    parts.push(`<b>${critN} ${TR('actionable signals','актуальных сигналов')}</b> ${TR('are active right now','активны прямо сейчас')}.`);
+    if (topFlash) parts.push(`${_esc(topFlash.country)} ${TR('flared this week','вспыхнул на этой неделе')} (+${topFlash.delta}).`);
+    if (topRise)  parts.push(`${_esc(locDisease(topRise.disease))} · ${_esc((topRise.country&&topRise.country!=='XX')?locCountry(topRise.country):TR('Global','Глобально'))} ${TR('is the fastest-rising sustained threat','— самая быстрорастущая устойчивая угроза')}.`);
+    return parts.join(' ');
   })();
 
-  el.innerHTML = html + `<div class="brief-updated">${updTime}</div>`;
+  const meta = window.VIGILO_SIGNALS_META;
+  const updMins = (meta && meta.generated_at) ? Math.round((Date.now() - new Date(meta.generated_at))/60000) : null;
+  const updTxt  = updMins==null ? '' : (updMins<60 ? TR(`Synthesized · ${updMins}m ago`,`Сформировано · ${updMins} мин назад`) : TR('Synthesized · today','Сформировано · сегодня'));
+
+  let html = `<div class="brief-hero">
+    <div class="brief-hero-head">
+      <span class="brief-hero-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>
+      <span class="brief-hero-title">${TR("Today's brief",'Сводка дня')}</span>
+      <span class="brief-hero-meta">${updTxt}</span>
+    </div>
+    <p class="brief-hero-body">${heroBody}</p>
+  </div>`;
+
+  if (flash.length) {
+    html += `<div class="brief-section-label"><i></i>${TR('Flash — erupted this week','Вспышка — этой недели')}</div>`
+         +  `<div class="brief-grid">${flash.map(flashCard).join('')}</div>`;
+  }
+  if (rising.length) {
+    html += `<div class="brief-section-label rising"><i></i>${TR('Rising — sustained threat','Нарастает — устойчивая угроза')}</div>`
+         +  `<div class="brief-grid">${rising.map(risingCard).join('')}</div>`;
+  }
+  if (!flash.length && !rising.length) {
+    html += `<div style="text-align:center;color:var(--muted);padding:48px 0;font-size:13px">${TR('Loading signals…','Загрузка сигналов…')}</div>`;
+  }
+
+  el.innerHTML = html;
 };
 
 function _onTrendClick(t) {
