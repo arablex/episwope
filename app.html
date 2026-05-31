@@ -744,15 +744,46 @@
   .sig-detail-link:hover{text-decoration:underline}
 
   /* ── Brief view ───────────────────────────────────── */
-  /* In Brief view: hide right panel, sigWidget, events bar */
-  .app.v-brief .panel{ display:none; }
+  /* Brief view layout fixes */
+  .app.v-brief{
+    grid-template-rows: 56px 1fr;   /* collapse events-bar row → no cut-off */
+  }
   .app.v-brief #sigWidget{ display:none; }
   .app.v-brief .events-bar{ display:none !important; }
-  /* Brief view fills the stage column, overrides position:absolute */
+  .app.v-brief .sidebar{ overflow-y:auto; }  /* sidebar scrolls fully */
+  /* Brief stage fills properly */
   #view-brief{
     overflow-y:auto; overflow-x:hidden;
     padding:0; background:var(--bg);
   }
+  /* Right panel brief detail state */
+  .brief-detail-empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; padding:32px 24px; text-align:center; color:var(--muted);
+    gap:10px;
+  }
+  .brief-detail-empty svg{ opacity:.3; }
+  .brief-detail-empty p{ font-size:13px; line-height:1.55; max-width:200px; }
+  /* AI analysis block in panel */
+  .panel-ai-block{
+    padding:18px 22px; border-bottom:1px solid var(--line-faint);
+  }
+  .panel-ai-lbl{
+    font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:10px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .panel-ai-lbl .ai-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent); flex-shrink:0;
+  }
+  .panel-ai-text{
+    font-size:13px; line-height:1.65; color:var(--ink-2);
+  }
+  .panel-ai-loading{
+    font-size:12px; color:var(--muted); font-style:italic;
+  }
+  .panel-ai-error{ font-size:12px; color:var(--muted); }
 
   .brief-content{
     max-width:720px; margin:0 auto;
@@ -2856,6 +2887,33 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
 
   <!-- ============ RIGHT PANEL ============ -->
   <aside class="panel" id="panel">
+    <!-- Brief view detail — shown only when Brief tab is active -->
+    <div id="briefPanelContent" style="display:none; flex-direction:column; flex:1; min-height:0; overflow:hidden">
+      <div class="panel-head" style="flex-shrink:0">
+        <div class="panel-eyebrow">
+          <span id="bpEyebrow">Brief · Detail</span>
+          <button class="x" aria-label="Close" onclick="document.getElementById('briefPanelContent').style.display='none'">×</button>
+        </div>
+        <h1 class="panel-name" id="bpName" style="font-size:20px"></h1>
+        <div class="panel-loc"><span class="pin" id="bpPin" style="background:var(--accent)"></span><span id="bpLoc"></span></div>
+      </div>
+      <div style="overflow-y:auto; flex:1; min-height:0">
+        <!-- AI Analysis -->
+        <div class="panel-ai-block">
+          <div class="panel-ai-lbl"><span class="ai-dot"></span>Analysis</div>
+          <div id="bpAiText" class="panel-ai-loading">Generating analysis…</div>
+        </div>
+        <!-- Risk breakdown -->
+        <div class="panel-ai-block" id="bpBreakdown"></div>
+        <!-- Headlines -->
+        <div class="panel-ai-block" id="bpHeadlines"></div>
+        <!-- Sources footer -->
+        <div style="padding:14px 22px; font-size:10px; color:var(--muted)">
+          Data: risk_index · risk_history · GDELT · Google News
+        </div>
+      </div>
+    </div>
+
     <div class="mob-panel-back" id="mobPanelBack" style="display:none">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       Back
@@ -4000,6 +4058,139 @@ function _renderSignals(sigs, meta) {
   }
 }
 
+// ── Brief panel: right-column detail with AI explanation ──────────────────
+const _briefAiCache = {};  // {iso_date: "summary text"}
+
+async function _openBriefPanel({ iso, country, category, catLabel, delta, days,
+                                  topThreat, level, trendScore }) {
+  const panel     = document.getElementById('panel');
+  const bpContent = document.getElementById('briefPanelContent');
+  if (!bpContent || !panel) return;
+
+  // Show brief panel, hide normal panel scroll content
+  bpContent.style.display = 'flex';
+  panel.style.display = '';
+  const normalScroll = panel.querySelector('.panel-scroll');
+  if (normalScroll) normalScroll.style.display = 'none';
+  // Restore on close button
+  const closeBtn = bpContent.querySelector('button.x');
+  if (closeBtn) closeBtn.onclick = () => {
+    bpContent.style.display = 'none';
+    if (normalScroll) normalScroll.style.display = '';
+  };
+
+  // Header
+  document.getElementById('bpEyebrow').textContent =
+    `${TR('Brief','Бриф')} · ${_esc(catLabel || category || 'Risk')}`;
+  document.getElementById('bpName').textContent   = country;
+  document.getElementById('bpLoc').textContent    =
+    `+${delta} ${TR('this week','за неделю')} · ${days}${TR('d','д')}`;
+
+  // Risk breakdown from _riskIdx
+  const bpBreak = document.getElementById('bpBreakdown');
+  if (bpBreak && _riskIdx && _riskIdx[iso]) {
+    const cb   = _riskIdx[iso].category_breakdown || {};
+    const CATS = ['conflict','civil_unrest','health','climate','border'];
+    const CLAB = { conflict:'Conflict', civil_unrest:'Unrest', health:'Health',
+                   climate:'Climate', border:'Border' };
+    const rows = CATS.map(k => ({ k, v: cb[k] }))
+      .filter(r => r.v && r.v.score > 0)
+      .sort((a,b) => b.v.score - a.v.score).slice(0,4);
+    const maxS = rows[0] ? rows[0].v.score : 1;
+    bpBreak.innerHTML = rows.map(r => {
+      const pct = Math.round(r.v.score / Math.max(maxS,1) * 100);
+      const thr = r.v.top_threat ? ` · ${r.v.top_threat.replace(/_/g,' ')}` : '';
+      return `<div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+          <span style="font-weight:600;color:var(--ink)">${_esc(CLAB[r.k]||r.k)} (${r.v.active_events||0})</span>
+          <span style="color:var(--muted)">${r.v.score.toFixed(1)}${_esc(thr)}</span>
+        </div>
+        <div class="sig-threat-bar" style="margin:0"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Headlines
+  const bpHl = document.getElementById('bpHeadlines');
+  if (bpHl && _riskEvtById && _riskIdx && _riskIdx[iso]) {
+    const ids  = (_riskIdx[iso].event_ids || []);
+    const evts = ids.map(id => _riskEvtById[id])
+      .filter(e => e && e.headline)
+      .sort((a,b) => (b.severity||0)-(a.severity||0))
+      .slice(0,4);
+    bpHl.innerHTML = evts.map(e => {
+      const date = (e.first_seen||'').slice(5,10);
+      const url  = e.url ? `href="${_esc(e.url)}" target="_blank" rel="noopener"` : '';
+      return `<div style="padding:6px 0;border-bottom:1px solid var(--line-faint);font-size:12px;line-height:1.45">
+        <span style="font-size:9px;color:var(--muted);margin-right:4px">${_esc(e.type||'').replace(/_/g,' ')}</span>
+        <span style="font-size:9px;color:var(--muted);float:right">${date}</span>
+        <a ${url} style="color:var(--ink);text-decoration:none">${_esc(e.headline)}</a>
+      </div>`;
+    }).join('');
+  }
+
+  // AI explanation — cached or fresh
+  const today    = new Date().toISOString().slice(0,10);
+  const cacheKey = `${iso}_${today}`;
+  const aiEl     = document.getElementById('bpAiText');
+  if (!aiEl) return;
+
+  if (_briefAiCache[cacheKey]) {
+    aiEl.className = 'panel-ai-text';
+    aiEl.textContent = _briefAiCache[cacheKey];
+    return;
+  }
+
+  aiEl.className   = 'panel-ai-loading';
+  aiEl.textContent = TR('Generating analysis…','Формирую анализ…');
+
+  try {
+    // Collect headlines and breakdown for the prompt
+    const headlines = (() => {
+      if (!_riskEvtById || !_riskIdx || !_riskIdx[iso]) return [];
+      return (_riskIdx[iso].event_ids||[])
+        .map(id => _riskEvtById[id])
+        .filter(e => e && e.headline)
+        .slice(0,5)
+        .map(e => e.headline);
+    })();
+
+    const breakdown = (() => {
+      if (!_riskIdx || !_riskIdx[iso]) return [];
+      const cb = _riskIdx[iso].category_breakdown || {};
+      return Object.entries(cb)
+        .filter(([,v]) => v && v.score > 0)
+        .map(([k,v]) => ({ cat: k, score: v.score, events: v.active_events||0 }));
+    })();
+
+    const sparkline = (() => {
+      if (!_riskHistory || !_riskHistory[iso]) return [];
+      return _riskHistory[iso].map(r => r.c);
+    })();
+
+    const resp = await fetch('/api/ai-brief', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ iso, country, category, delta, topThreat, headlines, breakdown, sparkline }),
+    });
+
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const data = await resp.json();
+
+    if (data.summary) {
+      _briefAiCache[cacheKey] = data.summary;
+      aiEl.className   = 'panel-ai-text';
+      aiEl.textContent = data.summary;
+    } else {
+      throw new Error('No summary');
+    }
+  } catch(e) {
+    aiEl.className   = 'panel-ai-error';
+    aiEl.textContent = TR('Analysis unavailable. Check back shortly.',
+                          'Анализ временно недоступен.');
+  }
+}
+
 // ── Brief view renderer ────────────────────────────────────────────────────
 window.renderBriefView = function renderBriefView() {
   const el = document.getElementById('briefContent');
@@ -4032,7 +4223,7 @@ window.renderBriefView = function renderBriefView() {
     const hlHTML = topEvt
       ? `<div class="brief-card-hl">"${_esc(topEvt.headline.substring(0,100))}"</div>`
       : '';
-    return `<div class="brief-card" onclick="_onTrendClick(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+    return `<div class="brief-card" onclick="_openBriefPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
       <div class="brief-card-dot" style="background:#E8590C"></div>
       <div class="brief-card-body">
         <div class="brief-card-title">
@@ -4051,7 +4242,8 @@ window.renderBriefView = function renderBriefView() {
     const country = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
     const dot = SEV_COLOR[s.level] || '#9CA3AF';
     const hlText = s.headline ? `<div class="brief-card-hl">"${_esc(s.headline.substring(0,100))}"</div>` : '';
-    return `<div class="brief-card" onclick="_openSignal(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+    const briefPayload = { iso: s.iso, country: (s.country||s.iso), category:'health', catLabel:'Health', delta: Math.round(((s.momentum||1)-1)*100)/100, days:7, topThreat:s.disease, level:s.level };
+    return `<div class="brief-card" onclick="_openBriefPanel(${JSON.stringify(briefPayload).replace(/"/g,'&quot;')})">
       <div class="brief-card-dot" style="background:${dot}"></div>
       <div class="brief-card-body">
         <div class="brief-card-title">
