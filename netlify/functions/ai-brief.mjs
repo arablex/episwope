@@ -2,8 +2,13 @@
  * POST /api/ai-brief
  *
  * Generates a 3-sentence AI narrative for a Brief view insight card.
- * Uses Claude Haiku (cheap + fast). Caches per (iso + date) for 12h
- * in Netlify Blobs so repeated views are free.
+ * Caches per (iso + date) for 12h in Netlify Blobs so repeated views
+ * are free.
+ *
+ * Provider is chosen by which env var is set, in priority order:
+ *   1. DEEPSEEK_API_KEY → DeepSeek (deepseek-chat, OpenAI-compatible)
+ *   2. GEMINI_API_KEY   → Gemini 2.0 Flash (free tier, 1500 req/day)
+ *   3. ANTHROPIC_API_KEY → Claude Haiku (paid fallback)
  *
  * Body:
  *   {
@@ -18,7 +23,7 @@
  *     breakdown: [{ cat: "Conflict", score: 2.7, events: 8 }]
  *   }
  *
- * Returns: { summary: "...", cached: bool }
+ * Returns: { summary: "...", cached: bool, provider: "..." }
  */
 
 import { getStore } from '@netlify/blobs';
@@ -36,8 +41,14 @@ export default async (req) => {
   if (req.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
   if (req.method !== 'POST')   return new Response('Method Not Allowed', { status: 405, headers: CORS });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const DEEPSEEK_KEY  = process.env.DEEPSEEK_API_KEY;
+  const GEMINI_KEY    = process.env.GEMINI_API_KEY;
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+  const provider = DEEPSEEK_KEY ? 'deepseek'
+                 : GEMINI_KEY   ? 'gemini'
+                 : ANTHROPIC_KEY ? 'claude'
+                 : null;
+  if (!provider) {
     return new Response(JSON.stringify({ error: 'AI not configured' }), { status: 503, headers: CORS });
   }
 
@@ -87,43 +98,85 @@ Rules:
 - Do not start with "I" or "Based on"
 - Plain prose, no markdown`;
 
-  // ── Call Claude Haiku ──────────────────────────────────────────────────
+  // ── Call the selected provider ─────────────────────────────────────────
   let summary;
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 200,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-
-    if (!resp.ok) {
-      const err = await resp.text();
-      console.error('Anthropic error:', resp.status, err);
-      return new Response(JSON.stringify({ error: 'AI unavailable' }), { status: 502, headers: CORS });
+    if (provider === 'deepseek') {
+      summary = await callOpenAICompat(
+        'https://api.deepseek.com/chat/completions',
+        DEEPSEEK_KEY, 'deepseek-chat', prompt);
+    } else if (provider === 'gemini') {
+      summary = await callGemini(GEMINI_KEY, prompt);
+    } else {
+      summary = await callClaude(ANTHROPIC_KEY, prompt);
     }
-
-    const data = await resp.json();
-    summary = data.content?.[0]?.text?.trim();
     if (!summary) throw new Error('Empty response');
   } catch (e) {
-    console.error('ai-brief fetch error:', e);
+    console.error(`ai-brief ${provider} error:`, e);
     return new Response(JSON.stringify({ error: 'AI unavailable' }), { status: 502, headers: CORS });
   }
 
   // ── Cache result ───────────────────────────────────────────────────────
   try {
-    await store.setJSON(cacheKey, { summary, generated_at: new Date().toISOString() });
+    await store.setJSON(cacheKey, { summary, provider, generated_at: new Date().toISOString() });
   } catch { /* cache write optional */ }
 
-  return new Response(JSON.stringify({ summary, cached: false }), { headers: CORS });
+  return new Response(JSON.stringify({ summary, cached: false, provider }), { headers: CORS });
 };
+
+// ── Provider adapters ──────────────────────────────────────────────────────
+
+// DeepSeek + any OpenAI-compatible chat endpoint
+async function callOpenAICompat(url, key, model, prompt) {
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model,
+      max_tokens: 220,
+      temperature: 0.4,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!resp.ok) throw new Error(`${resp.status} ${await resp.text()}`);
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content?.trim();
+}
+
+// Google Gemini 2.0 Flash — free tier
+async function callGemini(key, prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 220, temperature: 0.4 },
+    }),
+  });
+  if (!resp.ok) throw new Error(`${resp.status} ${await resp.text()}`);
+  const data = await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+}
+
+// Anthropic Claude Haiku — paid fallback
+async function callClaude(key, prompt) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 220,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!resp.ok) throw new Error(`${resp.status} ${await resp.text()}`);
+  const data = await resp.json();
+  return data.content?.[0]?.text?.trim();
+}
 
 export const config = { path: '/api/ai-brief' };
