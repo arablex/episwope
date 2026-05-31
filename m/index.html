@@ -425,6 +425,13 @@ function MapGlobe({ markers = [], onPickMarker = null }) {
     });
     mapRef.current = map;
     map.on('style.load', () => map.setFog(fogFor(!document.body.classList.contains('page-light'))));
+    // Grow markers slightly as the globe zooms in (easier to tap)
+    const onZoom = () => {
+      const z = map.getZoom();
+      const sc = Math.max(1, Math.min(2.1, 1 + (z - 1.35) * 0.42));
+      marksRef.current.forEach(mk => { const el = mk.getElement && mk.getElement(); const dot = el && el.firstChild; if (dot) dot.style.transform = `scale(${sc.toFixed(2)})`; });
+    };
+    map.on('zoom', onZoom); map.on('zoomend', onZoom);
     // Follow the app theme: restyle + re-place markers when body class flips
     let lastDark = !document.body.classList.contains('page-light');
     const obs = new MutationObserver(() => {
@@ -802,7 +809,7 @@ async function buildVigiloData(){
       sources: e.sources || [], headline: e.headline || '',
       category: e.category==='conflict'||e.category==='civil_unrest' ? 'humanitarian' : (e.category==='climate'?'disasters':'epidemics'),
     });
-    if(out.length >= 40) break;
+    if(out.length >= 120) break;
   }
 
   out.sort((a,b)=> (b.idx||0) - (a.idx||0));
