@@ -743,6 +743,74 @@
   }
   .sig-detail-link:hover{text-decoration:underline}
 
+  /* ── Brief view ───────────────────────────────────── */
+  /* In Brief view: hide right panel, sigWidget, events bar */
+  .app.v-brief .panel{ display:none; }
+  .app.v-brief #sigWidget{ display:none; }
+  .app.v-brief .events-bar{ display:none !important; }
+  /* Brief view fills the stage column, overrides position:absolute */
+  #view-brief{
+    overflow-y:auto; overflow-x:hidden;
+    padding:0; background:var(--bg);
+  }
+
+  .brief-content{
+    max-width:720px; margin:0 auto;
+    padding:24px 20px 60px;
+  }
+  .brief-section{ margin-bottom:32px; }
+  .brief-section-h{
+    font-size:9px; font-weight:800; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--muted);
+    display:flex; align-items:center; gap:8px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:0;
+  }
+  .brief-section-h i{
+    width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  }
+  .brief-section-h.flash i { background:#E8590C; }
+  .brief-section-h.rising i{ background:#D97706; }
+  .brief-section-h.new    i{ background:#2563EB; }
+
+  .brief-card{
+    display:flex; align-items:flex-start; gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--line-faint);
+    cursor:pointer; transition:background .12s;
+  }
+  .brief-card:hover{ background:var(--hover-bg); margin:0 -12px; padding:14px 12px; border-radius:10px; border-color:transparent; }
+  .brief-card-dot{
+    width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px;
+  }
+  .brief-card-body{ flex:1; min-width:0; }
+  .brief-card-title{
+    font-size:14px; font-weight:700; letter-spacing:-.01em;
+    color:var(--ink); margin-bottom:3px;
+    display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+  }
+  .brief-card-sub{
+    font-size:11.5px; color:var(--muted); margin-bottom:6px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .brief-card-hl{
+    font-size:12px; color:var(--ink-2); line-height:1.4;
+    font-style:italic;
+  }
+  .brief-card-badge{
+    flex-shrink:0; align-self:flex-start;
+    font-size:9px; font-weight:800; letter-spacing:.06em;
+    text-transform:uppercase; padding:3px 7px; border-radius:5px;
+  }
+  .brief-card-badge.alert  { background:rgba(201,42,42,.12); color:#C92A2A; }
+  .brief-card-badge.watch  { background:rgba(232,89,12,.10); color:#C05621; }
+  .brief-card-badge.rising { background:rgba(217,119,6,.10);  color:#92400E; }
+  .brief-updated{
+    font-size:10px; color:var(--muted); text-align:center;
+    padding-top:16px;
+  }
+
   /* ── Section headers (Flash / Rising / Monitoring) ── */
   .sig-section-h{
     display:flex; align-items:center; gap:6px;
@@ -2431,6 +2499,10 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         List
       </button>
+      <button class="top-tab" data-view="brief" aria-label="Brief view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+        Brief
+      </button>
     </div>
 
     <div class="top-actions">
@@ -2747,6 +2819,11 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
         </div>
       </div>
     </div><!-- /view-heatmap -->
+
+    <!-- VIEW: Brief -->
+    <div id="view-brief" class="view brief-view">
+      <div id="briefContent" class="brief-content"></div>
+    </div><!-- /view-brief -->
 
     <!-- VIEW: Pathogens -->
     <div id="view-pathogens" class="view">
@@ -3494,14 +3571,15 @@ document.addEventListener('DOMContentLoaded', function(){
     const vt = document.createElement('div');
     vt.id = 'mobViewToggle';
     vt.className = 'mob-viewtoggle show';
-    vt.innerHTML = `<button data-v="globe" class="on">3D</button><button data-v="heatmap">${T('Map','Карта')}</button><button data-v="list">${T('List','Список')}</button>`;
+    vt.innerHTML = `<button data-v="globe" class="on">3D</button><button data-v="heatmap">${T('Map','Карта')}</button><button data-v="list">${T('List','Список')}</button><button data-v="brief">${T('Brief','Бриф')}</button>`;
     document.body.appendChild(vt);
     function vtActive(v){ vt.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x.dataset.v===v)); }
     window._vtActive = vtActive;
     vt.addEventListener('click', e=>{
       const b = e.target.closest('button[data-v]'); if(!b) return;
       vtActive(b.dataset.v);
-      if(b.dataset.v === 'list'){ setMobTab('events'); return; }
+      if(b.dataset.v === 'list')  { setMobTab('events'); return; }
+      if(b.dataset.v === 'brief') { if(typeof window.switchView === 'function') window.switchView('brief'); setMobTab('home'); return; }
       if(typeof window.switchView === 'function') window.switchView(b.dataset.v);
       setMobTab('home');
     });
@@ -3770,6 +3848,7 @@ async function loadSignals() {
     _lastSignalIds = new Set(sigs.map(s => s.id));
     _signalsLoaded = true;
     window.VIGILO_SIGNALS = sigs;
+    window.VIGILO_SIGNALS_META = data.meta;
     _renderSignals(sigs, data.meta);
   } catch(e) {
     console.debug('Signals fetch error', e);
@@ -3920,6 +3999,113 @@ function _renderSignals(sigs, meta) {
       : TR('Updated ','Обновлено ') + dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   }
 }
+
+// ── Brief view renderer ────────────────────────────────────────────────────
+window.renderBriefView = function renderBriefView() {
+  const el = document.getElementById('briefContent');
+  if (!el) return;
+
+  const sigs  = window.VIGILO_SIGNALS || [];
+  const flash = _buildTrendItems().slice(0, 4);
+  const _sc   = s => s.source_count || 0;
+  const _mom  = s => s.momentum || 1;
+
+  const rising = sigs
+    .filter(s => s.level === 'alert' || (s.level === 'watch' && _sc(s) > 30 && _mom(s) > 1.0))
+    .sort((a, b) => (Math.min(_sc(b),150) * _mom(b)) - (Math.min(_sc(a),150) * _mom(a)))
+    .slice(0, 5);
+
+  const newSigs = sigs
+    .filter(s => s.is_new && !rising.find(r => r.id === s.id))
+    .sort((a, b) => (b.threat_index || 0) - (a.threat_index || 0))
+    .slice(0, 4);
+
+  const SEV_COLOR = { alert:'#C92A2A', watch:'#E8590C', urgent:'#8B1A1A', monitoring:'#9CA3AF' };
+
+  const secH = (cls, label) =>
+    `<div class="brief-section-h ${cls}"><i></i>${label}</div>`;
+
+  const flashCard = t => {
+    const topEvt = _riskEvtById && _riskIdx && _riskIdx[t.iso]
+      ? (_riskIdx[t.iso].event_ids || []).map(id => _riskEvtById[id]).filter(e => e && e.headline)[0]
+      : null;
+    const hlHTML = topEvt
+      ? `<div class="brief-card-hl">"${_esc(topEvt.headline.substring(0,100))}"</div>`
+      : '';
+    return `<div class="brief-card" onclick="_onTrendClick(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+      <div class="brief-card-dot" style="background:#E8590C"></div>
+      <div class="brief-card-body">
+        <div class="brief-card-title">
+          <span class="sig-cat ${t.catCls}" style="font-size:9px">${_esc(t.catLabel)}</span>
+          ${_esc(t.country)}
+          <span class="sig-trend-arrow up">+${t.delta} ${TR('this week','за нед.')}</span>
+        </div>
+        <div class="brief-card-sub">${_esc(t.topThreat || '')} · ${t.days}${TR('d window','д окно')}</div>
+        ${hlHTML}
+      </div>
+      <span class="brief-card-badge rising">${TR('Flash','Вспышка')}</span>
+    </div>`;
+  };
+
+  const risingCard = s => {
+    const country = (s.country && s.country !== 'XX') ? locCountry(s.country) : TR('Global','Глобально');
+    const dot = SEV_COLOR[s.level] || '#9CA3AF';
+    const hlText = s.headline ? `<div class="brief-card-hl">"${_esc(s.headline.substring(0,100))}"</div>` : '';
+    return `<div class="brief-card" onclick="_openSignal(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+      <div class="brief-card-dot" style="background:${dot}"></div>
+      <div class="brief-card-body">
+        <div class="brief-card-title">
+          <span class="sig-cat health" style="font-size:9px">health</span>
+          ${_esc(locDisease(s.disease))} · ${_esc(country)}
+        </div>
+        <div class="brief-card-sub">
+          ${_sc(s)} ${TR('sources','ист.')} · momentum ${_mom(s).toFixed(2)}
+          ${s.hours_ahead_estimate ? ` · ${s.hours_ahead_estimate}h ${TR('early','раньше')}` : ''}
+        </div>
+        ${hlText}
+      </div>
+      <span class="brief-card-badge ${s.level}">${locLevel(s.level)}</span>
+    </div>`;
+  };
+
+  let html = '';
+
+  if (flash.length) {
+    html += `<div class="brief-section">
+      ${secH('flash', TR('Flash — erupted this week','Вспышка — этой недели'))}
+      ${flash.map(flashCard).join('')}
+    </div>`;
+  }
+
+  if (rising.length) {
+    html += `<div class="brief-section">
+      ${secH('rising', TR('Rising — sustained threat','Нарастает — устойчивая угроза'))}
+      ${rising.map(risingCard).join('')}
+    </div>`;
+  }
+
+  if (newSigs.length) {
+    html += `<div class="brief-section">
+      ${secH('new', TR('New signals','Новые сигналы'))}
+      ${newSigs.map(risingCard).join('')}
+    </div>`;
+  }
+
+  if (!html) {
+    html = `<div style="text-align:center;color:var(--muted);padding:48px 0;font-size:13px">${TR('Loading signals…','Загрузка сигналов…')}</div>`;
+  }
+
+  const updTime = (() => {
+    const meta = window.VIGILO_SIGNALS_META;
+    if (!meta || !meta.generated_at) return '';
+    const mins = Math.round((Date.now() - new Date(meta.generated_at)) / 60000);
+    return mins < 60
+      ? TR(`Updated ${mins}m ago`, `Обновлено ${mins} мин назад`)
+      : TR('Updated today', 'Обновлено сегодня');
+  })();
+
+  el.innerHTML = html + `<div class="brief-updated">${updTime}</div>`;
+};
 
 function _onTrendClick(t) {
   const detail = document.getElementById('sigDetail');

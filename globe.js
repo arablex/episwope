@@ -5487,7 +5487,7 @@ const REPORTS_DATA = [
    VIEW SWITCHING
    ========================================================= */
 const APP = document.getElementById('app');
-const VIEW_NAMES = ['globe','heatmap','list'];
+const VIEW_NAMES = ['globe','heatmap','list','brief'];
 let currentView = 'globe';
 
 function switchView(name){
@@ -5510,6 +5510,11 @@ function switchView(name){
     if(name === 'globe')   map.setProjection({ name:'globe' });
     if(name === 'heatmap') map.setProjection({ name:'mercator' });
     if(name === 'list')    map.setProjection({ name:'globe' });
+    // 'brief' — no Mapbox interaction needed
+  }
+  // Render brief content when switching to that view
+  if(name === 'brief' && typeof window.renderBriefView === 'function'){
+    window.renderBriefView();
   }
 }
 
