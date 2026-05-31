@@ -807,14 +807,35 @@ async function buildVigiloData(){
 
   out.sort((a,b)=> (b.idx||0) - (a.idx||0));
 
-  const critCount = out.filter(o=>o.sev==='critical').length;
-  const countrySet = new Set(out.map(o=>o.code));
   OUTBREAKS = out;
+
+  // ── Global stats from the FULL dataset (not the capped card list) ──
+  const _critBands = new Set(['critical','catastrophic','severe']);
+  const allCountries = new Set();
+  let activeEvents = 0, criticalEvents = 0;
+  for (const e of events) {
+    if (!e || !e.country) continue;
+    allCountries.add(e.country);
+    activeEvents++;
+    const band = (e.band || '').toLowerCase();
+    if (_critBands.has(band) || (e.severity || 0) >= 5) criticalEvents++;
+  }
+  for (const s of signals) {
+    if (s && s.iso) allCountries.add(s.iso);
+    activeEvents++;
+    if (s && (s.level === 'alert' || s.level === 'urgent')) criticalEvents++;
+  }
+  // Country-level critical: composite band critical across the index
+  let critCountries = 0;
+  for (const iso in idx) {
+    const b = idx[iso] && idx[iso].composite_risk && idx[iso].composite_risk.band;
+    if (b && _critBands.has(String(b).toLowerCase())) critCountries++;
+  }
   GLOBAL_STATS = {
-    outbreaks: out.length,
-    deaths30: (idxW && idxW.meta && idxW.meta.deaths_30d) || 0,
-    critical: critCount,
-    countries: countrySet.size,
+    outbreaks: activeEvents,
+    deaths30: (idxW && idxW.meta && (idxW.meta.deaths_30d || idxW.meta.deaths30)) || 0,
+    critical: criticalEvents || critCountries,
+    countries: allCountries.size,
   };
   window.OUTBREAKS = OUTBREAKS;
   window.GLOBAL_STATS = GLOBAL_STATS;
@@ -992,9 +1013,9 @@ function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sev
       <div style={{ position: 'absolute', left: 22, top: 170, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
         <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}><Stat align="left" value={GLOBAL_STATS.outbreaks} label={TT('Активно','Active')} /></div>
       </div>
-      <div style={{ position: 'absolute', right: 22, top: 212, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
+      <div style={{ position: 'absolute', right: 22, top: 170, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
         <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: 'var(--crit)', lineHeight: 1, letterSpacing: -0.5 }}>{GLOBAL_STATS.critical}</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.3, textTransform: 'uppercase' }}>{TT('Критич.','Critical')}</div>
           </div>
