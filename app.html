@@ -86,6 +86,8 @@
     --muted-2:#A7AEB6;
     --line:rgba(20,22,26,0.09);
     --line-2:rgba(20,22,26,0.05);
+    /* ambient canvas glow — coral hero glow + cool counter-glow (prototype) */
+    --amb: radial-gradient(125% 70% at 50% -8%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 56%), radial-gradient(95% 60% at 100% 102%, rgba(90,120,150,0.05), transparent 55%), var(--bg);
 
     /* severity scale — coral reserved for the top (critical/catastrophic),
        cool slate ramp below it (prototype color discipline) */
@@ -150,6 +152,7 @@
     --muted-2:rgba(236,238,241,0.38);
     --line:rgba(255,255,255,0.09);
     --line-2:rgba(255,255,255,0.05);
+    --amb: radial-gradient(125% 70% at 50% -8%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 56%), radial-gradient(95% 60% at 100% 102%, rgba(120,150,180,0.07), transparent 55%), var(--bg);
     --chip-bg: rgba(255,255,255,0.06);
     --hover-bg: rgba(255,255,255,0.045);
     --scrim: rgba(4,6,8,0.70);
@@ -178,7 +181,8 @@
     letter-spacing:-0.005em;
   }
   body{
-    background:var(--bg);
+    background:var(--amb);
+    background-attachment:fixed;
   }
   button{ font-family:inherit; cursor:pointer; border:0; background:none; color:inherit; }
   ::selection{ background:#F26A4133; }
