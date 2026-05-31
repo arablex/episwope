@@ -77,25 +77,27 @@
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
 <style>
   :root{
-    --bg:#F4F2EE;
-    --bg-card:#FFFFFF;
-    --ink:#0F0E0C;
-    --ink-2:#3B3A36;
-    --muted:#807E76;
-    --muted-2:#B6B3AA;
-    --line:#ECEAE2;
-    --line-2:#F2F0E8;
+    /* Light theme — prototype "warm paper" canvas, cool slate ink/borders */
+    --bg:#F4F3EF;
+    --bg-card:#FBFAF7;
+    --ink:#16191D;
+    --ink-2:#3D4651;
+    --muted:#6B7682;
+    --muted-2:#A7AEB6;
+    --line:rgba(20,22,26,0.09);
+    --line-2:rgba(20,22,26,0.05);
 
-    /* severity scale */
-    --s0:#A09F95;
-    --s1:#E4B514;
-    --s2:#E8590C;
-    --s3:#C92A2A;
-    --s4:#8B1A1A;
-    --s5:#5C2010;
+    /* severity scale — coral reserved for the top (critical/catastrophic),
+       cool slate ramp below it (prototype color discipline) */
+    --s0:#A7AEB6;
+    --s1:#9AA3AD;
+    --s2:#E8853F;
+    --s3:#F26A41;
+    --s4:#E0512A;
+    --s5:#C23E1C;
 
-    --accent:#E8590C;
-    --accent-deep:#C92A2A;
+    --accent:#F26A41;
+    --accent-deep:#E0512A;
 
     /* radii — 2026: large + soft */
     --r-xs: 10px;
@@ -138,19 +140,20 @@
      use var(--…) flip automatically. Remaining hardcoded literals are mapped
      to these tokens in the CSS below. */
   html[data-theme="dark"]{
-    --bg:#141310;
-    --bg-card:#1E1C16;
-    --surface-2:#2A2820;
-    --ink:#F2F0E8;
-    --ink-2:#C7C4B9;
-    --muted:#928F85;
-    --muted-2:#6A6860;
-    --line:#2E2B23;
-    --line-2:#262319;
-    --chip-bg: rgba(255,255,255,0.07);
-    --hover-bg: rgba(255,255,255,0.04);
-    --scrim: rgba(0,0,0,0.66);
-    --glass-bg: linear-gradient(180deg, rgba(42,40,32,0.74) 0%, rgba(30,28,22,0.56) 100%);
+    /* Dark theme — prototype cool near-black canvas, white-translucent borders */
+    --bg:#0A0C0E;
+    --bg-card:#13171C;
+    --surface-2:#1E242B;
+    --ink:#ECEEF1;
+    --ink-2:rgba(236,238,241,0.80);
+    --muted:rgba(236,238,241,0.56);
+    --muted-2:rgba(236,238,241,0.38);
+    --line:rgba(255,255,255,0.09);
+    --line-2:rgba(255,255,255,0.05);
+    --chip-bg: rgba(255,255,255,0.06);
+    --hover-bg: rgba(255,255,255,0.045);
+    --scrim: rgba(4,6,8,0.70);
+    --glass-bg: linear-gradient(180deg, rgba(22,27,33,0.74) 0%, rgba(14,17,22,0.58) 100%);
     --glass-bd: rgba(255,255,255,0.10);
     --glass-shadow:
       0 22px 52px -22px rgba(0,0,0,0.55),
@@ -549,7 +552,7 @@
   }
   .out-row:hover{ background:var(--fill-hover); }
   .out-row.is-selected{
-    background:rgba(255,255,255,0.85);
+    background:var(--fill-hover);
     border-color:var(--line);
     box-shadow:0 6px 16px -10px rgba(20,18,14,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
   }
@@ -1013,7 +1016,7 @@
     border-radius:var(--r-xl);
     overflow:hidden;
   }
-  #globe{ width:100%; height:100%; display:block; background:#F4F2EE; border-radius:18px; overflow:hidden; }
+  #globe{ width:100%; height:100%; display:block; background:var(--bg); border-radius:18px; overflow:hidden; }
   #globe .mapboxgl-canvas{ outline:none; }
   #globe .mapboxgl-ctrl-attrib{ background:var(--fill); }
   #globe .mapboxgl-ctrl-attrib a{ color:rgba(20,18,14,0.5); }
@@ -1839,7 +1842,7 @@
   .hmap-pill .pin{ width:7px; height:7px; border-radius:50%; background:var(--accent-deep); }
   .hmap-tooltip{
     position:fixed;
-    background:rgba(255,255,255,0.97);
+    background:color-mix(in srgb, var(--bg-card) 96%, transparent);
     backdrop-filter:blur(16px);
     border:1px solid var(--line);
     border-radius:var(--r-md);
@@ -2261,7 +2264,7 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 60px;
-      background: rgba(244,242,238,0.96);
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-top: 1px solid var(--line);
@@ -2304,7 +2307,7 @@
       position: fixed; top: 60px;
       left: 50%; transform: translateX(-50%);
       z-index: 240; display: none;
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg-card) 92%, transparent); backdrop-filter: blur(12px);
       border: 1px solid var(--line); border-radius: 999px;
       padding: 3px; gap: 2px;
       box-shadow: 0 4px 14px -6px rgba(22,21,19,.18);
