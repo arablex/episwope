@@ -330,6 +330,16 @@ _FINANCE_TECH_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Geo-misattribution filters — module-level so both classifier and carry-forward can use them
+_IL_TERMS = re.compile(
+    r'\bisrael[i]?\b|\bhamas\b|\bhezbollah\b|\bgaza\b|\bnetanyahu\b'
+    r'|\bidf\b|\bwest bank\b|\brafah\b|\btel aviv\b|\bgolan\b', re.I)
+_IL_VALID = frozenset({'IL', 'PS', 'LB', 'SY', 'JO', 'EG', 'YE', 'IQ', 'IR', 'SA'})
+_UA_TERMS = re.compile(
+    r'\bukraine\b|\bkyiv\b|\bzelensky\b|\bkharkiv\b|\bkherson\b'
+    r'|\bzaporizhzhia\b|\bmariupol\b', re.I)
+_UA_VALID = frozenset({'UA', 'RU', 'BY', 'PL', 'MD', 'GE', 'AM', 'AZ'})
+
 # Encyclopedic / reference domains — articles about historical events
 # (Britannica, Wikipedia, etc.) should not appear in a live threat feed.
 _ENCYCLOPEDIC_DOMAINS = frozenset({
@@ -337,8 +347,9 @@ _ENCYCLOPEDIC_DOMAINS = frozenset({
     "britannica-", "encyclopedia", "history.com", "thoughtco.com",
 })
 
-def _classify(text: str, rules: list) -> tuple[str | None, int]:
+def _classify(text: str, rules: list, domain: str = "") -> tuple[str | None, int]:
     low = text.lower()
+    _is_sports_domain = any(d in domain for d in _SPORTS_DOMAINS) if domain else False
     for pat, typ, sev in rules:
         if re.search(pat, low):
             # Suppress civil_unrest/conflict false positives from entertainment news
@@ -351,7 +362,6 @@ def _classify(text: str, rules: list) -> tuple[str | None, int]:
             # Suppress conflict/civil_unrest from sports articles
             # ("Colombia's Offensive Firepower" → armed_clash is wrong)
             # ("La Vuelta protests" → civil_unrest is wrong)
-            _is_sports_domain = any(d in (a.domain or "") for d in _SPORTS_DOMAINS)
             if typ in ("violent_unrest", "mass_protest", "protest",
                        "kinetic_strike", "armed_clash", "insurgent_attack",
                        "military_buildup", "escalation") and \
@@ -500,7 +510,7 @@ def collect_events() -> list[dict]:
                 text = text.replace(a.domain, " ")
             if a.source:
                 text = text.replace(a.source, " ")
-            typ, sev = _classify(text, cfg["rules"])
+            typ, sev = _classify(text, cfg["rules"], domain=a.domain or "")
             if not typ:
                 continue
             cname, iso, lat, lng = detect_country(text)
@@ -511,26 +521,13 @@ def collect_events() -> list[dict]:
             # Catches the most common misattribution pattern: outlets from
             # country X reporting on events in country Y. The source domain's
             # home country should NEVER be the sole basis for geo-attribution.
-            _hl_lower = a.title.lower()
-
-            # Pattern 1: Israel/Hamas/Gaza conflict reported by non-regional outlets
-            _IL_TERMS = re.compile(
-                r'\bisrael[i]?\b|\bhamas\b|\bhezbollah\b|\bgaza\b|\bnetanyahu\b'
-                r'|\bidf\b|\bwest bank\b|\brafah\b|\btel aviv\b|\bgolan\b', re.I)
-            _IL_VALID = {'IL', 'PS', 'LB', 'SY', 'JO', 'EG', 'YE', 'IQ', 'IR', 'SA'}
+            # (_IL_TERMS, _IL_VALID, _UA_TERMS, _UA_VALID defined at module level)
             if _IL_TERMS.search(a.title) and iso not in _IL_VALID:
-                # Outlet from iso wrote about Israel/Middle East — redirect to IL
                 _new_iso = 'IL'
                 if _new_iso in ISO_CENTROID:
                     iso, lat, lng = _new_iso, *ISO_CENTROID[_new_iso]
                     cname = 'Israel'
-
-            # Pattern 2: Ukraine/Russia conflict reported by unrelated outlets
-            _UA_TERMS = re.compile(
-                r'\bukraine\b|\bkyiv\b|\bzelensky\b|\bkharkiv\b|\bkherson\b'
-                r'|\bzaporizhzhia\b|\bmariupol\b', re.I)
-            _UA_VALID = {'UA', 'RU', 'BY', 'PL', 'MD', 'GE', 'AM', 'AZ'}
-            if _UA_TERMS.search(a.title) and iso not in _UA_VALID:
+            elif _UA_TERMS.search(a.title) and iso not in _UA_VALID:
                 _new_iso = 'UA'
                 if _new_iso in ISO_CENTROID:
                     iso, lat, lng = _new_iso, *ISO_CENTROID[_new_iso]
@@ -806,6 +803,21 @@ def merge_persist(new_events: list[dict]) -> list[dict]:
         # Drop entertainment false positives (music festival "riot" etc.)
         headline_lc = (e.get("headline") or "").lower()
         if e.get("category") == "civil_unrest" and _ENTERTAINMENT_RE.search(headline_lc):
+            continue
+        # Drop geo-misattribution: IL/Hamas/Gaza news wrongly attributed to outlet country
+        _e_iso = e.get("country", "")
+        _e_hl  = e.get("headline", "") or ""
+        if _IL_TERMS.search(_e_hl) and _e_iso not in _IL_VALID:
+            continue
+        if _UA_TERMS.search(_e_hl) and _e_iso not in _UA_VALID:
+            continue
+        # Drop sports false positives (World Cup preview → armed_clash etc.)
+        _e_typ = e.get("type", "")
+        _e_dom = (e.get("geo") or {}).get("source_domain", "") or e.get("source_name", "") or ""
+        _is_sports_dom = any(d in _e_dom for d in _SPORTS_DOMAINS)
+        if _e_typ in ("armed_clash", "kinetic_strike", "insurgent_attack",
+                      "military_buildup", "escalation", "mass_protest", "protest") and \
+           (_SPORTS_RE.search(_e_hl) or _is_sports_dom):
             continue
         # Carry forward only if the date is parseable AND within the window.
         # An unparseable first_seen would otherwise count as age 0 (fresh) and
