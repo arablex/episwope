@@ -165,6 +165,14 @@
   @keyframes flagsheen{ 0%{ background-position: 150% 0; } 100%{ background-position: -50% 0; } }
   .no-motion .flag-sheen{ animation: none !important; }
 
+  /* event trajectory — draw-in + a soft pulse on the leading dot */
+  .trj-line{ stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: trjdraw 1.7s cubic-bezier(.4,0,.18,1) forwards; }
+  @keyframes trjdraw{ to{ stroke-dashoffset: 0; } }
+  .trj-dot{ opacity: 0; animation: trjdot 0.6s ease forwards 1.5s; }
+  @keyframes trjdot{ to{ opacity: 1; } }
+  .no-motion .trj-line{ animation: none; stroke-dashoffset: 0; }
+  .no-motion .trj-dot{ animation: none; opacity: 1; }
+
   /* living background — drifting glow blobs + faint twinkling star-dots */
   .amb-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .amb-blob { position: absolute; border-radius: 50%; filter: blur(50px); will-change: transform; opacity: 0.6; }
@@ -492,6 +500,34 @@ function MapGlobe({ markers = [], onPickMarker = null, center = null, zoom = nul
     if (map.isStyleLoaded()) placeMarkers(); else map.once('load', placeMarkers);
   }, [markers]);
   return <div ref={ref} className="mapglobe" style={boxStyle || { position:'absolute', inset:0, width:'100%', height:'100%' }} />;
+}
+
+// ── event trajectory as an ambient header background (its "signature") ──
+function TrajectoryBg({ data, color = 'var(--crit)' }) {
+  const uid = useUid('trj');
+  if (!data || data.length < 2) return null;
+  const w = 400, h = 240, padX = 8;
+  const max = Math.max(...data, 1), min = Math.min(...data, 0), rng = (max - min) || 1;
+  const pts = data.map((v, i) => [padX + (i / (data.length - 1)) * (w - 2 * padX), (h - 26) - ((v - min) / rng) * (h - 96)]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = line + ` L ${pts[pts.length - 1][0].toFixed(1)} ${h} L ${padX} ${h} Z`;
+  const last = pts[pts.length - 1];
+  return (
+    <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+      WebkitMaskImage: 'linear-gradient(to bottom, #000 46%, transparent 90%)', maskImage: 'linear-gradient(to bottom, #000 46%, transparent 90%)' }}>
+      <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ width: '100%', height: '100%', display: 'block', opacity: 0.6 }}>
+        <defs>
+          <linearGradient id={uid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.20" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={area} fill={`url(#${uid})`} />
+        <path className="trj-line" d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <circle className="trj-dot" cx={last[0]} cy={last[1]} r="3.2" fill={color} vectorEffect="non-scaling-stroke" />
+      </svg>
+    </div>
+  );
 }
 
 // ── giant animated waving flag (decorative header background) ──
@@ -1333,6 +1369,7 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
       <div onScroll={(e) => setSt(e.target.scrollTop)} style={{ height: '100%', overflow: 'auto', padding: '0 18px 130px' }}>
         {/* hero */}
         <div style={{ position: 'relative', margin: '0 -18px', height: 296, overflow: 'hidden' }}>
+          <TrajectoryBg data={o.curve} color={(window.Sev && Sev[o.sev] && Sev[o.sev].color) || 'var(--crit)'} />
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 78% 14%, var(--hero-glow), transparent 60%)' }} />
           <div style={{ position: 'absolute', right: -42, top: 70, opacity: 0.85 }}>
             <MapGlobe center={[o.lon, o.lat]} zoom={2.4} spin interactive={false}
