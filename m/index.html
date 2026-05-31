@@ -7,7 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
 <style>
+  /* real Mapbox globe inside the home hero */
+  .mapglobe .mapboxgl-ctrl-logo, .mapglobe .mapboxgl-ctrl-attrib { display:none !important; }
+  .mapglobe canvas { outline:none; }
   :root {
     --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
     --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
@@ -352,6 +357,50 @@ function LiveBadge() {
       <span className="live-dot" />Live
     </span>
   );
+}
+
+// ── real Mapbox globe (our working globe) ──────────────────────
+function MapGlobe({ markers = [], onPickMarker = null }) {
+  const ref = useRefH(null);
+  const mapRef = useRefH(null);
+  const marksRef = useRefH([]);
+  useEffectH(() => {
+    if (!ref.current || !window.mapboxgl) return;
+    const dark = !document.body.classList.contains('page-light');
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXBucHlncDMwbzdkMnBzOWZieGVobXhpIn0.Dyr6Mi6dRB7L-bNnUEVLsA';
+    const map = new mapboxgl.Map({
+      container: ref.current,
+      style: dark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
+      projection: 'globe', center: [22, 8], zoom: 1.35, minZoom: 0.8, maxZoom: 6,
+      attributionControl: false, pitchWithRotate: false, dragRotate: false,
+    });
+    mapRef.current = map;
+    map.on('style.load', () => {
+      map.setFog(dark
+        ? { color:'rgb(20,22,27)', 'high-color':'rgb(36,40,52)', 'horizon-blend':0.08, 'space-color':'rgb(10,12,15)', 'star-intensity':0.18 }
+        : { color:'rgb(244,243,239)', 'high-color':'rgb(220,222,226)', 'horizon-blend':0.06, 'space-color':'rgb(244,243,239)', 'star-intensity':0 });
+    });
+    return () => { try { map.remove(); } catch(e){} };
+  }, []);
+  // sync markers
+  useEffectH(() => {
+    const map = mapRef.current; if (!map) return;
+    const place = () => {
+      marksRef.current.forEach(m => m.remove());
+      marksRef.current = markers.filter(mk => typeof mk.lat==='number' && typeof mk.lon==='number').map(mk => {
+        const s = (window.Sev && window.Sev[mk.sev]) || { color:'#9fb0c0', glow:false };
+        const big = mk.sev === 'critical' || mk.sev === 'alert';
+        const el = document.createElement('div');
+        el.style.cssText = `width:${big?13:9}px;height:${big?13:9}px;border-radius:50%;background:${s.color};`
+          + `border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 ${big?9:4}px ${s.glow?'var(--crit-glow)':'transparent'};`
+          + (onPickMarker && mk.id ? 'cursor:pointer;' : '');
+        if (onPickMarker && mk.id) el.addEventListener('click', () => onPickMarker(mk.id));
+        return new mapboxgl.Marker({ element: el }).setLngLat([mk.lon, mk.lat]).addTo(map);
+      });
+    };
+    if (map.isStyleLoaded()) place(); else map.once('load', place);
+  }, [markers]);
+  return <div ref={ref} className="mapglobe" style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} />;
 }
 
 // ── dotted globe ───────────────────────────────────────────────
@@ -791,7 +840,7 @@ function OutbreakRow({ o, variant = 'rich', onClick }) {
 function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sevFilter = 'all' }) {
   const [query, setQuery] = useStateH('');
   const visible = OUTBREAKS.filter(o => !cats || cats[o.category]);
-  const markers = visible.map(o => ({ lat: o.lat, lon: o.lon, sev: o.sev }));
+  const markers = visible.map(o => ({ id: o.id, lat: o.lat, lon: o.lon, sev: o.sev }));
   const crits = visible.filter(o => o.sev === 'critical' || o.sev === 'alert');
   const allSorted = visible.slice().sort((a, b) => b.idx - a.idx);
 
@@ -843,23 +892,11 @@ function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sev
 
   return (
     <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
-      {/* hero / interactive globe */}
-      <div onPointerDown={interactive ? gDown : undefined}
-        onWheel={interactive ? (e) => zoomBy(e.deltaY < 0 ? 0.15 : -0.15) : undefined}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, touchAction: 'none', cursor: interactive ? (gdrag ? 'grabbing' : 'grab') : 'default' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 70% at 50% 30%, var(--hero-glow), transparent 60%)', opacity: 1 - 0.7 * scrim }} />
-        <div style={{ position: 'absolute', left: '50%', top: gTop, transform: `translateX(-50%) scale(${1 - 0.08 * scrim}) translateY(${-26 * scrim}px)`, opacity: 1 - 0.85 * scrim, transition: drag || gdrag ? 'none' : `top .5s ${ease}, transform .5s ${ease}, opacity .5s ${ease}`, transformOrigin: '50% 40%' }}>
-          <GlobeViz size={gSize} lon0={gLon} lat0={gLat} zoom={gZoom} markers={markers} />
-        </div>
+      {/* hero / real Mapbox globe (our working globe) */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, opacity: 1 - 0.85 * scrim, transition: drag || gdrag ? 'none' : `opacity .5s ${ease}` }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 70% at 50% 30%, var(--hero-glow), transparent 60%)', opacity: 1 - 0.7 * scrim, pointerEvents: 'none', zIndex: 2 }} />
+        <MapGlobe markers={markers} onPickMarker={(id) => { const o = OUTBREAKS.find(x => x.id === id); if (o) onOpen(o); }} />
       </div>
-
-      {/* zoom controls */}
-      {interactive && (
-        <div style={{ position: 'absolute', right: 16, top: gCenterY + 30, zIndex: 15, display: 'flex', flexDirection: 'column', gap: 8, opacity: 1 - scrim }}>
-          <span className="iconbtn" onClick={() => zoomBy(0.3)} style={{ width: 36, height: 36 }}><Icon name="plus" size={18} /></span>
-          <span className="iconbtn" onClick={() => zoomBy(-0.3)} style={{ width: 36, height: 36 }}><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M5 12h14"/></svg></span>
-        </div>
-      )}
 
       <div style={{ position: 'relative', zIndex: 30 }}>
         <TopBar>
