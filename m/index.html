@@ -204,6 +204,38 @@ const RU_STATUS = { Escalating:'Нарастает', Sustained:'Устойчив
 function locStatus(s){ return APP_LANG==='ru' ? (RU_STATUS[(s||'').replace(/\s/g,'_')] || RU_STATUS[s] || s) : s; }
 function locSev(s){ return APP_LANG==='ru' ? (RU_SEV[s] || s) : (s||'').replace(/^\w/,c=>c.toUpperCase()); }
 
+/* ===== ripple waves — rendered imperatively in a body layer (NOT React) =====
+   Doing this outside React avoids a Shell re-render on every pointerdown,
+   which was swallowing the first tap (forcing a double-tap to activate). */
+function _waveLayer(){
+  let el = document.getElementById('vg-wave-layer');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'vg-wave-layer';
+    el.style.cssText = 'position:fixed;inset:0;z-index:9000;pointer-events:none;overflow:hidden';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function spawnWave(x, y, kind){
+  if(document.body.classList.contains('no-motion')) return;
+  const layer = _waveLayer();
+  const strong = kind === 'strong';
+  const ttl = strong ? 2100 : 1900;
+  const add = (cls, setup) => {
+    const s = document.createElement('span');
+    s.className = cls; s.style.left = x + 'px'; s.style.top = y + 'px';
+    setup(s); layer.appendChild(s); setTimeout(() => s.remove(), ttl);
+  };
+  if(strong) add('wv-band', s => s.style.setProperty('--wv-dur', '1300ms'));
+  (strong ? [0, 240, 480] : [0]).forEach((d, i) => add('wv-ring', s => {
+    s.style.animationDelay = d + 'ms';
+    s.style.setProperty('--wv-dur', (strong ? 2000 : 1750) + 'ms');
+    s.style.setProperty('--wv-max', strong ? 26 : 16);
+    s.style.setProperty('--wv-op', strong ? (0.32 - i * 0.07) : 0.22);
+  }));
+}
+
 /* ===== vigilo-ui.jsx ===== */
 // vigilo-ui.jsx — shared design primitives for Vigilo
 // Exports to window: Icon, Sev, SevDot, Tag, Stat, Metric, GlobeViz, CaseCurve,
@@ -410,12 +442,21 @@ function MapGlobe({ markers = [], onPickMarker = null }) {
     marksRef.current = (markersRef.current || []).filter(mk => typeof mk.lat==='number' && typeof mk.lon==='number').map(mk => {
       const s = (window.Sev && window.Sev[mk.sev]) || { color:'#9fb0c0', glow:false };
       const big = mk.sev === 'critical' || mk.sev === 'alert';
+      // Larger transparent hit area (28px) with the visible dot centred — small
+      // dots on a globe are otherwise nearly impossible to tap.
       const el = document.createElement('div');
-      el.style.cssText = `width:${big?13:9}px;height:${big?13:9}px;border-radius:50%;background:${s.color};`
-        + `border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 ${big?9:4}px ${s.glow?'var(--crit-glow)':'transparent'};`
+      el.dataset.mkid = mk.id || '';
+      el.style.cssText = 'width:28px;height:28px;display:grid;place-items:center;'
         + (onPickMarker && mk.id ? 'cursor:pointer;' : '');
-      if (onPickMarker && mk.id) el.addEventListener('click', () => onPickMarker(mk.id));
-      return new mapboxgl.Marker({ element: el }).setLngLat([mk.lon, mk.lat]).addTo(map);
+      const dot = document.createElement('div');
+      dot.style.cssText = `width:${big?13:9}px;height:${big?13:9}px;border-radius:50%;background:${s.color};`
+        + `border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 ${big?9:4}px ${s.glow?'var(--crit-glow)':'transparent'};`;
+      el.appendChild(dot);
+      if (onPickMarker && mk.id) {
+        const open = (ev) => { ev.preventDefault(); ev.stopPropagation(); onPickMarker(mk.id); };
+        el.addEventListener('click', open);
+      }
+      return new mapboxgl.Marker({ element: el, anchor: 'center' }).setLngLat([mk.lon, mk.lat]).addTo(map);
     });
   };
   // sync markers
@@ -713,7 +754,7 @@ async function buildVigiloData(){
 
   const scoreOf = iso => {
     const c = idx[iso]; const s = c && c.composite_risk && c.composite_risk.score;
-    return typeof s==='number' ? Math.round(s*100) : null;
+    return typeof s==='number' ? Math.max(0, Math.min(100, Math.round(s*100))) : null;
   };
 
   const out = [];
@@ -2158,28 +2199,17 @@ function Shell({ light, setLight } = {}) {
   const [stack, setStack] = useState([]);
   const rootRef = React.useRef(null);
   const origin = React.useRef({ x: 201, y: 437 });
-  const [rings, setRings] = useState([]);
-  const [waves, setWaves] = useState([]);
   const lastWave = React.useRef(0);
   const captureOrigin = (e) => {
-    const r = rootRef.current && rootRef.current.getBoundingClientRect();
-    if (!r) return;
-    const x = Math.round((e.clientX - r.left) / r.width * 402);
-    const y = Math.round((e.clientY - r.top) / r.height * 874);
-    origin.current = { x, y };
-    // ripple only on interactive targets (buttons / cards / clickable rows)
+    // Record the tap point (real viewport px) for the reveal animation + ripple.
+    origin.current = { x: e.clientX, y: e.clientY };
     const hit = e.target.closest('button, [data-ripple], .panel, .glass, [role="button"]');
     const clickable = hit || (() => { let n = e.target; for (let i = 0; i < 5 && n; i++, n = n.parentElement) { if (getComputedStyle(n).cursor === 'pointer') return true; } return false; })();
     if (!clickable) return;
     const now = Date.now();
-    if (now - lastWave.current > 220) { lastWave.current = now; emitWave(x, y, 'soft'); }
+    if (now - lastWave.current > 220) { lastWave.current = now; spawnWave(e.clientX, e.clientY, 'soft'); }
   };
-  const emitWave = (x, y, kind) => {
-    const id = Date.now() + Math.random();
-    setWaves(w => [...w, { id, x, y, kind }]);
-    setTimeout(() => setWaves(w => w.filter(v => v.id !== id)), kind === 'strong' ? 2100 : 1900);
-  };
-  const emitRing = () => { emitWave(origin.current.x, origin.current.y, 'strong'); };
+  const emitRing = () => { spawnWave(origin.current.x, origin.current.y, 'strong'); };
   const [modal, setModal] = useState(null);
   const [tracked, setTracked] = useState({ 'mbg-rw': true, 'mpx-cd': true, 'cho-sd': false });
   const [prefs, setPrefs] = useState({ push: true, email: false });
@@ -2231,27 +2261,7 @@ function Shell({ light, setLight } = {}) {
           <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>{screenFor(v)}</div>
         </div>
       ))}
-      {rings.map(r => <span key={r.id} className="reveal-ring" style={{ left: r.x, top: r.y }} />)}
-      {/* water ripples — concentric rings spreading across the app */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 70, pointerEvents: 'none', overflow: 'hidden' }}>
-        {waves.map(w => {
-          const strong = w.kind === 'strong';
-          const ringDelays = strong ? [0, 240, 480] : [0];
-          return (
-            <React.Fragment key={w.id}>
-              {strong && <span className="wv-band" style={{ left: w.x, top: w.y, '--wv-dur': '1300ms' }} />}
-              {ringDelays.map((d, i) => (
-                <span key={i} className="wv-ring" style={{
-                  left: w.x, top: w.y, animationDelay: d + 'ms',
-                  '--wv-dur': (strong ? 2000 : 1750) + 'ms',
-                  '--wv-max': strong ? 26 : 16,
-                  '--wv-op': strong ? (0.32 - i * 0.07) : 0.22,
-                }} />
-              ))}
-            </React.Fragment>
-          );
-        })}
-      </div>
+      {/* ripple waves are rendered imperatively via spawnWave() into a body layer */}
       {stack.length === 0 && <BottomNav active={tab} onNav={go} floating badge={GLOBAL_STATS.critical} />}
       {modal && modal.type === 'newAlert' && (
         <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 90 }}>
