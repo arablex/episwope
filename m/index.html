@@ -1607,13 +1607,67 @@ const BRIEFS = [
   { id: 'h5n1-us', src: 'US CDC', time: '1d', sev: 'alert', title: 'H5N1 detected in additional dairy herds', text: 'Three more states report infected herds; one mild human case among farm workers.' },
 ];
 
+// Classify an event's trajectory into a trend bucket from its curve.
+function trendOf(o) {
+  const c = (o.curve || []).filter(v => typeof v === 'number');
+  const sc = o.cases || 0;            // source_count proxy
+  if (c.length >= 3) {
+    const last = c[c.length - 1];
+    const earlyAvg = (c[0] + c[1]) / 2;
+    const maxv = Math.max(...c, 0.001);
+    // Flash: started quiet, spiked recently
+    if (earlyAvg < maxv * 0.45 && last > earlyAvg + (maxv - earlyAvg) * 0.5 && (last - earlyAvg) > 0.5) {
+      return { k: 'flash', delta: +(last - earlyAvg).toFixed(1) };
+    }
+    // Rising: sustained & still elevated/climbing, well-sourced or high severity
+    if (last >= c[c.length - 2] * 0.95 && maxv >= 0.8 && (o.sev === 'critical' || o.sev === 'alert' || sc >= 25)) {
+      return { k: 'rising', delta: +(last - c[0]).toFixed(1) };
+    }
+  }
+  if (o.sev === 'critical' || o.sev === 'alert') return { k: 'rising', delta: 0 };
+  return { k: 'monitor', delta: 0 };
+}
+
 function Briefings({ onOpen }) {
-  const list = OUTBREAKS.slice().sort((a, b) => (b.idx || 0) - (a.idx || 0)).slice(0, 16);
-  const t1 = list[0], t2 = list[1];
+  const ranked = OUTBREAKS.slice().sort((a, b) => (b.idx || 0) - (a.idx || 0));
+  const flash = [], rising = [], monitor = [];
+  for (const o of ranked) {
+    const t = trendOf(o); o._trend = t;
+    (t.k === 'flash' ? flash : t.k === 'rising' ? rising : monitor).push(o);
+  }
+  const t1 = ranked[0], t2 = ranked[1];
+
+  const card = o => (
+    <div key={o.id} onClick={() => onOpen && onOpen(o)} className="panel" style={{ borderRadius: 18, padding: 16, cursor: 'pointer' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+        <SevDot sev={o.sev} size={8} />
+        <Tag>{(o.sources && o.sources[0]) || o.cat || TT('Источник','Source')}</Tag>
+        <span style={{ marginLeft: 'auto', fontSize: 11.5, color: o._trend.k === 'flash' ? 'var(--crit)' : 'var(--text3)', fontWeight: o._trend.k === 'flash' ? 700 : 400 }}>
+          {o._trend.k === 'flash' ? `+${o._trend.delta} ${TT('за нед.','wk')}`
+            : o._trend.k === 'rising' ? `${o.cases} ${TT('ист.','src')} · ${TT('растёт','rising')}`
+            : o.since}
+        </span>
+      </div>
+      <div style={{ fontSize: 15.5, fontWeight: 600, color: 'var(--text)', letterSpacing: -0.2, lineHeight: 1.25, display: 'flex', alignItems: 'center', gap: 7 }}>
+        <Flag code={o.code} />{o.name} · {o.place}
+      </div>
+      {o.headline && <p style={{ margin: '7px 0 0', fontSize: 13, lineHeight: 1.5, color: 'var(--text2)', textWrap: 'pretty', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{o.headline}</p>}
+    </div>
+  );
+
+  const Section = ({ dot, label, items }) => items.length ? (
+    <div style={{ marginBottom: 22 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 2px 12px', fontSize: 10.5, fontWeight: 800, letterSpacing: 0.6, textTransform: 'uppercase', color: 'var(--text3)' }}>
+        <span style={{ width: 6, height: 6, borderRadius: 99, background: dot }} />{label}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>{items.slice(0, 8).map(card)}</div>
+    </div>
+  ) : null;
+
   return (
     <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '58px 18px 8px', flexShrink: 0 }}>
-        <PageHead title={TT('Брифинги','Briefings')} sub={TT('Кураторская аналитика · обновляется постоянно','Curated intelligence · updated continuously')}
+        <PageHead title={TT('Брифинги','Briefings')} sub={TT('Что изменилось и почему','What changed and why')}
           action={<span className="iconbtn"><Icon name="filter" size={18} /></span>} />
       </div>
       <div style={{ flex: 1, overflow: 'auto', padding: '4px 18px 120px' }}>
@@ -1625,28 +1679,15 @@ function Briefings({ onOpen }) {
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{TT('Сводка дня','Today\'s brief')}</span>
         </div>
         <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.55, color: 'var(--text)', textWrap: 'pretty' }}>
-          <b style={{ color: 'var(--crit)' }}>{GLOBAL_STATS.critical} {TT('критических событий','critical events')}</b>{' '}
-          {TT(`активны в ${GLOBAL_STATS.countries} странах.`, `active across ${GLOBAL_STATS.countries} countries.`)}
+          <b style={{ color: 'var(--crit)' }}>{flash.length} {TT('вспышек','flash')}</b>{' '}
+          {TT(`за неделю, ${rising.length} нарастающих угроз в ${GLOBAL_STATS.countries} странах.`, `this week, ${rising.length} rising threats across ${GLOBAL_STATS.countries} countries.`)}
           {t1 && ' ' + t1.name + ' (' + t1.place + ')' + (t2 ? TT(` и ${t2.name} (${t2.place}) несут наибольшую тяжесть.`, ` and ${t2.name} (${t2.place}) carry the highest severity.`) : '.')}
         </p>
       </div>
 
-      <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, padding: '0 2px' }}>{TT('Последние сводки','Latest reports')}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-        {list.map(o => (
-          <div key={o.id} onClick={() => onOpen && onOpen(o)} className="panel" style={{ borderRadius: 18, padding: 16, cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
-              <SevDot sev={o.sev} size={8} />
-              <Tag>{(o.sources && o.sources[0]) || o.cat || TT('Источник','Source')}</Tag>
-              <span style={{ marginLeft: 'auto', fontSize: 11.5, color: 'var(--text3)' }}>{o.since}</span>
-            </div>
-            <div style={{ fontSize: 15.5, fontWeight: 600, color: 'var(--text)', letterSpacing: -0.2, lineHeight: 1.25, display: 'flex', alignItems: 'center', gap: 7 }}>
-              <Flag code={o.code} />{o.name} · {o.place}
-            </div>
-            {o.headline && <p style={{ margin: '7px 0 0', fontSize: 13, lineHeight: 1.5, color: 'var(--text2)', textWrap: 'pretty' }}>{o.headline}</p>}
-          </div>
-        ))}
-      </div>
+      <Section dot="var(--crit)" label={TT('Вспышка — этой недели','Flash — erupted this week')} items={flash} />
+      <Section dot="var(--sev-warn)" label={TT('Нарастает — устойчивая угроза','Rising — sustained threat')} items={rising} />
+      <Section dot="var(--sev-monitor)" label={TT('Наблюдение','Monitoring')} items={monitor} />
       </div>
     </div>
   );
