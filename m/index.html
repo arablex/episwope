@@ -12,7 +12,10 @@
 <style>
   /* real Mapbox globe inside the home hero */
   .mapglobe .mapboxgl-ctrl-logo, .mapglobe .mapboxgl-ctrl-attrib { display:none !important; }
-  .mapglobe canvas { outline:none; }
+  /* warm "stylized" tint — turn the grey Mapbox globe brownish-coral to match
+     the app. Only the map canvas is filtered; HTML markers keep their colour. */
+  .mapglobe canvas { outline:none; filter: sepia(0.62) saturate(1.5) hue-rotate(-14deg) brightness(0.92) contrast(1.08); }
+  .theme-light .mapglobe canvas, body.page-light .mapglobe canvas { filter: sepia(0.42) saturate(1.35) hue-rotate(-12deg) brightness(1.02) contrast(1.02); }
   :root {
     --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
     --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
@@ -535,10 +538,10 @@ function WavingFlag({ code, style = {} }) {
   if (!code) return null;
   const uid = useUid('flag');
   return (
-    <div aria-hidden="true" style={{ position: 'absolute', left: -46, top: -36, width: 320, height: 214,
-      pointerEvents: 'none', zIndex: 0, transform: 'rotate(-7deg)', opacity: 0.55,
-      WebkitMaskImage: 'radial-gradient(125% 125% at 12% 4%, #000 32%, transparent 72%)',
-      maskImage: 'radial-gradient(125% 125% at 12% 4%, #000 32%, transparent 72%)', ...style }}>
+    <div aria-hidden="true" style={{ position: 'absolute', left: -54, top: -44, width: 440, height: 250,
+      pointerEvents: 'none', zIndex: 0, transform: 'rotate(-7deg)', opacity: 0.5,
+      WebkitMaskImage: 'radial-gradient(150% 150% at 4% 6%, #000 22%, transparent 66%)',
+      maskImage: 'radial-gradient(150% 150% at 4% 6%, #000 22%, transparent 66%)', ...style }}>
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <filter id={uid}>
           <feTurbulence type="fractalNoise" baseFrequency="0.011 0.026" numOctaves="2" seed="4" result="n">
@@ -1372,9 +1375,11 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
           <TrajectoryBg data={o.curve} color={(window.Sev && Sev[o.sev] && Sev[o.sev].color) || 'var(--crit)'} />
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 78% 14%, var(--hero-glow), transparent 60%)' }} />
           <div style={{ position: 'absolute', right: -42, top: 70, opacity: 0.85 }}>
-            <MapGlobe center={[o.lon, o.lat]} zoom={2.4} spin interactive={false}
+            <MapGlobe center={[o.lon, o.lat]} zoom={1.85} spin interactive={false}
               markers={[{ id: o.id, lat: o.lat, lon: o.lon, sev: o.sev }]}
-              boxStyle={{ width: 210, height: 210, borderRadius: '50%', overflow: 'hidden' }} />
+              boxStyle={{ width: 210, height: 210, borderRadius: '50%', overflow: 'hidden',
+                WebkitMaskImage: 'linear-gradient(to bottom, #000 56%, transparent 96%)',
+                maskImage: 'linear-gradient(to bottom, #000 56%, transparent 96%)' }} />
           </div>
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 90, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
           <BackBar onClose={onClose} onShare={() => setShare(true)} onBell={() => onSetAlert && onSetAlert(o)} />
@@ -1833,9 +1838,11 @@ function CountryView({ country, nav }) {
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 84% 8%, var(--hero-glow), transparent 58%)' }} />
         <WavingFlag code={country.code} />
         <div style={{ position: 'absolute', right: -44, top: 26, opacity: 0.92 }}>
-          <MapGlobe center={[country.lon, country.lat]} zoom={2.4} spin interactive={false}
+          <MapGlobe center={[country.lon, country.lat]} zoom={1.85} spin interactive={false}
             markers={country.list.map(o => ({ id: o.id, lat: o.lat, lon: o.lon, sev: o.sev }))}
-            boxStyle={{ width: 206, height: 206, borderRadius: '50%', overflow: 'hidden' }} />
+            boxStyle={{ width: 206, height: 206, borderRadius: '50%', overflow: 'hidden',
+              WebkitMaskImage: 'linear-gradient(to bottom, #000 56%, transparent 96%)',
+              maskImage: 'linear-gradient(to bottom, #000 56%, transparent 96%)' }} />
         </div>
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
         <MoreBar nav={nav} trailing={<span className="iconbtn"><Icon name="share" size={18} /></span>} />
