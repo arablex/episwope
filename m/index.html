@@ -155,6 +155,16 @@
   }
   .no-motion .wv-ring, .no-motion .wv-band { display: none !important; }
 
+  /* waving-flag sheen — a light highlight drifting across like wind */
+  .flag-sheen{
+    background: linear-gradient(108deg, transparent 32%, rgba(255,255,255,0.26) 50%, transparent 68%);
+    background-size: 240% 100%;
+    mix-blend-mode: screen;
+    animation: flagsheen 7s ease-in-out infinite;
+  }
+  @keyframes flagsheen{ 0%{ background-position: 150% 0; } 100%{ background-position: -50% 0; } }
+  .no-motion .flag-sheen{ animation: none !important; }
+
   /* living background — drifting glow blobs + faint twinkling star-dots */
   .amb-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .amb-blob { position: absolute; border-radius: 50%; filter: blur(50px); will-change: transform; opacity: 0.6; }
@@ -481,6 +491,31 @@ function MapGlobe({ markers = [], onPickMarker = null, center = null, zoom = nul
     if (map.isStyleLoaded()) placeMarkers(); else map.once('load', placeMarkers);
   }, [markers]);
   return <div ref={ref} className="mapglobe" style={boxStyle || { position:'absolute', inset:0, width:'100%', height:'100%' }} />;
+}
+
+// ── giant animated waving flag (decorative header background) ──
+function WavingFlag({ code, style = {} }) {
+  if (!code) return null;
+  const uid = useUid('flag');
+  return (
+    <div aria-hidden="true" style={{ position: 'absolute', left: -46, top: -36, width: 320, height: 214,
+      pointerEvents: 'none', zIndex: 0, transform: 'rotate(-7deg)', opacity: 0.55,
+      WebkitMaskImage: 'radial-gradient(125% 125% at 12% 4%, #000 32%, transparent 72%)',
+      maskImage: 'radial-gradient(125% 125% at 12% 4%, #000 32%, transparent 72%)', ...style }}>
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <filter id={uid}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.011 0.026" numOctaves="2" seed="4" result="n">
+            <animate attributeName="baseFrequency" dur="12s" values="0.011 0.026;0.016 0.02;0.011 0.026" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+      <img src={`https://flagcdn.com/${String(code).toLowerCase()}.svg`} alt=""
+        onError={(e) => { e.target.style.display = 'none'; }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, filter: `url(#${uid}) saturate(1.05)`, boxShadow: '0 14px 36px -16px rgba(0,0,0,0.5)' }} />
+      <div className="flag-sheen" style={{ position: 'absolute', inset: 0, borderRadius: 8 }} />
+    </div>
+  );
 }
 
 // ── dotted globe ───────────────────────────────────────────────
@@ -1758,6 +1793,7 @@ function CountryView({ country, nav }) {
           WebkitMaskImage: 'radial-gradient(135% 120% at 62% -12%, #000 34%, transparent 76%)',
           maskImage: 'radial-gradient(135% 120% at 62% -12%, #000 34%, transparent 76%)', opacity: 0.5 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 84% 8%, var(--hero-glow), transparent 58%)' }} />
+        <WavingFlag code={country.code} />
         <div style={{ position: 'absolute', right: -44, top: 26, opacity: 0.92 }}>
           <MapGlobe center={[country.lon, country.lat]} zoom={2.4} spin interactive={false}
             markers={country.list.map(o => ({ id: o.id, lat: o.lat, lon: o.lon, sev: o.sev }))}
