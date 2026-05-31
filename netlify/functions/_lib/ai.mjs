@@ -2,15 +2,21 @@
 // Shared AI provider router + risk-analysis prompt builder.
 // Used by ai-brief.mjs (in-app, free hook) and pro-briefing.mjs (Pro email).
 //
-// Provider is chosen by which env var is set, in priority order:
-//   1. DEEPSEEK_API_KEY  → deepseek-chat (OpenAI-compatible)
-//   2. GEMINI_API_KEY    → gemini-2.0-flash (FREE tier)
-//   3. ANTHROPIC_API_KEY → claude-haiku-4-5 (paid fallback)
+// Provider is chosen by which env var is set, in priority order.
+// Card-free free tiers first (Groq, OpenRouter) so the function works even
+// when Google billing is unavailable:
+//   1. GROQ_API_KEY       → llama-3.3-70b (FREE, no card required)
+//   2. OPENROUTER_API_KEY → free model    (FREE tier, no card required)
+//   3. GEMINI_API_KEY     → gemini-2.0-flash (FREE, needs Google billing)
+//   4. DEEPSEEK_API_KEY   → deepseek-chat (cheap, paid)
+//   5. ANTHROPIC_API_KEY  → claude-haiku-4-5 (paid fallback)
 
 export function activeProvider() {
-  if (process.env.DEEPSEEK_API_KEY)  return 'deepseek';
-  if (process.env.GEMINI_API_KEY)    return 'gemini';
-  if (process.env.ANTHROPIC_API_KEY) return 'claude';
+  if (process.env.GROQ_API_KEY)       return 'groq';
+  if (process.env.OPENROUTER_API_KEY) return 'openrouter';
+  if (process.env.GEMINI_API_KEY)     return 'gemini';
+  if (process.env.DEEPSEEK_API_KEY)   return 'deepseek';
+  if (process.env.ANTHROPIC_API_KEY)  return 'claude';
   return null;
 }
 
@@ -53,12 +59,22 @@ ${hlBlock || '(no headlines available — say that no source material is availab
 export async function runAnalysis(prompt, { maxTokens = 220 } = {}) {
   const provider = activeProvider();
   if (!provider) throw new Error('No AI provider configured');
-  if (provider === 'deepseek') {
-    return callOpenAICompat('https://api.deepseek.com/chat/completions',
-      process.env.DEEPSEEK_API_KEY, 'deepseek-chat', prompt, maxTokens);
+  if (provider === 'groq') {
+    return callOpenAICompat('https://api.groq.com/openai/v1/chat/completions',
+      process.env.GROQ_API_KEY, 'llama-3.3-70b-versatile', prompt, maxTokens);
+  }
+  if (provider === 'openrouter') {
+    // Default to a free model; override with OPENROUTER_MODEL env if desired.
+    const model = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free';
+    return callOpenAICompat('https://openrouter.ai/api/v1/chat/completions',
+      process.env.OPENROUTER_API_KEY, model, prompt, maxTokens);
   }
   if (provider === 'gemini') {
     return callGemini(process.env.GEMINI_API_KEY, prompt, maxTokens);
+  }
+  if (provider === 'deepseek') {
+    return callOpenAICompat('https://api.deepseek.com/chat/completions',
+      process.env.DEEPSEEK_API_KEY, 'deepseek-chat', prompt, maxTokens);
   }
   return callClaude(process.env.ANTHROPIC_API_KEY, prompt, maxTokens);
 }
