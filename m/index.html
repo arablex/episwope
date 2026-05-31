@@ -15,7 +15,8 @@
   /* warm "stylized" tint — turn the grey Mapbox globe brownish-coral to match
      the app. Only the map canvas is filtered; HTML markers keep their colour. */
   .mapglobe canvas { outline:none; filter: sepia(0.62) saturate(1.5) hue-rotate(-14deg) brightness(0.92) contrast(1.08); }
-  .theme-light .mapglobe canvas, body.page-light .mapglobe canvas { filter: sepia(0.42) saturate(1.35) hue-rotate(-12deg) brightness(1.02) contrast(1.02); }
+  /* light theme: keep the clean default globe (warm tint over-yellowed it) */
+  .theme-light .mapglobe canvas, body.page-light .mapglobe canvas { filter: none; }
   :root {
     --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
     --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
