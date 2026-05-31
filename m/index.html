@@ -192,6 +192,18 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" data-presets="react">
+/* ===== i18n ===== */
+let APP_LANG = (function(){ try { return localStorage.getItem('vigilo-lang') || 'ru'; } catch(e){ return 'ru'; } })();
+function TT(ru, en){ return APP_LANG === 'ru' ? ru : en; }
+function setAppLang(l){ APP_LANG = l; try { localStorage.setItem('vigilo-lang', l); } catch(e){} }
+// Russian labels for severity, statuses, categories used across screens
+const RU_SEV = { critical:'Критич.', alert:'Алерт', warning:'Внимание', warn:'Внимание', monitor:'Монит.', watch:'Наблюд.' };
+const RU_STATUS = { Escalating:'Нарастает', Sustained:'Устойчивый', Spreading:'Распространяется', Monitoring:'Наблюдение',
+  Resurgent:'Возобновление', Endemic:'Эндемия', Emerging:'Появляется', Ongoing:'Продолжается', Seasonal_peak:'Сезонный пик',
+  Active:'Активно', Alert:'Алерт', Watch:'Наблюдение', Critical:'Критич.' };
+function locStatus(s){ return APP_LANG==='ru' ? (RU_STATUS[(s||'').replace(/\s/g,'_')] || RU_STATUS[s] || s) : s; }
+function locSev(s){ return APP_LANG==='ru' ? (RU_SEV[s] || s) : (s||'').replace(/^\w/,c=>c.toUpperCase()); }
+
 /* ===== vigilo-ui.jsx ===== */
 // vigilo-ui.jsx — shared design primitives for Vigilo
 // Exports to window: Icon, Sev, SevDot, Tag, Stat, Metric, GlobeViz, CaseCurve,
@@ -364,41 +376,52 @@ function MapGlobe({ markers = [], onPickMarker = null }) {
   const ref = useRefH(null);
   const mapRef = useRefH(null);
   const marksRef = useRefH([]);
+  const markersRef = useRefH(markers);
+  markersRef.current = markers;
+  const styleFor = d => d ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
+  const fogFor = d => d
+    ? { color:'rgb(20,22,27)', 'high-color':'rgb(36,40,52)', 'horizon-blend':0.08, 'space-color':'rgb(10,12,15)', 'star-intensity':0.18 }
+    : { color:'rgb(244,243,239)', 'high-color':'rgb(220,222,226)', 'horizon-blend':0.06, 'space-color':'rgb(244,243,239)', 'star-intensity':0 };
   useEffectH(() => {
     if (!ref.current || !window.mapboxgl) return;
-    const dark = !document.body.classList.contains('page-light');
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXJhYmxleCIsImEiOiJjbXBucHlncDMwbzdkMnBzOWZieGVobXhpIn0.Dyr6Mi6dRB7L-bNnUEVLsA';
     const map = new mapboxgl.Map({
       container: ref.current,
-      style: dark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
+      style: styleFor(!document.body.classList.contains('page-light')),
       projection: 'globe', center: [22, 8], zoom: 1.35, minZoom: 0.8, maxZoom: 6,
       attributionControl: false, pitchWithRotate: false, dragRotate: false,
     });
     mapRef.current = map;
-    map.on('style.load', () => {
-      map.setFog(dark
-        ? { color:'rgb(20,22,27)', 'high-color':'rgb(36,40,52)', 'horizon-blend':0.08, 'space-color':'rgb(10,12,15)', 'star-intensity':0.18 }
-        : { color:'rgb(244,243,239)', 'high-color':'rgb(220,222,226)', 'horizon-blend':0.06, 'space-color':'rgb(244,243,239)', 'star-intensity':0 });
+    map.on('style.load', () => map.setFog(fogFor(!document.body.classList.contains('page-light'))));
+    // Follow the app theme: restyle + re-place markers when body class flips
+    let lastDark = !document.body.classList.contains('page-light');
+    const obs = new MutationObserver(() => {
+      const d = !document.body.classList.contains('page-light');
+      if (d === lastDark) return; lastDark = d;
+      map.setStyle(styleFor(d));
+      map.once('style.load', () => { map.setFog(fogFor(d)); placeMarkers(); });
     });
-    return () => { try { map.remove(); } catch(e){} };
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    return () => { try { obs.disconnect(); map.remove(); } catch(e){} };
   }, []);
+  const placeMarkers = () => {
+    const map = mapRef.current; if (!map) return;
+    marksRef.current.forEach(m => m.remove());
+    marksRef.current = (markersRef.current || []).filter(mk => typeof mk.lat==='number' && typeof mk.lon==='number').map(mk => {
+      const s = (window.Sev && window.Sev[mk.sev]) || { color:'#9fb0c0', glow:false };
+      const big = mk.sev === 'critical' || mk.sev === 'alert';
+      const el = document.createElement('div');
+      el.style.cssText = `width:${big?13:9}px;height:${big?13:9}px;border-radius:50%;background:${s.color};`
+        + `border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 ${big?9:4}px ${s.glow?'var(--crit-glow)':'transparent'};`
+        + (onPickMarker && mk.id ? 'cursor:pointer;' : '');
+      if (onPickMarker && mk.id) el.addEventListener('click', () => onPickMarker(mk.id));
+      return new mapboxgl.Marker({ element: el }).setLngLat([mk.lon, mk.lat]).addTo(map);
+    });
+  };
   // sync markers
   useEffectH(() => {
     const map = mapRef.current; if (!map) return;
-    const place = () => {
-      marksRef.current.forEach(m => m.remove());
-      marksRef.current = markers.filter(mk => typeof mk.lat==='number' && typeof mk.lon==='number').map(mk => {
-        const s = (window.Sev && window.Sev[mk.sev]) || { color:'#9fb0c0', glow:false };
-        const big = mk.sev === 'critical' || mk.sev === 'alert';
-        const el = document.createElement('div');
-        el.style.cssText = `width:${big?13:9}px;height:${big?13:9}px;border-radius:50%;background:${s.color};`
-          + `border:1.5px solid rgba(255,255,255,.55);box-shadow:0 0 ${big?9:4}px ${s.glow?'var(--crit-glow)':'transparent'};`
-          + (onPickMarker && mk.id ? 'cursor:pointer;' : '');
-        if (onPickMarker && mk.id) el.addEventListener('click', () => onPickMarker(mk.id));
-        return new mapboxgl.Marker({ element: el }).setLngLat([mk.lon, mk.lat]).addTo(map);
-      });
-    };
-    if (map.isStyleLoaded()) place(); else map.once('load', place);
+    if (map.isStyleLoaded()) placeMarkers(); else map.once('load', placeMarkers);
   }, [markers]);
   return <div ref={ref} className="mapglobe" style={{ position:'absolute', inset:0, width:'100%', height:'100%' }} />;
 }
@@ -823,8 +846,8 @@ function OutbreakRow({ o, variant = 'rich', onClick }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12 }}>
         <div style={{ display: 'flex', gap: 18, marginLeft: 19 }}>
-          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Cases</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{fmt(o.cases)}</div></div>
-          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>CFR</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: crit ? 'var(--crit)' : 'var(--text)' }}>{o.cfr}%</div></div>
+          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{TT('Источн.','Sources')}</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{fmt(o.cases)}</div></div>
+          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{TT('Увер.','Conf.')}</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: crit ? 'var(--crit)' : 'var(--text)' }}>{o.cfr}%</div></div>
         </div>
         <div style={{ width: 76, height: 30, opacity: 0.95 }}>
           <CaseCurve data={o.curve} w={76} h={30} pad={3} dot={false} color={crit ? 'var(--crit)' : 'var(--sev-warn)'} />
@@ -914,7 +937,7 @@ function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sev
         <div className="glass" style={{ flex: 1, height: 46, borderRadius: 99, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px' }}>
           <Icon name="search" size={18} style={{ color: 'var(--text3)' }} />
           <input value={query} onChange={(e) => { const v = e.target.value; setQuery(v); if (v.trim() && y !== PEEK) setY(PEEK); }}
-            placeholder="Search outbreaks, countries…"
+            placeholder={TT('Поиск стран, болезней…','Search outbreaks, countries…')}
             style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--text)' }} />
           {q && <span onClick={() => setQuery('')} style={{ color: 'var(--text3)', cursor: 'pointer', display: 'flex' }}><Icon name="x" size={16} /></span>}
         </div>
@@ -926,13 +949,13 @@ function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sev
 
       {/* floating stat capsules — hide as sheet rises */}
       <div style={{ position: 'absolute', left: 22, top: 170, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
-        <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}><Stat align="left" value={GLOBAL_STATS.outbreaks} label="Active" /></div>
+        <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}><Stat align="left" value={GLOBAL_STATS.outbreaks} label={TT('Активно','Active')} /></div>
       </div>
       <div style={{ position: 'absolute', right: 22, top: 212, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
         <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: 'var(--crit)', lineHeight: 1, letterSpacing: -0.5 }}>{GLOBAL_STATS.critical}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.3, textTransform: 'uppercase' }}>Critical</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.3, textTransform: 'uppercase' }}>{TT('Критич.','Critical')}</div>
           </div>
         </div>
       </div>
@@ -949,12 +972,12 @@ function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sev
           <div style={{ width: 38, height: 4, borderRadius: 99, background: 'var(--border-strong)', margin: '0 auto 14px' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.3 }}>{q ? 'Search results' : (expanded ? 'All outbreaks' : 'Critical now')}</div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{q ? `${matches.length} match “${query}”` : `${expanded ? visible.length + ' active events' : crits.length + ' need attention'} · ${GLOBAL_STATS.countries} countries`}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.3 }}>{q ? TT('Результаты','Search results') : (expanded ? TT('Все события','All outbreaks') : TT('Сейчас критично','Critical now'))}</div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{q ? `${matches.length} ${TT('совпадений','match')} “${query}”` : `${expanded ? visible.length + TT(' активных событий',' active events') : crits.length + TT(' требуют внимания',' need attention')} · ${GLOBAL_STATS.countries} ${TT('стран','countries')}`}</div>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span className="iconbtn" onClick={(e) => { e.stopPropagation(); onOpenFilters && onOpenFilters(); }} style={{ width: 36, height: 36 }}><Icon name="sliders" size={17} /></span>
-              <span onClick={(e) => { e.stopPropagation(); setY(expanded ? PEEK : FULL); }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text2)', display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}>{expanded ? 'Less' : 'All'} <Icon name={expanded ? 'chevD' : 'chevR'} size={15} /></span>
+              <span onClick={(e) => { e.stopPropagation(); setY(expanded ? PEEK : FULL); }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text2)', display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}>{expanded ? TT('Свернуть','Less') : TT('Все','All')} <Icon name={expanded ? 'chevD' : 'chevR'} size={15} /></span>
             </div>
           </div>
         </div>
@@ -986,7 +1009,7 @@ function StatTile({ value, label, accent }) {
 function HomeWatch({ onOpen }) {
   const [filter, setFilter] = useStateH('all');
   const markers = OUTBREAKS.map(o => ({ lat: o.lat, lon: o.lon, sev: o.sev }));
-  const tabs = [['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['watch', 'Watch']];
+  const tabs = [['all', TT('Все','All')], ['critical', TT('Критич.','Critical')], ['alert', TT('Алерт','Alert')], ['watch', TT('Наблюд.','Watch')]];
   const list = OUTBREAKS.filter(o => filter === 'all' ? true : filter === 'watch' ? (o.sev === 'warning' || o.sev === 'monitor') : o.sev === filter)
     .sort((a, b) => b.idx - a.idx);
   return (
@@ -1148,7 +1171,7 @@ function ActionBar({ crit, onAlert }) {
           fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700, letterSpacing: 0.1, whiteSpace: 'nowrap',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           boxShadow: crit ? '0 10px 28px -8px var(--crit-glow)' : 'none',
-        }}><Icon name="bell" size={18} stroke={2} />Set alert</button>
+        }}><Icon name="bell" size={18} stroke={2} />{TT('Оповещать','Set alert')}</button>
         <button className="panel" style={{
           width: 52, height: 52, borderRadius: 16, border: '1px solid var(--border)', cursor: 'pointer',
           display: 'grid', placeItems: 'center', color: 'var(--text)',
@@ -1159,10 +1182,10 @@ function ActionBar({ crit, onAlert }) {
 }
 
 const MET = (o) => [
-  { label: 'Confirmed', value: fmt(o.cases), unit: 'cases' },
-  { label: 'Deaths', value: fmt(o.deaths) },
-  { label: 'Case fatality', value: o.cfr + '%', accent: o.sev === 'critical' },
-  { label: 'Reproduction Rt', value: o.rt, trend: o.rt > 1 ? 1 : -1 },
+  { label: TT('Источники','Sources'), value: fmt(o.cases), unit: TT('сообщений','reports') },
+  { label: TT('События','Events'), value: fmt(o.deaths || o.new24 || 0) },
+  { label: TT('Уверенность','Confidence'), value: o.cfr + '%', accent: o.sev === 'critical' },
+  { label: TT('Импульс','Momentum'), value: o.rt, trend: o.rt > 1 ? 1 : -1 },
 ];
 
 // ════════════════════════════════════════════════════════════════
@@ -1204,8 +1227,8 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
           <BackBar onClose={onClose} onShare={() => setShare(true)} onBell={() => onSetAlert && onSetAlert(o)} />
           <div style={{ position: 'absolute', left: 18, bottom: 16, right: 120 }}>
             <div style={{ display: 'flex', gap: 6, marginBottom: 11 }}>
-              <Tag tone="crit"><SevDot sev={o.sev} size={6} />{Sev[o.sev].label}</Tag>
-              <Tag>{o.status}</Tag>
+              <Tag tone="crit"><SevDot sev={o.sev} size={6} />{locSev(o.sev)}</Tag>
+              <Tag>{locStatus(o.status)}</Tag>
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.8, lineHeight: 1.04 }}>{o.name}</div>
             <div onClick={() => onCountry && onCountry(o.place)} style={{ fontSize: 13.5, color: 'var(--text2)', marginTop: 6, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 7 }}><Flag code={o.code} />{o.place} · {o.cat} <Icon name="chevR" size={14} /></div>
@@ -1214,11 +1237,11 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
 
         {/* severity index + key metrics */}
         <div className="panel" style={{ borderRadius: 22, padding: 18, marginTop: 16, display: 'flex', alignItems: 'center', gap: 18 }}>
-          <Ring value={o.idx} size={96} stroke={7} sub="Index" />
+          <Ring value={o.idx} size={96} stroke={7} sub={TT('Индекс','Index')} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Severity index</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{TT('Индекс риска','Severity index')}</div>
             <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.45, marginTop: 6, textWrap: 'pretty' }}>
-              Composite of case load, fatality rate and transmission velocity. <b style={{ color: 'var(--text)' }}>{o.idx}/100</b> places this in the top tier of active events.
+              {TT('Композит из числа источников, корроборации и скорости нарастания.','Composite of case load, fatality rate and transmission velocity.')} <b style={{ color: 'var(--text)' }}>{o.idx}/100</b> {TT('— в верхней группе активных событий.','places this in the top tier of active events.')}
             </div>
           </div>
         </div>
@@ -1229,17 +1252,17 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
         </div>
 
         {/* case curve */}
-        <SectionTitle right={<Tag>14 days</Tag>}>New cases</SectionTitle>
+        <SectionTitle right={<Tag>{TT('14 дней','14 days')}</Tag>}>{TT('Динамика','New cases')}</SectionTitle>
         <div className="panel" style={{ borderRadius: 20, padding: '16px 14px 8px' }}>
           <CaseCurve data={o.curve} w={330} h={120} pad={8} grid labels={['−14d', '−7d', 'Today']} color="var(--crit)" />
         </div>
 
         {/* AI brief */}
-        <SectionTitle>Intelligence</SectionTitle>
+        <SectionTitle>{TT('Аналитика','Intelligence')}</SectionTitle>
         <AIBrief o={o} />
 
         {/* affected regions */}
-        <SectionTitle>Affected regions</SectionTitle>
+        <SectionTitle>{TT('Затронутые регионы','Affected regions')}</SectionTitle>
         <div className="panel" style={{ borderRadius: 20, padding: 6 }}>
           {[['Kigali', 28], ['Eastern Province', 9], ['Southern Province', 4]].map(([r, n], i, a) => (
             <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
@@ -1290,7 +1313,7 @@ function DetailAnalytical({ o, onClose }) {
         <div style={{ padding: '4px 18px 130px' }}>
           {/* title block */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 11 }}>
-            <Tag tone="crit"><SevDot sev={o.sev} size={6} />{Sev[o.sev].label}</Tag>
+            <Tag tone="crit"><SevDot sev={o.sev} size={6} />{locSev(o.sev)}</Tag>
             <Tag>{o.status}</Tag>
             <Tag><Icon name="clock" size={12} />{o.since}</Tag>
           </div>
@@ -1402,14 +1425,14 @@ function Watchlist({ onOpen, sevFilter = 'all', onSeverity, cats, onOpenFilters 
   return (
     <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '58px 18px 0', flexShrink: 0 }}>
-        <PageHead title="Watchlist" sub={`${list.length} of ${OUTBREAKS.length} events · ${GLOBAL_STATS.countries} countries`}
+        <PageHead title={TT('Список','Watchlist')} sub={`${list.length} ${TT('из','of')} ${OUTBREAKS.length} ${TT('событий','events')} · ${GLOBAL_STATS.countries} ${TT('стран','countries')}`}
           action={<span className="iconbtn" onClick={onOpenFilters}><Icon name="sliders" size={18} /></span>} />
-        <Segmented tabs={[['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['watch', 'Watch']]} value={f} onChange={onSeverity} />
+        <Segmented tabs={[['all', TT('Все','All')], ['critical', TT('Критич.','Critical')], ['alert', TT('Алерт','Alert')], ['watch', TT('Наблюд.','Watch')]]} value={f} onChange={onSeverity} />
       </div>
       <div style={{ flex: 1, overflow: 'auto', padding: '2px 18px 120px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
           {list.length ? list.map(o => <OutbreakRow key={o.id} o={o} variant="rich" onClick={() => onOpen && onOpen(o)} />)
-            : <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13.5, padding: '24px 0' }}>No events match your filters.</div>}
+            : <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13.5, padding: '24px 0' }}>{TT('Нет событий по фильтрам.','No events match your filters.')}</div>}
         </div>
       </div>
     </div>
@@ -1429,7 +1452,7 @@ function Briefings({ onOpen }) {
   return (
     <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '58px 18px 8px', flexShrink: 0 }}>
-        <PageHead title="Briefings" sub="Curated intelligence · updated continuously"
+        <PageHead title={TT('Брифинги','Briefings')} sub={TT('Кураторская аналитика · обновляется постоянно','Curated intelligence · updated continuously')}
           action={<span className="iconbtn"><Icon name="filter" size={18} /></span>} />
       </div>
       <div style={{ flex: 1, overflow: 'auto', padding: '4px 18px 120px' }}>
@@ -1623,7 +1646,7 @@ function CountryView({ country, nav }) {
   const dColor = (s) => s >= 0.7 ? 'var(--crit)' : s >= 0.4 ? 'var(--sev-warn)' : 'var(--sev-monitor)';
   const top = country.list[0];
   const avgCfr = (country.list.reduce((s, o) => s + o.cfr, 0) / country.list.length).toFixed(1);
-  const tabs = [['overview', 'Overview'], ['health', 'Health'], ['risks', 'Risks'], ['history', 'History']];
+  const tabs = [['overview', TT('Обзор','Overview')], ['health', TT('Здоровье','Health')], ['risks', TT('Риски','Risks')], ['history', TT('История','History')]];
 
   const DomainRow = (d, i, a) => (
     <div key={d.key} style={{ padding: '14px 0', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
@@ -1666,7 +1689,7 @@ function CountryView({ country, nav }) {
             <Flag code={country.code} size="lg" />
             <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.7, lineHeight: 1 }}>{country.place}</span>
           </div>
-          <div style={{ marginTop: 10 }}><Tag tone={country.maxSev === 'critical' ? 'crit' : 'neutral'}><SevDot sev={country.maxSev} size={6} />{Sev[country.maxSev].label} risk</Tag></div>
+          <div style={{ marginTop: 10 }}><Tag tone={country.maxSev === 'critical' ? 'crit' : 'neutral'}><SevDot sev={country.maxSev} size={6} />{locSev(country.maxSev)} risk</Tag></div>
         </div>
       </div>
 
@@ -1782,7 +1805,7 @@ function CountryView({ country, nav }) {
 }
 
 // ── PROFILE / ACCOUNT ──────────────────────────────────────────
-function Profile({ nav, plan, prefs, setPref, lang, setLang }) {
+function Profile({ nav, plan, prefs, setPref, lang, setLang, light, setLight }) {
   const isPro = plan === 'pro';
   const T = lang === 'ru' ? {
     role: 'Эпидемиолог · WHO Health Emergencies', plan: 'Текущий план', active: 'Активна', used: '3 / 3 алертов',
@@ -1791,6 +1814,7 @@ function Profile({ nav, plan, prefs, setPref, lang, setLang }) {
     notif: 'Уведомления', push: 'Push-алерты', email: 'Ежедневный дайджест', quiet: 'Не беспокоить',
     acc: 'Аккаунт', sub: 'Подписка', exp: 'Экспорт данных', priv: 'Конфиденциальность',
     appL: 'Приложение', language: 'Язык', signout: 'Выйти', free: 'Free',
+    theme: 'Тема', dark: 'Тёмная', lightL: 'Светлая',
   } : {
     role: 'Epidemiologist · WHO Health Emergencies', plan: 'Current plan', active: 'Active', used: '3 / 3 alerts used',
     upgrade: 'Upgrade to Pro', manage: 'Manage subscription',
@@ -1798,6 +1822,7 @@ function Profile({ nav, plan, prefs, setPref, lang, setLang }) {
     notif: 'Notifications', push: 'Push alerts', email: 'Daily email digest', quiet: 'Quiet hours',
     acc: 'Account', sub: 'Subscription', exp: 'Export data', priv: 'Privacy & data',
     appL: 'App', language: 'Language', signout: 'Sign out', free: 'Free',
+    theme: 'Theme', dark: 'Dark', lightL: 'Light',
   };
   return (
     <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
@@ -1839,6 +1864,19 @@ function Profile({ nav, plan, prefs, setPref, lang, setLang }) {
                   background: lang === k ? 'var(--text)' : 'transparent', color: lang === k ? 'var(--bg)' : 'var(--text2)',
                   fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600 }}>{l}</button>
               ))}
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '14px 0', borderTop: '1px solid var(--border)' }}>
+            <span style={{ color: 'var(--text2)' }}><Icon name={light ? 'sun' : 'moon'} size={19} /></span>
+            <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>{T.theme}</span>
+            <div style={{ display: 'flex', gap: 4, background: 'var(--chip)', borderRadius: 99, padding: 3 }}>
+              {[['dark', T.dark], ['light', T.lightL]].map(([k, l]) => {
+                const on = (k === 'light') === !!light;
+                return <button key={k} onClick={() => setLight && setLight(k === 'light')} style={{
+                  height: 30, padding: '0 14px', borderRadius: 99, border: 'none', cursor: 'pointer',
+                  background: on ? 'var(--text)' : 'transparent', color: on ? 'var(--bg)' : 'var(--text2)',
+                  fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600 }}>{l}</button>;
+              })}
             </div>
           </div>
         </ListGroup>
@@ -1936,7 +1974,7 @@ function NewAlertSheet({ onClose, onCreate, preset }) {
   const [push, setPush] = useStateM(true);
   const [email, setEmail] = useStateM(false);
 
-  const label = type === 'pathogen' ? pathogen : type === 'region' ? region : `${Sev[sev].label}+ anywhere`;
+  const label = type === 'pathogen' ? pathogen : type === 'region' ? region : `${locSev(sev)}+ anywhere`;
   const create = () => { onCreate({ id: 'r' + Date.now(), type, label, sev: type === 'severity' ? sev : 'alert', push, email }); onClose(); };
 
   return (
@@ -1961,7 +1999,7 @@ function NewAlertSheet({ onClose, onCreate, preset }) {
             {['critical', 'alert', 'warning'].map((s, i, a) => (
               <div key={s} onClick={() => setSev(s)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '13px 0', cursor: 'pointer', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
                 <SevDot sev={s} size={9} />
-                <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>{Sev[s].label} or higher</span>
+                <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>{locSev(s)} or higher</span>
                 <span style={{ width: 20, height: 20, borderRadius: 99, border: '2px solid ' + (sev === s ? 'var(--crit)' : 'var(--border-strong)'), display: 'grid', placeItems: 'center' }}>
                   {sev === s && <span style={{ width: 10, height: 10, borderRadius: 99, background: 'var(--crit)' }} />}
                 </span>
@@ -2016,7 +2054,7 @@ Object.assign(window, { CountryView, Profile, Plans, NewAlertSheet, FiltersSheet
 // ── FILTERS SHEET (severity + category toggles) ────────────────
 function FiltersSheet({ cats, onToggleCat, sevFilter, onSeverity, onClose, onReset }) {
   const [open, setOpen] = useStateM(null);
-  const sevChips = [['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['warning', 'Warning'], ['monitor', 'Monitor']];
+  const sevChips = [['all', TT('Все','All')], ['critical', TT('Критич.','Critical')], ['alert', TT('Алерт','Alert')], ['warning', TT('Внимание','Warning')], ['monitor', TT('Монит.','Monitor')]];
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 80, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }} />
@@ -2115,7 +2153,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "motion": true
 }/*EDITMODE-END*/;
 
-function Shell() {
+function Shell({ light, setLight } = {}) {
   const [tab, setTab] = useState('globe');
   const [stack, setStack] = useState([]);
   const rootRef = React.useRef(null);
@@ -2145,7 +2183,8 @@ function Shell() {
   const [modal, setModal] = useState(null);
   const [tracked, setTracked] = useState({ 'mbg-rw': true, 'mpx-cd': true, 'cho-sd': false });
   const [prefs, setPrefs] = useState({ push: true, email: false });
-  const [lang, setLang] = useState('ru');
+  const [lang, setLangState] = useState(APP_LANG);
+  const setLang = (l) => { setAppLang(l); setLangState(l); };
   const [rules, setRules] = useState([
     { id: 'r1', type: 'severity', sev: 'critical', label: 'Critical+ anywhere', push: true, email: false },
     { id: 'r2', type: 'region', sev: 'alert', label: 'Sudan', push: true, email: true },
@@ -2177,7 +2216,7 @@ function Shell() {
   const screenFor = (v) => {
     if (v.type === 'outbreak') return <DetailImmersive o={v.data} onClose={back} onCountry={nav.openCountry} onSetAlert={(o) => nav.openNewAlert({ type: 'pathogen', label: o.name })} />;
     if (v.type === 'country') return <CountryView country={v.data} nav={nav} />;
-    if (v.type === 'profile') return <Profile nav={nav} plan="free" prefs={prefs} setPref={(k, val) => setPrefs(p => ({ ...p, [k]: val }))} lang={lang} setLang={setLang} />;
+    if (v.type === 'profile') return <Profile nav={nav} plan="free" prefs={prefs} setPref={(k, val) => setPrefs(p => ({ ...p, [k]: val }))} lang={lang} setLang={setLang} light={light} setLight={setLight} />;
     if (v.type === 'plans') return <Plans nav={nav} />;
     return null;
   };
@@ -2248,12 +2287,15 @@ class ErrBoundary extends React.Component {
 // Dark-first per the prototype; theme persisted in localStorage.
 function App() {
   const saved = (function(){ try { return localStorage.getItem('vigilo-theme'); } catch(e){ return null; } })();
-  const light = saved === 'light';
-  useEffect(() => { document.body.classList.toggle('page-light', light); }, [light]);
+  const [light, setLight] = useState(saved === 'light');
+  useEffect(() => {
+    document.body.classList.toggle('page-light', light);
+    try { localStorage.setItem('vigilo-theme', light ? 'light' : 'dark'); } catch(e){}
+  }, [light]);
   const vars = { '--crit': '#F26A41', '--crit-glow': '#F26A4180', height: '100dvh', width: '100%', position: 'relative', overflow: 'hidden' };
   return (
     <div className={light ? 'theme-light' : ''} style={vars}>
-      <ErrBoundary><Shell /></ErrBoundary>
+      <ErrBoundary><Shell light={light} setLight={setLight} /></ErrBoundary>
     </div>
   );
 }
