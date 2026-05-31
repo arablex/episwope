@@ -3608,6 +3608,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if(window.renderBriefView) window.renderBriefView();
         setMobTab('home');
         if(window._vtActive) window._vtActive('brief');
+        document.getElementById('mobFabFilters')?.classList.remove('show');
       } else if(a === 'alerts'){
         document.querySelector('.mob-subs-overlay')?.classList.add('mob-active');
       }
