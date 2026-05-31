@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vigilo — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+    --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
+    --font-mono: 'Geist Mono', 'IBM Plex Mono', ui-monospace, monospace;
+
+    --bg: #0A0C0E;
+    --bg2: #0E1116;
+    --amb: radial-gradient(125% 70% at 50% -8%, color-mix(in srgb, var(--crit) 9%, transparent), transparent 56%), radial-gradient(95% 60% at 100% 102%, rgba(120,150,180,0.07), transparent 55%), var(--bg);
+    --sheet: #0E1116;
+    --panel: rgba(255,255,255,0.045);
+    --panel-shadow: none;
+    --glass-bg: rgba(20,24,30,0.55);
+    --glass-bd: rgba(255,255,255,0.10);
+    --chip: rgba(255,255,255,0.06);
+    --nav-active: rgba(255,255,255,0.10);
+    --nav-badge-ring: var(--sheet);
+    --track: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.085);
+    --border-strong: rgba(255,255,255,0.17);
+    --text: #ECEEF1;
+    --text2: rgba(236,238,241,0.62);
+    --text3: rgba(236,238,241,0.40);
+
+    --crit: #F26A41;
+    --crit-glow: rgba(242,106,65,0.50);
+    --sev-alert: #C7D0D9;
+    --sev-warn: #8E97A1;
+    --sev-monitor: #5E6772;
+
+    --hero-glow: rgba(242,106,65,0.12);
+    --globe-hi: #1c222a;
+    --globe-mid: #10141a;
+    --globe-lo: #070a0e;
+    --globe-dot: #9fb0c0;
+    --globe-atm: rgba(110,140,175,0.20);
+    --globe-shade: transparent;
+  }
+  .theme-light {
+    --bg: #F4F3EF;
+    --bg2: #ECEBE6;
+    --amb: radial-gradient(125% 70% at 50% -8%, color-mix(in srgb, var(--crit) 7%, transparent), transparent 56%), radial-gradient(95% 60% at 100% 102%, rgba(90,120,150,0.06), transparent 55%), var(--bg);
+    --sheet: #FBFAF7;
+    --panel: #FFFFFF;
+    --panel-shadow: 0 1px 2px rgba(20,24,30,0.05), 0 10px 30px -20px rgba(20,24,30,0.22);
+    --glass-bg: rgba(255,255,255,0.62);
+    --glass-bd: rgba(20,22,26,0.07);
+    --chip: rgba(20,22,26,0.05);
+    --nav-active: rgba(20,22,26,0.07);
+    --nav-badge-ring: var(--sheet);
+    --track: rgba(20,22,26,0.09);
+    --border: rgba(20,22,26,0.09);
+    --border-strong: rgba(20,22,26,0.20);
+    --text: #16191D;
+    --text2: rgba(22,25,29,0.64);
+    --text3: rgba(22,25,29,0.42);
+
+    --crit-glow: rgba(242,106,65,0.38);
+    --sev-alert: #3D4651;
+    --sev-warn: #79828C;
+    --sev-monitor: #A7AEB6;
+
+    --hero-glow: rgba(242,106,65,0.10);
+    --globe-hi: #FFFFFF;
+    --globe-mid: #E9EBE6;
+    --globe-lo: #D6D9D2;
+    --globe-dot: #6B7682;
+    --globe-atm: rgba(120,140,165,0.18);
+    --globe-shade: transparent;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  body { background: #0b0c0f; transition: background .3s; }
+  body.page-light { background: #E7E6E1; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); box-shadow: var(--panel-shadow); }
+  .glass {
+    background: var(--glass-bg); border: 1px solid var(--glass-bd);
+    backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%);
+  }
+  .mono { font-family: var(--font-mono); font-feature-settings: 'tnum' 1; letter-spacing: -0.2px; }
+  .iconbtn {
+    width: 38px; height: 38px; border-radius: 99px; display: grid; place-items: center;
+    background: var(--chip); border: 1px solid var(--border); color: var(--text2); cursor: pointer; flex-shrink: 0;
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 99px; background: var(--crit); display: inline-block; animation: livepulse 2.2s ease-out infinite; }
+  @keyframes livepulse { 0% { box-shadow: 0 0 0 0 var(--crit-glow); } 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .ping { transform-box: fill-box; transform-origin: center; animation: ping 2.8s ease-out infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.85; } 100% { transform: scale(3.4); opacity: 0; } }
+  .no-motion .live-dot, .no-motion .ping { animation: none !important; }
+
+  .screen-fade { animation: fade .42s cubic-bezier(.33,.1,.18,1); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .screen-push { animation: slideUp .46s cubic-bezier(.32,.72,0,1); will-change: transform; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+  .modal-in { animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .sheet-up { animation: slideUp .42s cubic-bezier(.32,.72,0,1); }
+  .no-motion .screen-push, .no-motion .sheet-up, .no-motion .modal-in, .no-motion .screen-fade, .no-motion .reveal-layer { animation: none !important; }
+  .no-motion .reveal-layer { clip-path: none !important; }
+  .no-motion .reveal-ring { display: none !important; }
+
+  /* contagion reveal — screen blooms gently from the tapped point */
+  .reveal-layer { animation: contagion .72s cubic-bezier(.33,.1,.18,1) forwards; will-change: clip-path, opacity; }
+  @keyframes contagion {
+    0%   { clip-path: circle(0% at var(--ox) var(--oy)); opacity: .55; }
+    22%  { opacity: 1; }
+    100% { clip-path: circle(150% at var(--ox) var(--oy)); opacity: 1; }
+  }
+  .reveal-ring {
+    position: absolute; z-index: 60; width: 30px; height: 30px; margin: -15px 0 0 -15px;
+    border-radius: 50%; border: 1.5px solid var(--crit); pointer-events: none;
+    animation: revealping .6s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes revealping {
+    0% { transform: scale(.2); opacity: .9; }
+    100% { transform: scale(13); opacity: 0; }
+  }
+
+  /* water ripple — concentric rings spread across the app like circles in water */
+  .wv-ring {
+    position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%;
+    border: 1.4px solid color-mix(in srgb, var(--text) 24%, transparent); pointer-events: none;
+    transform: scale(.15); will-change: transform, opacity;
+    animation: wvspread var(--wv-dur, 1100ms) cubic-bezier(.22,.61,.25,1) forwards;
+  }
+  @keyframes wvspread {
+    0%   { transform: scale(.15); opacity: 0; }
+    9%   { opacity: var(--wv-op, .5); }
+    100% { transform: scale(var(--wv-max, 26)); opacity: 0; }
+  }
+  /* refracting crest — a thin blurred annulus that bends the content as it passes */
+  .wv-band {
+    position: absolute; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%;
+    pointer-events: none; transform: scale(.1); will-change: transform, opacity;
+    -webkit-mask: radial-gradient(circle, transparent 60%, #000 67%, #000 76%, transparent 84%);
+            mask: radial-gradient(circle, transparent 60%, #000 67%, #000 76%, transparent 84%);
+    backdrop-filter: blur(2.5px) brightness(1.05);
+    -webkit-backdrop-filter: blur(2.5px) brightness(1.05);
+    animation: wvspread var(--wv-dur, 1100ms) cubic-bezier(.22,.61,.25,1) forwards;
+  }
+  .no-motion .wv-ring, .no-motion .wv-band { display: none !important; }
+
+  /* living background — drifting glow blobs + faint twinkling star-dots */
+  .amb-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .amb-blob { position: absolute; border-radius: 50%; filter: blur(50px); will-change: transform; opacity: 0.6; }
+  .amb-blob-1 { width: 70%; height: 46%; left: -8%; top: -12%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--crit) 22%, transparent), transparent 68%);
+    animation: drift1 26s ease-in-out infinite; }
+  .amb-blob-2 { width: 64%; height: 50%; right: -14%; bottom: -16%;
+    background: radial-gradient(circle, rgba(120,150,185,0.16), transparent 68%);
+    animation: drift2 32s ease-in-out infinite; }
+  @keyframes drift1 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(8%, 6%) scale(1.12); }
+    66% { transform: translate(-5%, 3%) scale(0.96); }
+  }
+  @keyframes drift2 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    40% { transform: translate(-7%, -5%) scale(1.1); }
+    70% { transform: translate(4%, -2%) scale(0.94); }
+  }
+  .amb-star { position: absolute; border-radius: 50%;
+    background: var(--text); will-change: opacity, transform; }
+  @keyframes twinkle {
+    0%   { opacity: 0.06; transform: scale(0.72); }
+    50%  { opacity: var(--pk, 0.35); transform: scale(1.12); }
+    100% { opacity: 0.06; transform: scale(0.72); }
+  }
+  .no-motion .amb-blob, .no-motion .amb-star { animation: none !important; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-presets="react">
+/* ===== vigilo-ui.jsx ===== */
+// vigilo-ui.jsx — shared design primitives for Vigilo
+// Exports to window: Icon, Sev, SevDot, Tag, Stat, Metric, GlobeViz, CaseCurve,
+//                    Ring, BottomNav, Wordmark, LiveBadge, fmt
+// All visual tokens come from CSS vars defined in the host HTML (dark / .theme-light).
+
+const { useState, useEffect, useRef } = React;
+let _uidc = 0;
+const useUid = (p) => useRef(p + (++_uidc)).current;
+
+// ── number formatting ──────────────────────────────────────────
+const fmt = (n) => n.toLocaleString('en-US');
+
+// ── severity model ─────────────────────────────────────────────
+// Orange is reserved for CRITICAL only. Everything else rides a calm neutral ramp.
+const Sev = {
+  critical: { key: 'critical', label: 'Critical', color: 'var(--crit)', glow: true },
+  alert:    { key: 'alert',    label: 'Alert',    color: 'var(--sev-alert)' },
+  warning:  { key: 'warning',  label: 'Warning',  color: 'var(--sev-warn)' },
+  monitor:  { key: 'monitor',  label: 'Monitor',  color: 'var(--sev-monitor)' },
+};
+
+// ── icon set (Lucide-ish, 1.7 stroke, rounded) ─────────────────
+function Icon({ name, size = 20, stroke = 1.7, style = {}, fill = 'none' }) {
+  const p = {
+    globe: <><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></>,
+    list: <><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="3.5" cy="6" r="1.1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="18" r="1.1" fill="currentColor" stroke="none"/></>,
+    brief: <><path d="M5 4h10l4 4v12H5z"/><path d="M14 4v5h5"/><path d="M8.5 13h7M8.5 16.5h4.5"/></>,
+    bell: <><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></>,
+    user: <><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></>,
+    search: <><circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.6-3.6"/></>,
+    chevR: <path d="m9 5 7 7-7 7"/>,
+    chevL: <path d="m15 5-7 7 7 7"/>,
+    chevD: <path d="m5 9 7 7 7-7"/>,
+    arrowUR: <><path d="M7 17 17 7"/><path d="M8 7h9v9"/></>,
+    activity: <path d="M3 12h3.5l2.5-7 5 14 2.5-7H21"/>,
+    pin: <><path d="M12 21s7-6.3 7-11a7 7 0 0 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></>,
+    share: <><path d="M12 15V4"/><path d="m8 8 4-4 4 4"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></>,
+    plus: <><path d="M12 5v14M5 12h14"/></>,
+    filter: <path d="M3 5h18l-7 8v6l-4-2v-4z"/>,
+    sliders: <><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></>,
+    info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></>,
+    trendUp: <><path d="m4 16 5-5 4 3 7-8"/><path d="M16 6h4v4"/></>,
+    trendDown: <><path d="m4 8 5 5 4-3 7 8"/><path d="M16 18h4v-4"/></>,
+    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    alertT: <><path d="M12 3 2.5 19h19L12 3Z"/><path d="M12 10v4M12 17h.01"/></>,
+    layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></>,
+    x: <path d="M6 6l12 12M18 6 6 18"/>,
+    check: <path d="m5 12 5 5 9-11"/>,
+    sprout: <><path d="M12 21v-9"/><path d="M12 12c0-3.5-3-5-6-5 0 3.5 3 5 6 5Z"/><path d="M12 11c0-3 2.5-4.5 5.5-4.5C17.5 9.5 15 11 12 11Z"/></>,
+    spark: <path d="M12 3v5m0 8v5M3 12h5m8 0h5M6 6l3 3m6 6 3 3m0-12-3 3M9 15l-3 3"/>,
+    pulse: <path d="M3 12h4l2-5 4 12 2-7h6"/>,
+    flame: <path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c2 2 3 3.5 3 6a5 5 0 0 1-10 0c0-4 3-5 5-13Z"/>,
+    grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></>,
+    eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></>,
+    droplet: <path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/>,
+    wind: <><path d="M3 8h10a2.5 2.5 0 1 0-2.5-2.5"/><path d="M3 12h14a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16h7a2.2 2.2 0 1 1-2.2 2.2"/></>,
+    food: <><path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10"/><path d="M16 3c-1.5 0-2.5 2-2.5 5s1 4 2.5 4 2.5-1 2.5-4-1-5-2.5-5Zm0 13v5"/></>,
+    home: <><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></>,
+    power: <><path d="M12 3v8"/><path d="M6.5 7a8 8 0 1 0 11 0"/></>,
+    shield: <path d="M12 3 5 6v6c0 4 3 6.5 7 9 4-2.5 7-5 7-9V6l-7-3Z"/>,
+    plane: <path d="M21 15.5 13 11V5a1.5 1.5 0 0 0-3 0v6l-8 4.5V18l8-2.5V20l-2.5 1.5V23l4-1 4 1v-1.5L13 20v-4.5L21 18v-2.5Z"/>,
+    sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>,
+    moon: <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>,
+  }[name] || null;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}
+      stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"
+      style={{ display: 'block', flexShrink: 0, ...style }}>
+      {p}
+    </svg>
+  );
+}
+
+// ── severity dot ───────────────────────────────────────────────
+function SevDot({ sev, size = 8 }) {
+  const s = Sev[sev];
+  return (
+    <span style={{
+      width: size, height: size, borderRadius: 99, flexShrink: 0,
+      background: s.color, display: 'inline-block',
+      boxShadow: s.glow ? `0 0 0 3px color-mix(in srgb, ${s.color} 22%, transparent), 0 0 10px var(--crit-glow)` : 'none',
+    }} />
+  );
+}
+
+// ── tag / chip ─────────────────────────────────────────────────
+function Tag({ children, tone = 'neutral', style = {} }) {
+  const tones = {
+    neutral: { bg: 'var(--chip)', fg: 'var(--text2)', bd: 'var(--border)' },
+    crit:    { bg: 'color-mix(in srgb, var(--crit) 16%, transparent)', fg: 'var(--crit)', bd: 'color-mix(in srgb, var(--crit) 38%, transparent)' },
+    solid:   { bg: 'var(--text)', fg: 'var(--bg)', bd: 'transparent' },
+  }[tone];
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6, height: 24, padding: '0 10px',
+      borderRadius: 99, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2,
+      background: tones.bg, color: tones.fg, border: `1px solid ${tones.bd}`,
+      whiteSpace: 'nowrap', ...style,
+    }}>{children}</span>
+  );
+}
+
+// ── frosted stat capsule ───────────────────────────────────────
+function Stat({ value, label, sub, align = 'center' }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: align === 'center' ? 'center' : 'flex-start', gap: 2 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: 'var(--text)', lineHeight: 1, letterSpacing: -0.5 }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.3, textTransform: 'uppercase' }}>{label}</div>
+      {sub && <div style={{ fontSize: 11, color: 'var(--text2)' }}>{sub}</div>}
+    </div>
+  );
+}
+
+// ── metric (label + mono value) ────────────────────────────────
+function Metric({ label, value, unit, accent, trend }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.4, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+        <span className="mono" style={{ fontSize: 20, fontWeight: 500, color: accent ? 'var(--crit)' : 'var(--text)', letterSpacing: -0.4 }}>{value}</span>
+        {unit && <span className="mono" style={{ fontSize: 12, color: 'var(--text3)' }}>{unit}</span>}
+        {trend != null && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 1, fontSize: 11, color: trend > 0 ? 'var(--crit)' : 'var(--text2)', marginLeft: 2 }}>
+            <Icon name={trend > 0 ? 'trendUp' : 'trendDown'} size={13} stroke={2} />
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── wordmark ───────────────────────────────────────────────────
+function Wordmark({ size = 17 }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+      <span style={{ position: 'relative', width: size + 3, height: size + 3, display: 'grid', placeItems: 'center' }}>
+        <span style={{ position: 'absolute', inset: 0, borderRadius: 99, border: '1.6px solid var(--text)', opacity: 0.9 }} />
+        <span style={{ width: 5, height: 5, borderRadius: 99, background: 'var(--crit)', boxShadow: '0 0 8px var(--crit-glow)' }} />
+      </span>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: size, fontWeight: 700, letterSpacing: 0.2, color: 'var(--text)' }}>Vigilo</span>
+    </div>
+  );
+}
+
+// ISO country-code badge (replaces emoji flags)
+function Flag({ code, size = 'sm' }) {
+  const big = size === 'lg';
+  return (
+    <span className="mono" style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      height: big ? 26 : 17, minWidth: big ? 34 : 23, padding: big ? '0 7px' : '0 5px',
+      borderRadius: big ? 7 : 5, background: 'var(--chip)', border: '1px solid var(--border)',
+      color: 'var(--text2)', fontSize: big ? 13 : 10.5, fontWeight: 600, letterSpacing: 0.5,
+      flexShrink: 0, verticalAlign: 'middle',
+    }}>{code}</span>
+  );
+}
+
+function LiveBadge() {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: 'var(--text2)', letterSpacing: 0.4, textTransform: 'uppercase' }}>
+      <span className="live-dot" />Live
+    </span>
+  );
+}
+
+// ── dotted globe ───────────────────────────────────────────────
+function GlobeViz({ size = 300, lon0 = 18, lat0 = 0, zoom = 1, markers = [], halo = true, selId = null, onPickMarker = null }) {
+  const baseR = size / 2 * 0.88;
+  const R = baseR * zoom;
+  const cx = size / 2, cy = size / 2;
+  const tlt = lat0 * Math.PI / 180, ct = Math.cos(tlt), st = Math.sin(tlt);
+  const rot = (lat, lon) => {
+    const la = lat * Math.PI / 180, dl = (lon - lon0) * Math.PI / 180;
+    const px = Math.cos(la) * Math.sin(dl), py0 = Math.sin(la), pz0 = Math.cos(la) * Math.cos(dl);
+    return { x: px, y: py0 * ct - pz0 * st, z: py0 * st + pz0 * ct };
+  };
+  const dots = [];
+  for (let lat = -82; lat <= 82; lat += 7) {
+    const step = 7 / Math.max(0.25, Math.cos(lat * Math.PI / 180));
+    for (let lon = -180; lon < 180; lon += step) {
+      const p = rot(lat, lon);
+      if (p.z <= 0.05) continue;
+      dots.push({ sx: cx + R * p.x, sy: cy - R * p.y, op: 0.08 + 0.34 * p.z, r: (0.55 + 0.85 * p.z) * Math.min(zoom, 1.5), k: lat + '_' + lon.toFixed(0) });
+    }
+  }
+  const uid = useUid('glb');
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', overflow: 'visible' }}>
+      <defs>
+        <radialGradient id={uid + 'sph'} cx="38%" cy="30%" r="80%">
+          <stop offset="0%" stopColor="var(--globe-hi)" />
+          <stop offset="55%" stopColor="var(--globe-mid)" />
+          <stop offset="100%" stopColor="var(--globe-lo)" />
+        </radialGradient>
+        <radialGradient id={uid + 'atm'} cx="50%" cy="50%" r="50%">
+          <stop offset="78%" stopColor="transparent" />
+          <stop offset="90%" stopColor="var(--globe-atm)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <clipPath id={uid + 'clip'}><circle cx={cx} cy={cy} r={baseR} /></clipPath>
+      </defs>
+      {halo && <circle cx={cx} cy={cy} r={baseR * 1.18} fill={`url(#${uid}atm)`} />}
+      <circle cx={cx} cy={cy} r={baseR} fill={`url(#${uid}sph)`} />
+      <g clipPath={`url(#${uid}clip)`}>
+        {dots.map(d => <circle key={d.k} cx={d.sx} cy={d.sy} r={d.r} fill="var(--globe-dot)" opacity={d.op} />)}
+        {markers.map((m, i) => {
+          const p = rot(m.lat, m.lon);
+          if (p.z <= 0.04) return null;
+          const sx = cx + R * p.x, sy = cy - R * p.y;
+          const s = Sev[m.sev]; const crit = s.glow;
+          const isSel = selId && m.id === selId;
+          return (
+            <g key={i} opacity={0.45 + 0.55 * p.z} style={{ cursor: onPickMarker ? 'pointer' : 'default' }}
+              onPointerDown={onPickMarker ? (e) => { e.stopPropagation(); } : undefined}
+              onClick={onPickMarker ? (e) => { e.stopPropagation(); onPickMarker(m.id); } : undefined}>
+              {isSel && <circle cx={sx} cy={sy} r={8} fill="none" stroke={s.color} strokeWidth="1.6" opacity="0.9" />}
+              {crit && <circle cx={sx} cy={sy} r={4} fill="none" stroke={s.color} strokeWidth="1.4" className="ping" />}
+              {onPickMarker && <circle cx={sx} cy={sy} r={9} fill="transparent" />}
+              <circle cx={sx} cy={sy} r={crit ? 3.4 : 2.4} fill={s.color}
+                style={{ filter: crit ? 'drop-shadow(0 0 5px var(--crit-glow))' : 'none' }} />
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+  );
+}
+
+// ── case curve (area chart) ────────────────────────────────────
+function CaseCurve({ data, w = 320, h = 96, pad = 6, grid = false, labels = null, color = 'var(--crit)', dot = true }) {
+  const max = Math.max(...data, 1), min = 0;
+  const innerH = h - pad * 2 - (labels ? 16 : 0);
+  const stepX = (w - pad * 2) / (data.length - 1);
+  const pts = data.map((v, i) => [pad + i * stepX, pad + innerH - ((v - min) / (max - min)) * innerH]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = line + ` L ${pts[pts.length - 1][0].toFixed(1)} ${pad + innerH} L ${pad} ${pad + innerH} Z`;
+  const uid = useUid('cc');
+  const last = pts[pts.length - 1];
+  return (
+    <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={uid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.30" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {grid && [0.25, 0.5, 0.75].map((g, i) => (
+        <line key={i} x1={pad} x2={w - pad} y1={pad + innerH * g} y2={pad + innerH * g} stroke="var(--border)" strokeWidth="1" />
+      ))}
+      <path d={area} fill={`url(#${uid})`} />
+      <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      {dot && <circle cx={last[0]} cy={last[1]} r="3" fill={color} />}
+      {dot && <circle cx={last[0]} cy={last[1]} r="6.5" fill="none" stroke={color} strokeOpacity="0.35" strokeWidth="1.5" />}
+      {labels && labels.map((l, i) => (
+        <text key={i} x={pad + (i / (labels.length - 1)) * (w - pad * 2)} y={h - 3}
+          fill="var(--text3)" fontSize="9" fontFamily="var(--font-mono)" textAnchor={i === 0 ? 'start' : i === labels.length - 1 ? 'end' : 'middle'}>{l}</text>
+      ))}
+    </svg>
+  );
+}
+
+// ── ring gauge (severity index) ────────────────────────────────
+function Ring({ value, max = 100, size = 96, stroke = 7, label, sub }) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  const dash = (value / max) * c;
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--track)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--crit)" strokeWidth={stroke}
+          strokeDasharray={`${dash} ${c}`} strokeLinecap="round"
+          style={{ filter: 'drop-shadow(0 0 6px var(--crit-glow))' }} />
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+        <span className="mono" style={{ fontSize: size * 0.30, fontWeight: 600, color: 'var(--text)', lineHeight: 1 }}>{value}</span>
+        {sub && <span style={{ fontSize: 9.5, color: 'var(--text3)', letterSpacing: 0.4, textTransform: 'uppercase', marginTop: 3 }}>{sub}</span>}
+      </div>
+    </div>
+  );
+}
+
+// ── floating bottom nav ────────────────────────────────────────
+function BottomNav({ active = 'globe', floating = true, badge = 17, onNav }) {
+  const items = [
+    { k: 'globe', icon: 'globe' },
+    { k: 'list', icon: 'list' },
+    { k: 'brief', icon: 'brief' },
+    { k: 'bell', icon: 'bell', badge },
+  ];
+  return (
+    <div style={{
+      position: 'absolute', bottom: floating ? 26 : 0, left: 0, right: 0, zIndex: 40,
+      display: 'flex', justifyContent: 'center', pointerEvents: 'none',
+    }}>
+      <div className="glass" style={{
+        display: 'flex', gap: floating ? 6 : 24, alignItems: 'center',
+        padding: floating ? '8px 10px' : '12px 28px 26px',
+        borderRadius: floating ? 99 : '24px 24px 0 0',
+        width: floating ? 'auto' : '100%', justifyContent: floating ? 'center' : 'space-around',
+        boxShadow: floating ? '0 12px 32px rgba(0,0,0,0.45)' : 'none',
+        pointerEvents: 'auto',
+      }}>
+        {items.map(it => {
+          const on = it.k === active;
+          return (
+            <div key={it.k} onClick={() => onNav && onNav(it.k)} style={{
+              position: 'relative', width: 46, height: 46, borderRadius: 99,
+              display: 'grid', placeItems: 'center', cursor: 'pointer',
+              background: on && floating ? 'var(--nav-active)' : 'transparent',
+              color: on ? 'var(--text)' : 'var(--text3)', transition: 'color .2s',
+            }}>
+              <Icon name={it.icon} size={21} stroke={on ? 2 : 1.7} />
+              {it.badge ? (
+                <span style={{
+                  position: 'absolute', top: 6, right: 6, minWidth: 15, height: 15, padding: '0 3px',
+                  borderRadius: 99, background: 'var(--crit)', color: '#fff', fontSize: 9, fontWeight: 700,
+                  display: 'grid', placeItems: 'center', boxShadow: '0 0 0 2px var(--nav-badge-ring)',
+                }}>{it.badge}</span>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Icon, Sev, SevDot, Tag, Stat, Metric, GlobeViz, CaseCurve, Ring, BottomNav, Wordmark, LiveBadge, Flag, fmt });
+
+
+/* ===== vigilo-data.jsx ===== */
+// vigilo-data.jsx — real Vigilo data adapter. OUTBREAKS/GLOBAL_STATS start as
+// a small sample, then buildVigiloData() replaces them with live data.
+let OUTBREAKS = [
+  { id: 'mbg-rw', sev: 'critical', name: 'Marburg virus disease', cat: 'Viral hemorrhagic',
+    place: 'Rwanda', region: 'Kigali · Eastern Province', code: 'RW', lat: -1.9, lon: 30.1,
+    cases: 41, deaths: 25, cfr: 61, rt: 1.8, idx: 87, new24: 4, status: 'Escalating',
+    since: '12d', curve: [0,1,0,1,2,2,3,3,4,5,5,6,8,7],
+    sources: ['WHO DON', 'Rwanda Biomedical Centre', 'ECDC'] },
+  { id: 'mpx-cd', sev: 'critical', name: 'Mpox · clade Ib', cat: 'Zoonotic',
+    place: 'DR Congo', region: 'South Kivu · Kinshasa', code: 'CD', lat: -4.3, lon: 23.4,
+    cases: 18420, deaths: 574, cfr: 3.1, rt: 1.4, idx: 79, new24: 312, status: 'Sustained',
+    since: '6mo', curve: [120,140,160,150,180,210,240,260,290,310,300,330,360,312],
+    sources: ['WHO PHEIC', 'Africa CDC'] },
+  { id: 'cho-sd', sev: 'alert', name: 'Cholera', cat: 'Waterborne',
+    place: 'Sudan', region: 'Gezira · Khartoum', code: 'SD', lat: 14.5, lon: 30.2,
+    cases: 24900, deaths: 612, cfr: 2.4, rt: 1.2, idx: 64, new24: 540, status: 'Spreading',
+    since: '3mo', curve: [300,360,420,480,460,520,560,590,620,600,640,660,700,540],
+    sources: ['WHO', 'FMoH Sudan'] },
+  { id: 'h5n1-us', sev: 'alert', name: 'H5N1 avian influenza', cat: 'Zoonotic',
+    place: 'United States', region: 'Dairy herds · 14 states', code: 'US', lat: 39, lon: -98,
+    cases: 67, deaths: 1, cfr: 1.5, rt: 0.9, idx: 58, new24: 3, status: 'Monitoring',
+    since: '14mo', curve: [2,1,3,2,4,3,5,4,6,5,4,6,5,3],
+    sources: ['US CDC', 'USDA APHIS'] },
+  { id: 'den-br', sev: 'warning', name: 'Dengue · DENV-3', cat: 'Vector-borne',
+    place: 'Brazil', region: 'São Paulo · Minas Gerais', code: 'BR', lat: -14, lon: -51,
+    cases: 1240000, deaths: 1840, cfr: 0.15, rt: 1.1, idx: 49, new24: 8900, status: 'Seasonal peak',
+    since: '4mo', curve: [4,5,6,7,7,8,9,9,8,9,9,9,9,8.9].map(v=>v*1000),
+    sources: ['PAHO', 'MS Brazil'] },
+  { id: 'mea-ro', sev: 'warning', name: 'Measles', cat: 'Vaccine-preventable',
+    place: 'Romania', region: 'Bucharest · Transylvania', code: 'RO', lat: 45.9, lon: 24.9,
+    cases: 4310, deaths: 7, cfr: 0.16, rt: 1.3, idx: 44, new24: 38, status: 'Resurgent',
+    since: '8mo', curve: [20,25,30,28,34,40,42,48,50,46,52,55,58,38],
+    sources: ['ECDC', 'WHO Europe'] },
+  { id: 'las-ng', sev: 'monitor', name: 'Lassa fever', cat: 'Viral hemorrhagic',
+    place: 'Nigeria', region: 'Ondo · Edo · Bauchi', code: 'NG', lat: 9.1, lon: 8.7,
+    cases: 920, deaths: 152, cfr: 16.5, rt: 0.8, idx: 38, new24: 11, status: 'Endemic',
+    since: 'Ongoing', curve: [8,9,7,10,8,9,11,9,10,8,9,10,11,11],
+    sources: ['Nigeria CDC', 'WHO'] },
+  { id: 'oro-bo', sev: 'monitor', name: 'Oropouche', cat: 'Vector-borne',
+    place: 'Bolivia', region: 'Beni · Santa Cruz', code: 'BO', lat: -16.3, lon: -64,
+    cases: 380, deaths: 0, cfr: 0, rt: 1.0, idx: 29, new24: 6, status: 'Emerging',
+    since: '2mo', curve: [2,3,2,4,3,5,4,6,5,7,6,5,7,6],
+    sources: ['PAHO', 'SEDES Bolivia'] },
+  { id: 'mea-cd', sev: 'warning', name: 'Measles', cat: 'Vaccine-preventable',
+    place: 'DR Congo', region: 'Tshopo · Kinshasa', code: 'CD', lat: -2.5, lon: 23.6,
+    cases: 14200, deaths: 210, cfr: 1.5, rt: 1.2, idx: 42, new24: 120, status: 'Ongoing',
+    since: '7mo', curve: [60,70,80,75,90,100,110,105,120,118,125,130,128,120],
+    sources: ['WHO', 'Africa CDC'] },
+  { id: 'dip-ng', sev: 'warning', name: 'Diphtheria', cat: 'Vaccine-preventable',
+    place: 'Nigeria', region: 'Kano · Yobe', code: 'NG', lat: 11.5, lon: 8.5,
+    cases: 25600, deaths: 700, cfr: 2.7, rt: 1.1, idx: 46, new24: 90, status: 'Sustained',
+    since: '10mo', curve: [40,45,55,60,58,65,70,72,80,78,85,88,90,90],
+    sources: ['Nigeria CDC', 'WHO'] },
+];
+let GLOBAL_STATS = { outbreaks: 142, deaths30: 8341, critical: 17, countries: 63 };
+
+// every sample event is an epidemic; the catalog mirrors desktop's event categories
+OUTBREAKS.forEach(o => { o.category = o.category || 'epidemics'; });
+const CATEGORIES = [
+  { key: 'epidemics', label: 'Epidemics', icon: 'spark', count: 36, subs: ['Viral hemorrhagic', 'Respiratory', 'Vector-borne', 'Waterborne', 'Zoonotic', 'Vaccine-preventable'] },
+  { key: 'disasters', label: 'Disasters', icon: 'alertT', count: 131, subs: ['Earthquake', 'Flood', 'Wildfire', 'Storm'] },
+  { key: 'air', label: 'Air quality', icon: 'wind', count: 4, subs: ['AQI hazard', 'Wildfire smoke', 'Industrial'] },
+  { key: 'food', label: 'Food safety', icon: 'food', count: 51, subs: ['Foodborne illness', 'Contamination', 'Recall'] },
+  { key: 'humanitarian', label: 'Humanitarian', icon: 'home', count: 355, subs: ['Displacement', 'Famine', 'Conflict health'] },
+  { key: 'blackout', label: 'Blackout', icon: 'power', count: 41, subs: ['Power outage', 'Comms blackout'] },
+];
+window.CATEGORIES = CATEGORIES;
+
+// country aggregate derived from outbreaks
+const SEV_RANK = { critical: 4, alert: 3, warning: 2, monitor: 1 };
+function getCountry(place) {
+  const list = OUTBREAKS.filter(o => o.place === place).sort((a, b) => b.idx - a.idx);
+  if (!list.length) return null;
+  const f = list[0];
+  return {
+    place, code: f.code, lon: f.lon, lat: f.lat, list,
+    active: list.length,
+    cases: list.reduce((s, o) => s + o.cases, 0),
+    deaths: list.reduce((s, o) => s + o.deaths, 0),
+    maxSev: list.reduce((m, o) => SEV_RANK[o.sev] > SEV_RANK[m] ? o.sev : m, 'monitor'),
+  };
+}
+window.getCountry = getCountry;
+window.OUTBREAKS = OUTBREAKS;
+window.GLOBAL_STATS = GLOBAL_STATS;
+
+// ── Real data adapter ───────────────────────────────────────────────────────
+async function _vfetch(paths){
+  for(const p of paths){ try{ const r = await fetch(p); if(r.ok) return await r.json(); }catch(e){} }
+  return null;
+}
+const _ISO_NAME = (typeof Intl!=='undefined' && Intl.DisplayNames)
+  ? new Intl.DisplayNames(['en'], { type: 'region' }) : null;
+function _countryName(iso){ try { return (_ISO_NAME && _ISO_NAME.of(iso)) || iso; } catch(e){ return iso; } }
+const _SEV_FROM_LEVEL = { urgent:'critical', alert:'alert', watch:'warning', watching:'warning', monitoring:'monitor', monitor:'monitor' };
+const _SEV_FROM_BAND  = { catastrophic:'critical', critical:'critical', severe:'critical', elevated:'alert', high:'alert', alert:'alert', moderate:'warning', warning:'warning', low:'monitor', minimal:'monitor', minimal_:'monitor' };
+const _AGE = iso => {
+  if(!iso) return '';
+  const dt = new Date(iso); const days = Math.max(0, Math.round((Date.now()-dt.getTime())/864e5));
+  if(days<1) return 'today'; if(days<30) return days+'d'; return Math.round(days/30)+'mo';
+};
+
+async function buildVigiloData(){
+  const [sigW, idxW, hist, evW] = await Promise.all([
+    _vfetch(['/public/signals.json','/signals.json']),
+    _vfetch(['/public/risk_index.json','/risk_index.json']),
+    _vfetch(['/public/risk_history.json','/risk_history.json']),
+    _vfetch(['/public/risk_events.json','/risk_events.json']),
+  ]);
+  const signals = (sigW && (sigW.signals||sigW)) || [];
+  const idx = (idxW && (idxW.index||idxW.countries)) || {};
+  const events = (evW && (evW.events||evW)) || [];
+  const H = (hist && typeof hist==='object') ? hist : {};
+  const curveOf = iso => {
+    const c = H[iso] ? H[iso].map(r=>r.c).filter(v=>typeof v==='number') : [];
+    return c.length >= 2 ? c : [0,0,0,0,0,0];   // CaseCurve needs ≥2 points
+  };
+  if(!signals.length && !events.length) return; // keep sample on total failure
+
+  const scoreOf = iso => {
+    const c = idx[iso]; const s = c && c.composite_risk && c.composite_risk.score;
+    return typeof s==='number' ? Math.round(s*100) : null;
+  };
+
+  const out = [];
+
+  // Health signals → outbreak cards
+  for(const s of signals){
+    const iso = s.iso || s.country_iso;
+    if(!iso) continue;
+    const sev = _SEV_FROM_LEVEL[s.level] || 'monitor';
+    const idxVal = scoreOf(iso) ?? Math.round((s.confidence||0)*100);
+    out.push({
+      id: s.id || ('sig-'+iso), sev, name: s.disease || 'Health signal', cat: 'Epidemic',
+      place: _countryName(iso), region: s.country && s.country!==iso ? s.country : '', code: iso,
+      lat: s.lat, lon: s.lng,
+      cases: s.source_count||0, deaths: 0,
+      cfr: Math.round((s.confidence||0)*100), rt: +(s.spike_ratio||1).toFixed(2),
+      idx: idxVal, new24: s.source_count||0,
+      status: (s.level||'').replace(/^\w/,c=>c.toUpperCase()) || 'Monitoring',
+      since: _AGE(s.detected_at), curve: curveOf(iso),
+      sources: s.sources || [], headline: s.headline || '', category: 'epidemics',
+    });
+  }
+
+  // Top non-health risk events (conflict / unrest / climate) → cards
+  const seen = new Set(out.map(o=>o.code+o.name));
+  const bySev = { catastrophic:5, critical:5, severe:4, alert:3, elevated:3, high:3, warning:2, moderate:2, low:1, minimal:0 };
+  const evSorted = events
+    .filter(e => e.category && e.category!=='health' && e.headline && e.country)
+    .sort((a,b)=> (b.severity||bySev[b.band]||0) - (a.severity||bySev[a.band]||0));
+  for(const e of evSorted){
+    const iso = e.country; const key = iso+(e.type||'');
+    if(seen.has(key)) continue; seen.add(key);
+    const band = (e.band||'').toLowerCase();
+    const sev = _SEV_FROM_BAND[band] || (e.severity>=5?'critical':e.severity>=3?'alert':e.severity>=2?'warning':'monitor');
+    const geo = e.geo||{};
+    out.push({
+      id: e.id || (iso+'-'+(e.type||'ev')), sev,
+      name: (e.type||e.category||'event').replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase()),
+      cat: (e.category||'').replace(/_/g,' '),
+      place: _countryName(iso), region:'', code: iso, lat: geo.lat, lon: geo.lng,
+      cases: e.source_count||0, deaths: 0, cfr: 0, rt: 1,
+      idx: scoreOf(iso) ?? 0, new24: e.source_count||0,
+      status: (e.band||'active').replace(/^\w/,c=>c.toUpperCase()),
+      since: _AGE(e.first_seen), curve: curveOf(iso),
+      sources: e.sources || [], headline: e.headline || '',
+      category: e.category==='conflict'||e.category==='civil_unrest' ? 'humanitarian' : (e.category==='climate'?'disasters':'epidemics'),
+    });
+    if(out.length >= 40) break;
+  }
+
+  out.sort((a,b)=> (b.idx||0) - (a.idx||0));
+
+  const critCount = out.filter(o=>o.sev==='critical').length;
+  const countrySet = new Set(out.map(o=>o.code));
+  OUTBREAKS = out;
+  GLOBAL_STATS = {
+    outbreaks: out.length,
+    deaths30: (idxW && idxW.meta && idxW.meta.deaths_30d) || 0,
+    critical: critCount,
+    countries: countrySet.size,
+  };
+  window.OUTBREAKS = OUTBREAKS;
+  window.GLOBAL_STATS = GLOBAL_STATS;
+}
+window.buildVigiloData = buildVigiloData;
+
+
+/* ===== vigilo-home.jsx ===== */
+// vigilo-home.jsx — HomeGlobe (A, immersive) + HomeWatch (B, analytical)
+const { useState: useStateH, useRef: useRefH, useEffect: useEffectH } = React;
+
+// ── shared header bar ──────────────────────────────────────────
+function TopBar({ children, pad = 58 }) {
+  return (
+    <div style={{
+      position: 'absolute', top: 0, left: 0, right: 0, zIndex: 30,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: `${pad}px 18px 0`,
+    }}>{children}</div>
+  );
+}
+
+function IconBtn({ name, size = 20 }) {
+  return (
+    <span className="iconbtn"><Icon name={name} size={size} /></span>
+  );
+}
+
+// ── outbreak row (rich + dense variants) ───────────────────────
+function OutbreakRow({ o, variant = 'rich', onClick }) {
+  const s = Sev[o.sev];
+  const crit = s.glow;
+  if (variant === 'dense') {
+    return (
+      <div onClick={onClick} style={{
+        display: 'flex', alignItems: 'center', gap: 13, padding: '13px 4px', cursor: 'pointer',
+        borderBottom: '1px solid var(--border)',
+      }}>
+        <span style={{ width: 3, height: 38, borderRadius: 99, background: s.color, flexShrink: 0,
+          boxShadow: crit ? '0 0 10px var(--crit-glow)' : 'none' }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.name}</span>
+          </div>
+          <div style={{ fontSize: 11.5, color: 'var(--text3)', marginTop: 2, display: 'flex', gap: 6 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Flag code={o.code} />{o.place}</span><span style={{ opacity: 0.4 }}>·</span><span className="mono">{fmt(o.cases)} cases</span>
+          </div>
+        </div>
+        <div style={{ width: 46, height: 24 }}><CaseCurve data={o.curve} w={46} h={24} pad={2} dot={false} color={crit ? 'var(--crit)' : 'var(--sev-warn)'} /></div>
+        <div style={{ width: 30, textAlign: 'right' }}>
+          <span className="mono" style={{ fontSize: 15, fontWeight: 600, color: crit ? 'var(--crit)' : 'var(--text2)' }}>{o.idx}</span>
+        </div>
+      </div>
+    );
+  }
+  // rich
+  return (
+    <div onClick={onClick} className="panel" style={{
+      borderRadius: 18, padding: 14, cursor: 'pointer',
+      border: crit ? '1px solid color-mix(in srgb, var(--crit) 34%, transparent)' : '1px solid var(--border)',
+      boxShadow: crit ? '0 0 24px -10px var(--crit-glow)' : 'none',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+        <span style={{ marginTop: 5 }}><SevDot sev={o.sev} size={9} /></span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15.5, fontWeight: 600, color: 'var(--text)', letterSpacing: -0.2 }}>{o.name}</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 3, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={o.code} />{o.place} · {o.cat}</div>
+        </div>
+        <span style={{ color: 'var(--text3)' }}><Icon name="arrowUR" size={17} /></span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12 }}>
+        <div style={{ display: 'flex', gap: 18, marginLeft: 19 }}>
+          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Cases</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{fmt(o.cases)}</div></div>
+          <div><div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>CFR</div><div className="mono" style={{ fontSize: 15, fontWeight: 600, color: crit ? 'var(--crit)' : 'var(--text)' }}>{o.cfr}%</div></div>
+        </div>
+        <div style={{ width: 76, height: 30, opacity: 0.95 }}>
+          <CaseCurve data={o.curve} w={76} h={30} pad={3} dot={false} color={crit ? 'var(--crit)' : 'var(--sev-warn)'} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// VARIANT A — Immersive globe
+// ════════════════════════════════════════════════════════════════
+function HomeGlobe({ onOpen, showNav = true, onProfile, cats, onOpenFilters, sevFilter = 'all' }) {
+  const [query, setQuery] = useStateH('');
+  const visible = OUTBREAKS.filter(o => !cats || cats[o.category]);
+  const markers = visible.map(o => ({ lat: o.lat, lon: o.lon, sev: o.sev }));
+  const crits = visible.filter(o => o.sev === 'critical' || o.sev === 'alert');
+  const allSorted = visible.slice().sort((a, b) => b.idx - a.idx);
+
+  const FULL = 100, PEEK = 420, LOW = 726, SNAPS = [FULL, PEEK, LOW];
+  const [y, setY] = useStateH(PEEK);
+  const [drag, setDrag] = useStateH(false);
+  const start = useRefH(null);
+  const expanded = y < (FULL + PEEK) / 2;
+  const scrim = Math.max(0, Math.min(1, (PEEK - y) / (PEEK - FULL)));
+
+  // sheet drag
+  const snapTo = (val) => SNAPS.reduce((a, b) => Math.abs(b - val) < Math.abs(a - val) ? b : a, SNAPS[0]);
+  const down = (e) => { start.current = { py: e.clientY, y0: y }; setDrag(true); };
+  useEffectH(() => {
+    if (!drag) return;
+    const m = (e) => { if (!start.current) return; setY(Math.max(FULL, Math.min(LOW, start.current.y0 + (e.clientY - start.current.py)))); };
+    const u = () => { setDrag(false); setY(p => snapTo(p)); start.current = null; };
+    window.addEventListener('pointermove', m); window.addEventListener('pointerup', u);
+    return () => { window.removeEventListener('pointermove', m); window.removeEventListener('pointerup', u); };
+  }, [drag, y]);
+
+  // globe rotation + zoom
+  const [gLon, setGLon] = useStateH(22);
+  const [gLat, setGLat] = useStateH(-6);
+  const [gZoom, setGZoom] = useStateH(1);
+  const gstart = useRefH(null);
+  const [gdrag, setGdrag] = useStateH(false);
+  const gDown = (e) => { gstart.current = { px: e.clientX, py: e.clientY, lon: gLon, lat: gLat }; setGdrag(true); };
+  useEffectH(() => {
+    if (!gdrag) return;
+    const m = (e) => {
+      if (!gstart.current) return;
+      setGLon(gstart.current.lon - (e.clientX - gstart.current.px) * 0.45);
+      setGLat(Math.max(-72, Math.min(72, gstart.current.lat + (e.clientY - gstart.current.py) * 0.45)));
+    };
+    const u = () => { setGdrag(false); gstart.current = null; };
+    window.addEventListener('pointermove', m); window.addEventListener('pointerup', u);
+    return () => { window.removeEventListener('pointermove', m); window.removeEventListener('pointerup', u); };
+  }, [gdrag]);
+  const zoomBy = (d) => setGZoom(z => Math.max(1, Math.min(2.6, +(z + d).toFixed(2))));
+
+  const gSize = 300, gCenterY = (96 + Math.max(y, PEEK)) / 2, gTop = gCenterY - gSize / 2;
+  const q = query.trim().toLowerCase();
+  const matches = allSorted.filter(o => o.name.toLowerCase().includes(q) || o.place.toLowerCase().includes(q) || o.cat.toLowerCase().includes(q));
+  const list = q ? matches : (expanded ? allSorted : crits);
+  const ease = 'cubic-bezier(.32,.72,0,1)';
+  const interactive = scrim < 0.4;
+  const activeFilters = (sevFilter !== 'all' ? 1 : 0) + (cats ? Object.values(cats).filter(v => !v).length : 0);
+
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
+      {/* hero / interactive globe */}
+      <div onPointerDown={interactive ? gDown : undefined}
+        onWheel={interactive ? (e) => zoomBy(e.deltaY < 0 ? 0.15 : -0.15) : undefined}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, touchAction: 'none', cursor: interactive ? (gdrag ? 'grabbing' : 'grab') : 'default' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 70% at 50% 30%, var(--hero-glow), transparent 60%)', opacity: 1 - 0.7 * scrim }} />
+        <div style={{ position: 'absolute', left: '50%', top: gTop, transform: `translateX(-50%) scale(${1 - 0.08 * scrim}) translateY(${-26 * scrim}px)`, opacity: 1 - 0.85 * scrim, transition: drag || gdrag ? 'none' : `top .5s ${ease}, transform .5s ${ease}, opacity .5s ${ease}`, transformOrigin: '50% 40%' }}>
+          <GlobeViz size={gSize} lon0={gLon} lat0={gLat} zoom={gZoom} markers={markers} />
+        </div>
+      </div>
+
+      {/* zoom controls */}
+      {interactive && (
+        <div style={{ position: 'absolute', right: 16, top: gCenterY + 30, zIndex: 15, display: 'flex', flexDirection: 'column', gap: 8, opacity: 1 - scrim }}>
+          <span className="iconbtn" onClick={() => zoomBy(0.3)} style={{ width: 36, height: 36 }}><Icon name="plus" size={18} /></span>
+          <span className="iconbtn" onClick={() => zoomBy(-0.3)} style={{ width: 36, height: 36 }}><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M5 12h14"/></svg></span>
+        </div>
+      )}
+
+      <div style={{ position: 'relative', zIndex: 30 }}>
+        <TopBar>
+          <Wordmark />
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <LiveBadge />
+            <span className="iconbtn" onClick={onProfile} style={{ padding: 0, overflow: 'hidden' }}><Avatar name="Lena Mahler" size={38} /></span>
+          </div>
+        </TopBar>
+      </div>
+
+      {/* search + filter bar */}
+      <div style={{ position: 'absolute', top: 104, left: 18, right: 18, zIndex: 16, display: 'flex', gap: 10,
+        opacity: q ? 1 : 1 - 1.6 * scrim, pointerEvents: (q || scrim <= 0.3) ? 'auto' : 'none', transition: drag ? 'none' : 'opacity .35s ease' }}>
+        <div className="glass" style={{ flex: 1, height: 46, borderRadius: 99, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px' }}>
+          <Icon name="search" size={18} style={{ color: 'var(--text3)' }} />
+          <input value={query} onChange={(e) => { const v = e.target.value; setQuery(v); if (v.trim() && y !== PEEK) setY(PEEK); }}
+            placeholder="Search outbreaks, countries…"
+            style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--text)' }} />
+          {q && <span onClick={() => setQuery('')} style={{ color: 'var(--text3)', cursor: 'pointer', display: 'flex' }}><Icon name="x" size={16} /></span>}
+        </div>
+        <span className="glass" onClick={onOpenFilters} style={{ position: 'relative', width: 46, height: 46, borderRadius: 99, display: 'grid', placeItems: 'center', color: 'var(--text)', cursor: 'pointer' }}>
+          <Icon name="sliders" size={19} />
+          {activeFilters > 0 && <span style={{ position: 'absolute', top: 7, right: 7, minWidth: 15, height: 15, padding: '0 3px', borderRadius: 99, background: 'var(--crit)', color: '#fff', fontSize: 9, fontWeight: 700, display: 'grid', placeItems: 'center', boxShadow: '0 0 0 2px var(--sheet)' }}>{activeFilters}</span>}
+        </span>
+      </div>
+
+      {/* floating stat capsules — hide as sheet rises */}
+      <div style={{ position: 'absolute', left: 22, top: 170, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
+        <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}><Stat align="left" value={GLOBAL_STATS.outbreaks} label="Active" /></div>
+      </div>
+      <div style={{ position: 'absolute', right: 22, top: 212, zIndex: 12, opacity: 1 - 1.6 * scrim, pointerEvents: scrim > 0.3 ? 'none' : 'auto' }}>
+        <div className="glass" style={{ padding: '10px 14px', borderRadius: 18, minWidth: 92 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: 'var(--crit)', lineHeight: 1, letterSpacing: -0.5 }}>{GLOBAL_STATS.critical}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.3, textTransform: 'uppercase' }}>Critical</div>
+          </div>
+        </div>
+      </div>
+
+      {/* draggable sheet */}
+      <div style={{
+        position: 'absolute', left: 0, right: 0, bottom: 0, top: y, zIndex: 20,
+        background: 'var(--sheet)', borderRadius: '28px 28px 0 0', borderTop: '1px solid var(--border)',
+        boxShadow: '0 -24px 50px -28px rgba(0,0,0,0.7)', display: 'flex', flexDirection: 'column',
+        transition: drag ? 'none' : `top .5s ${ease}`, touchAction: 'none',
+      }}>
+        <div onPointerDown={down} onClick={() => !drag && setY(y <= PEEK ? LOW : PEEK)}
+          style={{ padding: '12px 18px 8px', cursor: 'grab', flexShrink: 0, touchAction: 'none' }}>
+          <div style={{ width: 38, height: 4, borderRadius: 99, background: 'var(--border-strong)', margin: '0 auto 14px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.3 }}>{q ? 'Search results' : (expanded ? 'All outbreaks' : 'Critical now')}</div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{q ? `${matches.length} match “${query}”` : `${expanded ? visible.length + ' active events' : crits.length + ' need attention'} · ${GLOBAL_STATS.countries} countries`}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span className="iconbtn" onClick={(e) => { e.stopPropagation(); onOpenFilters && onOpenFilters(); }} style={{ width: 36, height: 36 }}><Icon name="sliders" size={17} /></span>
+              <span onClick={(e) => { e.stopPropagation(); setY(expanded ? PEEK : FULL); }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text2)', display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}>{expanded ? 'Less' : 'All'} <Icon name={expanded ? 'chevD' : 'chevR'} size={15} /></span>
+            </div>
+          </div>
+        </div>
+        <div style={{ flex: 1, overflow: expanded ? 'auto' : 'hidden', padding: '6px 18px 120px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+            {list.length ? list.map(o => <OutbreakRow key={o.id} o={o} variant="rich" onClick={() => onOpen && onOpen(o)} />)
+              : <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13.5, padding: '24px 0' }}>No events match your filters.</div>}
+          </div>
+        </div>
+      </div>
+
+      {showNav && <BottomNav active="globe" floating badge={GLOBAL_STATS.critical} />}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// VARIANT B — Analytical watchlist
+// ════════════════════════════════════════════════════════════════
+function StatTile({ value, label, accent }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 23, fontWeight: 700, lineHeight: 1, letterSpacing: -0.5, color: accent ? 'var(--crit)' : 'var(--text)' }}>{value}</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text3)', fontWeight: 500, letterSpacing: 0.4, textTransform: 'uppercase' }}>{label}</div>
+    </div>
+  );
+}
+
+function HomeWatch({ onOpen }) {
+  const [filter, setFilter] = useStateH('all');
+  const markers = OUTBREAKS.map(o => ({ lat: o.lat, lon: o.lon, sev: o.sev }));
+  const tabs = [['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['watch', 'Watch']];
+  const list = OUTBREAKS.filter(o => filter === 'all' ? true : filter === 'watch' ? (o.sev === 'warning' || o.sev === 'monitor') : o.sev === filter)
+    .sort((a, b) => b.idx - a.idx);
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '58px 18px 116px' }}>
+        {/* header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <Wordmark size={16} />
+          <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+            <LiveBadge />
+            <IconBtn name="sliders" size={19} />
+          </div>
+        </div>
+
+        {/* intel hero card */}
+        <div className="panel" style={{ borderRadius: 24, padding: 18, position: 'relative', overflow: 'hidden', marginBottom: 18 }}>
+          <div style={{ position: 'absolute', right: -64, top: -36, opacity: 0.9 }}>
+            <GlobeViz size={210} lon0={26} markers={markers} halo={false} />
+          </div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 12, color: 'var(--text3)', letterSpacing: 0.4, textTransform: 'uppercase', marginBottom: 3 }}>Global surveillance</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 27, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.6, maxWidth: 200, lineHeight: 1.06 }}>Outbreak watch</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 20px', marginTop: 22, maxWidth: 215 }}>
+              <StatTile value={GLOBAL_STATS.outbreaks} label="Active" />
+              <StatTile value={GLOBAL_STATS.critical} label="Critical" accent />
+              <StatTile value={fmt(GLOBAL_STATS.deaths30)} label="Deaths · 30d" />
+              <StatTile value={GLOBAL_STATS.countries} label="Countries" />
+            </div>
+          </div>
+        </div>
+
+        {/* segmented filter */}
+        <div style={{ display: 'flex', gap: 7, marginBottom: 6 }}>
+          {tabs.map(([k, l]) => (
+            <button key={k} onClick={() => setFilter(k)} style={{
+              flex: 1, height: 34, borderRadius: 99, border: '1px solid var(--border)', cursor: 'pointer',
+              background: filter === k ? 'var(--text)' : 'transparent',
+              color: filter === k ? 'var(--bg)' : 'var(--text2)',
+              fontFamily: 'var(--font-sans)', fontSize: 12.5, fontWeight: 600, letterSpacing: 0.1,
+            }}>{l}</button>
+          ))}
+        </div>
+
+        {/* list header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 4px 4px' }}>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Pathogen · Location</span>
+          <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 3 }}>Severity <Icon name="chevD" size={13} /></span>
+        </div>
+
+        {/* dense list */}
+        <div>
+          {list.map(o => <OutbreakRow key={o.id} o={o} variant="dense" onClick={() => onOpen && onOpen(o)} />)}
+        </div>
+      </div>
+
+      <BottomNav active="list" floating={false} badge={GLOBAL_STATS.critical} />
+    </div>
+  );
+}
+
+Object.assign(window, { HomeGlobe, HomeWatch, OutbreakRow, TopBar, IconBtn });
+
+
+/* ===== vigilo-detail.jsx ===== */
+// vigilo-detail.jsx — DetailImmersive (A) + DetailAnalytical (B)
+const { useState: useStateD, useRef: useRefD } = React;
+
+// share sheet (bottom modal)
+function ShareSheet({ o, onClose }) {
+  const rows = [
+    { icon: 'arrowUR', label: 'Copy link', sub: 'vigilo.cc/o/' + o.id },
+    { icon: 'brief', label: 'Share situation report', sub: 'PDF · latest figures' },
+    { icon: 'share', label: 'Export data', sub: 'CSV · case timeline' },
+    { icon: 'bell', label: 'Send to a colleague', sub: 'In-app · with note' },
+  ];
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 80, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }} />
+      <div className="sheet-up" style={{ position: 'relative', background: 'var(--sheet)', borderRadius: '26px 26px 0 0', borderTop: '1px solid var(--border)', padding: '14px 20px 30px' }}>
+        <div style={{ width: 38, height: 4, borderRadius: 99, background: 'var(--border-strong)', margin: '0 auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 16 }}>
+          <SevDot sev={o.sev} size={9} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)' }}>Share or export</div>
+          </div>
+          <span className="iconbtn" onClick={onClose}><Icon name="x" size={18} /></span>
+        </div>
+        <div className="panel" style={{ borderRadius: 16, padding: '2px 16px' }}>
+          {rows.map((r, i, a) => (
+            <div key={r.label} onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '14px 0', cursor: 'pointer', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+              <span style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--chip)', display: 'grid', placeItems: 'center', color: 'var(--text2)', flexShrink: 0 }}><Icon name={r.icon} size={18} /></span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--text)' }}>{r.label}</div>
+                <div className="mono" style={{ fontSize: 11.5, color: 'var(--text3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.sub}</div>
+              </div>
+              <Icon name="chevR" size={16} style={{ color: 'var(--text3)' }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BackBar({ onClose, dense, onShare, onBell }) {
+  return (
+    <div style={{
+      position: dense ? 'sticky' : 'absolute', top: 0, left: 0, right: 0, zIndex: 30,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '56px 18px 14px',
+      background: dense ? 'linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 70%, transparent))' : 'transparent',
+      backdropFilter: dense ? 'blur(10px)' : 'none', WebkitBackdropFilter: dense ? 'blur(10px)' : 'none',
+    }}>
+      <span className="iconbtn" onClick={onClose}><Icon name="chevL" size={20} /></span>
+      <div style={{ display: 'flex', gap: 9 }}>
+        <span className="iconbtn" onClick={onShare}><Icon name="share" size={18} /></span>
+        <span className="iconbtn" onClick={onBell}><Icon name="bell" size={18} /></span>
+      </div>
+    </div>
+  );
+}
+
+function SectionTitle({ children, right }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '22px 0 11px' }}>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.2 }}>{children}</span>
+      {right}
+    </div>
+  );
+}
+
+function AIBrief({ o }) {
+  return (
+    <div className="glass" style={{ borderRadius: 20, padding: 16, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ width: 26, height: 26, borderRadius: 8, display: 'grid', placeItems: 'center', background: 'var(--chip)', color: 'var(--text)' }}><Icon name="spark" size={15} /></span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Vigilo Brief</span>
+        <span style={{ marginLeft: 'auto', fontSize: 10.5, color: 'var(--text3)' }}>Synthesized · 2h ago</span>
+      </div>
+      <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: 'var(--text2)', textWrap: 'pretty' }}>
+        <b style={{ color: 'var(--text)' }}>{o.cases} confirmed cases</b> and {o.deaths} deaths across {o.region} since onset {o.since} ago. The {o.cfr}% case-fatality rate is consistent with prior events; an Rt of {o.rt} indicates active human-to-human transmission. Two healthcare-worker clusters suggest nosocomial spread — WHO has deployed a rapid-response team.
+      </p>
+      <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {o.sources.map(s => <Tag key={s}>{s}</Tag>)}
+      </div>
+    </div>
+  );
+}
+
+function ActionBar({ crit, onAlert }) {
+  return (
+    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 40, padding: '14px 18px 30px',
+      background: 'linear-gradient(to top, var(--bg) 62%, transparent)' }}>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button onClick={onAlert} style={{
+          flex: 1, height: 52, borderRadius: 16, border: 'none', cursor: 'pointer',
+          background: crit ? 'var(--crit)' : 'var(--text)', color: crit ? '#fff' : 'var(--bg)',
+          fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700, letterSpacing: 0.1, whiteSpace: 'nowrap',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          boxShadow: crit ? '0 10px 28px -8px var(--crit-glow)' : 'none',
+        }}><Icon name="bell" size={18} stroke={2} />Set alert</button>
+        <button className="panel" style={{
+          width: 52, height: 52, borderRadius: 16, border: '1px solid var(--border)', cursor: 'pointer',
+          display: 'grid', placeItems: 'center', color: 'var(--text)',
+        }}><Icon name="plus" size={20} /></button>
+      </div>
+    </div>
+  );
+}
+
+const MET = (o) => [
+  { label: 'Confirmed', value: fmt(o.cases), unit: 'cases' },
+  { label: 'Deaths', value: fmt(o.deaths) },
+  { label: 'Case fatality', value: o.cfr + '%', accent: o.sev === 'critical' },
+  { label: 'Reproduction Rt', value: o.rt, trend: o.rt > 1 ? 1 : -1 },
+];
+
+// ════════════════════════════════════════════════════════════════
+// VARIANT A — Immersive detail
+// ════════════════════════════════════════════════════════════════
+function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
+  const crit = o.sev === 'critical';
+  const [st, setSt] = useStateD(0);
+  const [share, setShare] = useStateD(false);
+  const condensed = st > 170;
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
+      {/* condensed sticky header — fades in on scroll */}
+      <div className="glass" style={{
+        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 36, borderRadius: 0,
+        borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderBottom: '1px solid var(--border)',
+        display: 'flex', alignItems: 'center', gap: 11, padding: '52px 14px 11px',
+        opacity: condensed ? 1 : 0, transform: `translateY(${condensed ? 0 : -10}px)`,
+        pointerEvents: condensed ? 'auto' : 'none', transition: 'opacity .25s ease, transform .25s ease',
+      }}>
+        <span className="iconbtn" onClick={onClose}><Icon name="chevL" size={20} /></span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <SevDot sev={o.sev} size={7} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.name}</span>
+          </div>
+        </div>
+        <span className="iconbtn" onClick={() => setShare(true)}><Icon name="share" size={18} /></span>
+      </div>
+
+      <div onScroll={(e) => setSt(e.target.scrollTop)} style={{ height: '100%', overflow: 'auto', padding: '0 18px 130px' }}>
+        {/* hero */}
+        <div style={{ position: 'relative', margin: '0 -18px', height: 296, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 78% 14%, var(--hero-glow), transparent 60%)' }} />
+          <div style={{ position: 'absolute', right: -42, top: 70, opacity: 0.85 }}>
+            <GlobeViz size={210} lon0={o.lon} lat0={-8} markers={[{ lat: o.lat, lon: o.lon, sev: o.sev }]} halo />
+          </div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 90, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
+          <BackBar onClose={onClose} onShare={() => setShare(true)} onBell={() => onSetAlert && onSetAlert(o)} />
+          <div style={{ position: 'absolute', left: 18, bottom: 16, right: 120 }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 11 }}>
+              <Tag tone="crit"><SevDot sev={o.sev} size={6} />{Sev[o.sev].label}</Tag>
+              <Tag>{o.status}</Tag>
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.8, lineHeight: 1.04 }}>{o.name}</div>
+            <div onClick={() => onCountry && onCountry(o.place)} style={{ fontSize: 13.5, color: 'var(--text2)', marginTop: 6, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 7 }}><Flag code={o.code} />{o.place} · {o.cat} <Icon name="chevR" size={14} /></div>
+          </div>
+        </div>
+
+        {/* severity index + key metrics */}
+        <div className="panel" style={{ borderRadius: 22, padding: 18, marginTop: 16, display: 'flex', alignItems: 'center', gap: 18 }}>
+          <Ring value={o.idx} size={96} stroke={7} sub="Index" />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Severity index</div>
+            <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.45, marginTop: 6, textWrap: 'pretty' }}>
+              Composite of case load, fatality rate and transmission velocity. <b style={{ color: 'var(--text)' }}>{o.idx}/100</b> places this in the top tier of active events.
+            </div>
+          </div>
+        </div>
+
+        {/* metric grid */}
+        <div className="panel" style={{ borderRadius: 22, padding: 18, marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px 16px' }}>
+          {MET(o).map(m => <Metric key={m.label} {...m} />)}
+        </div>
+
+        {/* case curve */}
+        <SectionTitle right={<Tag>14 days</Tag>}>New cases</SectionTitle>
+        <div className="panel" style={{ borderRadius: 20, padding: '16px 14px 8px' }}>
+          <CaseCurve data={o.curve} w={330} h={120} pad={8} grid labels={['−14d', '−7d', 'Today']} color="var(--crit)" />
+        </div>
+
+        {/* AI brief */}
+        <SectionTitle>Intelligence</SectionTitle>
+        <AIBrief o={o} />
+
+        {/* affected regions */}
+        <SectionTitle>Affected regions</SectionTitle>
+        <div className="panel" style={{ borderRadius: 20, padding: 6 }}>
+          {[['Kigali', 28], ['Eastern Province', 9], ['Southern Province', 4]].map(([r, n], i, a) => (
+            <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+              <span style={{ color: 'var(--text3)' }}><Icon name="pin" size={17} /></span>
+              <span style={{ flex: 1, fontSize: 14, color: 'var(--text)' }}>{r}</span>
+              <div style={{ width: 64, height: 5, borderRadius: 99, background: 'var(--track)', overflow: 'hidden' }}>
+                <div style={{ width: (n / 28 * 100) + '%', height: '100%', background: 'var(--crit)', borderRadius: 99 }} />
+              </div>
+              <span className="mono" style={{ fontSize: 13, color: 'var(--text2)', width: 22, textAlign: 'right' }}>{n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <ActionBar crit={crit} onAlert={() => onSetAlert && onSetAlert(o)} />
+      {share && <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 80 }}><ShareSheet o={o} onClose={() => setShare(false)} /></div>}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// VARIANT B — Analytical detail
+// ════════════════════════════════════════════════════════════════
+function MetricRow({ label, value, unit, accent, spark, color }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 4px', borderBottom: '1px solid var(--border)' }}>
+      <span style={{ flex: 1, fontSize: 13.5, color: 'var(--text2)' }}>{label}</span>
+      {spark && <div style={{ width: 56, height: 22 }}><CaseCurve data={spark} w={56} h={22} pad={2} dot={false} color={color || 'var(--sev-warn)'} /></div>}
+      <span className="mono" style={{ fontSize: 16, fontWeight: 600, color: accent ? 'var(--crit)' : 'var(--text)', minWidth: 64, textAlign: 'right' }}>
+        {value}{unit && <span style={{ fontSize: 11, color: 'var(--text3)' }}> {unit}</span>}
+      </span>
+    </div>
+  );
+}
+
+function DetailAnalytical({ o, onClose }) {
+  const crit = o.sev === 'critical';
+  const [share, setShare] = useStateD(false);
+  const events = [
+    ['Today', 'Two new healthcare-worker cases confirmed in Kigali'],
+    ['−3d', 'WHO rapid-response team deployed; contact tracing scaled'],
+    ['−7d', 'Index cluster linked to a single burial event'],
+    ['−12d', 'First laboratory confirmation by Rwanda Biomedical Centre'],
+  ];
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
+      <div style={{ height: '100%', overflow: 'auto' }}>
+        <BackBar onClose={onClose} dense onShare={() => setShare(true)} onBell={() => {}} />
+        <div style={{ padding: '4px 18px 130px' }}>
+          {/* title block */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 11 }}>
+            <Tag tone="crit"><SevDot sev={o.sev} size={6} />{Sev[o.sev].label}</Tag>
+            <Tag>{o.status}</Tag>
+            <Tag><Icon name="clock" size={12} />{o.since}</Tag>
+          </div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 31, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.8, lineHeight: 1.03 }}>{o.name}</div>
+          <div style={{ fontSize: 14, color: 'var(--text2)', marginTop: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Icon name="pin" size={15} /><Flag code={o.code} />{o.place} · {o.region}
+          </div>
+
+          {/* big chart */}
+          <div className="panel" style={{ borderRadius: 20, padding: '16px 14px 8px', marginTop: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}>
+              <span style={{ fontSize: 12.5, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>New cases / day</span>
+              <span className="mono" style={{ fontSize: 12, color: 'var(--crit)' }}>+{o.new24} today</span>
+            </div>
+            <CaseCurve data={o.curve} w={330} h={132} pad={8} grid labels={['−14d', '−10d', '−7d', '−3d', 'Today']} color="var(--crit)" />
+          </div>
+
+          {/* metrics table */}
+          <SectionTitle>Key indicators</SectionTitle>
+          <div className="panel" style={{ borderRadius: 18, padding: '2px 14px' }}>
+            <MetricRow label="Confirmed cases" value={fmt(o.cases)} spark={o.curve} color="var(--crit)" />
+            <MetricRow label="Deaths" value={fmt(o.deaths)} />
+            <MetricRow label="Case-fatality rate" value={o.cfr} unit="%" accent={crit} />
+            <MetricRow label="Reproduction · Rt" value={o.rt} />
+            <MetricRow label="New · last 24h" value={'+' + o.new24} accent={crit} />
+            <MetricRow label="Severity index" value={o.idx + ' / 100'} accent={crit} />
+          </div>
+
+          {/* AI brief */}
+          <SectionTitle>Intelligence</SectionTitle>
+          <AIBrief o={o} />
+
+          {/* timeline */}
+          <SectionTitle>Timeline</SectionTitle>
+          <div className="panel" style={{ borderRadius: 18, padding: '6px 16px' }}>
+            {events.map(([t, txt], i, a) => (
+              <div key={i} style={{ display: 'flex', gap: 13, padding: '12px 0' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 99, background: i === 0 ? 'var(--crit)' : 'var(--border-strong)', marginTop: 4, boxShadow: i === 0 ? '0 0 8px var(--crit-glow)' : 'none' }} />
+                  {i < a.length - 1 && <span style={{ width: 1, flex: 1, background: 'var(--border)', marginTop: 4 }} />}
+                </div>
+                <div style={{ flex: 1, paddingBottom: 4 }}>
+                  <div className="mono" style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 2 }}>{t}</div>
+                  <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.4, textWrap: 'pretty' }}>{txt}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <ActionBar crit={crit} />
+      {share && <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 80 }}><ShareSheet o={o} onClose={() => setShare(false)} /></div>}
+    </div>
+  );
+}
+
+Object.assign(window, { DetailImmersive, DetailAnalytical });
+
+
+/* ===== vigilo-tabs.jsx ===== */
+// vigilo-tabs.jsx — Watchlist · Briefings · Alerts (Direction A aesthetic)
+const { useState: useStateT } = React;
+
+// page header used by tab screens
+function PageHead({ title, sub, action }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.7, lineHeight: 1 }}>{title}</div>
+        {sub && <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 6 }}>{sub}</div>}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function Segmented({ tabs, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', gap: 7, marginBottom: 16 }}>
+      {tabs.map(([k, l]) => (
+        <button key={k} onClick={() => onChange(k)} style={{
+          flex: 1, height: 34, borderRadius: 99, border: '1px solid var(--border)', cursor: 'pointer',
+          background: value === k ? 'var(--text)' : 'transparent',
+          color: value === k ? 'var(--bg)' : 'var(--text2)',
+          fontFamily: 'var(--font-sans)', fontSize: 12.5, fontWeight: 600,
+        }}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
+function Switch({ on, onToggle }) {
+  return (
+    <div onClick={onToggle} style={{
+      width: 44, height: 26, borderRadius: 99, padding: 3, cursor: 'pointer', flexShrink: 0,
+      background: on ? 'var(--crit)' : 'var(--track)', transition: 'background .2s',
+      display: 'flex', justifyContent: on ? 'flex-end' : 'flex-start',
+    }}>
+      <div style={{ width: 20, height: 20, borderRadius: 99, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+    </div>
+  );
+}
+
+// ── WATCHLIST ──────────────────────────────────────────────────
+function Watchlist({ onOpen, sevFilter = 'all', onSeverity, cats, onOpenFilters }) {
+  const f = sevFilter;
+  const list = OUTBREAKS.filter(o => (!cats || cats[o.category]) && (f === 'all' ? true : f === 'watch' ? (o.sev === 'warning' || o.sev === 'monitor') : o.sev === f))
+    .sort((a, b) => b.idx - a.idx);
+  return (
+    <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '58px 18px 0', flexShrink: 0 }}>
+        <PageHead title="Watchlist" sub={`${list.length} of ${OUTBREAKS.length} events · ${GLOBAL_STATS.countries} countries`}
+          action={<span className="iconbtn" onClick={onOpenFilters}><Icon name="sliders" size={18} /></span>} />
+        <Segmented tabs={[['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['watch', 'Watch']]} value={f} onChange={onSeverity} />
+      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '2px 18px 120px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+          {list.length ? list.map(o => <OutbreakRow key={o.id} o={o} variant="rich" onClick={() => onOpen && onOpen(o)} />)
+            : <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13.5, padding: '24px 0' }}>No events match your filters.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── BRIEFINGS ──────────────────────────────────────────────────
+const BRIEFS = [
+  { id: 'mbg-rw', src: 'WHO DON', time: '2h', sev: 'critical', title: 'Marburg virus disease — Rwanda', text: 'WHO confirms 41 cases with a 61% case-fatality rate; a rapid-response team has been deployed to Kigali.' },
+  { id: 'mpx-cd', src: 'Africa CDC', time: '5h', sev: 'critical', title: 'Mpox clade Ib persists across Central Africa', text: 'Sustained human-to-human transmission in South Kivu; 312 new cases logged in the last 24 hours.' },
+  { id: 'mea-ro', src: 'ECDC', time: '9h', sev: 'warning', title: 'Measles resurgence in Eastern Europe', text: 'Romania reports 38 new cases as childhood immunity gaps widen across the region.' },
+  { id: 'den-br', src: 'PAHO', time: '14h', sev: 'warning', title: 'Dengue season peaks in Brazil', text: '1.24M cumulative cases this season, with DENV-3 now the dominant circulating serotype.' },
+  { id: 'h5n1-us', src: 'US CDC', time: '1d', sev: 'alert', title: 'H5N1 detected in additional dairy herds', text: 'Three more states report infected herds; one mild human case among farm workers.' },
+];
+
+function Briefings({ onOpen }) {
+  return (
+    <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '58px 18px 8px', flexShrink: 0 }}>
+        <PageHead title="Briefings" sub="Curated intelligence · updated continuously"
+          action={<span className="iconbtn"><Icon name="filter" size={18} /></span>} />
+      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '4px 18px 120px' }}>
+
+      {/* today's synthesis */}
+      <div className="glass" style={{ borderRadius: 22, padding: 18, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <span style={{ width: 26, height: 26, borderRadius: 8, display: 'grid', placeItems: 'center', background: 'var(--chip)', color: 'var(--text)' }}><Icon name="spark" size={15} /></span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Today's brief</span>
+          <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--crit)', fontWeight: 600 }}><Icon name="trendUp" size={13} stroke={2} />+4% wk</span>
+        </div>
+        <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.55, color: 'var(--text)', textWrap: 'pretty' }}>
+          <b style={{ color: 'var(--crit)' }}>17 critical events</b> are active across 63 countries. Marburg in Rwanda and mpox in DR Congo carry the highest severity, while cholera in Sudan is spreading fastest week-over-week.
+        </p>
+        <div style={{ marginTop: 14 }}>
+          <button style={{ height: 40, padding: '0 16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--text)', color: 'var(--bg)', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 700, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+            Read full digest <Icon name="arrowUR" size={16} stroke={2} />
+          </button>
+        </div>
+      </div>
+
+      <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, padding: '0 2px' }}>Latest reports</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+        {BRIEFS.map(b => {
+          const o = OUTBREAKS.find(x => x.id === b.id);
+          return (
+            <div key={b.id} onClick={() => o && onOpen && onOpen(o)} className="panel" style={{ borderRadius: 18, padding: 16, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+                <SevDot sev={b.sev} size={8} />
+                <Tag>{b.src}</Tag>
+                <span style={{ marginLeft: 'auto', fontSize: 11.5, color: 'var(--text3)' }}>{b.time} ago</span>
+              </div>
+              <div style={{ fontSize: 15.5, fontWeight: 600, color: 'var(--text)', letterSpacing: -0.2, lineHeight: 1.25 }}>{b.title}</div>
+              <p style={{ margin: '7px 0 0', fontSize: 13, lineHeight: 1.5, color: 'var(--text2)', textWrap: 'pretty' }}>{b.text}</p>
+            </div>
+          );
+        })}
+      </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ALERTS ─────────────────────────────────────────────────────
+const NOTIFS = [
+  { sev: 'critical', time: '18m', text: 'Marburg · Rwanda escalated to Critical (index 87)' },
+  { sev: 'critical', time: '2h', text: 'Mpox · DR Congo — 312 new cases in the last 24h' },
+  { sev: 'alert', time: '6h', text: 'Cholera · Sudan crossed 24,000 cumulative cases' },
+  { sev: 'warning', time: '11h', text: 'Measles · Romania — new cluster reported in Bucharest' },
+  { sev: 'monitor', time: '1d', text: 'Oropouche · Bolivia added to your watched regions' },
+];
+
+function Alerts({ onOpen, tracked, onToggleTrack, rules, onRemoveRule, onNewAlert }) {
+  const trackList = OUTBREAKS.slice(0, 3);
+  const ruleIcon = (r) => r.type === 'pathogen' ? 'spark' : r.type === 'region' ? 'pin' : null;
+  return (
+    <div style={{ height: '100%', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '58px 18px 8px', flexShrink: 0 }}>
+        <PageHead title="Alerts" sub="Get notified when severity changes"
+          action={<span className="iconbtn" onClick={() => onNewAlert()}><Icon name="plus" size={20} /></span>} />
+      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '4px 18px 120px' }}>
+
+      {/* alert rules — add / remove */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11, padding: '0 2px' }}>
+        <span style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Your alert rules</span>
+      </div>
+      <div className="panel" style={{ borderRadius: 18, padding: rules.length ? '4px 16px' : 18, marginBottom: 22 }}>
+        {rules.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '14px 0', color: 'var(--text3)', fontSize: 13.5 }}>No rules yet — tap <b style={{ color: 'var(--text2)' }}>New</b> to create one.</div>
+        )}
+        {rules.map((r, i, a) => (
+          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+            {ruleIcon(r) ? <span style={{ color: 'var(--text2)' }}><Icon name={ruleIcon(r)} size={18} /></span> : <SevDot sev={r.sev} size={9} />}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.label}</div>
+              <div style={{ fontSize: 11.5, color: 'var(--text3)', marginTop: 1, display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ textTransform: 'capitalize' }}>{r.type}</span>
+                {r.push && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="bell" size={11} />Push</span>}
+                {r.email && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="brief" size={11} />Email</span>}
+              </div>
+            </div>
+            <span onClick={() => onRemoveRule(r.id)} className="iconbtn" style={{ width: 32, height: 32 }}><Icon name="x" size={15} /></span>
+          </div>
+        ))}
+      </div>
+
+      {/* tracked */}
+      <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 11, padding: '0 2px' }}>Tracked events</div>
+      <div className="panel" style={{ borderRadius: 18, padding: '4px 16px', marginBottom: 22 }}>
+        {trackList.map((o, i, a) => (
+          <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+            <SevDot sev={o.sev} size={9} />
+            <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => onOpen && onOpen(o)}>
+              <div style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--text)' }}>{o.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 1, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={o.code} />{o.place}</div>
+            </div>
+            <Switch on={!!tracked[o.id]} onToggle={() => onToggleTrack(o.id)} />
+          </div>
+        ))}
+      </div>
+
+      {/* notifications */}
+      <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 11, padding: '0 2px' }}>Recent</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+        {NOTIFS.map((n, i) => (
+          <div key={i} className="panel" style={{ borderRadius: 16, padding: 14, display: 'flex', gap: 12, alignItems: 'flex-start',
+            border: n.sev === 'critical' ? '1px solid color-mix(in srgb, var(--crit) 28%, transparent)' : '1px solid var(--border)' }}>
+            <span style={{ marginTop: 4 }}><SevDot sev={n.sev} size={9} /></span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13.5, color: 'var(--text)', lineHeight: 1.4, textWrap: 'pretty' }}>{n.text}</div>
+              <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>{n.time} ago</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Watchlist, Briefings, Alerts, PageHead, Segmented, Switch });
+
+
+/* ===== vigilo-more.jsx ===== */
+// vigilo-more.jsx — Country · Profile · Plans · New-alert sheet
+const { useState: useStateM } = React;
+
+function Avatar({ name, size = 44 }) {
+  const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('');
+  return (
+    <div style={{ width: size, height: size, borderRadius: 99, flexShrink: 0,
+      background: 'linear-gradient(135deg, color-mix(in srgb, var(--crit) 70%, #b94), var(--crit))',
+      display: 'grid', placeItems: 'center', color: '#fff', fontWeight: 700, fontSize: size * 0.36, fontFamily: 'var(--font-display)' }}>
+      {initials}
+    </div>
+  );
+}
+
+function MoreBar({ nav, trailing }) {
+  return (
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '56px 18px 14px' }}>
+      <span className="iconbtn" onClick={nav.back}><Icon name="chevL" size={20} /></span>
+      <div style={{ display: 'flex', gap: 9 }}>{trailing}</div>
+    </div>
+  );
+}
+
+// generic list group (grouped settings rows)
+function ListGroup({ label, children }) {
+  return (
+    <div style={{ marginBottom: 22 }}>
+      {label && <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 11, padding: '0 2px' }}>{label}</div>}
+      <div className="panel" style={{ borderRadius: 18, padding: '0 16px' }}>{children}</div>
+    </div>
+  );
+}
+function ListRow({ icon, label, value, control, onClick, last, danger }) {
+  return (
+    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '14px 0', cursor: onClick ? 'pointer' : 'default', borderBottom: last ? 'none' : '1px solid var(--border)' }}>
+      {icon && <span style={{ color: danger ? 'var(--crit)' : 'var(--text2)' }}><Icon name={icon} size={19} /></span>}
+      <span style={{ flex: 1, fontSize: 14.5, color: danger ? 'var(--crit)' : 'var(--text)' }}>{label}</span>
+      {value && <span style={{ fontSize: 13.5, color: 'var(--text3)' }}>{value}</span>}
+      {control}
+      {onClick && !control && <span style={{ color: 'var(--text3)' }}><Icon name="chevR" size={16} /></span>}
+    </div>
+  );
+}
+
+// ── COUNTRY ────────────────────────────────────────────────────
+function CountryView({ country, nav }) {
+  const [tab, setTab] = useStateM('overview');
+  if (!country) return null;
+  const CONFLICT = {
+    'Sudan': { conflict: 0.72, unrest: 0.45, border: 0.3 },
+    'DR Congo': { conflict: 0.6, unrest: 0.35 },
+    'Nigeria': { conflict: 0.34, unrest: 0.2 },
+    'Bolivia': { unrest: 0.2 },
+  };
+  const maxIdx = Math.max(...country.list.map(o => o.idx));
+  const ov = CONFLICT[country.place] || {};
+  const domains = [
+    { key: 'health', label: 'Health & outbreaks', icon: 'pulse', score: +(maxIdx / 100).toFixed(1) },
+    { key: 'conflict', label: 'Armed conflict', icon: 'shield', score: ov.conflict || 0 },
+    { key: 'unrest', label: 'Civil unrest', icon: 'user', score: ov.unrest || 0 },
+    { key: 'transport', label: 'Transport', icon: 'plane', score: ov.transport || 0 },
+    { key: 'border', label: 'Border & entry', icon: 'grid', score: ov.border || 0 },
+  ];
+  const composite = +Math.max(...domains.map(d => d.score)).toFixed(1);
+  const riskLabel = composite >= 0.8 ? 'Severe' : composite >= 0.6 ? 'Elevated' : composite >= 0.3 ? 'Moderate' : 'Low';
+  const dColor = (s) => s >= 0.7 ? 'var(--crit)' : s >= 0.4 ? 'var(--sev-warn)' : 'var(--sev-monitor)';
+  const top = country.list[0];
+  const avgCfr = (country.list.reduce((s, o) => s + o.cfr, 0) / country.list.length).toFixed(1);
+  const tabs = [['overview', 'Overview'], ['health', 'Health'], ['risks', 'Risks'], ['history', 'History']];
+
+  const DomainRow = (d, i, a) => (
+    <div key={d.key} style={{ padding: '14px 0', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 9 }}>
+        <span style={{ color: 'var(--text2)' }}><Icon name={d.icon} size={18} /></span>
+        <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: 'var(--text)' }}>{d.label}</span>
+        <span className="mono" style={{ fontSize: 15, fontWeight: 600, color: d.score >= 0.7 ? 'var(--crit)' : d.score > 0 ? 'var(--text)' : 'var(--text3)' }}>{d.score.toFixed(1)}</span>
+      </div>
+      <div style={{ height: 5, borderRadius: 99, background: 'var(--track)', overflow: 'hidden' }}>
+        <div style={{ width: Math.max(2, d.score * 100) + '%', height: '100%', borderRadius: 99, background: dColor(d.score) }} />
+      </div>
+    </div>
+  );
+
+  const events = [
+    ['Today', `${top.new24} new ${top.name.toLowerCase()} cases confirmed`],
+    ['−3d', 'Rapid-response coordination meeting held'],
+    ['−7d', 'Surveillance expanded to neighbouring districts'],
+    ['−' + top.since, `First confirmation of ${top.name}`],
+  ];
+
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', display: 'flex', flexDirection: 'column' }}>
+      {/* hero */}
+      <div style={{ position: 'relative', height: 236, flexShrink: 0, overflow: 'hidden' }}>
+        {/* feathered cover — stylized, melts into the background */}
+        <div style={{ position: 'absolute', inset: 0,
+          background: `linear-gradient(122deg, color-mix(in srgb, ${dColor(composite)} 26%, var(--globe-mid)), var(--globe-lo) 74%)`,
+          WebkitMaskImage: 'radial-gradient(135% 120% at 62% -12%, #000 34%, transparent 76%)',
+          maskImage: 'radial-gradient(135% 120% at 62% -12%, #000 34%, transparent 76%)', opacity: 0.5 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(110% 80% at 84% 8%, var(--hero-glow), transparent 58%)' }} />
+        <div style={{ position: 'absolute', right: -44, top: 26, opacity: 0.92 }}>
+          <GlobeViz size={206} lon0={country.lon} lat0={-12} markers={country.list.map(o => ({ lat: o.lat, lon: o.lon, sev: o.sev }))} halo />
+        </div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
+        <MoreBar nav={nav} trailing={<span className="iconbtn"><Icon name="share" size={18} /></span>} />
+        <div style={{ position: 'absolute', left: 18, bottom: 14, right: 100 }}>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Country profile</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+            <Flag code={country.code} size="lg" />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.7, lineHeight: 1 }}>{country.place}</span>
+          </div>
+          <div style={{ marginTop: 10 }}><Tag tone={country.maxSev === 'critical' ? 'crit' : 'neutral'}><SevDot sev={country.maxSev} size={6} />{Sev[country.maxSev].label} risk</Tag></div>
+        </div>
+      </div>
+
+      {/* tab bar */}
+      <div style={{ display: 'flex', gap: 22, padding: '0 18px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+        {tabs.map(([k, l]) => {
+          const on = tab === k;
+          return (
+            <div key={k} onClick={() => setTab(k)} style={{ padding: '13px 0', cursor: 'pointer', position: 'relative',
+              fontSize: 14.5, fontWeight: on ? 700 : 500, color: on ? 'var(--text)' : 'var(--text3)' }}>
+              {l}
+              {on && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -1, height: 2.5, borderRadius: 99, background: 'var(--text)' }} />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* tab content */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '18px 18px 120px' }}>
+        {tab === 'overview' && (
+          <div>
+            <div className="panel" style={{ borderRadius: 20, padding: 18, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              <Metric label="Active" value={country.active} />
+              <Metric label="Cases" value={fmt(country.cases)} />
+              <Metric label="Deaths" value={fmt(country.deaths)} />
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>Highest severity</div>
+            <OutbreakRow o={top} variant="rich" onClick={() => nav.openOutbreak(top)} />
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>Risk snapshot</div>
+            <div className="panel" style={{ borderRadius: 18, padding: '16px 16px 6px' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
+                <span className="mono" style={{ fontSize: 30, fontWeight: 600, color: composite >= 0.7 ? 'var(--crit)' : 'var(--text)' }}>{composite.toFixed(1)}</span>
+                <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 600 }}>{riskLabel} composite</span>
+              </div>
+              {domains.slice(0, 3).map((d, i, a) => DomainRow(d, i, a))}
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>Monitoring sources</div>
+            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+              {[...new Set(country.list.flatMap(o => o.sources))].map(s => <Tag key={s}>{s}</Tag>)}
+            </div>
+          </div>
+        )}
+
+        {tab === 'health' && (
+          <div>
+            <div className="panel" style={{ borderRadius: 20, padding: 18, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 22 }}>
+              <Metric label="Events" value={country.active} />
+              <Metric label="Cases" value={fmt(country.cases)} />
+              <Metric label="Avg CFR" value={avgCfr + '%'} accent={composite >= 0.7} />
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 11 }}>Active events</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+              {country.list.map(o => <OutbreakRow key={o.id} o={o} variant="rich" onClick={() => nav.openOutbreak(o)} />)}
+            </div>
+          </div>
+        )}
+
+        {tab === 'risks' && (
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 11 }}>Risk index by domain</div>
+            <div className="panel" style={{ borderRadius: 18, padding: 18, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span className="mono" style={{ fontSize: 44, fontWeight: 600, color: composite >= 0.7 ? 'var(--crit)' : 'var(--text)', lineHeight: 1 }}>{composite.toFixed(1)}</span>
+              <div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: composite >= 0.7 ? 'var(--crit)' : 'var(--text)' }}>{riskLabel}</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>Composite · 44 sources · {domains.length} domains</div>
+              </div>
+            </div>
+            <div className="panel" style={{ borderRadius: 18, padding: '2px 16px' }}>
+              {domains.map((d, i, a) => DomainRow(d, i, a))}
+            </div>
+          </div>
+        )}
+
+        {tab === 'history' && (
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 11 }}>Case trend · {top.name}</div>
+            <div className="panel" style={{ borderRadius: 20, padding: '16px 14px 8px', marginBottom: 22 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '0 4px 6px' }}>
+                <span style={{ fontSize: 12.5, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>New cases / day</span>
+                <span className="mono" style={{ fontSize: 12, color: top.sev === 'critical' ? 'var(--crit)' : 'var(--text2)' }}>+{top.new24} today</span>
+              </div>
+              <CaseCurve data={top.curve} w={330} h={128} pad={8} grid labels={['−14d', '−7d', 'Today']} color={top.sev === 'critical' ? 'var(--crit)' : 'var(--sev-warn)'} />
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 11 }}>Timeline</div>
+            <div className="panel" style={{ borderRadius: 18, padding: '6px 16px' }}>
+              {events.map(([t, txt], i, a) => (
+                <div key={i} style={{ display: 'flex', gap: 13, padding: '12px 0' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 99, background: i === 0 ? dColor(composite) : 'var(--border-strong)', marginTop: 4 }} />
+                    {i < a.length - 1 && <span style={{ width: 1, flex: 1, background: 'var(--border)', marginTop: 4 }} />}
+                  </div>
+                  <div style={{ flex: 1, paddingBottom: 4 }}>
+                    <div className="mono" style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 2 }}>{t}</div>
+                    <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.4, textWrap: 'pretty' }}>{txt}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 40, padding: '14px 18px 30px', background: 'linear-gradient(to top, var(--bg) 62%, transparent)' }}>
+        <button onClick={() => nav.openNewAlert({ type: 'region', label: country.place })} style={{
+          width: '100%', height: 52, borderRadius: 16, border: '1px solid var(--border)', cursor: 'pointer',
+          background: 'var(--chip)', color: 'var(--text)', fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700, whiteSpace: 'nowrap',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <Icon name="bell" size={18} />Alert me about {country.place}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── PROFILE / ACCOUNT ──────────────────────────────────────────
+function Profile({ nav, plan, prefs, setPref, lang, setLang }) {
+  const isPro = plan === 'pro';
+  const T = lang === 'ru' ? {
+    role: 'Эпидемиолог · WHO Health Emergencies', plan: 'Текущий план', active: 'Активна', used: '3 / 3 алертов',
+    upgrade: 'Перейти на Pro', manage: 'Управление подпиской',
+    prefsL: 'Предпочтения', regions: 'Отслеживаемые регионы', view: 'Вид по умолчанию', map: 'Карта', cats: 'Категории', all: 'Все',
+    notif: 'Уведомления', push: 'Push-алерты', email: 'Ежедневный дайджест', quiet: 'Не беспокоить',
+    acc: 'Аккаунт', sub: 'Подписка', exp: 'Экспорт данных', priv: 'Конфиденциальность',
+    appL: 'Приложение', language: 'Язык', signout: 'Выйти', free: 'Free',
+  } : {
+    role: 'Epidemiologist · WHO Health Emergencies', plan: 'Current plan', active: 'Active', used: '3 / 3 alerts used',
+    upgrade: 'Upgrade to Pro', manage: 'Manage subscription',
+    prefsL: 'Preferences', regions: 'Watched regions', view: 'Default view', map: 'Live map', cats: 'Categories', all: 'All',
+    notif: 'Notifications', push: 'Push alerts', email: 'Daily email digest', quiet: 'Quiet hours',
+    acc: 'Account', sub: 'Subscription', exp: 'Export data', priv: 'Privacy & data',
+    appL: 'App', language: 'Language', signout: 'Sign out', free: 'Free',
+  };
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
+      <MoreBar nav={nav} trailing={<span className="iconbtn"><Icon name="sliders" size={18} /></span>} />
+      <div style={{ height: '100%', overflow: 'auto', padding: '104px 18px 40px' }}>
+        {/* identity */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+          <Avatar name="Lena Mahler" size={58} />
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.4 }}>Dr. Lena Mahler</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2 }}>{T.role}</div>
+          </div>
+        </div>
+
+        {/* plan card */}
+        <div className="panel" style={{ borderRadius: 20, padding: 18, marginBottom: 22, border: isPro ? '1px solid color-mix(in srgb, var(--crit) 30%, transparent)' : '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{T.plan}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 3 }}>Vigilo {isPro ? 'Pro' : T.free}</div>
+            </div>
+            <Tag tone={isPro ? 'crit' : 'neutral'}>{isPro ? T.active : T.used}</Tag>
+          </div>
+          <button onClick={nav.openPlans} style={{ marginTop: 14, width: '100%', height: 46, borderRadius: 13, border: 'none', cursor: 'pointer',
+            background: 'var(--text)', color: 'var(--bg)', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+            {isPro ? T.manage : T.upgrade} <Icon name="arrowUR" size={16} stroke={2} />
+          </button>
+        </div>
+
+        <ListGroup label={T.appL}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '14px 0' }}>
+            <span style={{ color: 'var(--text2)' }}><Icon name="globe" size={19} /></span>
+            <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>{T.language}</span>
+            <div style={{ display: 'flex', gap: 4, background: 'var(--chip)', borderRadius: 99, padding: 3 }}>
+              {[['ru', 'Рус'], ['en', 'Eng']].map(([k, l]) => (
+                <button key={k} onClick={() => setLang(k)} style={{
+                  height: 30, padding: '0 14px', borderRadius: 99, border: 'none', cursor: 'pointer',
+                  background: lang === k ? 'var(--text)' : 'transparent', color: lang === k ? 'var(--bg)' : 'var(--text2)',
+                  fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600 }}>{l}</button>
+              ))}
+            </div>
+          </div>
+        </ListGroup>
+
+        <ListGroup label={T.prefsL}>
+          <ListRow icon="pin" label={T.regions} value="3" onClick={() => {}} />
+          <ListRow icon="globe" label={T.view} value={T.map} onClick={() => {}} />
+          <ListRow icon="layers" label={T.cats} value={T.all} onClick={() => {}} last />
+        </ListGroup>
+
+        <ListGroup label={T.notif}>
+          <ListRow icon="bell" label={T.push} control={<Switch on={prefs.push} onToggle={() => setPref('push', !prefs.push)} />} />
+          <ListRow icon="brief" label={T.email} control={<Switch on={prefs.email} onToggle={() => setPref('email', !prefs.email)} />} />
+          <ListRow icon="clock" label={T.quiet} value="22:00–07:00" onClick={() => {}} last />
+        </ListGroup>
+
+        <ListGroup label={T.acc}>
+          <ListRow icon="spark" label={T.sub} value={isPro ? 'Pro' : T.free} onClick={nav.openPlans} />
+          <ListRow icon="share" label={T.exp} onClick={() => {}} />
+          <ListRow icon="eye" label={T.priv} onClick={() => {}} last />
+        </ListGroup>
+
+        <ListGroup>
+          <ListRow icon="x" label={T.signout} danger last onClick={() => {}} />
+        </ListGroup>
+      </div>
+    </div>
+  );
+}
+
+// ── PLANS / PAYWALL ────────────────────────────────────────────
+function Plans({ nav }) {
+  const [cycle, setCycle] = useStateM('year');
+  const price = cycle === 'year' ? '$99' : '$12';
+  const per = cycle === 'year' ? '/yr' : '/mo';
+  const features = [
+    'Unlimited custom alerts & rules',
+    'Country deep-dives & risk profiles',
+    'Full AI intelligence briefs',
+    'Historical data & CSV export',
+    'Priority WHO / ECDC / CDC feeds',
+    'Early-signal detection',
+  ];
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'transparent', overflow: 'hidden' }}>
+      <MoreBar nav={nav} trailing={<span style={{ fontSize: 13, color: 'var(--text3)', alignSelf: 'center' }}>Restore</span>} />
+      <div style={{ height: '100%', overflow: 'auto', padding: '104px 18px 130px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--crit) 14%, transparent)', color: 'var(--crit)', fontSize: 12, fontWeight: 700, marginBottom: 14, whiteSpace: 'nowrap' }}>
+          <Icon name="spark" size={14} />Vigilo Pro
+        </div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.7, lineHeight: 1.05 }}>See every signal,<br />before it spreads.</div>
+        <div style={{ fontSize: 14, color: 'var(--text2)', marginTop: 10, lineHeight: 1.5, textWrap: 'pretty' }}>Unlimited alerts, deep country intelligence and full AI briefs for people who track outbreaks for a living.</div>
+
+        {/* billing toggle */}
+        <div style={{ display: 'flex', gap: 7, margin: '22px 0 14px' }}>
+          {[['month', 'Monthly'], ['year', 'Yearly · save 31%']].map(([k, l]) => (
+            <button key={k} onClick={() => setCycle(k)} style={{ flex: 1, height: 38, borderRadius: 99, border: '1px solid var(--border)', cursor: 'pointer',
+              background: cycle === k ? 'var(--text)' : 'transparent', color: cycle === k ? 'var(--bg)' : 'var(--text2)', fontFamily: 'var(--font-sans)', fontSize: 12.5, fontWeight: 600 }}>{l}</button>
+          ))}
+        </div>
+
+        <div className="panel" style={{ borderRadius: 20, padding: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 700, color: 'var(--text)', letterSpacing: -1 }}>{price}</span>
+            <span style={{ fontSize: 15, color: 'var(--text3)' }}>{per}</span>
+          </div>
+          <div style={{ fontSize: 12.5, color: 'var(--text3)', marginTop: 2 }}>14-day free trial · cancel anytime</div>
+          <div style={{ height: 1, background: 'var(--border)', margin: '16px 0' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {features.map(f => (
+              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                <span style={{ width: 20, height: 20, borderRadius: 99, background: 'color-mix(in srgb, var(--crit) 16%, transparent)', color: 'var(--crit)', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Icon name="check" size={13} stroke={2.5} /></span>
+                <span style={{ fontSize: 13.5, color: 'var(--text)' }}>{f}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 40, padding: '14px 18px 30px', background: 'linear-gradient(to top, var(--bg) 62%, transparent)' }}>
+        <button onClick={nav.back} style={{ width: '100%', height: 54, borderRadius: 16, border: 'none', cursor: 'pointer', background: 'var(--text)', color: 'var(--bg)', fontFamily: 'var(--font-sans)', fontSize: 15.5, fontWeight: 700 }}>
+          Start 14-day free trial
+        </button>
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text3)', marginTop: 10 }}>Then {price}{per} · Terms & Privacy apply</div>
+      </div>
+    </div>
+  );
+}
+
+// ── NEW ALERT SHEET (modal) ────────────────────────────────────
+function NewAlertSheet({ onClose, onCreate, preset }) {
+  const [type, setType] = useStateM(preset ? preset.type : 'severity');
+  const [pathogen, setPathogen] = useStateM(preset && preset.type === 'pathogen' ? preset.label : OUTBREAKS[0].name);
+  const [region, setRegion] = useStateM(preset && preset.type === 'region' ? preset.label : OUTBREAKS[0].place);
+  const [sev, setSev] = useStateM('alert');
+  const [push, setPush] = useStateM(true);
+  const [email, setEmail] = useStateM(false);
+
+  const label = type === 'pathogen' ? pathogen : type === 'region' ? region : `${Sev[sev].label}+ anywhere`;
+  const create = () => { onCreate({ id: 'r' + Date.now(), type, label, sev: type === 'severity' ? sev : 'alert', push, email }); onClose(); };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 80, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }} />
+      <div className="sheet-up" style={{ position: 'relative', background: 'var(--sheet)', borderRadius: '26px 26px 0 0', borderTop: '1px solid var(--border)', padding: '14px 20px 30px', maxHeight: '86%', overflow: 'auto' }}>
+        <div style={{ width: 38, height: 4, borderRadius: 99, background: 'var(--border-strong)', margin: '0 auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>New alert</span>
+          <span className="iconbtn" onClick={onClose}><Icon name="x" size={18} /></span>
+        </div>
+
+        <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 9 }}>Trigger</div>
+        <div style={{ display: 'flex', gap: 7, marginBottom: 16 }}>
+          {[['severity', 'Severity'], ['pathogen', 'Pathogen'], ['region', 'Region']].map(([k, l]) => (
+            <button key={k} onClick={() => setType(k)} style={{ flex: 1, height: 36, borderRadius: 99, border: '1px solid var(--border)', cursor: 'pointer', background: type === k ? 'var(--text)' : 'transparent', color: type === k ? 'var(--bg)' : 'var(--text2)', fontFamily: 'var(--font-sans)', fontSize: 12.5, fontWeight: 600 }}>{l}</button>
+          ))}
+        </div>
+
+        {type === 'severity' && (
+          <div className="panel" style={{ borderRadius: 14, padding: '4px 14px', marginBottom: 16 }}>
+            {['critical', 'alert', 'warning'].map((s, i, a) => (
+              <div key={s} onClick={() => setSev(s)} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '13px 0', cursor: 'pointer', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <SevDot sev={s} size={9} />
+                <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>{Sev[s].label} or higher</span>
+                <span style={{ width: 20, height: 20, borderRadius: 99, border: '2px solid ' + (sev === s ? 'var(--crit)' : 'var(--border-strong)'), display: 'grid', placeItems: 'center' }}>
+                  {sev === s && <span style={{ width: 10, height: 10, borderRadius: 99, background: 'var(--crit)' }} />}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        {type === 'pathogen' && (
+          <div className="panel" style={{ borderRadius: 14, padding: '4px 14px', marginBottom: 16, maxHeight: 200, overflow: 'auto' }}>
+            {[...new Set(OUTBREAKS.map(o => o.name))].map((n, i, a) => (
+              <div key={n} onClick={() => setPathogen(n)} style={{ display: 'flex', alignItems: 'center', padding: '12px 0', cursor: 'pointer', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <span style={{ flex: 1, fontSize: 14, color: 'var(--text)' }}>{n}</span>
+                {pathogen === n && <span style={{ color: 'var(--crit)' }}><Icon name="check" size={18} stroke={2.5} /></span>}
+              </div>
+            ))}
+          </div>
+        )}
+        {type === 'region' && (
+          <div className="panel" style={{ borderRadius: 14, padding: '4px 14px', marginBottom: 16, maxHeight: 200, overflow: 'auto' }}>
+            {[...new Set(OUTBREAKS.map(o => o.place))].map((n, i, a) => {
+              const o = OUTBREAKS.find(x => x.place === n);
+              return (
+                <div key={n} onClick={() => setRegion(n)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', cursor: 'pointer', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                  <Flag code={o.code} /><span style={{ flex: 1, fontSize: 14, color: 'var(--text)' }}>{n}</span>
+                  {region === n && <span style={{ color: 'var(--crit)' }}><Icon name="check" size={18} stroke={2.5} /></span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 9 }}>Deliver via</div>
+        <div className="panel" style={{ borderRadius: 14, padding: '4px 14px', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '13px 0', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>Push notification</span><Switch on={push} onToggle={() => setPush(!push)} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '13px 0' }}>
+            <span style={{ flex: 1, fontSize: 14.5, color: 'var(--text)' }}>Email</span><Switch on={email} onToggle={() => setEmail(!email)} />
+          </div>
+        </div>
+
+        <button onClick={create} style={{ width: '100%', height: 52, borderRadius: 16, border: 'none', cursor: 'pointer', background: 'var(--text)', color: 'var(--bg)', fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700 }}>
+          Create alert
+        </button>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { CountryView, Profile, Plans, NewAlertSheet, FiltersSheet, Avatar, ListGroup, ListRow });
+
+// ── FILTERS SHEET (severity + category toggles) ────────────────
+function FiltersSheet({ cats, onToggleCat, sevFilter, onSeverity, onClose, onReset }) {
+  const [open, setOpen] = useStateM(null);
+  const sevChips = [['all', 'All'], ['critical', 'Critical'], ['alert', 'Alert'], ['warning', 'Warning'], ['monitor', 'Monitor']];
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 80, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)' }} />
+      <div className="sheet-up" style={{ position: 'relative', background: 'var(--sheet)', borderRadius: '26px 26px 0 0', borderTop: '1px solid var(--border)', padding: '14px 20px 30px', maxHeight: '88%', overflow: 'auto' }}>
+        <div style={{ width: 38, height: 4, borderRadius: 99, background: 'var(--border-strong)', margin: '0 auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>Filters</span>
+          <span onClick={onReset} style={{ fontSize: 13, fontWeight: 600, color: 'var(--text2)', cursor: 'pointer' }}>Reset</span>
+        </div>
+
+        <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Severity</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+          {sevChips.map(([k, l]) => {
+            const on = sevFilter === k;
+            return (
+              <button key={k} onClick={() => onSeverity(k)} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 7, height: 38, padding: '0 16px', borderRadius: 99, cursor: 'pointer',
+                border: '1px solid ' + (on ? 'transparent' : 'var(--border)'), background: on ? 'var(--text)' : 'transparent',
+                color: on ? 'var(--bg)' : 'var(--text2)', fontFamily: 'var(--font-sans)', fontSize: 13.5, fontWeight: 600 }}>
+                {k !== 'all' && <SevDot sev={k} size={8} />}{l}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Categories</div>
+        <div className="panel" style={{ borderRadius: 16, padding: '2px 14px' }}>
+          {CATEGORIES.map((c, i, a) => {
+            const isOpen = open === c.key;
+            const on = cats[c.key];
+            return (
+              <div key={c.key} style={{ borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0' }}>
+                  <span onClick={() => setOpen(isOpen ? null : c.key)} style={{ color: 'var(--text3)', cursor: 'pointer', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}><Icon name="chevD" size={16} /></span>
+                  <span style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--chip)', display: 'grid', placeItems: 'center', color: on ? 'var(--text)' : 'var(--text3)', flexShrink: 0 }}><Icon name={c.icon} size={18} /></span>
+                  <span onClick={() => setOpen(isOpen ? null : c.key)} style={{ flex: 1, fontSize: 15, fontWeight: 600, color: on ? 'var(--text)' : 'var(--text3)', cursor: 'pointer' }}>{c.label}</span>
+                  <span style={{ minWidth: 34, textAlign: 'center', padding: '2px 8px', borderRadius: 99, background: 'var(--chip)', color: 'var(--text2)', fontSize: 12, fontWeight: 600 }} className="mono">{c.count}</span>
+                  <Switch on={on} onToggle={() => onToggleCat(c.key)} />
+                </div>
+                {isOpen && (
+                  <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', padding: '0 0 14px 48px' }}>
+                    {c.subs.map(s => <Tag key={s}>{s}</Tag>)}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <button onClick={onClose} style={{ marginTop: 20, width: '100%', height: 52, borderRadius: 16, border: 'none', cursor: 'pointer', background: 'var(--text)', color: 'var(--bg)', fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700 }}>
+          Show results
+        </button>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { FiltersSheet });
+
+
+/* ===== bootstrap ===== */
+/* (useState/useEffect already destructured in vigilo-ui) */
+
+// living background: 2 drifting glow blobs + a sparse field of twinkling dots
+const AMB_STAR_TINTS = [
+  'var(--text)',
+  'color-mix(in srgb, var(--crit) 70%, var(--text))',
+  'color-mix(in srgb, #6fa0d8 70%, var(--text))',
+  'color-mix(in srgb, #8fd0c0 60%, var(--text))',
+];
+const AMB_STARS = Array.from({ length: 60 }, (_, i) => ({
+  left: (i * 67 + 13) % 100, top: (i * 41 + 7) % 100,
+  size: 1.5 + (i % 4) * 0.7,            // 1.5 – 3.6px
+  tint: AMB_STAR_TINTS[i % AMB_STAR_TINTS.length],
+  peak: 0.22 + (i % 5) * 0.07,          // varied max brightness
+  dur: 2.2 + (i % 6) * 0.5,            // 2.2 – 4.7s, a touch quicker
+  delay: (i % 9) * 0.4,
+}));
+function AmbientField() {
+  return (
+    <div className="amb-field" aria-hidden="true">
+      <div className="amb-blob amb-blob-1" />
+      <div className="amb-blob amb-blob-2" />
+      {AMB_STARS.map((s, i) => (
+        <span key={i} className="amb-star" style={{ left: s.left + '%', top: s.top + '%',
+          width: s.size, height: s.size, background: s.tint, '--pk': s.peak,
+          animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite` }} />
+      ))}
+    </div>
+  );
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "light",
+  "accent": "#F26A41",
+  "motion": true
+}/*EDITMODE-END*/;
+
+function Shell() {
+  const [tab, setTab] = useState('globe');
+  const [stack, setStack] = useState([]);
+  const rootRef = React.useRef(null);
+  const origin = React.useRef({ x: 201, y: 437 });
+  const [rings, setRings] = useState([]);
+  const [waves, setWaves] = useState([]);
+  const lastWave = React.useRef(0);
+  const captureOrigin = (e) => {
+    const r = rootRef.current && rootRef.current.getBoundingClientRect();
+    if (!r) return;
+    const x = Math.round((e.clientX - r.left) / r.width * 402);
+    const y = Math.round((e.clientY - r.top) / r.height * 874);
+    origin.current = { x, y };
+    // ripple only on interactive targets (buttons / cards / clickable rows)
+    const hit = e.target.closest('button, [data-ripple], .panel, .glass, [role="button"]');
+    const clickable = hit || (() => { let n = e.target; for (let i = 0; i < 5 && n; i++, n = n.parentElement) { if (getComputedStyle(n).cursor === 'pointer') return true; } return false; })();
+    if (!clickable) return;
+    const now = Date.now();
+    if (now - lastWave.current > 220) { lastWave.current = now; emitWave(x, y, 'soft'); }
+  };
+  const emitWave = (x, y, kind) => {
+    const id = Date.now() + Math.random();
+    setWaves(w => [...w, { id, x, y, kind }]);
+    setTimeout(() => setWaves(w => w.filter(v => v.id !== id)), kind === 'strong' ? 2100 : 1900);
+  };
+  const emitRing = () => { emitWave(origin.current.x, origin.current.y, 'strong'); };
+  const [modal, setModal] = useState(null);
+  const [tracked, setTracked] = useState({ 'mbg-rw': true, 'mpx-cd': true, 'cho-sd': false });
+  const [prefs, setPrefs] = useState({ push: true, email: false });
+  const [lang, setLang] = useState('ru');
+  const [rules, setRules] = useState([
+    { id: 'r1', type: 'severity', sev: 'critical', label: 'Critical+ anywhere', push: true, email: false },
+    { id: 'r2', type: 'region', sev: 'alert', label: 'Sudan', push: true, email: true },
+  ]);
+  const [cats, setCats] = useState({ epidemics: true, disasters: true, air: true, food: true, humanitarian: true, blackout: true });
+  const [sevFilter, setSevFilter] = useState('all');
+
+  const push = (v) => { emitRing(); setStack(s => [...s, v]); };
+  const back = () => setStack(s => s.slice(0, -1));
+  const go = (k) => { setStack([]); setModal(null); setTab(k); };
+  const nav = {
+    back,
+    openOutbreak: (o) => push({ type: 'outbreak', data: o }),
+    openCountry: (place) => push({ type: 'country', data: getCountry(place) }),
+    openProfile: () => push({ type: 'profile' }),
+    openPlans: () => push({ type: 'plans' }),
+    openNewAlert: (preset) => setModal({ type: 'newAlert', preset }),
+    openFilters: () => setModal({ type: 'filters' }),
+  };
+
+  let base;
+  if (tab === 'globe') base = <HomeGlobe showNav={false} onOpen={nav.openOutbreak} onProfile={nav.openProfile} cats={cats} onOpenFilters={nav.openFilters} sevFilter={sevFilter} />;
+  else if (tab === 'list') base = <Watchlist onOpen={nav.openOutbreak} sevFilter={sevFilter} onSeverity={setSevFilter} cats={cats} onOpenFilters={nav.openFilters} />;
+  else if (tab === 'brief') base = <Briefings onOpen={nav.openOutbreak} />;
+  else base = <Alerts onOpen={nav.openOutbreak} tracked={tracked}
+    onToggleTrack={(id) => setTracked(t => ({ ...t, [id]: !t[id] }))}
+    rules={rules} onRemoveRule={(id) => setRules(r => r.filter(x => x.id !== id))} onNewAlert={nav.openNewAlert} />;
+
+  const screenFor = (v) => {
+    if (v.type === 'outbreak') return <DetailImmersive o={v.data} onClose={back} onCountry={nav.openCountry} onSetAlert={(o) => nav.openNewAlert({ type: 'pathogen', label: o.name })} />;
+    if (v.type === 'country') return <CountryView country={v.data} nav={nav} />;
+    if (v.type === 'profile') return <Profile nav={nav} plan="free" prefs={prefs} setPref={(k, val) => setPrefs(p => ({ ...p, [k]: val }))} lang={lang} setLang={setLang} />;
+    if (v.type === 'plans') return <Plans nav={nav} />;
+    return null;
+  };
+
+  return (
+    <div ref={rootRef} onPointerDownCapture={captureOrigin} style={{ height: '100%', position: 'relative', background: 'var(--amb)', overflow: 'hidden' }}>
+      <AmbientField />
+      <div key={'tab-' + tab} className="screen-fade" style={{ height: '100%', position: 'relative', zIndex: 1 }}>{base}</div>
+      {stack.map((v, i) => (
+        <div key={i + '-' + v.type} className="reveal-layer" style={{ position: 'absolute', inset: 0, zIndex: 50 + i, background: 'var(--amb)', '--ox': origin.current.x + 'px', '--oy': origin.current.y + 'px' }}>
+          <AmbientField />
+          <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>{screenFor(v)}</div>
+        </div>
+      ))}
+      {rings.map(r => <span key={r.id} className="reveal-ring" style={{ left: r.x, top: r.y }} />)}
+      {/* water ripples — concentric rings spreading across the app */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 70, pointerEvents: 'none', overflow: 'hidden' }}>
+        {waves.map(w => {
+          const strong = w.kind === 'strong';
+          const ringDelays = strong ? [0, 240, 480] : [0];
+          return (
+            <React.Fragment key={w.id}>
+              {strong && <span className="wv-band" style={{ left: w.x, top: w.y, '--wv-dur': '1300ms' }} />}
+              {ringDelays.map((d, i) => (
+                <span key={i} className="wv-ring" style={{
+                  left: w.x, top: w.y, animationDelay: d + 'ms',
+                  '--wv-dur': (strong ? 2000 : 1750) + 'ms',
+                  '--wv-max': strong ? 26 : 16,
+                  '--wv-op': strong ? (0.32 - i * 0.07) : 0.22,
+                }} />
+              ))}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      {stack.length === 0 && <BottomNav active={tab} onNav={go} floating badge={GLOBAL_STATS.critical} />}
+      {modal && modal.type === 'newAlert' && (
+        <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 90 }}>
+          <NewAlertSheet preset={modal.preset} onClose={() => setModal(null)} onCreate={(r) => setRules(s => [...s, r])} />
+        </div>
+      )}
+      {modal && modal.type === 'filters' && (
+        <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 90 }}>
+          <FiltersSheet cats={cats} onToggleCat={(k) => setCats(c => ({ ...c, [k]: !c[k] }))}
+            sevFilter={sevFilter} onSeverity={setSevFilter}
+            onReset={() => { setCats({ epidemics: true, disasters: true, air: true, food: true, humanitarian: true, blackout: true }); setSevFilter('all'); }}
+            onClose={() => setModal(null)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+class ErrBoundary extends React.Component {
+  constructor(p){ super(p); this.state = { err: null }; }
+  static getDerivedStateFromError(err){ return { err }; }
+  render(){
+    if(this.state.err){
+      return <div style={{padding:24, color:'#fff', font:'13px/1.5 monospace', whiteSpace:'pre-wrap'}}>
+        <b style={{color:'#F26A41'}}>Shell error:</b>{"\n"}{String(this.state.err && this.state.err.stack || this.state.err)}
+      </div>;
+    }
+    return this.props.children;
+  }
+}
+
+// Full-screen mobile app — Shell only (no phone frame, no tweaks panel).
+// Dark-first per the prototype; theme persisted in localStorage.
+function App() {
+  const saved = (function(){ try { return localStorage.getItem('vigilo-theme'); } catch(e){ return null; } })();
+  const light = saved === 'light';
+  useEffect(() => { document.body.classList.toggle('page-light', light); }, [light]);
+  const vars = { '--crit': '#F26A41', '--crit-glow': '#F26A4180', height: '100dvh', width: '100%', position: 'relative', overflow: 'hidden' };
+  return (
+    <div className={light ? 'theme-light' : ''} style={vars}>
+      <ErrBoundary><Shell /></ErrBoundary>
+    </div>
+  );
+}
+
+// Load real Vigilo data into OUTBREAKS/GLOBAL_STATS, then render.
+(async () => {
+  try { if (typeof buildVigiloData === 'function') await buildVigiloData(); }
+  catch (e) { console.error('Vigilo data load failed:', e); }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+})();
+
+</script>
+</body>
+</html>
