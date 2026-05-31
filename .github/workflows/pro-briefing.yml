@@ -1,0 +1,42 @@
+name: Pro weekly briefing
+
+on:
+  schedule:
+    # Mondays 07:00 UTC — weekly briefing for Pro subscribers
+    - cron: "0 7 * * 1"
+  workflow_dispatch:   # allow manual trigger from GitHub UI
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build risk events payload + call pro-briefing
+        env:
+          EPISCOPE_TOKEN_SECRET: ${{ secrets.EPISCOPE_TOKEN_SECRET }}
+        run: |
+          # Assemble the same events payload alert-check uses, from the
+          # committed public JSON (freshest data the last cron produced).
+          python3 -c "
+          import json, os
+          out = []
+          for f in ['public/risk_events.json']:
+              if os.path.exists(f):
+                  try: out += (json.load(open(f)).get('events') or [])
+                  except Exception: pass
+          json.dump({'events': out}, open('/tmp/brief_payload.json','w'))
+          print('payload events:', len(out))
+          "
+          CODE=$(curl -s -o /tmp/brief_resp.json -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${EPISCOPE_TOKEN_SECRET}" \
+            -H "Content-Type: application/json" \
+            --data @/tmp/brief_payload.json \
+            https://vigilo.cc/api/pro-briefing)
+          echo "pro-briefing HTTP $CODE"
+          echo "pro-briefing response: $(cat /tmp/brief_resp.json)"
+          if [ "$CODE" != "200" ]; then
+            echo "::warning::pro-briefing non-200 (non-critical)"
+          fi

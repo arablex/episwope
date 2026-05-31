@@ -2606,6 +2606,21 @@ const CATEGORY_META = {
 };
 
 function catLabel(key){ return LANG==='ru' ? CATEGORY_META[key].ru : CATEGORY_META[key].en; }
+
+// Sync every toggle's visual state FROM state.cats (single source of truth).
+// Without this, the static HTML is-on classes can disagree with state.cats
+// (e.g. humanitarian/blackout default true in state but no is-on in markup),
+// which caused the "needs two clicks to enable" bug: the first click only
+// re-synced the invisible state and produced no visible change.
+function syncCatToggles(){
+  for(const key in state.cats){
+    const toggle  = document.querySelector(`.sw-toggle[data-cat="${key}"]`);
+    const section = document.querySelector(`.cat-section[data-cat="${key}"]`);
+    if(toggle)  toggle.classList.toggle('is-on', !!state.cats[key]);
+    if(section) section.classList.toggle('cat-off', !state.cats[key]);
+  }
+}
+
 function toggleCat(key){
   state.cats[key] = !state.cats[key];
   const toggle  = document.querySelector(`.sw-toggle[data-cat="${key}"]`);
@@ -5179,6 +5194,9 @@ async function boot(){
   loadLiveData();
   // Refresh every 30 minutes
   setInterval(loadLiveData, 30 * 60 * 1000);
+
+  // Sync toggle visuals to state.cats on load (fixes 2-click-to-enable bug)
+  syncCatToggles();
 
   // Category sections wiring: expand/collapse + switch toggle
   document.getElementById('catSections')?.addEventListener('click', e=>{

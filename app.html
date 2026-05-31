@@ -784,6 +784,26 @@
     font-size:12px; color:var(--muted); font-style:italic;
   }
   .panel-ai-error{ font-size:12px; color:var(--muted); }
+  /* Pro upsell card in brief panel */
+  .brief-pro-upsell{
+    margin:14px 22px; padding:14px 16px;
+    border:1px solid rgba(232,89,12,0.25);
+    border-radius:12px;
+    background:linear-gradient(180deg, rgba(232,89,12,0.05), rgba(201,42,42,0.04));
+  }
+  .brief-pro-upsell .u-eyebrow{
+    font-size:9px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:6px; display:flex; align-items:center; gap:5px;
+  }
+  .brief-pro-upsell .u-title{
+    font-size:13px; font-weight:700; color:var(--ink); line-height:1.4; margin-bottom:10px;
+  }
+  .brief-pro-upsell .u-cta{
+    display:block; text-align:center; padding:9px;
+    background:linear-gradient(180deg,#E8590C,#C92A2A); color:#fff;
+    border-radius:8px; text-decoration:none; font-size:12px; font-weight:700;
+    border:none; cursor:pointer; width:100%;
+  }
 
   .brief-content{
     max-width:720px; margin:0 auto;
@@ -2907,6 +2927,8 @@ ym(109240834,'init',{ssr:true,clickmap:true,accurateTrackBounce:true,trackLinks:
         <div class="panel-ai-block" id="bpBreakdown"></div>
         <!-- Headlines -->
         <div class="panel-ai-block" id="bpHeadlines"></div>
+        <!-- Pro upsell (free users only) -->
+        <div id="bpProUpsell" class="brief-pro-upsell" style="display:none"></div>
         <!-- Sources footer -->
         <div style="padding:14px 22px; font-size:10px; color:var(--muted)">
           Data: risk_index · risk_history · GDELT · Google News
@@ -4129,6 +4151,26 @@ async function _openBriefPanel({ iso, country, category, catLabel, delta, days,
     }).join('');
   }
 
+  // Pro upsell: free users see the in-app analysis (the hook) plus an offer
+  // to get it delivered for their watched countries. Pro users don't see it.
+  const upsellEl = document.getElementById('bpProUpsell');
+  if (upsellEl) {
+    const _isPro = (typeof isPaid === 'function') && isPaid();
+    if (_isPro) {
+      upsellEl.style.display = 'none';
+    } else {
+      upsellEl.style.display = '';
+      upsellEl.innerHTML = `
+        <div class="u-eyebrow"><span>✦</span> ${TR('Vigilo Pro','Vigilo Pro')}</div>
+        <div class="u-title">${TR(
+          'Get this briefing delivered weekly for your watched countries — with deeper analysis.',
+          'Получайте этот брифинг еженедельно по вашим странам — с углублённым анализом.')}</div>
+        <button class="u-cta" onclick="(typeof openProWaitlist==='function') && openProWaitlist('brief_panel')">
+          ${TR('Upgrade to Pro','Перейти на Pro')}
+        </button>`;
+    }
+  }
+
   // AI explanation — cached or fresh
   const today    = new Date().toISOString().slice(0,10);
   const cacheKey = `${iso}_${today}`;
@@ -4151,7 +4193,7 @@ async function _openBriefPanel({ iso, country, category, catLabel, delta, days,
       return (_riskIdx[iso].event_ids||[])
         .map(id => _riskEvtById[id])
         .filter(e => e && e.headline)
-        .slice(0,5)
+        .slice(0,8)
         .map(e => e.headline);
     })();
 
@@ -4171,7 +4213,7 @@ async function _openBriefPanel({ iso, country, category, catLabel, delta, days,
     const resp = await fetch('/api/ai-brief', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ iso, country, category, delta, topThreat, headlines, breakdown, sparkline }),
+      body: JSON.stringify({ iso, country, category, delta, topThreat, headlines, breakdown, sparkline, lang: (typeof LANG !== 'undefined' ? LANG : 'en') }),
     });
 
     if (!resp.ok) throw new Error('API error ' + resp.status);
