@@ -165,6 +165,12 @@
   @keyframes flagsheen{ 0%{ background-position: 150% 0; } 100%{ background-position: -50% 0; } }
   .no-motion .flag-sheen{ animation: none !important; }
 
+  /* globe-morph — the home globe "recedes" into the new page's header globe */
+  .globe-morph{
+    background: radial-gradient(40% 34% at 38% 30%, var(--globe-hi), var(--globe-mid) 52%, var(--globe-lo) 100%);
+    box-shadow: inset -18px -24px 60px rgba(0,0,0,0.55), 0 0 44px -6px var(--crit-glow);
+  }
+
   /* living background — drifting glow blobs + faint twinkling star-dots */
   .amb-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .amb-blob { position: absolute; border-radius: 50%; filter: blur(50px); will-change: transform; opacity: 0.6; }
@@ -244,6 +250,27 @@ function spawnWave(x, y, kind){
     s.style.setProperty('--wv-max', strong ? 26 : 16);
     s.style.setProperty('--wv-op', strong ? (0.32 - i * 0.07) : 0.22);
   }));
+}
+
+/* Globe-morph transition: the full-screen home globe "recedes" and settles
+   into the small header globe of the country/detail page (top-right). */
+function morphGlobe(){
+  if(document.body.classList.contains('no-motion')) return;
+  const W = window.innerWidth, H = window.innerHeight;
+  const size = 206, cxF = W - 60, cyF = 92;          // final (header globe centre)
+  const cxS = W / 2, cyS = H * 0.40, startD = W * 1.5; // start (home globe centre/size)
+  const g = document.createElement('div');
+  g.className = 'globe-morph';
+  g.style.cssText = `position:fixed;width:${size}px;height:${size}px;left:${cxF - size/2}px;top:${cyF - size/2}px;border-radius:50%;z-index:55;pointer-events:none`;
+  document.body.appendChild(g);
+  const tx = cxS - cxF, ty = cyS - cyF, sc = startD / size;
+  const anim = g.animate([
+    { transform: `translate(${tx}px,${ty}px) scale(${sc})`, opacity: 0.92 },
+    { transform: 'translate(0,0) scale(1)', opacity: 1, offset: 0.82 },
+    { transform: 'translate(0,0) scale(1)', opacity: 0 },
+  ], { duration: 780, easing: 'cubic-bezier(.5,0,.18,1)' });
+  anim.onfinish = () => g.remove();
+  setTimeout(() => { try { g.remove(); } catch(e){} }, 850);
 }
 
 /* ===== vigilo-ui.jsx ===== */
@@ -2304,8 +2331,8 @@ function Shell({ light, setLight } = {}) {
   const go = (k) => { setStack([]); setModal(null); setTab(k); };
   const nav = {
     back,
-    openOutbreak: (o) => push({ type: 'outbreak', data: o }),
-    openCountry: (place) => push({ type: 'country', data: getCountry(place) }),
+    openOutbreak: (o) => { if (tab === 'globe' && stack.length === 0) morphGlobe(); push({ type: 'outbreak', data: o }); },
+    openCountry: (place) => { if (tab === 'globe' && stack.length === 0) morphGlobe(); push({ type: 'country', data: getCountry(place) }); },
     openProfile: () => push({ type: 'profile' }),
     openPlans: () => push({ type: 'plans' }),
     openNewAlert: (preset) => setModal({ type: 'newAlert', preset }),
