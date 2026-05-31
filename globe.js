@@ -483,12 +483,12 @@ function computeRisk(o){
 /* ── Travel advisory ─────────────────────────────────────── */
 const TRAVEL_ADVISORY = {
   en: {
-    high:   { label: 'Avoid non-essential travel', dot: '#C92A2A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    high:   { label: 'Avoid non-essential travel', dot: '#E0512A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
     medium: { label: 'Exercise increased caution', dot: '#C87B00', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
     low:    { label: 'Normal precautions apply',   dot: '#3D8B5C', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
   },
   ru: {
-    high:   { label: 'Избегать несущественных поездок',  dot: '#C92A2A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
+    high:   { label: 'Избегать несущественных поездок',  dot: '#E0512A', bg: 'rgba(201,42,42,0.07)', border: 'rgba(201,42,42,0.20)' },
     medium: { label: 'Повышенная осторожность',           dot: '#C87B00', bg: 'rgba(200,123,0,0.07)', border: 'rgba(200,123,0,0.20)' },
     low:    { label: 'Стандартные меры предосторожности', dot: '#3D8B5C', bg: 'rgba(61,139,92,0.07)', border: 'rgba(61,139,92,0.20)' },
   },
@@ -780,7 +780,7 @@ function renderHistoryChart(s, color) {
       <stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
     <path d="${area}" fill="url(#hg)"/>
     <path d="${lineFor(s.total)}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="${lineFor(s.crit)}" fill="none" stroke="#C92A2A" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8"/>
+    <path d="${lineFor(s.crit)}" fill="none" stroke="#E0512A" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8"/>
     ${dot(s.total, color)}
   </svg>`;
 }
@@ -940,7 +940,7 @@ function updateAssessCounter(){
   el.textContent = left > 0
     ? (ru ? `Осталось: ${left}` : `${left} left`)
     : (ru ? 'Лимит исчерпан' : 'Limit reached');
-  el.style.color = left <= 2 ? 'var(--red, #C92A2A)' : 'var(--muted)';
+  el.style.color = left <= 2 ? 'var(--red, #E0512A)' : 'var(--muted)';
 }
 
 function getSession() {
@@ -1005,7 +1005,7 @@ function openProWaitlist(source) {
   ov.innerHTML = `
     <div id="_proWaitCard" style="background:var(--bg-card);max-width:420px;width:100%;border-radius:20px;padding:30px 28px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);transform:translateY(8px);transition:transform .22s">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${L.eyebrow}</span>
+        <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#F26A41">${L.eyebrow}</span>
         <button id="_proWaitX" aria-label="close" style="border:0;background:none;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px">×</button>
       </div>
       <div style="font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25;color:var(--ink);margin-bottom:6px">${L.title}</div>
@@ -1017,7 +1017,7 @@ function openProWaitlist(source) {
         <input id="_proWaitEmail" type="email" required placeholder="${L.ph}" autocomplete="email"
           style="height:46px;padding:0 15px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:14.5px;color:var(--ink);background:var(--bg-card);outline:none">
         <button type="submit" id="_proWaitBtn"
-          style="height:46px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border:0;border-radius:12px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer">${L.cta}</button>
+          style="height:46px;background:linear-gradient(180deg,#F26A41,#E0512A);color:#fff;border:0;border-radius:12px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer">${L.cta}</button>
       </form>
       <div id="_proWaitOk" style="display:none;text-align:center;padding:10px 0 2px">
         <div style="font-size:15px;font-weight:800;color:#19A463;margin-bottom:4px">${L.okT}</div>
@@ -1112,7 +1112,7 @@ function emergencyFor(iso2){
 /* Section header: small accent icon + uppercase label + thin rule */
 function _sec(label, svgPath){
   return `<div style="display:flex;align-items:center;gap:7px;margin:20px 0 9px">
-    <span style="color:#E8590C;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></span>
+    <span style="color:#F26A41;display:flex"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg></span>
     <span style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">${label}</span>
     <span style="flex:1;height:1px;background:var(--line)"></span>
   </div>`;
@@ -1127,7 +1127,7 @@ function _riskVerdict(country, outbreaks){
   };
   let lvl = risk;                              // capacity-aware tier
   if(risk==='high' && worstIdx >= 5) lvl='extreme';   // genuine catastrophe only
-  const color = {low:'#19A463', medium:'#E4B514', high:'#E8590C', extreme:'#C92A2A'}[lvl];
+  const color = {low:'#19A463', medium:'#E4B514', high:'#F26A41', extreme:'#E0512A'}[lvl];
   return { lvl, color, label:(map[LANG==='ru'?'ru':'en'])[lvl] };
 }
 
@@ -1229,15 +1229,15 @@ function _riskScore({ obs, country, air, recalls, hs }){
             + wastewaterBoost + currencyBoost + macroPts;
   const score = Math.max(0, Math.min(100, Math.round(raw)));
 
-  const band = score>=75 ? {k:'severe',  c:'#C92A2A', en:'Severe',   ru:'Серьёзный'}
-             : score>=50 ? {k:'high',    c:'#E8590C', en:'High',     ru:'Высокий'}
+  const band = score>=75 ? {k:'severe',  c:'#E0512A', en:'Severe',   ru:'Серьёзный'}
+             : score>=50 ? {k:'high',    c:'#F26A41', en:'High',     ru:'Высокий'}
              : score>=25 ? {k:'moderate',c:'#E4B514', en:'Moderate', ru:'Умеренный'}
              :             {k:'low',     c:'#19A463', en:'Low',      ru:'Низкий'};
 
   const parts = [
-    { l: ru?'Вспышки':'Outbreaks',      v: Math.round(sevPts),       max:42, c:'#C92A2A',
+    { l: ru?'Вспышки':'Outbreaks',      v: Math.round(sevPts),       max:42, c:'#E0512A',
       desc: ru?'Тяжесть вспышек с поправкой на систему здравоохранения':'Outbreak severity, adjusted for health-system capacity' },
-    { l: ru?'Базовый риск':'Baseline',  v: Math.round(advPts+advBump), max:29, c:'#E8590C',
+    { l: ru?'Базовый риск':'Baseline',  v: Math.round(advPts+advBump), max:29, c:'#F26A41',
       desc: ru?'Развитость и система здравоохранения (не офиц. рекомендация)':'Development & health-system baseline (not an official advisory)' },
     ...(conflictPts > 0 ? [{ l: ru?'Конфликт':'Conflict', v: Math.round(conflictPts), max:10, c:'#7C3AED',
       desc: ru?'Вооружённые столкновения и активные боевые действия (ACLED/GDELT)':'Armed clashes and active hostilities (ACLED/GDELT)' }] : []),
@@ -1576,13 +1576,13 @@ function openRiskReport(country){
   ov.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(8,7,6,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto';
   ov.innerHTML = `<div id="_riskCard" style="background:var(--bg-card);max-width:560px;width:100%;border-radius:20px;padding:26px;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);max-height:92vh;overflow:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#E8590C">${ru?'Оценка рисков':'Risk assessment'}</span>
+      <span style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#F26A41">${ru?'Оценка рисков':'Risk assessment'}</span>
       <button id="_riskX" style="border:0;background:none;cursor:pointer;color:var(--muted);font-size:22px;line-height:1">×</button>
     </div>
     <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px">${countryName(country)}</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:18px">${ru?'Выберите цель — соберём детальный отчёт':'Pick a purpose — we’ll build a detailed report'}</div>
     <div id="_riskPick" style="display:flex;flex-direction:column;gap:9px">
-      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg-card);cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);text-align:left;width:100%"><span style="color:#E8590C;display:flex;flex-shrink:0">${p.icon}</span>${ru?p.ru:p.en}</button>`).join('')}
+      ${RISK_PURPOSES.map(p=>`<button class="_rp" data-p="${p.id}" style="display:flex;align-items:center;gap:12px;padding:15px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg-card);cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);text-align:left;width:100%"><span style="color:#F26A41;display:flex;flex-shrink:0">${p.icon}</span>${ru?p.ru:p.en}</button>`).join('')}
     </div>
     <div id="_riskBody"></div>
   </div>`;
@@ -1652,11 +1652,11 @@ async function buildRiskReport(country, purpose){
   const iso2  = _cc?.iso2;
   const em    = emergencyFor(iso2);
   const callBtn = (label, num, svg) => `<a href="tel:${num}" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;text-decoration:none">
-      <span style="color:#C92A2A;display:flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span>
+      <span style="color:#E0512A;display:flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg></span>
       <span style="font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.02em">${num}</span>
       <span style="font-size:10px;color:var(--muted)">${label}</span></a>`;
   const emHtml = em.g
-    ? `<a href="tel:${em.g}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:#C92A2A;border-radius:14px;text-decoration:none">
+    ? `<a href="tel:${em.g}" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:#E0512A;border-radius:14px;text-decoration:none">
          <span style="color:#fff;display:flex"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.74-1.74a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/></svg></span>
          <span style="font-size:24px;font-weight:900;color:#fff;letter-spacing:-.02em">${em.g}</span>
          <span style="font-size:11px;color:rgba(255,255,255,.85)">${ru?'единый номер':'universal'}</span></a>`
@@ -1682,8 +1682,8 @@ async function buildRiskReport(country, purpose){
 
   const chip = (label, val, color) => `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}14;color:${color};font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px">${label}: ${val}</span>`;
 
-  const trendClr = /рас|ris/i.test(trendTxt) ? '#C92A2A' : /сниж|fall/i.test(trendTxt) ? '#3D8B5C' : '#807E76';
-  const aqiClr = air==null?'#807E76':air<=50?'#19A463':air<=100?'#E4B514':air<=150?'#E8590C':'#C92A2A';
+  const trendClr = /рас|ris/i.test(trendTxt) ? '#E0512A' : /сниж|fall/i.test(trendTxt) ? '#3D8B5C' : '#807E76';
+  const aqiClr = air==null?'#807E76':air<=50?'#19A463':air<=100?'#E4B514':air<=150?'#F26A41':'#E0512A';
 
   return `
   <div id="_riskReport" style="margin-top:4px">
@@ -1701,7 +1701,7 @@ async function buildRiskReport(country, purpose){
         ${chip(ru?'Поездки':'Travel', `<b>${adv?.label||'—'}</b>`, v.color)}
         ${trendTxt?chip(ru?'Тренд':'Trend', trendTxt, trendClr):''}
         ${chip(ru?'Воздух':'Air', airTxt, aqiClr)}
-        ${recalls.length?chip(ru?'Отзывы':'Recalls', recalls.length, '#E8590C'):''}
+        ${recalls.length?chip(ru?'Отзывы':'Recalls', recalls.length, '#F26A41'):''}
       </div>
     </div>
 
@@ -1712,7 +1712,7 @@ async function buildRiskReport(country, purpose){
 
       <!-- Gradation scale -->
       <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;margin-bottom:6px">
-        <span style="flex:25;background:#19A463"></span><span style="flex:25;background:#E4B514"></span><span style="flex:25;background:#E8590C"></span><span style="flex:25;background:#C92A2A"></span>
+        <span style="flex:25;background:#19A463"></span><span style="flex:25;background:#E4B514"></span><span style="flex:25;background:#F26A41"></span><span style="flex:25;background:#E0512A"></span>
       </div>
       <div style="display:flex;font-size:10px;color:var(--muted);margin-bottom:16px">
         <span style="flex:25">${ru?'0–24 Низкий':'0–24 Low'}</span>
@@ -1813,7 +1813,7 @@ function toggleAuthPopover() {
       <div style="font-weight:700;margin-bottom:4px">${s.email}</div>
       <div style="color:${isPro?'#F5A623':'#807E76'};font-size:12px;margin-bottom:14px">${isPro ? '✦ Pro' : (LANG==='ru'?'Бесплатный план':'Free plan')}</div>
       <a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:var(--ink);color:var(--bg-card);border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px">${LANG==='ru'?'Мой профиль':'My profile'}</a>
-      ${isPro ? '' : `<a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:linear-gradient(180deg,#E8590C,#C92A2A);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:8px">${LANG==='ru'?'✦ Перейти на Pro':'✦ Upgrade to Pro'}</a>`}
+      ${isPro ? '' : `<a href="${ACCOUNT_URL}" style="display:block;text-align:center;width:100%;padding:9px;background:linear-gradient(180deg,#F26A41,#E0512A);color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:8px">${LANG==='ru'?'✦ Перейти на Pro':'✦ Upgrade to Pro'}</a>`}
       <button onclick="localStorage.removeItem('vigilo_jwt');location.reload()" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg-card);cursor:pointer;font-size:13px">${LANG==='ru'?'Выйти':'Sign out'}</button>`;
   } else {
     const hint = LANG === 'ru' ? 'Введи email — пришлём ссылку для входа.' : 'Enter your email — we\'ll send a login link.';
@@ -1867,7 +1867,7 @@ async function sendMagicLink() {
 /** Render the "My countries" sidebar section from the WATCHED Set.
  *  Empty state explains how to add countries. Each row clicks to the
  *  country profile; trailing × removes from the watch list. */
-const MC_BAND_C = { minimal:'#9aa0a6', low:'#E4B514', moderate:'#E8590C', elevated:'#d8531e', severe:'#C92A2A', critical:'#8B1A1A' };
+const MC_BAND_C = { minimal:'#9aa0a6', low:'#E4B514', moderate:'#F26A41', elevated:'#d8531e', severe:'#E0512A', critical:'#8B1A1A' };
 let _mcSeen = null;   // last-visit snapshot {iso2: score}, frozen for the session
 
 /* Composite score+band for a watched country name (via RISK_INDEX, ISO2 key). */
@@ -2246,8 +2246,8 @@ function renderCountryPanel(country){
   const AQI_CATS_LOCAL = [
     {max:50,  label:ru?'Хороший':'Good',                    color:'#19A463'},
     {max:100, label:ru?'Умеренный':'Moderate',              color:'#E4B514'},
-    {max:150, label:ru?'Вреден для чувствит.':'Unhealthy for Sensitive', color:'#E8590C'},
-    {max:200, label:ru?'Вредный':'Unhealthy',               color:'#C92A2A'},
+    {max:150, label:ru?'Вреден для чувствит.':'Unhealthy for Sensitive', color:'#F26A41'},
+    {max:200, label:ru?'Вредный':'Unhealthy',               color:'#E0512A'},
     {max:300, label:ru?'Очень вредный':'Very Unhealthy',    color:'#8B1A1A'},
     {max:500, label:ru?'Опасный':'Hazardous',               color:'#5C2010'},
   ];
@@ -2402,8 +2402,8 @@ function renderCountryPanel(country){
     const st = iso2 ? COUNTRY_STRUCTURAL[iso2] : null;
     if(st && st.hazard != null){
       const inf = Math.cbrt(st.hazard * st.vulnerability * st.coping); // 0–10
-      const band = inf>=6.5 ? {k:'high',c:'#C92A2A',ru:'Высокая уязвимость',en:'High vulnerability'}
-                 : inf>=4.5 ? {k:'elevated',c:'#E8590C',ru:'Повышенная уязвимость',en:'Elevated vulnerability'}
+      const band = inf>=6.5 ? {k:'high',c:'#E0512A',ru:'Высокая уязвимость',en:'High vulnerability'}
+                 : inf>=4.5 ? {k:'elevated',c:'#F26A41',ru:'Повышенная уязвимость',en:'Elevated vulnerability'}
                  : inf>=2.5 ? {k:'moderate',c:'#E4B514',ru:'Умеренная устойчивость',en:'Moderate resilience'}
                  :            {k:'low',c:'#19A463',ru:'Высокая устойчивость',en:'High resilience'};
       const bar = (lbl, val) => `<div class="cp-cat-row">
@@ -2466,7 +2466,7 @@ function renderCountryPanel(country){
       val == null ? '' :
       `<div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0">
          <span style="color:var(--muted)">${lbl}</span>
-         <b style="color:${hot?'#C92A2A':'#14110C'}">${val}${suffix||''}</b>
+         <b style="color:${hot?'#E0512A':'#14110C'}">${val}${suffix||''}</b>
        </div>`;
     return `
       <div class="cp-section">
@@ -2545,7 +2545,7 @@ function renderCountryPanel(country){
         const ru = LANG === 'ru';
         const msg = ru ? 'Лимит оценок исчерпан' : 'Assessment limit reached';
         const counter = document.getElementById('assessCounter');
-        if(counter){ counter.textContent = msg; counter.style.color = 'var(--red, #C92A2A)'; }
+        if(counter){ counter.textContent = msg; counter.style.color = 'var(--red, #E0512A)'; }
         return;
       }
       openRiskReport(country);
@@ -2583,15 +2583,15 @@ function renderCountryPanel(country){
 const SEV = {
   monitoring:  { idx:0, color:'#A09F95', dark:'#807E76', light:'#B8B7AD', label: STRINGS[LANG]?.sevLabel?.monitoring || 'Monitor' },
   low:         { idx:1, color:'#E4B514', dark:'#B28A0E', light:'#F2C73D', label: STRINGS[LANG]?.sevLabel?.low || 'Low' },
-  warning:     { idx:2, color:'#E8590C', dark:'#B84408', light:'#F47521', label: STRINGS[LANG]?.sevLabel?.warning || 'Warning' },
-  alert:       { idx:3, color:'#C92A2A', dark:'#9F1F1F', light:'#E03A3A', label: STRINGS[LANG]?.sevLabel?.alert || 'Alert' },
+  warning:     { idx:2, color:'#F26A41', dark:'#B84408', light:'#F47521', label: STRINGS[LANG]?.sevLabel?.warning || 'Warning' },
+  alert:       { idx:3, color:'#E0512A', dark:'#9F1F1F', light:'#E03A3A', label: STRINGS[LANG]?.sevLabel?.alert || 'Alert' },
   critical:    { idx:4, color:'#8B1A1A', dark:'#6E1414', light:'#A02222', label: STRINGS[LANG]?.sevLabel?.critical || 'Critical' },
   catastrophic:{ idx:5, color:'#5C2010', dark:'#421710', light:'#7A2A18', label: STRINGS[LANG]?.sevLabel?.catastrophic || 'Catastrophic' },
 };
 
 /* ── Category definitions (inline SVG icons — Lucide-style) ─ */
 const CATEGORY_META = {
-  epidemic:     { color:'#C92A2A', en:'Epidemics',    ru:'Эпидемии',    type:'epidemic',
+  epidemic:     { color:'#E0512A', en:'Epidemics',    ru:'Эпидемии',    type:'epidemic',
                   icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 5V3M12 21v-2M5 12H3M21 12h-2M7.05 7.05 5.64 5.64M18.36 18.36l-1.41-1.41M7.05 16.95l-1.41 1.41M18.36 5.64l-1.41 1.41"/></svg>' },
   disaster:     { color:'#1D6FA4', en:'Disasters',    ru:'Катастрофы',  type:'disaster',
                   icon:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>' },
@@ -2878,8 +2878,8 @@ let _aqiTimer   = null;
 const AQI_CATS = [
   { max:  50, color:'#19A463', label:'Good',             labelRu:'Хорошее' },
   { max: 100, color:'#E4B514', label:'Moderate',         labelRu:'Умеренное' },
-  { max: 150, color:'#E8590C', label:'Unhealthy (SG)',   labelRu:'Вредно (чувств.)' },
-  { max: 200, color:'#C92A2A', label:'Unhealthy',        labelRu:'Вредное' },
+  { max: 150, color:'#F26A41', label:'Unhealthy (SG)',   labelRu:'Вредно (чувств.)' },
+  { max: 200, color:'#E0512A', label:'Unhealthy',        labelRu:'Вредное' },
   { max: 300, color:'#8B1A1A', label:'Very Unhealthy',   labelRu:'Очень вредное' },
   { max: 999, color:'#5C2010', label:'Hazardous',        labelRu:'Опасное' },
 ];
@@ -3314,8 +3314,8 @@ async function _submitAlertModal(e){
 const SEV_COLOR_EXPR = ['match', ['get','sev'],
   'monitoring',   '#A09F95',
   'low',          '#E4B514',
-  'warning',      '#E8590C',
-  'alert',        '#C92A2A',
+  'warning',      '#F26A41',
+  'alert',        '#E0512A',
   'critical',     '#8B1A1A',
   'catastrophic', '#5C2010',
   '#888'
@@ -3369,7 +3369,7 @@ function toggleTheme(){
   try{ localStorage.setItem('vigilo-theme', dark ? 'dark' : 'light'); }catch(e){}
   // Keep the mobile browser chrome colour in sync.
   const meta = document.querySelector('meta[name="theme-color"]');
-  if(meta) meta.setAttribute('content', dark ? '#141310' : '#E8590C');
+  if(meta) meta.setAttribute('content', dark ? '#141310' : '#F26A41');
   setMapTheme();
 }
 window.toggleTheme = toggleTheme;
@@ -3471,7 +3471,7 @@ function openAppFeedback(){
     <div id="afbMsg" style="font-size:12.5px;margin-top:8px;min-height:16px"></div>
     <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
       <button id="afbCancel" style="background:none;border:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer">${tr('Cancel','Отмена')}</button>
-      <button id="afbSend" style="background:var(--accent,#E8590C);color:#fff;border:none;border-radius:10px;padding:10px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">${tr('Send','Отправить')}</button>
+      <button id="afbSend" style="background:var(--accent,#F26A41);color:#fff;border:none;border-radius:10px;padding:10px 18px;font:inherit;font-size:14px;font-weight:700;cursor:pointer">${tr('Send','Отправить')}</button>
     </div></div>`;
   document.body.appendChild(ov);
   const txt = ov.querySelector('#afbText'); txt.focus();
@@ -3479,13 +3479,13 @@ function openAppFeedback(){
   ov.querySelector('#afbSend').onclick = async ()=>{
     const message = txt.value.trim();
     const msg = ov.querySelector('#afbMsg');
-    if(message.length < 3){ msg.style.color='var(--s3,#C92A2A)'; msg.textContent=tr('Add a little more.','Добавьте чуть больше.'); return; }
+    if(message.length < 3){ msg.style.color='var(--s3,#E0512A)'; msg.textContent=tr('Add a little more.','Добавьте чуть больше.'); return; }
     const btn = ov.querySelector('#afbSend'); btn.disabled=true; btn.style.opacity='.6';
     try{
       await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,email:'',page:'app'})});
       ov.querySelector('div').innerHTML='<div style="text-align:center;padding:8px 0"><div style="font-size:17px;font-weight:800;color:var(--online,#19A463);margin-bottom:6px">'+tr('Thank you','Спасибо')+'</div><div style="font-size:13.5px;color:var(--muted)">'+tr('We read every message.','Читаем каждое сообщение.')+'</div></div>';
       setTimeout(()=>ov.remove(),1400);
-    }catch(e){ btn.disabled=false; btn.style.opacity='1'; msg.style.color='var(--s3,#C92A2A)'; msg.textContent=tr('Could not send. Try again.','Не удалось. Попробуйте ещё.'); }
+    }catch(e){ btn.disabled=false; btn.style.opacity='1'; msg.style.color='var(--s3,#E0512A)'; msg.textContent=tr('Could not send. Try again.','Не удалось. Попробуйте ещё.'); }
   };
 }
 window.openAppFeedback = openAppFeedback;
@@ -3594,8 +3594,8 @@ function refreshCountryRiskFill(){
   for(const [iso, ri] of Object.entries(RISK_INDEX)){
     const band = ri?.composite_risk?.band;
     let color = null;
-    if(band === 'critical' || band === 'severe')      color = '#C92A2A';
-    else if(band === 'high' || band === 'elevated')   color = '#E8590C';
+    if(band === 'critical' || band === 'severe')      color = '#E0512A';
+    else if(band === 'high' || band === 'elevated')   color = '#F26A41';
     else if(band === 'moderate')                       color = '#E4B514';
     else if(band === 'low' || band === 'minimal')     color = '#19A463';
     if(color){ matchExpr.push(iso, color); added++; }
@@ -4575,7 +4575,7 @@ function renderPanel(){
   } else if(riskEl){
     riskEl.style.display = '';
     const risk = computeRisk(o);
-    const riskColor = {low:'#3D8B5C', medium:'#C87B00', high:'#C92A2A'};
+    const riskColor = {low:'#3D8B5C', medium:'#C87B00', high:'#E0512A'};
     const riskBg    = {low:'rgba(61,139,92,0.10)', medium:'rgba(200,123,0,0.10)', high:'rgba(201,42,42,0.10)'};
     // small colored dot replaces emoji circles
     const dotFor = (level) => `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${riskColor[level]};margin-right:6px;vertical-align:middle;"></span>`;
@@ -4634,7 +4634,7 @@ function renderPanel(){
     const adv   = TRAVEL_ADVISORY[lang][risk];
     const trend = trendDirection(o.trend);
     const tLbl  = (TREND_LABELS[lang] || TREND_LABELS.en)[trend];
-    const tClr  = {rising:'#C92A2A', stable:'#807E76', falling:'#3D8B5C'}[trend];
+    const tClr  = {rising:'#E0512A', stable:'#807E76', falling:'#3D8B5C'}[trend];
     const others = OUTBREAKS.filter(x => x.country === o.country && x.id !== o.id);
     const othersHtml = others.length ? `
       <div class="travel-others">
