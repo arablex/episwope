@@ -435,6 +435,7 @@ function MapGlobe({ markers = [], onPickMarker = null, center = null, zoom = nul
   const marksRef = useRefH([]);
   const markersRef = useRefH(markers);
   markersRef.current = markers;
+  const _validCenter = (center && typeof center[0] === 'number' && typeof center[1] === 'number' && isFinite(center[0]) && isFinite(center[1])) ? center : null;
   const styleFor = d => d ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
   const fogFor = d => d
     ? { color:'rgb(20,22,27)', 'high-color':'rgb(36,40,52)', 'horizon-blend':0.08, 'space-color':'rgb(10,12,15)', 'star-intensity':0.18 }
@@ -445,15 +446,15 @@ function MapGlobe({ markers = [], onPickMarker = null, center = null, zoom = nul
     const map = new mapboxgl.Map({
       container: ref.current,
       style: styleFor(!document.body.classList.contains('page-light')),
-      projection: 'globe', center: center || [22, 8], zoom: zoom != null ? zoom : 1.35, minZoom: 0.8, maxZoom: 6,
+      projection: 'globe', center: _validCenter || [22, 8], zoom: zoom != null ? zoom : 1.35, minZoom: 0.8, maxZoom: 6,
       attributionControl: false, pitchWithRotate: false, dragRotate: false, interactive: interactive,
     });
     mapRef.current = map;
     // Animated focus: spin/zoom from afar onto the target location (the
     // "globe shrinks and settles on the place" effect requested).
-    if (center && spin) {
+    if (_validCenter && spin) {
       map.once('load', () => {
-        try { map.flyTo({ center, zoom: zoom != null ? zoom : 2.4, duration: 1500, essential: true }); } catch(e){}
+        try { map.flyTo({ center: _validCenter, zoom: zoom != null ? zoom : 2.4, duration: 1500, essential: true }); } catch(e){}
       });
     }
     map.on('style.load', () => map.setFog(fogFor(!document.body.classList.contains('page-light'))));
@@ -852,13 +853,16 @@ async function buildVigiloData(){
   const out = [];
 
   // Health signals → outbreak cards
+  const _usedIds = new Set();
+  const _uid = base => { let id = base, n = 1; while (_usedIds.has(id)) id = base + '-' + (n++); _usedIds.add(id); return id; };
   for(const s of signals){
     const iso = s.iso || s.country_iso;
-    if(!iso) continue;
+    if(!iso || iso === 'XX') continue;                                  // skip unplaceable ghost signals
+    if(typeof s.lat !== 'number' || typeof s.lng !== 'number') continue; // need a location for the globe
     const sev = _SEV_FROM_LEVEL[s.level] || 'monitor';
     const idxVal = scoreOf(iso) ?? Math.round((s.confidence||0)*100);
     out.push({
-      id: s.id || ('sig-'+iso), sev, name: s.disease || 'Health signal', cat: 'Epidemic',
+      id: _uid(s.id || ('sig-'+iso)), sev, name: s.disease || 'Health signal', cat: 'Epidemic',
       place: _countryName(iso), region: s.country && s.country!==iso ? s.country : '', code: iso,
       lat: s.lat, lon: s.lng,
       cases: s.source_count||0, deaths: 0,
@@ -883,7 +887,7 @@ async function buildVigiloData(){
     const sev = _SEV_FROM_BAND[band] || (e.severity>=5?'critical':e.severity>=3?'alert':e.severity>=2?'warning':'monitor');
     const geo = e.geo||{};
     out.push({
-      id: e.id || (iso+'-'+(e.type||'ev')), sev,
+      id: _uid(e.id || (iso+'-'+(e.type||'ev'))), sev,
       name: (e.type||e.category||'event').replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase()),
       cat: (e.category||'').replace(/_/g,' '),
       place: _countryName(iso), region:'', code: iso, lat: geo.lat, lon: geo.lng,
@@ -1301,15 +1305,20 @@ function AIBrief({ o }) {
     <div className="glass" style={{ borderRadius: 20, padding: 16, position: 'relative', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
         <span style={{ width: 26, height: 26, borderRadius: 8, display: 'grid', placeItems: 'center', background: 'var(--chip)', color: 'var(--text)' }}><Icon name="spark" size={15} /></span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Vigilo Brief</span>
-        <span style={{ marginLeft: 'auto', fontSize: 10.5, color: 'var(--text3)' }}>Synthesized · 2h ago</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{TT('Сигнал','Signal')}</span>
+        <span style={{ marginLeft: 'auto', fontSize: 10.5, color: 'var(--text3)' }}>{o.since}</span>
       </div>
-      <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: 'var(--text2)', textWrap: 'pretty' }}>
-        <b style={{ color: 'var(--text)' }}>{o.cases} confirmed cases</b> and {o.deaths} deaths across {o.region} since onset {o.since} ago. The {o.cfr}% case-fatality rate is consistent with prior events; an Rt of {o.rt} indicates active human-to-human transmission. Two healthcare-worker clusters suggest nosocomial spread — WHO has deployed a rapid-response team.
+      <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: 'var(--text2)', textWrap: 'pretty', fontStyle: 'italic' }}>
+        {o.headline
+          ? '“' + o.headline + '”'
+          : TT(`${o.name} · ${o.place}. Подтверждено ${o.cases} источниками, уверенность ${o.cfr}%.`,
+               `${o.name} · ${o.place}. Corroborated by ${o.cases} sources, ${o.cfr}% confidence.`)}
       </p>
-      <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        {o.sources.map(s => <Tag key={s}>{s}</Tag>)}
-      </div>
+      {o.sources && o.sources.length > 0 && (
+        <div style={{ marginTop: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {o.sources.slice(0, 6).map((s, i) => <Tag key={s + i}>{s}</Tag>)}
+        </div>
+      )}
     </div>
   );
 }
@@ -1400,7 +1409,7 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{TT('Индекс риска','Severity index')}</div>
             <div style={{ fontSize: 13.5, color: 'var(--text2)', lineHeight: 1.45, marginTop: 6, textWrap: 'pretty' }}>
-              {TT('Композит из числа источников, корроборации и скорости нарастания.','Composite of case load, fatality rate and transmission velocity.')} <b style={{ color: 'var(--text)' }}>{o.idx}/100</b> {TT('— в верхней группе активных событий.','places this in the top tier of active events.')}
+              {TT('Композит из числа источников, корроборации и скорости нарастания.','Composite of source count, corroboration and rate of escalation.')} <b style={{ color: 'var(--text)' }}>{o.idx}/100</b> {TT('— в верхней группе активных событий.','places this in the top tier of active events.')}
             </div>
           </div>
         </div>
@@ -1421,19 +1430,17 @@ function DetailImmersive({ o, onClose, onCountry, onSetAlert }) {
         <AIBrief o={o} />
 
         {/* affected regions */}
-        <SectionTitle>{TT('Затронутые регионы','Affected regions')}</SectionTitle>
-        <div className="panel" style={{ borderRadius: 20, padding: 6 }}>
-          {[['Kigali', 28], ['Eastern Province', 9], ['Southern Province', 4]].map(([r, n], i, a) => (
-            <div key={r} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
-              <span style={{ color: 'var(--text3)' }}><Icon name="pin" size={17} /></span>
-              <span style={{ flex: 1, fontSize: 14, color: 'var(--text)' }}>{r}</span>
-              <div style={{ width: 64, height: 5, borderRadius: 99, background: 'var(--track)', overflow: 'hidden' }}>
-                <div style={{ width: (n / 28 * 100) + '%', height: '100%', background: 'var(--crit)', borderRadius: 99 }} />
+        {o.sources && o.sources.length > 0 && <>
+          <SectionTitle>{TT('Источники','Sources')}</SectionTitle>
+          <div className="panel" style={{ borderRadius: 20, padding: 6 }}>
+            {o.sources.slice(0, 8).map((src, i, a) => (
+              <div key={src + i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 12px', borderBottom: i < a.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <span style={{ color: 'var(--text3)' }}><Icon name="pin" size={17} /></span>
+                <span style={{ flex: 1, fontSize: 14, color: 'var(--text)' }}>{src}</span>
               </div>
-              <span className="mono" style={{ fontSize: 13, color: 'var(--text2)', width: 22, textAlign: 'right' }}>{n}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>}
       </div>
       <ActionBar crit={crit} onAlert={() => onSetAlert && onSetAlert(o)} />
       {share && <div className="modal-in" style={{ position: 'absolute', inset: 0, zIndex: 80 }}><ShareSheet o={o} onClose={() => setShare(false)} /></div>}
@@ -1832,14 +1839,14 @@ function CountryView({ country, nav }) {
   const maxIdx = Math.max(...country.list.map(o => o.idx));
   const ov = CONFLICT[country.place] || {};
   const domains = [
-    { key: 'health', label: 'Health & outbreaks', icon: 'pulse', score: +(maxIdx / 100).toFixed(1) },
-    { key: 'conflict', label: 'Armed conflict', icon: 'shield', score: ov.conflict || 0 },
-    { key: 'unrest', label: 'Civil unrest', icon: 'user', score: ov.unrest || 0 },
-    { key: 'transport', label: 'Transport', icon: 'plane', score: ov.transport || 0 },
-    { key: 'border', label: 'Border & entry', icon: 'grid', score: ov.border || 0 },
+    { key: 'health', label: TT('Здоровье и вспышки','Health & outbreaks'), icon: 'pulse', score: +(maxIdx / 100).toFixed(1) },
+    { key: 'conflict', label: TT('Вооружённый конфликт','Armed conflict'), icon: 'shield', score: ov.conflict || 0 },
+    { key: 'unrest', label: TT('Гражданские беспорядки','Civil unrest'), icon: 'user', score: ov.unrest || 0 },
+    { key: 'transport', label: TT('Транспорт','Transport'), icon: 'plane', score: ov.transport || 0 },
+    { key: 'border', label: TT('Границы и въезд','Border & entry'), icon: 'grid', score: ov.border || 0 },
   ];
   const composite = +Math.max(...domains.map(d => d.score)).toFixed(1);
-  const riskLabel = composite >= 0.8 ? 'Severe' : composite >= 0.6 ? 'Elevated' : composite >= 0.3 ? 'Moderate' : 'Low';
+  const riskLabel = composite >= 0.8 ? TT('Тяжёлый','Severe') : composite >= 0.6 ? TT('Повышенный','Elevated') : composite >= 0.3 ? TT('Умеренный','Moderate') : TT('Низкий','Low');
   const dColor = (s) => s >= 0.7 ? 'var(--crit)' : s >= 0.4 ? 'var(--sev-warn)' : 'var(--sev-monitor)';
   const top = country.list[0];
   const avgCfr = (country.list.reduce((s, o) => s + o.cfr, 0) / country.list.length).toFixed(1);
@@ -1886,12 +1893,12 @@ function CountryView({ country, nav }) {
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
         <MoreBar nav={nav} trailing={<span className="iconbtn"><Icon name="share" size={18} /></span>} />
         <div style={{ position: 'absolute', left: 18, bottom: 14, right: 100 }}>
-          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Country profile</div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>{TT('Профиль страны','Country profile')}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
             <Flag code={country.code} size="lg" />
             <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--text)', letterSpacing: -0.7, lineHeight: 1 }}>{country.place}</span>
           </div>
-          <div style={{ marginTop: 10 }}><Tag tone={country.maxSev === 'critical' ? 'crit' : 'neutral'}><SevDot sev={country.maxSev} size={6} />{locSev(country.maxSev)} risk</Tag></div>
+          <div style={{ marginTop: 10 }}><Tag tone={country.maxSev === 'critical' ? 'crit' : 'neutral'}><SevDot sev={country.maxSev} size={6} />{locSev(country.maxSev)} {TT('риск','risk')}</Tag></div>
         </div>
       </div>
 
@@ -1914,17 +1921,17 @@ function CountryView({ country, nav }) {
         {tab === 'overview' && (
           <div>
             <div className="panel" style={{ borderRadius: 20, padding: 18, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-              <Metric label="Active" value={country.active} />
-              <Metric label="Cases" value={fmt(country.cases)} />
-              <Metric label="Deaths" value={fmt(country.deaths)} />
+              <Metric label={TT('Активно','Active')} value={country.active} />
+              <Metric label={TT('Источники','Sources')} value={fmt(country.cases)} />
+              <Metric label={TT('Индекс','Index')} value={Math.round(composite * 100)} />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>Highest severity</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>{TT('Наибольшая тяжесть','Highest severity')}</div>
             <OutbreakRow o={top} variant="rich" onClick={() => nav.openOutbreak(top)} />
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>Risk snapshot</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text)', margin: '22px 0 11px' }}>{TT('Снимок риска','Risk snapshot')}</div>
             <div className="panel" style={{ borderRadius: 18, padding: '16px 16px 6px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
                 <span className="mono" style={{ fontSize: 30, fontWeight: 600, color: composite >= 0.7 ? 'var(--crit)' : 'var(--text)' }}>{composite.toFixed(1)}</span>
-                <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 600 }}>{riskLabel} composite</span>
+                <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 600 }}>{riskLabel} {TT('композит','composite')}</span>
               </div>
               {domains.slice(0, 3).map((d, i, a) => DomainRow(d, i, a))}
             </div>
@@ -1999,7 +2006,7 @@ function CountryView({ country, nav }) {
           width: '100%', height: 52, borderRadius: 16, border: '1px solid var(--border)', cursor: 'pointer',
           background: 'var(--chip)', color: 'var(--text)', fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700, whiteSpace: 'nowrap',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <Icon name="bell" size={18} />Alert me about {country.place}
+          <Icon name="bell" size={18} />{TT('Оповещать о','Alert me about')} {country.place}
         </button>
       </div>
     </div>
@@ -2170,8 +2177,8 @@ function Plans({ nav }) {
 // ── NEW ALERT SHEET (modal) ────────────────────────────────────
 function NewAlertSheet({ onClose, onCreate, preset }) {
   const [type, setType] = useStateM(preset ? preset.type : 'severity');
-  const [pathogen, setPathogen] = useStateM(preset && preset.type === 'pathogen' ? preset.label : OUTBREAKS[0].name);
-  const [region, setRegion] = useStateM(preset && preset.type === 'region' ? preset.label : OUTBREAKS[0].place);
+  const [pathogen, setPathogen] = useStateM(preset && preset.type === 'pathogen' ? preset.label : (OUTBREAKS[0] ? OUTBREAKS[0].name : ''));
+  const [region, setRegion] = useStateM(preset && preset.type === 'region' ? preset.label : (OUTBREAKS[0] ? OUTBREAKS[0].place : ''));
   const [sev, setSev] = useStateM('alert');
   const [push, setPush] = useStateM(true);
   const [email, setEmail] = useStateM(false);
